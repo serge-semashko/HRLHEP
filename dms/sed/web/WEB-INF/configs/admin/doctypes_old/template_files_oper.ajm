@@ -1,0 +1,80 @@
+[comments]
+descr=A: Операции с файлами
+author=Устенко
+input=file_id = id файла из таблицы doc_templates_files, cop - код операции: "delete"-удаление, "moveup":перемещение файла на 1 позицию вверх в списке, "movedn": на 1 позицию вниз
+output=none
+parents=admin/doctypes/doc_files_list.cfg
+[end]
+
+[parameters]
+debug=off
+[end]
+
+[report]
+$INCLUDE [operate]
+[end]
+
+[operate]
+$GET_DATA [delete file] ??file_id&cop=delete
+$GET_DATA [moveup file] ??file_id&cop=moveup&upper_file_id&norder&upper_norder
+$GET_DATA [movedn file] ??file_id&cop=movedn&below_file_id&norder&below_norder
+[end]
+
+[preSQLs]
+select type_id, norder, '#file_storage_path#' as "DataStartPath", fs_file_name from doc_templates_files where id  = #file_id# ??file_id
+;
+$INCLUDE [get neighbours] ??file_id&type_id
+$INCLUDE [get norder] ??file_id
+[end]
+
+[moveup file]
+update doc_templates_files 
+set norder = #upper_norder#
+where id = #file_id#
+;
+update doc_templates_files 
+set norder = #norder# 
+where id = #upper_file_id#
+;
+[end]
+
+
+[movedn file]
+update doc_templates_files 
+set norder = #below_norder# 
+where id = #file_id#
+;
+update doc_templates_files 
+set norder = #norder# 
+where id = #below_file_id#
+;
+[end]
+
+
+
+[delete file]
+delete from doc_templates_files where id=#file_id#
+;
+delete file: #fs_file_name#
+;
+[end]
+
+
+
+[get neighbours]
+SELECT id as below_file_id, norder as below_norder FROM doc_templates_files
+WHERE 
+type_id = #type_id#
+and norder > #norder#
+ORDER BY norder
+limit 1
+;
+SELECT id as upper_file_id, norder as upper_norder FROM doc_templates_files
+WHERE 
+type_id = #type_id#
+and norder < #norder#
+ORDER BY norder desc
+limit 1
+;
+[end]
+

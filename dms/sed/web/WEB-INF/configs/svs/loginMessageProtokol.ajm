@@ -1,0 +1,31 @@
+svs/loginMessageProtokol.ajm
+
+[comments]
+descr=U: пометка: не показывать сообщение после входа
+output=запись в u_msg_protokol
+parents=svs/loginMessage.ajm
+author=Куняев
+[end]
+
+[description]
+<ul><li></li></ul>
+[end]
+
+
+[parameters]
+request_name=U: пометка: не показывать сообщение после входа
+LOG=ON
+[end]
+
+
+[report]
+    $GET_DATA [register msg]
+[end]
+
+[register msg]
+    update u_msg_protokol set 
+        not_show=1 ??not_show=true
+        not_show=0 ??!not_show=true
+    where msg_id=#msg_id# and user_id=#USER_ID#
+[end]
+

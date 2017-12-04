@@ -1,0 +1,43 @@
+docs/markImportant.cfg
+
+
+[comments]
+descr=U: Пометка документа
+
+input=doc_id, imp=(true, false)
+output=запись в таблицу d_marked
+parents=docs/view_doc.cfg
+childs=
+test_URL=?c=docs/markImportant&doc_id=8&imp=true
+author=Куняев
+[end]
+
+
+
+[parameters]
+LOG=ON
+[end]
+
+[report]
+$CALL_SERVICE c=sys/getARUD; ??!AR_R=Y
+$INCLUDE [OK report]  ??AR_R=Y
+$CALL_SERVICE c=sys/log_doc_access; doc_id=#doc_id#; rejected=1;   ??!AR_R=Y
+[end]
+
+
+[OK report]
+$LOG2 <hr>docs/markImportant.cfg: doc_id=#doc_id#; imp=#imp#;<br>
+$GET_DATA [mark doc]  ??imp=true
+$GET_DATA [unmark doc]  ??imp=false
+[end]
+
+
+[mark doc]
+insert into d_marked (user_id, doc_id)
+values (#USER_ID#,#doc_id#)
+[end]
+
+[unmark doc]
+delete from d_marked 
+where user_id=#USER_ID# and doc_id=#doc_id#
+[end]

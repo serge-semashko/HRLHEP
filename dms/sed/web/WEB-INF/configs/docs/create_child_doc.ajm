@@ -1,0 +1,102 @@
+docs/create_child_doc.ajm
+
+[comments]
+descr=U: Cоздание документа на основании существующего (потомка)
+input=pid-ID  родительского документа; child_type_id-ID типа документа-потомка
+output=
+parents=docs/choose_child_type.ajm
+childs=docs/edit_doc; obj/copy_collections; files/sys/copy_doc_files; svs/set_num_children
+author=Куняев
+[end]
+
+[description]
+<b>Создание документа на основании существующего.</b>
+<ul>
+    <li> создание дочернего документа заданного типа в d_list и в d_data_XX </li> 
+    <li> копирование сумм из исходного дока в дочерний, если они есть </li> 
+    <li> копирование коллекций (напр. источников финансирования) </li> 
+    <li> копирование прикрепленных файлов </li> 
+    <li> вызов docs/edit_doc (форма заполняется совпадающими значениями родителя) </li> 
+</ul>
+[end]
+
+[parameters]
+request_name=U:Создание потомка документа
+service=jinr.sed.ServiceCreateChildDoc
+tableCfg=table_no
+LOG=ON
+SYS_FIELDS=DOC_ID, IS_ACTIVE, DATE_FORMAT(modified,'#dateTimeFormat#') as DOC_MODIFIED, VERSION
+SYS_FIELDS_TYPES=int,int,varchar,int
+[end]
+
+
+[report header]  * получение информации о родителе
+    $SET_PARAMETERS doc_id=#pid#;
+    $GET_DATA docs/view_doc.cfg[getDocInfo]  ??copyData=Y
+[end]
+
+
+
+[report footer]  * копирование данных и файлов
+    $GET_DATA [create child doc]
+    $GET_DATA [copy sums] ??!ERROR
+    $GET_DATA [set permission]  ??!ERROR
+    $GET_DATA [commit]
+    $CALL_SERVICE c=obj/copy_collections;  ??!ERROR&copyData
+    $CALL_SERVICE c=files/sys/copy_doc_files; src_doc_id=#pid#; dest_doc_id=#doc_id#; ??!ERROR&copyFiles
+    $CALL_SERVICE c=svs/set_num_children; parent_doc_id=#pid#; ??!ERROR&doLink
+
+    $SET_PARAMETERS  NUMBER=; DOC_DATE=; INITIATOR_COMMENT=; 
+    $CALL_SERVICE c=docs/edit_doc; child=y; ??!ERROR
+[end]
+
+=====================================================================
+
+[preSQLs] * уже забылось, зачем это
+    select 'Y' as "doLink" from d_types where id=#child_type_id# and group_id in(90)
+[end]
+
+[create child doc] ***** создание пустого дочернего документа
+    lock tables d_list write, d_data_#child_type_id# write;
+    START TRANSACTION
+    ;
+    select name as "DOC_TYPE", curr_doc_type_version from d_types where id=#child_type_id#
+    ;
+    insert into d_list (pid, type_id, type_version, number, doc_date, created, creator_id)
+    values (
+    #pid#  ??doLink
+    null  ??!doLink
+    , #child_type_id#, #curr_doc_type_version#, null,  null, now(), #USER_ID#)
+    ;
+    select LAST_INSERT_ID() as "doc_id";
+    ;
+    insert into d_data_#child_type_id# (doc_id, version)
+    values (#doc_id#, 1)
+[end]
+
+
+[copy sums] ***** Копирование сумм из родителя, если они в нем есть. Возможную ошибку игнорируем
+    try: update d_data_#child_type_id# set summa_rub=#summa_rub# where doc_id=#doc_id#; ??summa_rub
+    try: update d_data_#child_type_id# set summa_usd=#summa_usd# where doc_id=#doc_id#; ??summa_usd
+    try: update d_data_#child_type_id# set summa_eur=#summa_eur# where doc_id=#doc_id#; ??summa_eur
+    try: update d_data_#child_type_id# set total_sum=#summa_rub#, total_sum_curr='руб.' where doc_id=#doc_id#; ??summa_rub
+    try: update d_data_#child_type_id# set total_sum=#summa_usd#, total_sum_curr='USD' where doc_id=#doc_id#; ??!summa_rub&summa_usd
+    $SET_PARAMETERS ERROR=; ??ERROR
+[end]
+
+[copy doc divs]  ***** Копирование из родителя подразделений
+    insert into d_divs (doc_id, div_id)
+    (select #doc_id#, div_id from d_divs where doc_id=#pid#)
+[end]
+
+[commit]  ***** Commit или Rollback при ошибке
+    COMMIT;   ??!ERROR
+    ROLLBACK;  ??ERROR
+    unlock tables; 
+[end]
+
+
+[set permission]  ***** Установка разрешения создателю
+    insert into p_permits (user_id, doc_id, rule_nr)
+    values (#CREATOR_ID#, #doc_id#, null)
+[end]

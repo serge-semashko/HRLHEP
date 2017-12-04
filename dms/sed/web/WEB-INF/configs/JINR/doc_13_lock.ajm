@@ -1,0 +1,19 @@
+JINR/doc_13_lock.ajm
+
+
+[report]
+$GET_DATA [lock doc SQL]
+Заблокировано ??!status=3 
+Разблокировано ??status=3 
+    <script type="text/javascript" language="javascript">
+        $('##doc_content :input[value="Изменить"]').remove();  ??!status=3 
+    </script>
+[end]
+
+[lock doc SQL]
+select status from d_list where id=#doc_id#;
+update d_list set 
+    status=0 ??status=3 
+    status=3 ??!status=3 
+    where id=#doc_id#
+[end]

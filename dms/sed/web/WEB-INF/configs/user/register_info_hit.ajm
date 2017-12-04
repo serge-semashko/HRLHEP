@@ -1,0 +1,31 @@
+user/register_info_hit.ajm
+
+[comments]
+descr=
+input=
+output=
+parents=svs/info_show_plain_data
+childs=
+author=Куняев
+[end]
+
+[parameters]
+request_name=U:ведение info favorites
+KeepLog=true
+ClearLog=false
+irpp=10
+[end]
+
+
+[report]
+
+[end]
+
+
+[preSQLs]
+    select id as fav_id from u_info_favorites where info_id=#info_id# and user_id=#USER_ID# and record_id=#record_id#
+    ;
+    update u_info_favorites set num_hits=num_hits+1, last_hit=now() where id=#fav_id# ??fav_id>0
+    ;
+    insert into u_info_favorites(user_id, info_id, record_id, num_hits, last_hit) values (#USER_ID#, #info_id#, #record_id#, 1, now())  ??!fav_id>0
+[end]

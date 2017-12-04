@@ -1,0 +1,211 @@
+tab_smts.cfg
+
+[comments]
+descr=U: Таб "СМТС" - вывод списка документов, ожидающих СМТС
+
+input=none
+output=
+parents=main.cfg
+childs=
+testURL=?c=tab_smts
+author=Куняев
+[end]
+
+[description]
+
+[end]
+
+[parameters]
+request_name=A:Монитор
+LOG=ON
+[end]
+
+
+[report]
+$INCLUDE dat/common.dat[check login] 
+$INCLUDE [report_]    ??AR_SYS_ADMIN=1|user_roles={{.*СМТС.*}}
+[end]
+
+
+[report_]
+$SET_PARAMETERS DIV=; f_div_id=; doc_types=1,8,9,10,11,12;
+$GET_DATA [get user div]  ??user_roles={{.*СМТС лаборатории.*}}
+$GET_DATA [getFilters]
+
+
++++++ Фильтры +++++ ??
+<table id="filters_div" border=0 cellpadding=5 style="margin:0 0 10px 100px;">
+<tr><td class="label" nowrap>
+Тип документа:</td><td><select name=f_type_id class=norm onChange="submitForm();"><option value="">все</option>#DOC_TYPES#</select>
+
+Подразделение: <b>#DIV#</b> <input type=hidden value="#f_div_id#" size="5" name="f_div_id"> 
+<div id="f_div" callback="setJinrDivFilter" class="info_input pt big bg_white" style="display: inline-block; width:100px; height:20px; border:solid 1px gray; " searchfor="none" info_view="11" info_id="10">все</div> ??!NUM_DIVS=1
+<input type=hidden value="#f_div_ids#" name="f_div_ids"> 
+<input type=hidden value="#NUM_DIVS#" name="NUM_DIVS"> 
+<input type=hidden value="#doc_types#" name="doc_types"> 
+
+</td></tr>
+
+$SET_PARAMETERS f_doc_stat=#f_doc_stat_sess#;
+<tr><td class="label">Статус:</td><td>
+<input type=radio name=f_doc_stat value="1,2" 
+checked ??!f_doc_stat|f_doc_stat=1,2
+onClick="submitForm();">не завершенные
+
+<input type=radio name=f_doc_stat value="1" 
+checked ??f_doc_stat=1
+onClick="submitForm();">в процессе согласования
+<input type=radio name=f_doc_stat value="2" 
+checked  ??f_doc_stat=2
+onClick="submitForm();">на этапе завершения
+<input type=radio name=f_doc_stat value="3" 
+checked  ??f_doc_stat=3
+onClick="submitForm();">завершенные
+
+<br><input type=checkbox name=f_wait_smts 
+checked  ??f_wait_smts|!done
+onClick="setWaitSMTS(this);">ожидающие СМТС
+ 
+<input type=checkbox name=f_wait_smts_div 
+checked  ??f_wait_smts_div|!done
+onClick="setWaitSMTS_div(this);">ожидающие СМТС лабораторий
+ 
+
+</td></tr>
+<td class="label">Ожидают:</td>
+
+<td>
+<select name=f_wuser_id class=norm onChange="submitForm();"><option value=""></option>#W_USERS#</select>
+
+</td></tr><td></td><td>
+<input type=checkbox name=f_wait_dog 
+checked  ??f_wait_dog
+onClick="submitForm();" ??
+onClick="setWaitDog(this);"
+>ожидающие подготовки договора
+</td></tr><td></td><td>
+
+<input type=hidden name="SMTS_USERS" value="#SMTS_USERS#">
+<input type=hidden name="srt" value="#srt#">
+<input type=hidden name="desc" value="#desc#">
+<input type=hidden name="done" value="Y">
+
+</td></tr></table>
+
++++++ Контейнер таблицы +++++ ??
+<div id="smts_docs">=====</div>
+
+
+<script type="text/javascript">
+
+
+var pasteDiv = function(requesterId, id, text) {
+alert(requesterId);
+
+}
+
+setModule("reports/jinr_smts_docs"); ??
+
+var resetSort=function(){
+    document.theForm.srt.value="uw.F"; 
+    document.theForm.desc.value="";
+}
+
+resetSort(); ??!done
+
+var submitForm=function() {
+    AjaxCall("smts_docs", "c=reports/jinr_smts_docs", true, "filters_div");
+}
+
+var doIt = function() {
+submitForm();
+}
+
+var setWaitDog=function(cb){
+    if(cb.checked){
+      selectOptionByVal(document.theForm.f_type_id, "1");
+      selectOptionByVal(document.theForm.f_wuser_id, "");
+
+      document.theForm.f_doc_stat[3].checked=true;
+      document.theForm.f_wait_smts.checked=false;
+      document.theForm.f_wait_smts_div.checked=false;
+    }
+    else {
+      selectOptionByVal(document.theForm.f_type_id, ""); ??
+      document.theForm.f_doc_stat[0].checked=true;
+      document.theForm.f_wait_smts.checked=true;
+    }
+    submitForm();
+}
+
+
+var setWaitSMTS=function(cb){
+    if(cb.checked){
+      selectOptionByVal(document.theForm.f_type_id, "");  ??
+      document.theForm.f_doc_stat[0].checked=true;
+      document.theForm.f_wait_dog.checked=false;
+    }
+    else {
+      selectOptionByVal(document.theForm.f_type_id, "1"); ??
+      document.theForm.f_wait_smts.checked=true; ??
+    }
+    submitForm();
+}
+
+var setWaitSMTS_div=function(cb){
+    if(cb.checked){
+      selectOptionByVal(document.theForm.f_type_id, ""); ??
+      document.theForm.f_doc_stat[0].checked=true;
+      document.theForm.f_wait_dog.checked=false;
+    }
+    else {
+      selectOptionByVal(document.theForm.f_type_id, "1"); ??
+      document.theForm.f_wait_smts.checked=true; ??
+    }
+    submitForm();
+}
+
+
+
+submitForm();
+</script>
+
+[end]
+
+
+=================================================================================
+=================================================================================
+=================================================================================
+[getFilters]
+select concat('<option value=', cast(dt.id as char), '>', dt.name, '</option>') as DOC_TYPES
+from d_types dt 
+ join doc_groups dg on dg.id=dt.group_id 
+where dt.is_active = 1 
+ and dg.id in(1,2) ??
+ and dt.id in(#doc_types#)
+order by dg.sort, dt.sort
+;
+select distinct concat('<option value=', cast(uw.id as char), '>', fio(uw.F, uw.I, uw.O) , '</option>') as W_USERS 
+,uw.F, uw.I, uw.O
+from wf_waiting wfw 
+ join d_list dh on (dh.id=wfw.doc_id and dh.type_id in(#doc_types#))
+ join #table_users_full# uw on uw.id=wfw.user_id
+where wfw.user_id in(#SMTS_USERS_ALL#) ??
+where uw.roles like '%СМТС%'
+and (uw.div_code is null or uw.div_code in (#f_div_ids#)) ??f_div_ids
+order by uw.F, uw.I, uw.O
+[end]
+
+select group_concat(user_id) as SMTS_USERS_ALL from a_user_role where role_id in(15,20,23) and active=1
+;
+
+
+
+[get user div]
+select group_concat(target_code) as f_div_ids, count(id) as NUM_DIVS
+from a_user_role
+where user_id=#USER_ID# and role_id=23 and active=1
+;
+select short_name as "DIV" from info_10 where id=#f_div_ids#  ??f_div_ids&NUM_DIVS=1
+;
+[end]

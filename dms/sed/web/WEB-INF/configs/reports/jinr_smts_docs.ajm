@@ -1,0 +1,163 @@
+reports/jinr_smts_docs.cfg
+
+[comments]
+descr=U: Модуль вывода списка документов закладки СМТС
+
+input=
+output=HTML таблица документов
+parents=tab_smts.cfg
+childs=
+testURL=
+author=Куняев
+[end]
+
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=U:Таблица всех документов
+LOG=ON 
+tableCfg=table_no
+subhead=<tr><td colspan=6><b>
+$INCLUDE dat/common.dat[rowLinks]
+[end]
+
+
+[report header]
+$INCLUDE [OK report header]  ??AR_SYS_ADMIN=1|user_roles={{.*СМТС.*}}
+$CALL_SERVICE c=sys/log_doc_access; doc_id=0; access_type=10; rejected=1;   ??!user_roles={{.*СМТС.*}}&!AR_SYS_ADMIN=1
+[end]
+
+
+[OK report header]
+$GET_DATA [get SMTS users]
+
+$SET_PARAMETERS srn=1; rpp=9999; icon=<i class="fa fa-user-circle" aria-hidden="true"></i>;
+
+++++++++++++++++++ Шапка таблицы документов +++++++++++++++++++++ ??
+f_doc_stat=#f_doc_stat#; ??
+<table class="tlist tblue" style="border:solid 1px ##a0a0a0;" cellspacing=0>
+<tr>
+<th class="srh" sr="dh.TYPE_ID">Документ</th>
+<th class="srh" sr="dh.NUMBER">№, дата</th>
+<th class="srh" sr="dh.TITLE">Содержание</th>
+<th class="srh" sr="dh.DIVS">Подразд.</th>
+<th class="srh pl" sr="dh.status">Статус</th>
+<th class="srh" sr="uw.F">Ожидает</th>
+</tr>
+<tr><tr><td colspan=6 class="subhead" style=""><b>Ожидают СМТС:</b></td></tr> ??f_wait_smts&!f_wuser_id
+[end]
+
+
+[item]
+#subhead##icon# #WAITING_USER#</b></td></tr>  ??srt=uw.F&WAITING_USER&!WAITING_USER=#WAITING_USER_OLD#
+#subhead##DIVS#</b></td></tr>  ??srt=dh.DIVS&DIVS&!DIVS=#DIVS_OLD#
+<tr class="pt
+oddRow ??oddRow=1
+bg_red ??is_deleted=1
+" 
+onClick="$('##doc_overlay').show(); AjaxCall('doc_content', 'c=admin/monitor/view_doc&doc_id=#ID#&mode=popup');" ??
+onClick="$('##doc_overlay').show(); AjaxCall('doc_content', 'c=docs/view_doc&doc_id=#ID#&mode=popup', true);"
+>
+<td class="nowrap" nowrap>#DOC_TYPE#
+</td>
+<td>#NUMBER#&nbsp;от&nbsp;#DOC_DATE#</td>  ??DOC_DATE
+<td>#NUMBER#</td>  ??!DOC_DATE
+<td>#TITLE#</td>
+<td>#DIVS#</td>
+<td class="pl">
+согласование  ??DOC_STATUS=1
+утверждение  ??DOC_STATUS=1_ZZ
+завершение  ??DOC_STATUS=2
+завершен  ??DOC_STATUS=3
+
+#DOC_STATUS# ??
+</td>
+<td class="nowrap pl
+bg_red ??WAITING_LEVEL=LONG_ZZZ
+">#WAITING#ч,
+#WAITING_USER#
+</td></tr>
+
+$SET_PARAMETERS WAITING_USER_OLD=#WAITING_USER#; DIVS_OLD=#DIVS#; subhead=<tr><td colspan=6 class="divider"></td></tr><tr><td colspan=6><b>;
+[end]
+
+
+[report footer]
+$CALL_SERVICE c=reports/jinr_smts_div_docs.cfg;  ??f_wait_smts_div&!f_wuser_id
+</table>
+
+$SET_PARAMETERS NumTableCols=7;
+<script type="text/javascript">
+showSrt("#srt#","sup"); ??!desc
+showSrt("#srt#","sdown"); ??desc
+
+</script>
+[end]
+
+
+***************************** Шаблон SQL запроса ***************************
+[SQL]
+$INCLUDE [SQL_]  ??f_wait_smts|f_wait_dog|!f_wait_smts_div
+[end]
+
+
+[SQL_]
+select distinct
+dh.ID, dh.TYPE_ID, dtp.SHORT_NAME AS DOC_TYPE, dh.DIVS, dh.is_deleted
+, dh.NUMBER, dh.TITLE
+, DATE_FORMAT(dh.doc_date,'#dateFormat#') as DOC_DATE 
+
+, TIMESTAMPDIFF(hour, dh.modified, now()) AS WAITING ??
+, concat(FORMAT(TIMESTAMPDIFF(day, dh.modified, now()), 0), 'д'
+   , FORMAT(TIMESTAMPDIFF(hour, dh.modified, now())-TIMESTAMPDIFF(day, dh.modified, now())*24,0)) AS WAITING 
+, case when TIMESTAMPDIFF(day, dh.modified, now()) > 1 then 'LONG'
+else 'SHORT'
+end AS WAITING_LEVEL 
+
+, fio(uw.F, uw.I, uw.O) ??srt=uw.F
+, group_concat(fio(uw.F, uw.I, uw.O)) ??!srt=uw.F
+as WAITING_USER
+
+, dh.status as "DOC_STATUS"
+
+,uw.F,  dh.modified   ??srt=uw.F
+from d_list dh
+left join d_types dtp on dtp.Id = dh.type_id
+left join wf_waiting wfw on 
+(wfw.doc_id=dh.id
+)
+left join #table_users_full# uw on uw.id=wfw.user_id
+left join d_divs d on d.doc_id=dh.id ??f_div_id|f_div_ids
+
+where dh.ID>0 
+and dh.is_deleted=0
+and dh.status in(#f_doc_stat#) ??f_doc_stat
+and dh.status>0  ??!f_doc_stat
+
+and dtp.group_id in(1,2) ??
+and dh.TYPE_ID = #f_type_id# ??f_type_id
+and dh.type_id in(#doc_types#)  ??!f_type_id
+
+and d.div_id=#f_div_id# ??f_div_id
+and d.div_id in(#f_div_ids#) ??f_div_ids
+
+and wfw.user_id=#f_wuser_id#  ??f_wuser_id
+and wfw.user_id in (#SMTS_USERS#)  ??!f_wuser_id&SMTS_USERS&f_wait_smts|f_wait_smts_div
+and dh.modified > DATE_SUB(now(),INTERVAL 30 day) ??f_wait_dog=on
+group by dh.id  ??!srt=uw.F
+
+order by 
+dh.status, ??srt=zzz
+#srt#   ??!f_wait_dog=on|!srt=uw.F
+DATEDIFF(now(), dh.modified)  ??f_wait_dog=on&srt=uw.F
+#desc#
+, DATEDIFF(now(), dh.modified) desc ??!f_wait_dog=on&srt=uw.F
+, dh.status
+[end]
+
+
+[get SMTS users]
+select group_concat(user_id) as SMTS_USERS from a_user_role where role_id in(15,20) and active=1
+[end]
+
+and active=1

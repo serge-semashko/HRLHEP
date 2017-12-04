@@ -1,0 +1,110 @@
+[comments]
+descr=A: Список шаблонов Word, загруженных в тип документа
+author=Устенко
+input=type_id = id типа документа
+output=таблица-список с метаданными файлов,сылками на скачку и элементами управления списка (удаление и изменения порядка)
+parents=admin/doctypes/doctype_panel.cfg
+childs=admin/doctypes/template_files_oper.cfg
+[end]
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+tableCfg=table_no
+KeepLog=true
+[end]
+
+[preSQLs]
+select count(Id) as cnt from doc_templates_files where type_id = #type_id#
+;
+[end]
+
+[report header]
+$INCLUDE [no files message] ??cnt=0
+$INCLUDE [tab start] ??!cnt=0
+[end]
+
+[report footer]
+$INCLUDE [tab end] ??!cnt=0
+[end]
+
+[no files message]
+<div class="bg_white" >Нет</div>
+[end]
+
+[tab start]
+<table id="file-list-tab" class="tlist tgreen" style="margin:0;">
+<tr>
+<th>&##9660;&nbsp;&##9650;</th>                             
+<th>Имя файла</th><th>Размер</th><th>Загружен</th>
+<th>Тип</th> ??
+<th align="center">&##10006;</th>                                          
+</tr>
+[end]
+
+[item]
+<tr class_="pt">
+    <td align="center" class="pt">                                  
+        <a onclick = "operFile(#Id#,'movedn');">&##9660;</a>&nbsp;  
+        <a onclick = "operFile(#Id#,'moveup');">&##9650;</a>        
+    </td>                                                           
+    <td><a href = "?c=admin/doctypes/template_files_dnld&id=#Id#" target="_blank">#file_name#</a></td>
+    <td>#human_bytes#</td><td>#upload_date_fmtd#</td>
+    <td>#file_ext#</td> ??
+    <td align="center" class="pt" onclick = "operFile(#Id#,'delete',this);">&##10006;</td> 
+</tr>
+[end]
+
+[tab end]
+</table>
+
+<script type="text/javascript">
+if(window.jQuery){
+$(function(){
+    $('##file-list-tab tr:even').addClass('oddRow');
+});
+setStandardEvents();
+}
+</script>
+$INCLUDE [control func] 
+[end]
+
+[control func]
+<script type="text/javascript">
+
+function operFile(id, cop, el){
+if(cop == 'delete'){
+     $(el).parents('##file-list-tab tr').addClass('bg_red');
+      if(!confirm ('Удалить файл?')) {
+        $(el).parents('##file-list-tab tr').removeClass('bg_red')
+        return;
+      }
+}
+var request = $.ajax({
+    url: "",
+    type: "POST",
+    data: { c : "admin/doctypes/template_files_oper", file_id : id, cop : cop },
+    dataType: "html"
+    });
+    request.done(function( msg ) {
+        refreshFileList();
+    });
+    request.fail(function( jqXHR, textStatus ) {
+        alert( "Ошибка: " + textStatus );
+    });
+
+}
+</script>
+[end]
+
+[SQL]
+$INCLUDE [SQL_] 
+[end]
+
+[SQL_]
+select *, date_format(upload_date,'%d.%m.%y %H:%i') as upload_date_fmtd, format_filesize(file_size) as human_bytes 
+from doc_templates_files 
+where 
+type_id = #type_id#
+order by norder
+[end]
+

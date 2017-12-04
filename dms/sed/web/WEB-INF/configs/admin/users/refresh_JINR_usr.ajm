@@ -1,0 +1,42 @@
+admin/users/refresh_JINR_usr.cfg
+
+[comments]
+descr=А: Обновление таблицы пользователей ОИЯИ 
+input=user_id - обновить данные указанного юзера.
+output=обновление таблицы #table_users_full# на основе a_roles и справочника персонала ОИЯИ (info_11)
+parents=admin/users/user_edit.cfg
+childs=svs/get_user_info
+call=$CALL_SERVICE c=admin/users/refresh_JINR_usr; user_id=2309;
+author=Куняев
+[end]
+
+
+[parameters]
+request_name=A:обновление юзера ОИЯИ  
+KeepLog=false
+ClearLog=true
+[end]
+
+
+[report]
+$CALL_SERVICE c=svs/get_user_info;  requested_user_id=#CURR_USER_ID#;  refresh=y;
+$GET_DATA [update user]
+$GET_DATA admin/users/refresh_JINR_usrs.cfg[updateUsersDivs] ??
+[end]
+
+
+[update user]
+update #table_users_full# set 
+F='#u_F#', I='#u_I#', O='#u_O#', FIO='#u_FIO#',posts='#u_posts#'
+, div_code=#u_lab_code# ??u_lab_code
+, div_code=null ??!u_lab_code
+, email='#u_email#', login='#u_login#', phone='#u_phone#', roles='#u_roles#' 
+, changed=now(), modifier_id=#USER_ID#
+, is_deleted=0#u_is_deleted# ??
+where id=#CURR_USER_ID#
+[end]
+
+;
+update cwl.users set div_code=floor(#u_lab_code#/1000), changed=now(), modifier_id=#USER_ID#
+where person_id=#CURR_USER_ID# 
+[end]

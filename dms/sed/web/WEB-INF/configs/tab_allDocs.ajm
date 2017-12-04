@@ -1,0 +1,94 @@
+tab_allDocs.ajm
+
+[comments]
+descr=U: Вывод таба "Все документы" 
+
+input=none
+output=HTML форма списка документов
+parents=main.cfg
+childs=reports/all_docs.cfg
+testURL=?c=tab_allDocs
+author=Куняев
+[end]
+
+
+[parameters]
+request_name=U:Список всех документов
+LOG=ON
+debug=off
+[end]
+
+[report]
+$INCLUDE dat/common.dat[check login]
+$INCLUDE [report_] ??USER_ID
+[end]
+
+[report_]
+$SET_PARAMETERS srt=dh.status; desc=; ??!srt
+<div id="all_docs"></div>
+
+<script type="text/javascript">
+var submitForm=function(reset) {
+    log (3, "tab_allDocs.ajm.submitForm(); srn=" + document.theForm.srn.value + "; ");
+    if(reset) {
+        document.theForm.srn.value=1;
+    }
+    AjaxCall("all_docs", "c=reports/all_docs", true, "filters_div",true);    
+    return false;
+}
+
+var doIt=function ()
+{ 
+alert(2); 
+	return false;
+}
+
+var resetSort=function(){
+    document.theForm.srt.value="dh.status"; 
+    document.theForm.desc.value="";
+    document.theForm.srn.value=1; 
+}
+
+$SET_PARAMETERS f_doc_type_id=6; f_stat=3; ??!f_doc_type_id&!srn&USER_ID=4722
+$SET_PARAMETERS f_doc_type_id=1;    ??!f_doc_type_id&!srn&SSS
+
+AjaxCall("all_docs","c=reports/all_docs&f_doc_type_id=#f_doc_type_id#&f_stat=#f_stat#",true,"",true);
+
+setModule("reports/all_docs");
+showPageTop(true);
+
+/* ВРЕМЕННО ЗДЕСЬ - пока юзеры не обновят JS.
+
+ * Аналог AjaxCall для загрузки в Excel, но через GET в wf
+ *
+ * query - запрос в URL-формате (param1=val1&param2=val2)
+ * containerId - если задан, то запрос дополняется значениями input в этом контейнере.
+ * значения параметров из query имеют приоритет - перекрывают значения из containerId, 
+ * если там присутствуют такие же параметры.
+ */
+var getXL=function(query, containerId) {
+
+  var data = [];
+  var q = "of=xl";
+  if(query && query.length > 0)
+    q = q + "&" + query;
+  console.log("getXL: query='" + q + "'");
+  if(containerId) {
+    console.log("getXL: containerId='" + containerId + "'");
+    data = $("##"+containerId+" input, ##" +containerId+" textarea, ##"+containerId + " select" ).serializeArray();
+
+    for(i=0; i<data.length; i++) {
+      if(q.indexOf("&" + data[i].name + "=") === -1) {
+        if(data[i].value){
+          console.log(i + ": " + data[i].name + "=" + data[i].value);
+          q = q + "&" + data[i].name + "=" + data[i].value;
+        }
+      }
+    }
+    console.log("getXL: res. query='" + q + "'");
+    frames["wf2"].window.location.href="#ServletPath#?" + q;
+  }    
+}
+
+</script>
+[end]

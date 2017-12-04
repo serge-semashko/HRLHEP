@@ -1,0 +1,95 @@
+[comments]
+descr=A: Создание нового поля для формы документа из списка типов документа
+
+input=type_id - ID типа документа (из таблицы d_types)
+output=HTML форма редактирования свойств поля формы документа, 
+parents=admin/doctypes/doctype_form_editor.cfg
+childs=
+test_URL=?c=admin/doctypes/doctype_create_field_menu.cfg&type_id=1
+author=Яковлев, Куняев
+[end]
+
+
+[parameters]
+request_name=A: Создание нового поля для формы документа из списка типов документа
+tableCfg=table_no ??
+KeepLog=false
+ClearLog=true
+[end]
+
+
+[report]
+++++ временно - открыто всем. Потом - проверить R и RW права пользователя +++ ??
+$SET_PARAMETERS RWACC=Y; RACC=Y;
+$INCLUDE [report_]  ??RACC
+[end]
+
+=========================
+
+[report_]
+<small>#c#</small> ??debug=on
+<input type=hidden name=type_id value='#type_id#'>
+
+
+<table width="100%" style="background-color:whitesmoke; ">
+
+<tr><td style="text-align:center;">
+<table>
+<tr><td>
+<div id="create_field_menu_panel"></div>
+</td></tr>
+<tr>
+
+$SET_PARAMETERS f_menu_mode=1;
+<td style="width:150;"> ??
+<td>
+
+<script type="text/javascript">
+function setCommonFieldMenu() {
+    AjaxCall('create_field_menu_panel', 'c=admin/doctypes/common_field_menu&type_id=#type_id#');
+
+}
+
+function setJINRFieldMenu() {
+    AjaxCall('create_field_menu_panel', 'c=admin/doctypes/JINR_field_menu&type_id=#type_id#');
+
+}
+
+</script>
+
+<input type=radio name=f_menu_mode value="1" 
+checked ??f_menu_mode=1|!f_menu_mode
+onClick="setCommonFieldMenu();">типовые поля
+<br>
+
+<input type=radio name=f_menu_mode value="1000" 
+checked ??f_menu_mode=1000
+onClick="setJINRFieldMenu();">спец. поля ОИЯИ
+
+</td></tr>
+</table>
+</tr>
+</table>
+
+
+
+<input type="button" class="butt1" style="width:100;" value="Закрыть" 
+onClick="AjaxCall('toolbar_panel','c=admin/doctypes/doctype_toolbar&type_id=#type_id#');">
+
+
+</form>
+</div>
+
++++++++++ Скрипт возврата результатов в вызывавшую страницу ++++ ??
+<script>
+AjaxCall('create_field_menu_panel', 'c=admin/doctypes/common_field_menu&type_id=#type_id#');
+</script>
+
+</body></html>
+[end]
+
+
+
+
+
+

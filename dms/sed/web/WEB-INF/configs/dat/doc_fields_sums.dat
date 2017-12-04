@@ -1,0 +1,336 @@
+dat/doc_fields_sums.dat
+
+[static text] ===== 1 - Статический текст ===
+^#FIELD_DB_NAME#
+[end]
+
+================ тип поля "Сумма + валюта" (15 - без других валют ) ================= ??
+[currency r]
+$GET_DATA dat/doc_fields_sums.dat[get currency]
+<div class="right nowrap">^#FIELD_DB_NAME# #currency#</div>
+[end]
+
+[get currency]
+select #FIELD_DB_NAME#_curr as "currency" from #TABLE_NAME#
+where id=#DOC_DATA_RECORD_ID#
+[end]
+
+================ тип поля "Сумма + валюта" - 7   ================= ??
+[set currency fields params]
+$SET_PARAMETERS curr_field=#FIELD_DB_NAME#_curr; 
+$SET_PARAMETERS rub_field=#FIELD_DB_NAME#_rub; usd_field=#FIELD_DB_NAME#_usd; eur_field=#FIELD_DB_NAME#_eur;
+
+$GET_DATA dat/doc_fields_sums.dat[get main doc id]
+$GET_DATA dat/doc_fields_sums.dat[get doc currency settings] ??MAIN_DOC_ID>0
+$SET_PARAMETERS has_rub=Y; has_usd=Y; has_eur=Y; ??!MAIN_DOC_ID>0
+[end]
+
+
+[set currency values]
+$SET_PARAMETERS value=^#FIELD_DB_NAME#; currency=^#curr_field#; rub_value=^#rub_field#;  usd_value=^#usd_field#;  eur_value=^#eur_field#;
+[end]
+
+[currency field r]
+$INCLUDE dat/doc_fields_sums.dat[set currency fields params]
+$INCLUDE dat/doc_fields_sums.dat[set currency values]
+$LOG3 <hr> ===== [currency field r] ===== <br> curr_field=#curr_field#; rub_field=#rub_field#; usd_field=#usd_field#; eur_field=#eur_field#;<br>value=#value#; currency=#currency#; <br> usd_rate=#usd_rate#; eur_rate=#eur_rate#; date_rate=#date_rate#; <br>
+
+^#FIELD_DB_NAME# #currency#
+ &nbsp; (
+#rub_value# руб.&nbsp;    ??!currency=руб.&has_rub=Y
+#usd_value# USD&nbsp;    ??!currency=USD&has_usd=Y
+#eur_value# EUR      ??!currency=EUR&has_eur=Y
+)
+[end]
+
+[currency field w]
+$INCLUDE dat/doc_fields_sums.dat[set currency fields params]
+$INCLUDE dat/doc_fields_sums.dat[set currency values]
+<input size="#SIZE#" name="#FIELD_DB_NAME#" value="^#FIELD_DB_NAME#" class="right" mand="#mand#" onChange="fixFloat(this);">  
+<select name=#FIELD_DB_NAME#_curr><option value='руб.'
+selected ??currency=руб.
+>руб.</option><option value='USD'
+selected ??currency=USD
+>USD</option><option value='EUR'
+selected ??currency=EUR
+>EUR</option></select>
+[end]
+
+[get main doc id]
+select 'Y' as "IS_OBJECT" from d_types dtp where dtp.id=#DOC_TYPE_ID# and dtp.group_id=99
+;
+select pid as "MAIN_DOC_ID" from d_list where id=#doc_id# ??IS_OBJECT
+;
+select #doc_id# as "MAIN_DOC_ID"  ??!IS_OBJECT
+;
+[end]
+
+
+[get doc currency settings]
+select type_id as "PARENT_DOC_TYPE_ID" from d_list where id = #MAIN_DOC_ID#;
+select 'Y' as "has_rub" from d_fields where type_id=#PARENT_DOC_TYPE_ID# and field_db_name='#FIELD_DB_NAME#_rub' and is_active=1;  ??PARENT_DOC_TYPE_ID
+select 'Y' as "has_usd" from d_fields where type_id=#PARENT_DOC_TYPE_ID# and field_db_name='#FIELD_DB_NAME#_usd' and is_active=1;  ??PARENT_DOC_TYPE_ID
+select 'Y' as "has_eur" from d_fields where type_id=#PARENT_DOC_TYPE_ID# and field_db_name='#FIELD_DB_NAME#_eur' and is_active=1;  ??PARENT_DOC_TYPE_ID
+[end]
+
+================ Сохранение суммы в валюте и пересчет в другие валюты (общее для 7 и 15) ====================    
+........ Также обновляет суммы родительского документа по всем потомкам, если он есть ................
+[currency s]
+$GET_DATA dat/doc_fields_sums.dat[get currency rates]
+$SET_PARAMETERS curr_field=#CUSTOM_FIELD_DB_NAME#_curr; rub_field=#CUSTOM_FIELD_DB_NAME#_rub; usd_field=#CUSTOM_FIELD_DB_NAME#_usd; eur_field=#CUSTOM_FIELD_DB_NAME#_eur;
+$SET_PARAMETERS value=^#CUSTOM_FIELD_DB_NAME#; currency=^#curr_field#; 
+
+$LOG <hr> ===== [currency s] ===== <br> curr_field=#curr_field#; rub_field=#rub_field#; usd_field=#usd_field#; eur_field=#eur_field#;<br>value=#value#; currency=#currency#; <br> usd_rate=#usd_rate#; eur_rate=#eur_rate#; date_rate=#date_rate#; <br>
+$SET_PARAMETERS value=0; ??!value
+$GET_DATA dat/doc_fields_sums.dat[save rub] ??currency=руб.
+$GET_DATA dat/doc_fields_sums.dat[save usd] ??currency=USD
+$GET_DATA dat/doc_fields_sums.dat[save eur] ??currency=EUR
+$INCLUDE dat/doc_fields_sums.dat[update parent doc] ??PARENT_DOC_ID>0&!ERROR
+[end]
+
+[get currency rates]
+SELECT rd.rate as usd_rate , re.rate as eur_rate, rd.date as date_rate
+FROM i_curr_rate rd
+inner join i_curr_rate re on re.date = rd.date and re.curr='EUR'
+WHERE rd.curr='USD' and rd.rate<now()
+ORDER BY rd.date desc
+limit 1
+[end]
+
+[save rub]
+update #TABLE_NAME# 
+set #CUSTOM_FIELD_DB_NAME#=#value#, #curr_field#='#currency#', #rub_field#=#value# 
+, #usd_field# = #value# / #usd_rate#
+, #eur_field# = #value# / #eur_rate#
+where id=#DOC_DATA_RECORD_ID#
+[end]
+
+[save usd]
+update #TABLE_NAME# 
+set #CUSTOM_FIELD_DB_NAME#=#value#, #curr_field#='#currency#', #usd_field#=#value# 
+, #rub_field# = #value# * #usd_rate# ??usd_rate
+, #eur_field# = (#value# * #usd_rate#) / #eur_rate# ??usd_rate&eur_rate
+where id=#DOC_DATA_RECORD_ID#
+[end]
+
+[save eur]
+update #TABLE_NAME# 
+set #CUSTOM_FIELD_DB_NAME#=#value#, #curr_field#='#currency#', #eur_field#=#value# 
+, #rub_field# = #value# * #eur_rate#  ??eur_rate
+, #usd_field# = (#value# * #eur_rate#) / #usd_rate# ??usd_rate&eur_rate
+where id=#DOC_DATA_RECORD_ID#
+[end]
+
+.............. Скручивание сумм в родительский документ, если он есть и если в нем есть такие поля ..........
+[update parent doc]
+$LOG +++ PARENT DOC: #PARENT_DOC_ID#; <br>
+$GET_DATA dat/doc_fields_sums.dat[get parent data record]
+$SET_PARAMETERS rub_field=summa_rub; ??!rub_field
+$SET_PARAMETERS usd_field=summa_usd; ??!usd_field
+$SET_PARAMETERS eur_field=summa_eur; ??!eur_field
+$GET_DATA dat/doc_fields_sums.dat[update parent values] ??PARENT_DOC_DATA_RECORD_ID&PARENT_TABLE_NAME
+$LOG_ERROR #ERROR#  ??ERROR
+$SET_PARAMETERS ERROR=;
+[end]
+
+[get parent data record]
+select type_id as "PARENT_DOC_TYPE_ID", concat('d_data_', cast(type_id as char)) as PARENT_TABLE_NAME
+from d_list where id = #PARENT_DOC_ID#
+;
+select id as PARENT_DOC_DATA_RECORD_ID from #PARENT_TABLE_NAME# where doc_id = #PARENT_DOC_ID# and is_active=1 order by modified desc limit 0,1 ??PARENT_TABLE_NAME
+;
+[end]
+
+[update parent values]
+try: update d_list set is_deleted=0 where id=#PARENT_DOC_ID#
+;
+try: update #PARENT_TABLE_NAME# 
+set #rub_field# = 
+( select sum(ifnull(dat.#rub_field#,0)) 
+  from #TABLE_NAME# dat 
+  inner join d_list dh on (dh.id=dat.doc_id and dh.pid=#PARENT_DOC_ID# and dh.type_id=#DOC_TYPE_ID#)
+  where dat.is_active=1
+)
+where id=#PARENT_DOC_DATA_RECORD_ID#
+;
+try: update #PARENT_TABLE_NAME# 
+set #eur_field# = 
+( select sum(dat.#eur_field#) 
+  from #TABLE_NAME# dat 
+  inner join d_list dh on (dh.id=dat.doc_id and dh.pid=#PARENT_DOC_ID# and dh.type_id=#DOC_TYPE_ID#)
+  where dat.is_active=1
+)
+where id=#PARENT_DOC_DATA_RECORD_ID#
+;
+try: update #PARENT_TABLE_NAME# 
+set #usd_field# = 
+( select sum(dat.#usd_field#) 
+  from #TABLE_NAME# dat 
+  inner join d_list dh on (dh.id=dat.doc_id and dh.pid=#PARENT_DOC_ID# and dh.type_id=#DOC_TYPE_ID#)
+  where dat.is_active=1
+)
+where id=#PARENT_DOC_DATA_RECORD_ID#
+[end]
+
+=================================================================
+================ тип поля "Cумма в рублях"  ================= ??
+[rubles field r]
+^#FIELD_DB_NAME# руб. ??#FIELD_DB_NAME# 
+[end]
+
+[rubles field w]
+<input size=#SIZE# name="#FIELD_DB_NAME#" value="^#FIELD_DB_NAME#" class="right" mand="#mand#"  onChange="fixFloat(this);"> руб.  
+[end]
+
+
+================ общие скрипты для поля "Сумма + процент"  ================= ??
+================ и для поля в валюте и для поля в рублях  ================= ??
+[sum percent script]
+<script type="text/javascript">
+function replaceAll(val, search, replace){
+ return val.split(search).join(replace);
+}
+
+function calcTotalSum(el){
+    var field_id = $(el).attr("for");
+    $('##'+field_id).val(bankerRound(parseFloat(replaceAll($('##'+field_id).val(),',','.')),2));
+    $('##'+field_id+'_percent').val(bankerRound(parseFloat(replaceAll($('##'+field_id+'_percent').val(),',','.')),2));    
+    $('##'+field_id+'_total_sum').val(bankerRound($('##'+field_id).val()*1 + $('##'+field_id).val() * $('##'+field_id+'_percent').val() / 100,2));
+}
+
+//банковское округление
+function bankerRound(num, decimalPlaces) {
+    var d = decimalPlaces || 0;
+    var m = Math.pow(10, d);
+    var n = +(d ? num * m : num).toFixed(8); 
+    var i = Math.floor(n), f = n - i;
+    var e = 1e-8; // Allow for rounding errors in f
+    var r = (f > 0.5 - e && f < 0.5 + e) ?
+                ((i % 2 == 0) ? i : i + 1) : Math.round(n);
+    var res = d ? r / m : r;
+    if(isNaN(res)) return '';
+    return res;
+}
+
+</script>
+[end]
+
+
+================ тип поля "Сумма + процент + валюта"  ================= ??
+[currency sum percent field r]
+$GET_DATA dat/doc_fields_sums.dat[getCurrencySumPercent]
+^#FIELD_DB_NAME# Страховой взнос: #PERCENT#% Общая сумма: #TOTAL_SUM# #CURR#
+[end]
+
+[currency sum percent field w]
+$GET_DATA dat/doc_fields_sums.dat[getCurrencySumPercent]
+
+$INCLUDE dat/doc_fields_sums.dat[sum percent script] 
+<input size=#SIZE# value="^#FIELD_DB_NAME#" id="#FIELD_DB_NAME#" name="#FIELD_DB_NAME#" for="#FIELD_DB_NAME#" class="right" mand="#mand#" onChange="calcTotalSum(this);">
+Страховой взнос %:
+<input size="6" value="#PERCENT#" id="#FIELD_DB_NAME#_percent" name="#FIELD_DB_NAME#_percent" for="#FIELD_DB_NAME#" class="right" mand="#mand#" onChange="calcTotalSum(this);">
+&nbsp;
+Общая сумма:
+<input size=#SIZE# id="#FIELD_DB_NAME#_total_sum" name="#FIELD_DB_NAME#_total_sum" value = "#TOTAL_SUM#" class="right" readonly="readonly" for = "#FIELD_DB_NAME#">  ??TOTAL_SUM
+<input size=#SIZE# id="#FIELD_DB_NAME#_total_sum" name="#FIELD_DB_NAME#_total_sum" value = "0" class="right" readonly="readonly" for = "#FIELD_DB_NAME#">  ??!TOTAL_SUM
+<select name=#FIELD_DB_NAME#_curr><option value='руб.'
+selected ??CURR=руб.
+>руб.</option><option value='USD'
+selected ??CURR=USD
+>USD</option><option value='EUR'
+selected ??CURR=EUR
+>EUR</option></select>
+[end]
+
+[getCurrencySumPercent]
+SELECT #FIELD_DB_NAME#_percent as "PERCENT"
+, #FIELD_DB_NAME#_total_sum as "TOTAL_SUM"
+, #FIELD_DB_NAME#_curr as "CURR"
+ from d_data_#DOC_TYPE_ID# where doc_id = #doc_id#
+;
+[end]
+
+[save currency sum percent]
+$SET_PARAMETERS temp_PERCENT = #CUSTOM_FIELD_DB_NAME#_percent;
+$SET_PARAMETERS temp_TOTAL_SUM = #CUSTOM_FIELD_DB_NAME#_total_sum;
+$SET_PARAMETERS temp_CURR = #CUSTOM_FIELD_DB_NAME#_curr;
+$GET_DATA dat/doc_fields_sums.dat[updateCurrencySumPercent]
+[end]
+
+[updateCurrencySumPercent]
+UPDATE d_data_#DOC_TYPE_ID# SET
+  #CUSTOM_FIELD_DB_NAME#_percent = ^#temp_PERCENT# ??#temp_PERCENT#
+  #CUSTOM_FIELD_DB_NAME#_percent = null ??!#temp_PERCENT#
+, #CUSTOM_FIELD_DB_NAME#_total_sum = ^#temp_TOTAL_SUM#
+, #CUSTOM_FIELD_DB_NAME#_curr = '^#temp_CURR#'
+ WHERE doc_id = #doc_id#
+;
+[end]
+
+
+================ тип поля "Сумма + процент в рублях" 12  ================= ??
+[rubles sum percent field r]
+$GET_DATA dat/doc_fields_sums.dat[getRublesSumPercent]
+^#FIELD_DB_NAME# руб.&nbsp; ??#FIELD_DB_NAME# 
+ Страховой взнос: #PERCENT#% &nbsp; Общая сумма: #TOTAL_SUM# руб.
+[end]
+
+[rubles sum percent field w]
+$GET_DATA dat/doc_fields_sums.dat[getRublesSumPercent]
+
+$INCLUDE dat/doc_fields_sums.dat[sum percent script] 
+<input size=#SIZE# value="^#FIELD_DB_NAME#" id="#FIELD_DB_NAME#" name="#FIELD_DB_NAME#" for="#FIELD_DB_NAME#" class="right" mand="#mand#" onChange="calcTotalSum(this);"
+>руб.&nbsp;Страховой взнос %:<input size="5" 
+value="#PERCENT#" id="#FIELD_DB_NAME#_percent" 
+readonly ??
+name="#FIELD_DB_NAME#_percent" for="#FIELD_DB_NAME#" class="right" mand="#mand#" onChange="calcTotalSum(this);">
+
+&nbsp;Общая сумма:<input size=#SIZE# id="#FIELD_DB_NAME#_total_sum" name="#FIELD_DB_NAME#_total_sum" 
+value = "#TOTAL_SUM#" class="right" readonly for = "#FIELD_DB_NAME#"> 
+руб.
+[end]
+
+ ??TOTAL_SUM
+value = "0" class="right" readonly for = "#FIELD_DB_NAME#">  ??!TOTAL_SUM
+
+[getRublesSumPercent]
+SELECT #FIELD_DB_NAME#_percent as "PERCENT"
+, #FIELD_DB_NAME#_total_sum as "TOTAL_SUM"
+ from d_data_#DOC_TYPE_ID# where doc_id = #doc_id#
+;
+[end]
+
+[save rubles sum percent]
+$SET_PARAMETERS temp_PERCENT = #CUSTOM_FIELD_DB_NAME#_percent;
+$SET_PARAMETERS temp_TOTAL_SUM = #CUSTOM_FIELD_DB_NAME#_total_sum;
+$GET_DATA dat/doc_fields_sums.dat[updateRublesSumPercent] ??#temp_TOTAL_SUM#
+[end]
+
+[updateRublesSumPercent]
+UPDATE d_data_#DOC_TYPE_ID# SET
+  #CUSTOM_FIELD_DB_NAME#_percent = ^#temp_PERCENT# ??#temp_PERCENT#
+  #CUSTOM_FIELD_DB_NAME#_percent = null ??!#temp_PERCENT#
+, #CUSTOM_FIELD_DB_NAME#_total_sum = ^#temp_TOTAL_SUM#
+ WHERE doc_id = #doc_id#
+;
+[end]
+
+===========================================================================
+=============== Создание полей в таблице данных============================
+===========================================================================
+
+типы поля: 
+Создаем 5 полей:
+ - fieldname numeric(15,2) - введенная сумма в валюте
+ - fieldname_curr varcar(15) - валюта суммы
+ - fieldname_rub numeric(15,2) - сумма в рублях
+ - fieldname_usd numeric(15,2) - сумма в USD
+ - fieldname_eur numeric(15,2) - сумма в EUR
+
+[add all sums fields]
+    alter table #DATA_TABLE# add column #new_db_field_name# numeric(15,2) null;
+    alter table #DATA_TABLE# add column #new_db_field_name#_val varchar(15) null;
+    alter table #DATA_TABLE# add column #new_db_field_name#_rub numeric(15,2) null;
+    alter table #DATA_TABLE# add column #new_db_field_name#_usd numeric(15,2) null;
+    alter table #DATA_TABLE# add column #new_db_field_name#_eur numeric(15,2) null;
+[end]

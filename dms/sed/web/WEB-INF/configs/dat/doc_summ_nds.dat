@@ -1,0 +1,83 @@
+[static text]
+$SET_PARAMETERS exist=^#FIELD_DB_NAME#
+$INCLUDE  dat/doc_summ_nds.dat[view] ??exist
+[end]
+
+[view]
+$GET_DATA dat/doc_summ_nds.dat[nds percent]
+$SET_PARAMETERS NDS_PERCENT = #FIELD_DB_NAME#_nds;
+<input type = "hidden" value="^#FIELD_DB_NAME#" id = "#FIELD_DB_NAME#" for = "#FIELD_DB_NAME#" />
+<input type="hidden" id = "#FIELD_DB_NAME#_nds" for = "#FIELD_DB_NAME#" sel="^#NDS_PERCENT#" value="#FIELD_DB_NAME#">
+<input class="nds_ammount" type = "hidden" value = "" id = "#FIELD_DB_NAME#_nds_ammount" for = "#FIELD_DB_NAME#"/>
+^#FIELD_DB_NAME# руб в т.ч. НДС ^#NDS_PERCENT#% (<span id = "#FIELD_DB_NAME#_nds_ammount_cont"></span> руб.)
+[end]
+
+
+[script]
+<script type="text/javascript">
+function replaceAll(val, search, replace){
+ return val.split(search).join(replace);
+}
+
+function refr_nds(el){
+    var sum_id = $(el).attr("for");
+    //меняем , на точку и убираем непарсящийся, как float мусор
+    $('##'+sum_id).val(bankerRound(parseFloat(replaceAll($('##'+sum_id).val(),',','.')),2));
+    $('##'+sum_id+'_nds_ammount').val(bankerRound($('##'+sum_id).val()*parseInt($('##'+sum_id+'_nds').val())/100,2));
+    $('##'+sum_id+'_nds_ammount_cont').html($('##'+sum_id+'_nds_ammount').val());
+}
+
+//банковское округление
+function bankerRound(num, decimalPlaces) {
+    var d = decimalPlaces || 0;
+    var m = Math.pow(10, d);
+    var n = +(d ? num * m : num).toFixed(8); 
+    var i = Math.floor(n), f = n - i;
+    var e = 1e-8; // Allow for rounding errors in f
+    var r = (f > 0.5 - e && f < 0.5 + e) ?
+                ((i % 2 == 0) ? i : i + 1) : Math.round(n);
+    var res = d ? r / m : r;
+    if(isNaN(res)) return '';
+    return res;
+}
+
+$(function(){
+   var nds_inputs = $('.nds_ammount');
+//ставим всем инпутам, связанным с "сумма в т.ч. ндс" значения
+   for(i=0;i<nds_inputs.length;i++){
+        $('##'+$(nds_inputs[i]).attr('for')+'_nds').val($('##'+$(nds_inputs[i]).attr('for')+'_nds').attr('sel'));
+        refr_nds(nds_inputs[i]);
+   }
+
+});
+
+</script>
+[end]
+
+[field_write]
+$GET_DATA dat/doc_summ_nds.dat[nds percent]
+$SET_PARAMETERS temp = #FIELD_DB_NAME#_nds;
+$SET_PARAMETERS NDS_PERCENT=^#temp#;
+<div id = "#FIELD_DB_NAME#-cont">
+<input type = "text" value="^#FIELD_DB_NAME#" id = "#FIELD_DB_NAME#" name = "#FIELD_DB_NAME#" for = "#FIELD_DB_NAME#" onchange="refr_nds(this)" /> руб. в т.ч.
+<select name = "#FIELD_DB_NAME#_nds" id = "#FIELD_DB_NAME#_nds" for = "#FIELD_DB_NAME#" onchange="refr_nds(this)" sel="#NDS_PERCENT#"><option>18</option><option>0</option>
+</select>% НДС
+<input class="nds_ammount" type = "text" value = "" name = "#FIELD_DB_NAME#_nds_ammount" id = "#FIELD_DB_NAME#_nds_ammount" readonly="readonly" for = "#FIELD_DB_NAME#"/> руб.
+</div>
+[end]
+
+[nds percent]
+SELECT #FIELD_DB_NAME#_nds from d_data_#DOC_TYPE_ID# where doc_id = #doc_id#
+;
+[end]
+
+[save]
+$SET_PARAMETERS temp = #CUSTOM_FIELD_DB_NAME#_nds;
+$GET_DATA dat/doc_summ_nds.dat[update nds percent]
+$PRINT CUSTOM_FIELD_DB_NAME=#CUSTOM_FIELD_DB_NAME#; doc_id=#doc_id# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+[end]
+
+[update nds percent]
+UPDATE d_data_#DOC_TYPE_ID# SET #CUSTOM_FIELD_DB_NAME#_nds = ^#temp# WHERE doc_id = #doc_id#
+;
+[end]

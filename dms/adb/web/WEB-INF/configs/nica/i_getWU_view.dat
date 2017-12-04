@@ -1,0 +1,124 @@
+Просмотр WU
+
+================================== ПРОСМОТР ============================
+[field] param: title; name; val; val_e; em; break=; cont=;
+<tr><td 
+class="l tb">#title#:</td><td class="tb" ??break
+class="l">#title#:</td><td  ??!break
+>&nbsp;#val#
+<br>&nbsp;#val_e# ??val_e
+<br>&nbsp;#em# ??em
+</td></tr> ??!cont
+[end]
+
+[viewBlock]
+$PRINT ----- WU(viewBlock): cop=#cop#; mode=#mode#; VER=#VER#; ??
+<div id="prjDetails">
+<table border=0 cellpadding=5 cellspacing=0 style="width:90%; margin:0 0 10px 0; background-color:white; ">
+<tr><td colspan=1><img src="#imgPath#task2_24.gif" width="24" height="24" border="0"> 
+<a href="#ServletPath#?c=gateway/post_object&object_type=WU&object_id=#wu_id#&mode=print" target="_blank">
+<b>Работа #CODE#
+#P_CODE#.X ??!CODE
+</b>
+</a>
+</td>
+<td class='l'>
+<input class="b_nica bedit short" type=button value="Перенести" onClick="doSubmit('move','e_moveWU');">&nbsp;&nbsp;  ??CAN_DETAIL
+  ??g_adm=USER_GROUP
+<input class="b_nica bedit short" type=button value="Изменить" onClick="doSubmit('edit','i_getWU');">&nbsp;&nbsp;  ??CAN_DETAIL
+<input class="b_nica bedit short" type=button value="Изменить" onClick="setMode('edit');">&nbsp;&nbsp;  ??CAN_DETAIL_ZZZ
+</td>
+
+</tr>
+$SET_PARAMETERS TITLE=; ??TITLE=#TITLE_E#
+$INCLUDE nica/i_getWU_view.dat[field] param: title=Код; name=CODE_; val=#CODE#;  ??
+$INCLUDE nica/i_getWU_view.dat[field] param: title=Название; name=TITLE_; val=#TITLE#; val_e=#TITLE_E#;  break=Y;
+$INCLUDE nica/i_getWU_view.dat[field] param: title=Приоритет; name=PRI_; val=<span class=pri_#PRI#>_ #PRI# _</span>;
+$INCLUDE nica/i_getWU_view.dat[field] param: title=Описание/комментарий; name=DES_; val=#DES#; val_e=#DES_E#; 
+
+$INCLUDE nica/i_getWU_view.dat[prev-post]
+
+$INCLUDE nica/i_getWU_view.dat[field] param: title=Ответственный; name=RESP_; val=#RESP#; val_e=#RESP_E#; em=#RESP_EMAIL#; break=Y; 
+$INCLUDE nica/i_getWU_view.dat[field] param: title=Зам. ответственного; name=DEPUTY_; val=#DEPUTY#; val_e=#DEPUTY_E#; em=#DEPUTY_EMAIL#; 
+$INCLUDE nica/i_getWU_view.dat[field] param: title=МОЛ - Код, ФИО; name=MOL_; val=#MOL#; 
+
+<tr><td class=l>Подразделение: </td><td>##</td></tr> ??
+<tr><td class="l tb">Даты работ (плановые): </td><td class="tb">#DATE_START# - #DATE_FINISH#
+<span style="font-size:8pt;">(#DATES_MODIFIED#, #DATES_MODIFIER#)</span> ??DATES_MODIFIED_ZZZ
+</td></tr> 
+
+<tr><td class="l">Плановая стоимость:</td><td>
+<i>НЕ ЗАДАНА</i>, ??PRICETOTALPLAN=0
+<b>#PRICETOTALPLAN# $,</b>  ??!PRICETOTALPLAN=0
+&nbsp; <b>НЕ</b> ??!REPORTING=1
+Отслеживать результат "освоенный объем" (EV)
+PRICETOTALPLAN='#PRICETOTALPLAN#' ??
+</td></tr>
+
+<tr><td class="l">Распределение затрат:</td><td>   ??!PRICETOTALPLAN=0
+$INCLUDE nica/i_getWU_edit.dat[viewPlan]  ??!PRICETOTALPLAN=0
+</td></tr>  ??!PRICETOTALPLAN=0
+
+$INCLUDE nica/i_getWU_view.dat[EV]  ??STARTED=Y&REPORTING=1
+
+$SET_PARAMETERS ALLOW_COPY=Y ??YEAR_START=#CURR_YEAR#&CURR_MONTH>6
+$SET_PARAMETERS ALLOW_COPY=Y ??YEAR_START=#LAST_YEAR#&CURR_MONTH<4
+$GET_DATA nica/i_getWU_view.dat[check_ALLOW_COPY] ??ALLOW_COPY
+$SET_PARAMETERS ALLOW_COPY=; ??ALREADY_COPIED
+<tr><td></td><td><input class="b_nica" type=button value="Копировать работу в 2017 год" onClick="doSubmit('copy','i_getWU');">&nbsp;&nbsp;</td></tr>  ??CAN_DETAIL&ALLOW_COPY&f_nica_year=2016
+
+</table>
+CURR_YR_ONLY=#CURR_YR_ONLY#; ??
+CURR_MONTH=#CURR_MONTH#; ??
+</div>
+<input class=b_nica type=button value="Выбрать" onClick="setProject();">&nbsp;&nbsp; ??
+<input class=b_nica type=button value="Закрыть окно" onClick="window.close();"> ??
+<br>NUM_DOCS=#NUM_DOCS#; wu_id=#wu_id# ??
+[end]
+
+[check_ALLOW_COPY]
+select 'Y' as "ALREADY_COPIED" 
+from nica_links l join nica_wu w on w.id=l.prev_id and w.active=1
+where l.prev_id=#wu_id# and l.cont=1
+;
+[end]
+
+[EV]
+<tr><td class="l tb">Процент выполнения:<br>(Earned Value)</td><td class="tb">
+$INCLUDE nica/i_getWU_view.dat[ev button] ??CAN_DETAIL
+  ??USER_ID={{34|369|1|471}}
+<div id="d_EV" class="ba">
+$CALL_SERVICE c=nica/i_WuEv; id=#wu_id#;
+</div>
+<div class=clr></div>
+</td></tr>
+[end]
+
+[ev button]
+<div style="float:right; margin:0 0px 0 10px;">
+<input class="b_nica bedit short" type=button
+value="Ввести EV"
+onClick="setEV(#curr_id#)">
+</div> 
+[end]
+
+
+[prev-post]
+<tr><td class="l">Предшествующие работы:</td><td>
+<div style="float:right; margin:0 0px 0 10px;"><input class="b_nica bedit short" type=button ??CAN_DETAIL
+value="Задать" ??!PREV_TASKS&CAN_DETAIL
+value="Изменить" ??PREV_TASKS&CAN_DETAIL
+onClick="changePrev(#curr_id#,'Y')"></div> ??CAN_DETAIL
+<div id="prev_tasks">#PREV_TASKS#
+<i>НЕ ЗАДАНЫ</i> ??!PREV_TASKS
+</div><div class=clr></div></td></tr>
+
+<tr><td class="l">Последующие работы:</td><td>
+<div style="float:right; margin:0 0px 0 10px;"><input class="b_nica bedit short" type=button  ??CAN_DETAIL
+value="Задать" ??!POST_TASKS&CAN_DETAIL
+value="Изменить" ??POST_TASKS&CAN_DETAIL
+onClick="changePrev(#curr_id#,'')"></div>  ??CAN_DETAIL
+<div id="post_tasks">#POST_TASKS#
+<i>НЕ ЗАДАНЫ</i> ??!POST_TASKS
+</div><div class=clr></div></td></tr>
+[end]

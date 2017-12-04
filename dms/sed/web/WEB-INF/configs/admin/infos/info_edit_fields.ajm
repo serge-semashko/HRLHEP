@@ -1,0 +1,107 @@
+[comments]
+descr=А: Редактирование списка полей справочника.
+
+input=ID - ID выбранного пользователя
+output=HTML форма редактирования полей справочника
+parents=admin/infos/infos_list_table.cfg
+childs=
+testURL=?c=admin/infos/info_edit_fields&ID=1
+[end]
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=A:Вывод полей info
+tableCfg=table_no
+thsnDelimiter=none
+[end]
+
+
+[report header]
+admin/infos/infos_list_fields ??debug=on
+<table border=0>
+<tr><th>№</th><th>Название поля</th><th>Тип</th><th>Размер</th><th>null</th><th>Комментарий</th></tr>
+$INCLUDE [field_ID]
+$INCLUDE [field_PID]  ??IS_TREE=1
+[end]
+
+$SET_PARAMETERS DIS=disabled;
+disabled 
+$SET_PARAMETERS RO=readonly;
+
+[field_ID]
+<tr><td>1</td><td>ID</td><td>Целое</td><td>11</td><td>-</td><td>ID записи</td></tr>
+[end]
+
+[field_PID]
+<tr><td>2</td><td>PID</td><td>Целое</td><td>11</td><td>v</td><td>ID родительской записи</td></tr>
+[end]
+
+[item]
+$SET_PARAMETERS DIS=; ??NR>2
+<tr><td>#NR#</td>
+<td><input class="xp #DIS#" #DIS# size=15 name="name_#F_ID#" value="#NAME#"></td>
+
+<td><select name="type_#F_ID#" #DIS#
+disabled ??DIS_ZZZ
+>	<option value="int"
+		selected ??TYPE=int
+	>Целое</option>
+	<option value="float">Float</option> ??
+	<option value="varchar" 
+		selected ??TYPE=varchar
+	>Текстовое</option>
+	<option value="date" 
+		selected ??TYPE=date
+	>Дата</option>
+</select></td>
+
+<td><input class="xp #DIS#" #DIS# size=3 name="size_#F_ID#" value="#SIZE#"></td>
+
+<td><input type=checkbox class="xp" name=nulls #DIS#
+checked ??NULLS=1
+></td>
+
+<td><input class="xp #DIS#" #DIS# size=25 name="comment_#F_ID#" value="#COMMENT#"></td>
+</tr>
+$SET_PARAMETERS SIZE=; COMMENT=;
+[end]
+
+
+[report footer]
+<tr><td>+</td><td>добавить поле</td>
+</tr>
+</table>
+<div class=right>
+$INCLUDE [create button] ??!NUM_RECORDS
+$INCLUDE [update button] ??NUM_RECORDS
+</div>
+[end]
+
+[create button]
+<input type="button" class="butt1 pt" style="width:180;" value="Создать справочник" 
+onClick="alert('Not implemented');"
+> 
+[end]
+
+
+[update button]
+<input type="button" class="butt1 pt" style="width:180;" value="Изменить справочник" 
+onClick="alert('Not implemented');"
+> 
+[end]
+
+****************************************************************************
+****************************************************************************
+****************************************************************************
+
+[SQL]
+select i.id as F_ID, i.NR, i.NAME, i.TYPE, i.SIZE, i.NULLS, i.COMMENT, i.FIELD_DB_NAME
+from i_fields i
+where i.info_id=#ID#
+and nr>1 ??IS_TREE=0
+and nr>2 ??IS_TREE=1
+and nr>2
+order by i.nr
+[end]
+
+and name<>'PID' ??IS_TREE=0

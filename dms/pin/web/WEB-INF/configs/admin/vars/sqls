@@ -1,0 +1,8 @@
+-- конференции
+UPDATE event_values set conf_id=i1, conf_str=t2_h WHERE type_id in (3,13,19);
+
+UPDATE `event_vars` SET `field_name`='conf_id', `view_field_name`='conf_str' WHERE `id` in (198,197,196);
+-- язык публикации
+
+UPDATE event_values set lang=vc7 where type_id in (1,12);
+UPDATE `pin`.`event_vars` SET `field_name`='lang', `view_field_name`='lang' WHERE `id` in(34,82);

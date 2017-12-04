@@ -1,0 +1,53 @@
+[comments]
+descr=JavaScript для работы с табами
+testURL=free/js_tabs.dat
+[end]
+
+[report]
+/*=============================== TABs ====================================*/ ??
+/*=========================================================================*/ ??
+
+var t_Data = function () {AjaxCall("c_Data", "c=tab_Data"); } // Клик на табе "Принятые данные" 
+var t_protocol = function () {AjaxCall("c_protocol", "c=tab_protocol"); } // Клик на табе "Протокол" 
+var t_settings = function() {AjaxCall("c_settings", "c=tab_settings");} 
+var t_objects = function() {AjaxCall("c_objects", "c=tab_objects");};
+var t_users = function() {AjaxCall("c_users", "c=admin/tab_users");};
+//console.log("start loading");
+var setTabsClicks=function(tabDivId, act)
+{
+	var a = 0;
+	if (act) a = act;
+	$( "##" + tabDivId ).tabs({
+		active: a,
+		beforeActivate: function( ev, ui ) 
+	{
+    var old_cont = atab.replace("t_", "c_");
+		console.log(old_cont + " / " + atab + " => " + ui.newTab[0]["id"]); 
+      if(tabDivId !== "info_tabs") 
+        $(".cont").html(""); //очистить все табы, если работаем не с под-табами (справочник)
+      try { document.theForm.srt.value=""; } catch (e) {;}
+			atab=ui.newTab[0]["id"];
+			eval(atab + "();");
+	}
+});
+};
+
+//console.log("Loaded");
+var clickTab=function(id)
+{
+	console.log(id); ??
+showProps($("##" + id + " a"));  ??
+	$("##" + id + " a").click();
+};
+
+var setLang=function(lang){
+  frm.target="";
+  frm.lang_.value=lang;
+  frm.c.value='#c#';
+  frm.submit();
+}
+
+var openTabById=function(id){
+$('##tabs').tabs( "option", "active", $('##ltabs li').index($('##'+id)) );
+}
+[end]

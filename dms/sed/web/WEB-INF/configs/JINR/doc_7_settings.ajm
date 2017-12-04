@@ -1,0 +1,205 @@
+JINR/doc_7_settings.ajm
+
+[comments]
+descr=U: Установка значений по умолчанию для источника финансирования (тип объекта: 7) 
+input=
+output=
+parents=docs/edit_doc.cfg
+childs=
+test_URL=
+author=Куняев
+[end]
+
+================= Сервис вызывается при открытии объекта в режиме редактирования в docs/edit_doc.cfg
+======= По выходу из docs/edit_doc.cfg вызывается снова с параметром defaults=clear
+
+[report]
+    $LOG <br><b>******** JINR/doc_7_settings.ajm ********</b> defaults=#defaults#;<br>
+    $INCLUDE [set defaults] ??!defaults=clear
+    $INCLUDE [clear defaults] ??defaults=clear
+[end]
+
+[set defaults]
+<script type="text/javascript">
+var STRING_VALUES_SEPARATOR=',';
+alert("doc_7_settings.cfg "); ??
+/**
+ * Перекрытие стандартной функции из js_forms.dat
+ *
+ */
+var delSelectedInfoItemFromChoice = function(el) {
+
+    where = $(el).attr("delfrom");  //id элемента с id-шниками
+    what = $(el).attr("delval");   //значение id-шника, который удаляем
+    wheretext = $(el).attr("delfromtext"); //хидден с текстами в том же порядке, что и id-шники. (если надо)
+    if(where.length>0 && what.length>0){
+        val = $('#'+where).val();
+        tval = $('#'+wheretext).val();
+        aval = val.split(',');
+        atval = tval.split(STRING_VALUES_SEPARATOR);
+        i = aval.indexOf(what);
+        aval.splice(i,1);
+        atval.splice(i,1);
+        $('#'+where).val(aval.join());
+        $('#'+wheretext).val(atval.join(STRING_VALUES_SEPARATOR));
+        $(el).parent().remove();
+    }
+    if(where=="project_item_id")
+        AjaxCall("d_spravCont", "c=JINR/doc_7_settings&defaults=clear", true);
+}
+
+/**
+ *
+ *
+ */
+var setJinrDivFilter=function(requesterId, id, text) {
+  pasteInfoResult(requesterId, id, text);
+  doIt();
+}
+
+/**
+ *
+ *
+ */
+var setJinrProjectFilter=function(requesterId, id, text) {
+    pasteInfoResult(requesterId, id, text);
+    if(text.length > 1) {
+        $("##f_bc_div_id").val("");
+        $("##f_bc_div").html("");
+    }
+    doIt();
+}
+
+</script>
+
+$GET_DATA JINR/doc_7_settings.ajm[get project item]
+$SET_PARAMETERS_SESSION prev_prj_id=;       ??!project_item_id>0
+$SET_PARAMETERS_SESSION prev_prj_id=#project_item_id#; ??project_item_id>0
+
+$LOG <br><b>+++++ Источник-Defaults:</b>prev_prj_id=#prev_prj_id#;<br>
+[end]
+
+[clear defaults]
+$LOG <br><b>+++++ Источник-Defaults: CLEAR.</b>
+$SET_PARAMETERS_SESSION prev_prj_id=;
+[end]
+
+
+
+[get project item]
+    select project_item_id 
+    from d_data_7
+    where doc_id=#doc_id# 
+[end]
+
+============= Секция выполняется перед сохранением объекта ============= 
+[before save] ****** проверка, содержит ли источник введенные данные или только default значения. Удаление не заполненного источника.
+$SET_PARAMETERS cop=delete;  ??cop=save&summa=0.00&!project_item_id&!bc_id&!statia_id&!comment
+[end]
+
+
+============= Секция выполняется при открытии документа для получения специфических параметров =====
+[set custom parameters]
+    $GET_DATA JINR/doc_8_settings.cfg[check WF stage] ??WF_ID
+[end]
+
+
+
+============= Секция выполняется при создании рабочего маршрута документа для определения специфических критериев =====
+[check custom criteria]
+    $INCLUDE JINR/doc_1_settings.cfg[get custom criteria]
+[end]
+
+
+========================= ПОСЫЛКА В ШЛЮЗ =================================
+[set custom object data] ****** Выполняется перед посылкой документа в шлюз. 
+    $GET_DATA JINR/doc_7_settings.ajm[get sbj]
+[end]
+
+
+[get sbj]
+    select bc_id from d_data_7 where id=#DOC_DATA_RECORD_ID#
+    ;
+    select sbj, prikaz_n, prikaz_punkt from i_jinr_bc where id=#bc_id# ??bc_id
+    ;
+    select des as sbj from i_jinr_bc where id=#bc_id#  ??!sbj
+[end]
+
+
+[custom object data] ****** Вставляется в JSON после общих параметров (шапка) до данных документа
+    $SET_PARAMETERS comment=#sbj#, #project_item#;
+    $SET_PARAMETERS comment=#comment#, пр.#prikaz_n# п.#prikaz_punkt#;  ??prikaz_n
+    $SET_PARAMETERS comment=#comment#, ст.#statia_id#
+    $SET_PARAMETERS comment=#comment#, #ITEM_INITIATOR_COMMENT#;  ??ITEM_INITIATOR_COMMENT
+    substatia=024: Расходные материалы ??statia_id=5
+    substatia=006: Оборудование ??statia_id=6
+    substatia=005: Пуско-наладочные работы ??statia_id=9
+
+    subject=#sbj#  ??sbj
+    comment=#comment#
+[end]
+
+
+Альберт, добрый день!
+
+Обновил выгрузку данных договоров.
+
+1. Из таблицы С1.dog_postavki убрал ненужных поля link, kontragent_guid и Unic, но пришлось вернуть обратно, т.к. обработка ругалась. Лучше уж выкинуть их, чтобы мусор не копить.
+
+2. В заявке ничего не заполняется. Или я что-то не так делаю?
+В заявках нужно заполнить:
+ - контрагента (из заказа),
+ - из JSON "источник финансирования" - сумму, валюту, подразделение
+
+В С1.dog_postavki добавлено поле ADB_NR. Его нужно вставлять в заявки в поле № ADB
+
+  В JSON "источник финансирования" добавлены поля:
+
+ - substatia (заполняется для статей, где есть однозначность: 5: материалы - 024: Расходные материалы, 6 - 006: Оборудование, 005: Пуско-наладочные работы). Если заполнено, то в заявке нужно выбрать соответствующую статью оборотов.
+
+ - subject - в заявке поле "проект". Должно совпадать, если это тема и не обязательно совпадет в других случаях. Если в справочнике найдена 1 запись с таким наименованием, то заполнить поле "проект"
+
+ - comment - содержимое нужно показывать в "комментарии" при создании заявки.
+
+3. Если кликнул в строку, а потом закрыл заказ ничего не делая, то все равно выскакивает форма заявки. Если это легко сделать, то лучше бы она выскакивала только после сохранения заказа. Но не обязательно, только если это легко сделать.
+
+4. Ты мне показывал, что слева появляется все содержимое JSON-a. У меня оно почему-то не появляется. Там для этого что-то еще нажать надо? Не нашел. Лучше бы оно выскакивало при клике в строчку и открытии формы заказа.
+
+В этом содержимом JSON слева нужно показывать поля:
+
+"DOC_NUMBER":"100-177", "DOC_DATE":"19.04.2017" =>  Договор №100-177 от 19.04.2017
+
+"kontragent":"", "kontragent_text":"Триэм" - в этих полях наименование контрагента. Если есть код, то заполнено kontragent_text, если контрагент не из справочника - то kontragent. Можно взять kontragent из таблицы С1.dog_postavki. Там они слиты в одно поле.
+
+"kontragent_inn":"6027094409" - ИНН контрагента "kontragent_cont":"..." - Контакты контрагента
+
+"TITLE":"Закупка профиля и кареток для монтажа детекторов ToF400 BM@N", - Содержание: .....
+"description":"Дозаказывается алюминиевый профиль специальной формы,..." , - Описание: .....
+
+"ext_number":"ххх"  - Внешний номер
+"nr_ADB":"259650" - № ADB
+"nr_1C":"ххх"  - № 1С
+
+"total_sum":"345984.00", "total_sum_curr":"руб."  -  сумма в валюте: 345984.00 руб.
+"total_sum_rub":"345984.00" - сумма (руб)
+
+"divisions":"ЛФВЭ" - подразделение
+"dealinitiator":"Румянцев Михаил Михайлович" - Инициатор закупки
+
+Дальше показать поля из источника(ов)
+"bc":"ЛФВЭ, т.1065 (Кекелидзе,Сорин)" - источник финансирования "project_item":"NICA:6.1.4.17" - НИКА "statia":"05. Материалы" - статья бюджета "summa":"345984.88", "summa_curr":"руб." - сумма в валюте: 345984.00 руб.
+"summa_rub":"345984.88"  - сумма (руб) - сумма (руб)
+
+Если источников больше одного, то показывать все их по-очереди.
+
+В конце:
+"CREATOR":"Войтишина Аурика Николаевна", "CREATED":"18.04.2017 16:39:30" =>  Cоздан Войтишина Аурика Николаевна, 18.04.2017 "INITIATOR_COMMENT":"ххх" - Комментарий
+
+Остальные поля JSONa не показывать.
+
+Надеюсь, ничего не забыл.
+Звони, если что-то непонятно написал или проблемы возникнут.
+Если что-то будет сложно или долго сделать - тоже можно обсудить, как упростить.
+
+С уважением,
+Сергей Куняев

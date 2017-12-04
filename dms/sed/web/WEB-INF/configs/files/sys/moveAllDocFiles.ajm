@@ -1,0 +1,39 @@
+files/sys/moveAllDocFiles.cfg
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+tableCfg=table_no
+LOG=ON
+[end]
+
+
+[report header]
+$INCLUDE viewer/common_blocks.dat[head]  *** Блок <head>...</head>
+<body>
+[end]
+
+[report footer]
+<br>All files moved.<br>
+======================<br>
+</body></html>
+[end]
+
+[item]
+#doc_id#:
+$CALL_SERVICE c=files/sys/moveDocFiles;
+$WAIT 10
+<br>
+[end]
+
+=========================================
+
+[SQL]
+select distinct doc_id as "doc_id"
+from doc_files
+where 
+not fs_file_name like concat('2015/%')
+and not fs_file_name like concat('2016/%')
+and not fs_file_name like concat('2017/%')
+and doc_id in(154, 156, 190) ??
+order by doc_id
+[end]

@@ -1,0 +1,174 @@
+monitor.cfg
+
+[comments]
+descr=A: Вывод списка документов, ожидающих визтирования (вывод самой таблицы)
+
+input=
+output=HTML таблица документов
+parents=admin/tab_monitor
+childs=
+testURL=?c=admin/monitor/docs_list_table
+[end]
+
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=A:Монитор багов
+LOG=ON
+tableCfg=table_no
+$INCLUDE dat/common.dat[rowLinks]
+[end]
+
+
+[report header]
+$SET_PARAMETERS_SESSION f_stat_sess=#f_stat#;
+$GET_DATA main.cfg[checkAdmin]
+$INCLUDE [OK report header]  ??AR_ADMIN=1
+$CALL_SERVICE c=sys/log_doc_access; doc_id=0; access_type=10; rejected=1;   ??!AR_ADMIN=1
+[end]
+
+
+[OK report header]
++++++++ начальная строка и кол-во строк на странице по умолчанию ++++ ??
+$SET_PARAMETERS srn=1; rpp=50;  ??!srn
+
+<div id="result_table">
+admin/monitor/docs_list_table ??debug=on                                                 	
+<center>
+<input type=hidden name="srn" value="#srn#"> 
+<input type=hidden name="srt" value="#srt#">
+<input type=hidden name="desc" value="#desc#">
+
+++++++++++++++++++ Шапка таблицы документов +++++++++++++++++++++ ??
+<table class="tlist tblue" cellspacing=0>
+<tr>
+<th>id</th> 
+<th>Документ</th>
+<th>Содержание</th>
+<th>Подразд.</th>
+<th>WF/шаг</th>
+<th>Результаты</th>
+<th>Начало-конец шагов</th>
+<th >Изменение wf</th>
+
+</tr>
+[end]
+
+
+[item]
+++++++++++++++++++ Строка таблицы - 1 документ +++++++++++++++++++++ ??
+<tr class="pt
+oddRow ??oddRow=1
+bg_red ??is_deleted=1
+" 
+onClick="ShowDialog(); AjaxCall('popupCont', 'c=docs/view_doc&doc_id=#ID#&mode=popup');"
+>
+<td class=small>#ID#</td> ??AR_DEV=1
+<td class="nowrap" nowrap>
+#DOC_TYPE# ??
+№#NUMBER#  ??NUMBER
+от #DOC_DATE#  ??DOC_DATE
+</td>
+
+<td>#TITLE#</td>
+<td>#DIVS#</td>
+<td>#wf_id# / #step#-#step2#</td>
+<td>#result# / #R2#</td>
+<td>#STARTED# + #DIFF#</td>
+<td>#MODIFIED#, #MODIFIER#</td>
+</tr>
+[end]
+
+
+[report footer]
+<tr><td colspan=8 class="pager last">
+$INCLUDE dat/common.dat[rpp]  ??!NumTableRows=0
+<input type=hidden name="rpp" value="#rpp#"> ??NumTableRows=0
+</td></tr>
+</table>
+</div>
+
++++++++++ Скрипт возврата результатов в вызывавшую страницу ++++ ??
+<script>
+window.parent.getResult("content_table", document.getElementById("result_table"));
+window.parent.setModule("admin/monitor/docs_list_table");
+--------- Отображение сортировки в заголовке таблицы ----- ??
+window.parent.showSrt("#srt#","sup"); ??!desc
+window.parent.showSrt("#srt#","sdown"); ??desc
+</script>
+[end]
+
+ShowDialog(); AjaxCall('popupCont', 'c=docs/view_doc&doc_id=178&mode=popup');
+
+
+***************************** Шаблон SQL запроса ***************************
+[SQL]
+$INCLUDE [SQL_] ??AR_ADMIN=1
+[end]
+
+[SQL_]
+select l.doc_id as ID
+ , dh.NUMBER, DATE_FORMAT(dh.doc_date,'#dateFormat#') as DOC_DATE
+ , dh.TITLE, dh.DIVS, dtp.NAME AS DOC_TYPE
+, w.wf_id, w.step, w2.step as step2, w.role_id, w.role_target_id
+, w.result, w2.result as R2
+ ,w.step_type, w.user_id, w.result_code
+, DATE_FORMAT(w.finished,'#dateTimeFormat#') as STARTED
+, DATE_FORMAT(w2.finished,'#dateTimeFormat#') as FINISHED ??
+, FORMAT(w2.finished - w.finished, 0) as DIFF
+, DATE_FORMAT(w2.modified,'#dateTimeFormat#') as MODIFIED
+, w2.modifier_id as MODIFIER
+from d_list dh
+join wf_list l on (l.doc_id=dh.id and l.is_active=1)
+join wf w on w.wf_id=l.id
+join wf w2 on w2.wf_id=w.wf_id and w2.step=w.step+1 and w2.user_id=w.user_id
+join d_types dtp on dtp.Id = dh.type_id
+
+where w.user_id>0
+
+order by w.finished desc
+[end]
+
+select
+dh.ID, dh.TYPE_ID, dtp.NAME AS DOC_TYPE, dh.DIVS, dh.is_deleted
+, dh.NUMBER, dh.TITLE
+, DATE_FORMAT(dh.doc_date,'#dateFormat#') as DOC_DATE 
+, DATE_FORMAT(dh.created,'#dateTimeFormat#') as CREATED 
+, DATE_FORMAT(dh.MODIFIED,'#dateTimeFormat#') as MODIFIED
+, dh.creator_id
+, iof(ucr.F, ucr.I, ucr.O) as CREATOR
+, iof(um.F, um.I, um.O) as MODIFIER
+, TIMESTAMPDIFF(hour, dh.modified, now()) AS WAITING ??
+, concat(FORMAT(TIMESTAMPDIFF(day, dh.modified, now()), 0), 'д'
+   , FORMAT(TIMESTAMPDIFF(hour, dh.modified, now())-TIMESTAMPDIFF(day, dh.modified, now())*24,0)) AS WAITING 
+, case when TIMESTAMPDIFF(day, dh.modified, now()) > 1 then 'LONG'
+else 'SHORT'
+end
+AS WAITING_LEVEL 
+, dh.status as "DOC_STATUS"
+from d_list dh
+left join d_types dtp on dtp.Id = dh.type_id
+left join #table_users_full# ucr on ucr.id=dh.creator_id 
+left join #table_users_full# um on um.id=dh.modifier_id 
+where dh.ID>0 
+
+and dh.NUMBER like '#f_doc_number#%' ??f_doc_number
+and dh.status in(#f_stat#) ??f_stat&!f_stat=-1
+and dh.is_deleted=0 ??!f_stat=-1
+ ??f_deleted
+and dh.is_deleted=1 ??f_stat=-1
+and dh.IS_CONFIDENTIAL=0
+and dh.id in(select doc_id from d_divs where div_id in(#A_LAB_CODES#)) ??AR_LAB_ADMIN
+and dh.id in(select doc_id from d_divs where div_id in(#f_div_id#)) ??f_div_id
+and dh.NUMBER like '#f_doc_number#%' ??f_doc_number
+and dh.TYPE_ID = #f_type_id# ??f_type_id
+and dh.creator_id=#f_initiator_id# ??f_initiator_id
+
+and dh.TITLE like '#f_doc_title#%' ??f_doc_titleZZZ
+and dh.id in(select doc_id from d_index where context like '%#f_search#%') ??f_search
+order by #srt# #desc#
+[end]
+
+[div criteria]
+
+[end]

@@ -1,0 +1,224 @@
+nica/common.dat
+
+[form]
+    <form name="theForm" id="theForm" method="POST" target="wf" enctype="multipart/form-data">
+    <input type=hidden name="c" value="#c#">
+    <input type=hidden name="mode" value="view">
+    <input type=hidden name="cop" value="">
+    <input type=hidden name="curr_id" value="#curr_id#">
+    <input type=hidden name="prj_id" value="#prj_id#">
+    <input type=hidden name="wu_id" value="#wu_id#">
+    <input type=hidden name="CostbookModule" value="r_data"> ??
+    <input type=hidden name="CostbookModule" value="r_list_all">
+[end]
+
+
+[topTable]
+    <table border=0 class="ztable"  width="100%" cellspacing="0" cellpadding="2">
+    <tr>
+        <td><img src="#imgPath#emblemaLHEP_35.gif" width="63" height="33" border="0" onClick="window.location.href='#ServletPath#?c=nica/i__main&tt=#tm#'"></td>
+        <td width="60%" ><h3> NICA</h3></td>
+        <td nowrap style="white-space:nowrap; padding-top:10px;">
+            Год:&nbsp;
+            <select name="f_nica_year" onChange="loadFrame('c=nica/i_setVersions&yr=' + getSelectedVal(this), 'wf2');">
+                <option value="2017"
+                    selected ??f_nica_year=2017
+                >2017
+                <option value="2016"
+                    selected ??f_nica_year=2016
+                >2016
+                <option value="2015"
+                    selected ??f_nica_year=2015
+                >2015
+                <option value="2014"
+                    selected ??f_nica_year=2014
+                >2014
+            </select>
+        </td>
+        <td id="d_versions" nowrap style="white-space:nowrap; padding-top:10px;">
+            Версия плана:&nbsp;
+            <select name="VER" onChange="refreshTree(0);">
+                #VERSIONS#
+            </select>
+        </td>
+        <td class="pt nowrap" nowrap=true style="color:##004080; font-size:9pt; font-weight:bold;" onClick="window.location.href='#ServletPath#'"><img src="#imgPath#home_24.png" width="24" height="24" border="0">На&nbsp;главную</td>
+    </tr>
+    </table>
+[end]
+
+
+[years-past]
+    <option value="2014" class="PAST"
+        selected ??WORK_YEAR=2014
+    >2014</option>
+    <option value="2015" class="PAST"
+        selected ??WORK_YEAR=2015
+    >2015</option>
+    <option value="2016" class="PAST" 
+        selected ??WORK_YEAR=2016
+    >2016</option>
+    <option value="2017" class="CURRENT"
+        selected ??WORK_YEAR=2017
+    >2017</option>
+[end]
+
+[year-current]
+    <option value="2017" class="CURRENT"
+        selected ??WORK_YEAR=2017
+    >2017</option>
+[end]
+
+[years-future]
+    <option value="2018" class="FUTURE"
+        selected ??WORK_YEAR=2018
+    >2018</option>
+    <option value="2019" class="FUTURE"
+        selected ??WORK_YEAR=2019
+    >2019</option>
+    <option value="2020" class="FUTURE"
+        selected ??WORK_YEAR=2020
+    >2020</option>
+    <option value="2021" class="FUTURE"
+        selected ??WORK_YEAR=2021
+    >2021</option>
+    <option value="2022" class="FUTURE"
+        selected ??WORK_YEAR=2022
+    >2022</option>
+    <option value="2023" class="FUTURE"
+        selected ??WORK_YEAR=2023
+    >2023</option>
+[end]
+
+
+[nature]
+<i>
+    ?  ??!NATURE
+    <i class="fa fa-exclamation-triangle red" aria-hidden="true"></i> A: Материалы и оборудование РФ  ??NATURE=1
+    A1: ОП.Производство машин,оборудования,электрооборудования и транспортных средств  ??NATURE=11
+    A2: ОП.Производство готовых металлических изделий(кроме машин и оборудования)  ??NATURE=12
+    A3: ОП.Химическая промышленность и производство резиновых и пластмассовых изделий  ??NATURE=13
+    A4: ОП.Прочие (все что не вошло в категории A1,A2,A3)   ??NATURE=14
+    A5: Нет возможности определить категорию отрасли.  ??NATURE=15
+    B: Материалы и оборудование зарубежные  ??NATURE=2
+    <i class="fa fa-exclamation-triangle red" aria-hidden="true"></i> C: НИОКР и прочее ??NATURE=3
+    С1: НИОКР ??NATURE=31
+    С2: Другие услуги ??NATURE=32
+    D: Строительство ??NATURE=4
+</i>
+[end]
+
+
+[nature_input]
+    <style>
+        option:disabled { color: ##404080; font-weight:bold;}
+        option.det {padding-left:10px;} ??
+    </style>
+
+    <br><br>
+    <select name="nature" style="width:100%; max-width:500px;" #dis#>
+        <option value=1 disabled 
+            selected ??NATURE=1
+        >A: МАТЕРИАЛЫ И ОБОРУДОВАНИЕ РФ:</option>
+        <option class="det" value=11
+            selected ??NATURE=11
+        > . - A1: ОП.Производство машин,оборудования,электрооборудования и транспортных средств</option>
+        <option class="det" value=12
+            selected ??NATURE=12
+        > . - A2: ОП.Производство готовых металлических изделий(кроме машин и оборудования)</option>
+        <option value=13
+            selected ??NATURE=13
+        > . - A3: ОП.Химическая промышленность и производство резиновых и пластмассовых изделий</option>
+        <option value=14
+            selected ??NATURE=14
+        > . - A4: ОП.Прочие (все что не вошло в категории A1,A2,A3)</option>
+        <option value=15
+            selected ??NATURE=15
+        > . - A5: Нет возможности определить категорию отрасли</option>
+
+        <option value="2" 
+            selected ??NATURE=2
+        >B: Материалы и оборудование зарубежные</option>
+
+        <option value="3" disabled 
+            selected ??NATURE=3
+        >C: НИОКР И ПРОЧЕЕ:</option>
+        <option value=31
+            selected ??NATURE=31
+        > . - С1: НИОКР</option>
+        <option value=32
+            selected ??NATURE=32
+        > . - С2: Другие услуги</option>
+
+        <option value="4"
+            selected ??NATURE=4
+        >D: Строительство</option>
+    </select>
+[end]
+
+
+
+[nature_input_dd]
+    <b>Тип:</b> ??
+    <select name="f_nature" onChange="refreshTable();" style="max-width:300px;">
+        <option value="">Любой</option>
+
+        <option value="1,11,12,13,14,15"
+            selected ??f_nature=1,11,12,13,14,15
+        >A: МАТЕРИАЛЫ И ОБОРУДОВАНИЕ РФ:</option>
+        <option value=11
+            selected ??f_nature=11
+        >- A1 - ОП.Производство машин,оборудования,электрооборудования и транспортных средств</option>
+        <option value=12
+            selected ??f_nature=12
+        >- A2 - ОП.Производство готовых металлических изделий(кроме машин и оборудования)</option>
+        <option value=13
+            selected ??f_nature=13
+        >- A3 - ОП.Химическая промышленность и производство резиновых и пластмассовых изделий</option>
+        <option value=14
+            selected ??f_nature=14
+        >- A4 - ОП.Прочие (все что не вошло в категории A1,A2,A3)</option>
+        <option value=15
+            selected ??f_nature=15
+        >- A5 - Нет возможности определить категорию отрасли</option>
+
+        <option value="2"
+            selected ??f_nature=2
+        >B: Материалы и оборудование зарубежные</option>
+
+        <option value="3,31,32"
+            selected ??f_nature=3,31,32
+        >C: НИОКР И ПРОЧЕЕ:</option>
+        <option value=31
+            selected ??f_nature=31
+        >- С1 - НИОКР</option>
+        <option value=32
+            selected ??f_nature=32
+        >- С2 - Другие услуги</option>
+
+        <option value="4"
+            selected ??f_nature=4
+        >D: Строительство</option>
+    </select>
+[end]
+
+
+
+[mega filter]
+    $SET_PARAMETERS_SESSION f_mega_=#f_mega#; ??f_mega
+    $SET_PARAMETERS f_mega=#f_mega_#; ??!f_mega
+    $SET_PARAMETERS f_mega=; ??f_mega=ALL
+
+<select name="f_mega" onChange="refreshTable();">
+    <option value="ALL">все</option>
+    <option value=0
+    selected ??f_mega=0
+    >базовая</option>
+    <option value="1"
+    selected ??f_mega=1
+    >расширенная</option>
+    <option value="null"
+    selected ??f_mega=null
+    >не указана</option>
+</select>
+[end]
+

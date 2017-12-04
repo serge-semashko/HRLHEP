@@ -1,0 +1,80 @@
+JINR/doc_6_fields.dat
+
+[comments]
+descr=S: Поля для договора подряда (doc_type=6)
+input=поля договора подряда
+output=
+parents=docs/edit_doc.cfg
+childs=
+author=Куняев
+[end]
+
+[date range r] ===== 1008: тип поля - Сроки действия договора подряда  =====
+$GET_DATA JINR/doc_6_fields.dat[convert dates] 
+с #DATE_1# по #DATE_2# 
+[end]
+
+
+[date range w]
+$LOG doc_6_fields.dat: cop=#cop#; contract_begin_date=#contract_begin_date#; contract_end_date=#contract_end_date#; ERROR_contract_begin_date=#ERROR_contract_begin_date#; ERROR_contract_end_date=#ERROR_contract_end_date#;<br>
+
+$GET_DATA JINR/doc_6_fields.dat[convert dates] ??!INPUT_ERROR&contract_begin_date|contract_end_date
+$SET_PARAMETERS contract_begin_date=#contract_begin_date_orig#; ??ERROR_contract_begin_date
+$SET_PARAMETERS contract_end_date=#contract_end_date_orig#;     ??ERROR_contract_end_date
+
+с <input id="contract_begin_date" type="text" mand="#mand#" size=10 name=contract_begin_date onKeyUp="fixDate(this);" onChange="checkDate(this);" value="#contract_begin_date#"> 
+<span class="err_msg">#ERROR_contract_begin_date#</span>  ??ERROR_contract_begin_date
+
+по <input id="contract_end_date" type="text" mand="#mand#" size=10 name=contract_end_date onKeyUp="fixDate(this);" onChange="checkDate(this);" value="#contract_end_date#"> 
+<span class="err_msg">#ERROR_contract_end_date#</span>  ??ERROR_contract_end_date
+
+
+<script type="text/javascript">
+$("##contract_begin_date").datepick({yearRange: 'c-2:c+2', showSpeed: 'fast'});
+$("##contract_end_date").datepick({yearRange: 'c-2:c+2', showSpeed: 'fast'});
+</script>
+[end]
+
+
+[convert dates]
+select 1 as "DUMMY"
+, DATE_FORMAT('#contract_begin_date#','#dateFormat#') AS contract_begin_date    ??contract_begin_date&!ERROR_contract_begin_date
+, DATE_FORMAT('#contract_end_date#','#dateFormat#') AS contract_end_date        ??contract_end_date&!ERROR_contract_end_date
+, DATE_FORMAT('#up_to_advance#','#dateFormat#') AS up_to_advance                ??up_to_advance&!ERROR_up_to_advance
+[end]
+
+[get dates]
+[end]
+
+[date range save]
+$GET_DATA JINR/doc_6_fields.dat[date range save SQL] ??
+[end]
+
+[date range save SQL]
+update d_data_6
+set 
+contract_begin_date=
+where id=##
+[end]
+
+-------------------------- АВАНС ----------------------------
+[avans r]  Аванс по договору (размер и срок)
+$GET_DATA JINR/doc_6_fields.dat[convert dates] ??!INPUT_ERROR&up_to_advance
+#avans# руб. в срок до #up_to_advance#
+[end]
+
+[avans w]
+$GET_DATA JINR/doc_6_fields.dat[convert dates] ??!INPUT_ERROR&up_to_advance
+$SET_PARAMETERS DATE_AVANS=#up_to_advance_orig#;  ??ERROR_up_to_advance
+
+<input id="avans" type="text" mand="#mand#" size=10 name=avans onChange="fixFloat(this);" value="#avans#"> руб.
+в срок до: <input id="up_to_advance" type="text" mand="#mand#" size=10 name=up_to_advance onKeyUp="fixDate(this);" onChange="checkDate(this);" value="#up_to_advance#"> 
+<span class="err_msg">#ERROR_up_to_advance#</span>  ??ERROR_up_to_advance
+
+
+<script type="text/javascript">
+$("##up_to_advance").datepick({yearRange: 'c-2:c+2', showSpeed: 'fast'});
+</script>
+[end]
+
+

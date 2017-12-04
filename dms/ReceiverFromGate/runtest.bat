@@ -1,0 +1,1 @@
+java -jar .\dist\ReceiverFromGate.jar -port 81 -url http://127.0.0.1:81 -size 5000 -count 20 -clientid 100 -objecttype 101 

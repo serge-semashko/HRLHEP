@@ -1,0 +1,290 @@
+[comments]
+descr=U: Печать документа
+
+input=doc_id - ID документа (из таблицы d_list)
+output=
+parents=
+childs=
+test_URL=?c=docs/doc_out_files&doc_id=1
+author=
+[end]
+
+[parameters]
+request_name=U:Печать документа
+service=jinr.sed.ServiceCreateDocFiles
+tableCfg=table_no
+LOG=ON
+SYS_FIELDS=DOC_ID, IS_ACTIVE, DATE_FORMAT(modified,'#dateTimeFormat#') as DOC_MODIFIED, VERSION
+SYS_FIELDS_TYPES=int,int,varchar,int
+
+[end]
+
+
+[report]
+[end]
+
+
+==============================================================================
+***************************** Шаблоны SQL запросов ***************************
+==============================================================================
+
+[getInfosInfo]
+select i.ID as "INFO_ID"
+, i.name as INFO_NAME, i.IS_EXTERNAL
+, i.IS_TREE, i.IS_ACTIVE
+, i.table_name as INFO_TABLE_NAME
+, data_updated 
+from i_infos i
+where i.Id=#INFO_ID#
+;
+select concat(field_db_name, ',') as INFO_FIELDS
+ , concat(name, ',') as INFO_FIELDS_NAMES
+ , concat(type, ',') as INFO_FIELDS_TYPES
+from i_fields
+where info_id=#INFO_ID#
+order by nr
+;
+select count(field_db_name) as INFO_NUM_FIELDS, count(field_db_name)+ 1 as INFO_NUM_COLUMNS
+from i_fields where info_id=#INFO_ID#
+;
+[end]
+
+
+[preSQLs]
+select concat('d_data_', cast(dtp.id as char)) as TABLE_NAME
+, dtp.id as "DOC_TYPE_ID", dtp.NAME as "DOC_TYPE"
+, dh.number as "DOC_NUMBER"
+, dh.title as "DOC_TITLE"
+, DATE_FORMAT(dh.doc_date,'#dateFormat#') as DOC_DATE
+, DATE_FORMAT(dh.created,'#dateTimeFormat#') as CREATED
+, '#file_storage_path#' as "DataStartPath"
+from d_types dtp
+left join d_list dh on dtp.Id = dh.type_id
+left join #table_users_full# u on u.Id = dh.creator_id
+where dh.Id = #doc_id#
+; 
+select count(id) as "NUM_TEMPLATES" from doc_templates_files where type_id=#DOC_TYPE_ID#
+;
+select id as DOC_DATA_RECORD_ID
+, doc_id as DOCUMENT_ID
+from #TABLE_NAME# where doc_id = #doc_id# 
+ and version=#DOC_VERSION# ??DOC VERSIONS NOT IMPLEMENTED
+;
+
+select concat(dtf.field_db_name, ',') as FIELDS
+ , concat(dtf.name, ',') as FIELDS_NAMES 
+ , concat(dtf.type, ',') as FIELDS_TYPES
+ , concat(dtf.form_field_type, ',') as FORM_FIELDS_TYPES
+ , concat(dtf.print_field_header, ',') as FORM_FIELDS_HEADERS
+from d_fields dtf
+left join d_list dh on (dtf.type_id = dh.type_id)
+where dh.Id = #doc_id# and dtf.is_active=1
+order by nr
+;
+[end]
+
+[getTemplateFilesInfo]
+select type_id AS TYPE_ID
+from d_list where Id = #doc_id#
+;
+select count(Id) as cnt from doc_templates_files where type_id = #TYPE_ID#
+;
+
+select concat(tpfl.file_name, ',') as TMPL_FILES_NAMES
+ , concat(tpfl.file_ext, ',') as TMPL_FILES_EXTS 
+ , concat(tpfl.file_content_type, ',') as TMPL_FILES_CONTENT_TYPES 
+ , concat(tpfl.fs_file_name, ',') as TMPL_FS_FILES_NAMES
+ from doc_templates_files tpfl where type_id = #TYPE_ID#
+order by norder
+;
+[end]
+
+
+[delete_doc_out_files]
+$GET_DATA [get prev files list]
+$EXECUTE_LOOP prev_file; #PREV_FILES#; [delete prev file]
+[end]
+
+[delete prev file]
+$GET_DATA [delete prev file SQL]
+[end]
+
+[delete prev file SQL]
+delete from doc_out_files 
+where doc_id = #doc_id# and fs_file_name='#prev_file#'
+;
+delete file: #prev_file#
+[end]
+
+[get prev files list]
+select concat(fs_file_name,',') as PREV_FILES 
+from doc_out_files 
+where doc_id = #doc_id#
+[end]
+
+[ZZZ_delete_doc_out_files SQL]
+delete from doc_out_files 
+where doc_id = #doc_id#
+;
+[end]
+
+[getDocOutFilesNorderInfo]
+select IFNULL(max(norder)+1,0) as DOC_OUT_NORDER 
+from doc_out_files where doc_id = #doc_id#
+;
+[end]
+
+[SQL_]
+select *, date_format(upload_date,'%d.%m.%y %H:%i') as upload_date_fmtd, format_filesize(file_size) as human_bytes 
+from doc_files 
+where 
+doc_id = #doc_id#
+and field_id is null
+order by norder
+[end]
+
+
+
+[getFizlitsaDataInfo] ******* для физлица (тип объекта: 1003)
+SELECT #F_DB_N#_F as "F_F"
+, #F_DB_N#_I as "F_I"
+, #F_DB_N#_O as "F_O"
+, #F_DB_N#_dr as "F_dr"
+, #F_DB_N#_inn as "F_inn"
+, #F_DB_N#_pfr as "F_pfr"
+, #F_DB_N#_strana as "F_strana"
+, #F_DB_N#_sex as "F_sex"
+, #F_DB_N#_vid_doc as "F_vid_doc"
+, #F_DB_N#_seria as "F_seria"
+, #F_DB_N#_nomer as "F_nomer"
+, #F_DB_N#_vidan as "F_vidan"
+, #F_DB_N#_kod_podrazd as "F_kod_podrazd"
+, #F_DB_N#_dat_vid as "F_dat_vid"
+, #F_DB_N#_dat_reg as "F_dat_reg"
+, #F_DB_N#_address as "F_address"
+ from #TABLE_NAME# where doc_id = #doc_id#
+;
+[end]
+
+
+[getSourceFundingDataInfo] ******* для источника финансирования (тип объекта: 7)
+
+select dtf.type AS "SF_TYPE"
+, concat('d_data_', cast(dtf.type as char)) as "SF_TABLE_NAME"
+from d_fields dtf 
+left join d_list dh on (dtf.type_id = dh.type_id)
+where dh.id=#doc_id#
+and dtf.is_active=1 and dtf.field_db_name = '#F_DB_N#'
+; 
+
+select replace(concat(
+IF(LOCATE('(',SF_d_data.bc), LEFT(SF_d_data.bc, (LOCATE('(',SF_d_data.bc)-1) ), SF_d_data.bc), ' '
+,SF_d_data.statia, ' ', CAST(SF_d_data.summa as CHAR), ' ',  SF_d_data.summa_curr, ';'), '  ',' ')
+ as "RESULT"
+from #SF_TABLE_NAME# SF_d_data
+left join d_list dh on dh.id = SF_d_data.doc_id
+where dh.pid = #doc_id#  
+;
+[end]
+
+
+[getZKDataInfo] ******* для закупочных комиссий (тип объекта: 1017)
+SELECT #F_DB_N#_header as "F_header"
+, #F_DB_N#_titulature as "F_titulature"
+, #F_DB_N#_present as "F_present"
+ from #TABLE_NAME# where doc_id = #doc_id#
+;
+[end]
+
+
+[getMemberIdsDataInfo] ******* для членов закупочных комиссий (тип объекта: 1012)
+SELECT #F_1012_DB_N#_id as "MEMBER_ID"
+, IFNULL(length(#F_1012_DB_N#_id), 0) as "Len_of_MEMBER_ID"
+ from #TABLE_NAME# where doc_id = #doc_id#
+[end]
+
+
+[getZKMemberDataInfo] ******* для членов закупочных комиссий (тип объекта: 1012)
+SELECT '' as "USER_FIO"
+;
+SELECT DISTINCT fio(u.F, u.I, u.O) as "MEMBER_FIO"
+from info_11 u 
+where u.person_id = #ZK_MEMBER_ID#
+and is_deleted = 0
+;
+SELECT CONCAT(post, ', ') as "MEMBER_POST"
+from info_11 u 
+where u.person_id = #ZK_MEMBER_ID#
+and is_deleted = 0
+;
+[end]
+
+
+[getTenderParticipantsIDDataInfo] ******* для списка участников конкурса(тип объекта: 1014)
+
+select dtf.type AS "TP_TYPE"
+, concat('d_data_', cast(dtf.type as char)) as "TP_TABLE_NAME"
+from d_fields dtf 
+left join d_list dh on (dtf.type_id = dh.type_id)
+where dh.id=#doc_id#
+and dtf.is_active=1 and dtf.field_db_name = '#F_DB_N#'
+; 
+select 
+concat(TP_d_data.doc_id, ',') AS TP_DOC_IDS
+from #TP_TABLE_NAME# TP_d_data
+left join d_list dh on dh.id = TP_d_data.doc_id
+where dh.pid = #doc_id#
+;
+[end]
+
+[getTenderParticipantDataInfo] ******* для списка участников конкурса(тип объекта: 1014)
+SELECT '-1' AS TP_PROVIDER_ID ;
+SELECT 'нет данных' AS TP_PROVIDER ;
+SELECT 'нет данных' AS TP_PRODUCT ;
+SELECT 'нет данных' AS TP_DELIVERY_TIME ;
+SELECT 'нет данных' AS TP_GUARANTEE ;
+SELECT 'нет данных' AS TP_TERMS_OF_PAYMENT ;
+
+select provider_id AS TP_PROVIDER_ID
+, product_specification AS TP_PRODUCT
+, IFNULL(CAST(VAT as CHAR),'нет данных') AS TP_VAT
+, delivery_time AS TP_DELIVERY_TIME
+, guarantee AS TP_GUARANTEE
+, terms_of_payment AS TP_TERMS_OF_PAYMENT
+, concat(IFNULL(CAST(cost as CHAR),' '), ' ', cost_curr) AS TP_COST
+from #TP_TABLE_NAME# TP_d_data
+where TP_d_data.doc_id = #TENDER_PARTICIPANT_DOC_ID#
+;
+select full_name AS TP_PROVIDER
+from i_jinr_tender_participant
+where id = #TP_PROVIDER_ID#
+;
+[end]
+
+
+[getVPDataInfo] ******* для протокола голосования ЗК (тип объекта: 1018)
+SELECT 
+  #ZK_VP_F_DB_N# as "ZK_VP_FIO"
+, #ZK_VP_F_DB_N#_members_id as "ZK_VP_members_id"
+, #ZK_VP_F_DB_N#_votes as "ZK_VP_votes"
+from #TABLE_NAME# 
+where doc_id = #doc_id#
+[end]
+
+[getVPMemberInfo] ******* для протокола голосования ЗК (тип объекта: 1018)
+SELECT DISTINCT fio(u.F, u.I, u.O) as "ZK_VP_MEMBER_FIO"
+from info_11 u 
+where u.person_id = #ZK_VP_MEMBER_ID#
+[end]
+
+
+
+[getCommissionMembersDataInfo] ******* для состава ЗК (тип объекта: 1019)
+SELECT 
+  #ZK_members_F_DB_N# as "com_members_FIO"
+, #ZK_members_F_DB_N#_id as "com_members_id"
+, #ZK_members_F_DB_N#_rank as "com_members_rank"
+, #ZK_members_F_DB_N#_presence as "com_members_presence"
+from #TABLE_NAME# 
+where doc_id = #doc_id#
+[end]

@@ -1,0 +1,54 @@
+svs/showWfStepTooltip.ajm
+
+[comments]
+descr=Модуль статуса шага WF
+input=tt_id - ID шага workflow
+output=Tooltip окно 
+parents=wf/show_wf_status
+childs=
+testURL=?c=&tt_id=346
+author=Куняев
+[end]
+
+[parameters]
+request_name=U:tooltip
+LOG=OFF
+[end]
+
+
+[report]
+    $GET_DATA [get doc opened] ??WF_USER_ID
+    шаг #STEP#: <br>
+    #ROLE#<br> ??ROLE
+    <b>#FIO#</b><br> ??FIO
+     ?  ??!FIO
+    #STARTED# - #FINISHED#<br> ??STARTED
+    Просмотр документа:&nbsp;#OPENED# ??OPENED&!RESULT
+    <b>результат: #RESULT#</b><br> ??RESULT
+    комментарий: #COMMENT# ??COMMENT
+[end]
+
+
+
+[preSQLs]
+    select wf.STEP
+        , DATE_FORMAT(wf.started,'#dateTimeFormat#') as "STARTED"
+        , ifnull(DATE_FORMAT(wf.finished,'#dateTimeFormat#'),'...') as "FINISHED"
+        , r.name as ROLE
+        , wf.RESULT, wf.COMMENT
+        ,wf.USER_ID as WF_USER_ID, u.FIO, l.doc_id, d.version
+    from wf left join #table_users_full# u on u.id=wf.user_id
+        left join wf_list l on l.id=wf.wf_id
+        left join d_list d on d.id=l.doc_id
+        left join a_roles r on r.id=wf.role_id
+    where wf.id=#tt_id#
+[end]
+
+
+[get doc opened]
+    select DATE_FORMAT(dat,'#dateTimeFormat#') as "OPENED"
+    from d_access_log
+    where doc_id=#doc_id# and doc_version=#version# and user_id=#WF_USER_ID#
+    order by OPENED
+    limit 0,1
+[end]

@@ -1,0 +1,152 @@
+<html>
+<head>
+
+<meta name="Description" content="Latex to HTML Converter">
+<meta name="Keywords" content="Linux, Windows, Java, HTML, software, developement"> 
+<meta name="Identifier-URL" content="http://perso.wanadoo.fr/eric.chopin/latex/latex4web.htm"> 
+<meta name="Author" content="Eric Chopin"> 
+<title>LaTeX4Web: a simple LATEX TO HTML converter (javascript)</title>
+<style type="text/css"> 
+body {color: black; 
+      background:"#FFCC99";  }
+td#m009 {border:2 solid red; }
+</style>
+
+
+<!-- ############# LOADING EXTERNAL .JS FILES ########## -->
+
+<!-- Loading Deterministic Finite Automata (DFA) data -->
+<script language=javascript src="LaTeX_asc.js"></script>
+<script language=javascript src="LaTeX_acc.js"></script>
+<script language=javascript src="LaTeX_tok.js"></script>
+<script language=javascript src="LaTeX_dfa_comp.js"></script>
+<!-- Libraries used by the main script -->
+<script language=javascript src="LaTeX_symbols.js"></script>
+<script language=javascript src="LaTeX_functions.js"></script>
+<!-- 
+   Edit the following file to change your own aliases that 
+   you have defined using \def, \newcommand or \renewcommand 
+-->
+<script language=javascript src="LaTeX_aliases.js"></script>
+<script language=javascript src="main.js"></script>
+
+</head>
+
+
+<BODY LINK="#A000DD" VLINK="#0000FF" ALINK="#00FFFF">
+
+
+<form name=MainForm method=post>
+<p>Type here your latex commands:&nbsp;<input type=button value="Convert" <!<-
+
+_onclick="javascript:document.MainForm.output.value=ltxParse(document.MainForm.input.value)"
+
+onclick="javascript:document.MainForm.output.value=fixTables(document.MainForm.input.value)">&nbsp;<input type=button value="Clear All" onclick="javascript:ltxClear()">
+<textarea name=input cols=100 rows=10></textarea>
+<hr>
+Here is the resulting HTML:&nbsp;<input type=button value="Compress Output" onclick="javascript:ltxCompress()">
+<textarea name=output cols=100 rows=10></textarea><br>
+<input type=button value="Show" onclick="javascript:ltxShow()"> (show output in a new browser window) &nbsp;&nbsp;&nbsp;&nbsp;<input type=button value="Debug" onclick="javascript:ltxDebug()"> (show debug output in a browser)
+<hr>
+<!--
+<input type=button value="Test" onclick="javascript:ltxTest()">
+-->
+</form>
+
+<div id="d_preview" style="position:absolute; width:500; top:100; left:-1000; border:solid 1px black; background-color:#DDEEFF">
+<table border=0 width=100% ><tr style="text-align:center; background-color:#406080; color:white;">
+<td style="text-align:center;">Просмотр</td>
+<td width=1% onClick="hidePreview()"; style="cursor:hand;">X</td></tr>
+<tr><td colspan=2 
+><div id="dd_preview" style="border:solid 1px black; height:400; overflow:scroll;">===</div></td></tr>
+<tr><td colspan=2 align=right><a href="javascript:hidePreview()">Закрыть</a></td></tr>
+</table></div>
+<a href="javascript:showPreview()">Просмотр</a>
+<!-- Initialization for testing -->
+<script language=javascript>
+ var d_preview = document.getElementById("d_preview");
+ var dd_preview = document.getElementById("dd_preview");
+
+function showPreview()
+{
+  d_preview.style.left=100;
+  dd_preview.innerHTML = document.MainForm.output.value;
+}
+
+function hidePreview()
+{
+  d_preview.style.left=-3000;
+}
+
+
+function compressHTML(src)
+{
+    var res = src.replace(/\n\s+([^\s])/g, '\n$1');
+    res = res.replace(/>\r?\n/g, '>');
+    res = res.replace(/\r?\n</g, '<');
+    return res;
+}
+
+function fixTables(src)
+{ var t = ltxParse(src);
+//  var t = src;
+  var res = "";
+  var s = "";
+  var tab = "";
+  var reTD=/<t[rd].*>/g;
+  var reTDE= new RegExp("</t[rd]>","g");
+  var reTE= new RegExp("</table>","g");
+  var j = 1;
+  for (i = 0; j>0; )
+  { i = t.indexOf("<table");
+    if (i >= 0)
+	{ j = t.indexOf("</table", i);
+	  k = t.indexOf("<table", i+8);
+//	alert ("j: " + j + "; k: " + k);
+	  while (k>0 && j > k)
+	 {
+	   j = t.indexOf("</table", j+8);
+ 	   k = t.indexOf("<table", k+8);
+//	alert ("j: " + j + "; k: " + k);
+	 }
+
+	  if (j > 0)
+  	    tab = t.substring(i, j+8);
+	}
+    else
+	{ i = t.length;
+	  tab = "";
+	  j = -1;
+	}
+//	alert ("tab=" + tab);
+	s = t.substring(0,i-1);
+//	alert (s.replace(reTD," ").replace(reTDE," "));
+	res += s.replace(reTD," ").replace(reTDE," ").replace(reTE," ") + tab;
+	if (j > 0)
+	 t = t.substring(j+9);
+  }
+  return compressHTML(res);
+}
+
+window.document.title ='LaTeX4Web: a simple LATEX TO HTML converter (javascript)'
+
+var strInit = ''
+
+// EXAMPLES FOR TESTING:
+// strInit = "$$ 0 = \\frac{7A+\\frac{x+y}{x-y}}{A-B} +5XYZ $$"
+
+// strInit = "$$ 0 = \\sqrt{\\frac{7A+\\frac{x+y}{x-y}}{A-B} +5XYZ }$$"
+
+// strInit = "$$ \\psi = e^{ikx+ \\sqrt{\\phi^2+1}  } $$"
+
+// strInit = "$$ 0 = \\frac{7A+\\frac{x+y}{x-y}}{A-B} +5XYZ^\\lambda +\\sigma_\\tau + \\vec V \\cdot \\vec \\Omega$$"
+// strInit = "$$ 0 = \\int_0^1 d\\omega f $$"
+// strInit = "$$ 0 = \\sqrt{x^2+1} $$"
+
+
+document.MainForm.input.value = strInit 
+
+
+</script>
+</body>
+</html>

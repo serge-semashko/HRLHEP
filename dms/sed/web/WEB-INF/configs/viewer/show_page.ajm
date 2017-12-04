@@ -1,0 +1,102 @@
+viewer/show_page.ajm
+
+[comments]
+descr=U: Просмотр заданной страницы файла
+input=active_page_id - id страницы из таблицы doc_file_pages, [file_id] - ID файла. Используется, если файл не конвертирован
+parents=viewer/show_file.cfg
+children=viewer/page_image.cfg
+testURL=?c=viewer/show_page&active_page_id=1
+author=Куняев
+[end]
+
+[description]
+<ul>
+<li>Выводит активную страницу в середине окна</li>
+<li>Вызывает viewer/show_markup_icons.cfg - отображение иконок маркапов на активной странице (AJAX)</li>
+<li>Вызывает viewer/show_markup_list - отображение списка маркапов справа (AJAX)</li>
+<li>Проверяет, есть ли активная страница в thumbnails и обновляет thumbnails, если ее там нет (checkThmbList(#page_nr#);)</li>
+</ul>
+[end]
+
+[parameters]
+LOG=ON
+[end]
+
+
+[report] *** Блок картинки активной страницы
+$GET_DATA [get file info] ??active_page_id>0
+$CALL_SERVICE c=sys/getARUD; doc_id=#doc_id#; ??doc_id
+$SET_PARAMETERS AR_R=Y; ??
+$SET_PARAMETERS ERROR=Нет прав для просмотра файла!; ??!AR_R=Y&doc_id
+$SET_PARAMETERS ERROR=страница не найдена! ??!page_nr
+
+<input type="hidden" name="active_page_id" value="#active_page_id#">
+
+======= Перечень страниц сверху ======= ??
+<div style="margin:0 0 8px 0;"> <b>Стр. #page_nr# </b>(из #NUM_PAGES#) &nbsp;#PAGE_LIST#</div> 
+
+======= Контейнер для иконок маркапов ======= ??
+<div id="main_page_mkps" class="mkp_container"></div> 
+
+======= Контейнер для изображения страницы ======= ??
+<div id="main_page" class="page"><img src="#imgPath#loading.gif" style="margin:100px 330px 700px 300px; width:32px;"></center></div>      ??!ERROR  
+
+======= Перечень страниц внизу ======= ??
+<div style="padding:15px 0 0 0;"><b>Стр. #page_nr# </b>(из #NUM_PAGES#) &nbsp; #PAGE_LIST#</div>     ??!ERROR  
+    
+$INCLUDE [err msg]   ??ERROR
+
+
+<script type="text/javascript">
+active_page_id=#active_page_id#;
+$("##page_content").unbind();
+
+===== Загрузка изображения страницы и вызов модуля отрисовки иконок ======= ??
+var img = new Image();
+
+img.onload = function(){
+  $("##main_page").html(img); 
+  showMarkupIcons("#active_page_id#", "N"); 
+
+===== Первоначальный вызов модуля вывода списка маркапов ======= ??
+  AjaxCall("page_comments", "c=viewer/show_markup_list", true, "commonForm");      ??page_nr=1
+
+===== Первоначальный вызов модуля вывода thumbnails ---   ??
+  AjaxCall("thumbnails", "c=viewer/show_thumbnails&active_page_id=#active_page_id#");     ??page_nr=1
+
+===== Проверка, есть ли выбранная страница среди thumbnails и обновление thumbnails при необходимости ======= ??
+  try {checkThmbList(#page_nr#);} catch (e) {;}       ??page_nr>1
+}
+img.src = "#ServletPath#?c=viewer/page_image&page_id=#active_page_id#";
+
+setAddCommentMode(false);
+
+</script>
+
+[end]
+
+
+[err msg]
+<div class="bg_white page" style="text-align:center; font-weight:bold; margin:30px;">Ошибка: #ERROR#</div>
+[end]
+
+================================================================================
+
+[get file info]  *** информация о файле, странице
+SELECT /* номер страницы и ID документа для проверки прав доступа */
+ p.file_id, p.page_nr, f.doc_id, f.file_name
+ from doc_file_pages p join doc_files f on f.id=p.file_id
+where p.id=#active_page_id#
+;
+select /* общее кол-во страниц у файла */ 
+count(*) as "NUM_PAGES"
+from doc_file_pages 
+where file_id=#file_id#
+;
+select /* формирование списка страниц */
+concat('<span class="pt pg', case when id=#active_page_id# then ' active_page' else '' end
+,'" onClick="showPage(', cast(id as char), ');">', page_nr,'</span> ') as "PAGE_LIST"
+from doc_file_pages 
+where file_id= #file_id#
+
+[end]

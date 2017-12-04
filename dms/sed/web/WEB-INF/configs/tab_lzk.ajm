@@ -1,0 +1,48 @@
+tab_lzk.cfg
+
+[comments]
+descr=U: Вывод таба "ЛЗК" 
+
+input=none
+output=HTML форма списка документов
+parents=main.cfg
+childs=JINR/reports/lzk_docs.cfg
+testURL=?c=tab_lzk
+author=Куняев
+[end]
+
+
+[parameters]
+request_name=U:Список заявок ЛЗК
+LOG=ON
+debug=off
+[end]
+
+[report]
+    $INCLUDE dat/common.dat[check login]
+    $INCLUDE [report_] ??USER_ID
+[end]
+
+[report_]
+    $SET_PARAMETERS srt=dh.status; desc=; ??!srt
+    <div id="lzk_docs"></div>
+
+    <script type="text/javascript">
+        var submitForm=function() {
+            AjaxCall("lzk_docs", "c=JINR/reports/lzk_docs", true, "filters_div");
+        }
+
+        var resetSort=function(){
+            document.theForm.srt.value="dh.status"; 
+            document.theForm.desc.value="";
+            document.theForm.srn.value=1; 
+        }
+
+        AjaxCall("lzk_docs","c=JINR/reports/lzk_docs");
+
+        setModule("JINR/reports/lzk_docs");
+        showPageTop(true);
+
+    </script>
+[end]
+

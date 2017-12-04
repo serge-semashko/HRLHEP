@@ -1,0 +1,69 @@
+[comments]
+author=Устенко
+[end]
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+tableCfg=table_no
+LOG=OFF
+[end]
+
+[preSQLs]
+select count(Id) as cnt from doc_out_files where doc_id = #doc_id#
+;
+[end]
+
+[report header]
+$CALL_SERVICE c=sys/getARUD; ??!AR_R=Y
+$INCLUDE [no files message] ??cnt=0
+$INCLUDE [tab start] ??!cnt=0&AR_R=Y
+[end]
+
+[report footer]
+$INCLUDE [tab end] ??!cnt=0
+[end]
+
+[no files message]
+<div class="bg_white" >Нет</div>
+[end]
+
+[tab start]
+$SET_PARAMETERS can_control=; ??!AR_W=Y
+<table id="out-file-list-tab" class="tlist tblue" cellspacing=0 style="margin:0;">
+<tr>
+<th>Имя файла</th><th>Размер</th><th>Сформирован</th>
+</tr>
+[end]
+
+[item]
+<tr class_="pt">
+    <td><a href = "?c=docs/out_files_dnld&id=#Id#" target="_blank">#file_name#</a></td>
+    <td>#human_bytes#</td><td>#upload_date_fmtd#</td>
+</tr>
+[end]
+
+[tab end]
+</table>
+
+<script type="text/javascript">
+if(window.jQuery){
+//$(function(){
+//    $('##out-file-list-tab tr:even').addClass('oddRowRed');
+//});
+setStandardEvents();
+}
+</script>
+[end]
+
+[SQL]
+$INCLUDE [SQL_] ??AR_R=Y
+[end]
+
+[SQL_]
+select *, date_format(upload_date,'%d.%m.%y %H:%i') as upload_date_fmtd, format_filesize(file_size) as human_bytes 
+from doc_out_files 
+where 
+doc_id = #doc_id#
+order by norder
+[end]
+

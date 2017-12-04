@@ -1,0 +1,52 @@
+receive_6_dogpodr.cfg
+
+TMP LOOPBACK - отладка
+
+[parameters]
+request_name=S:Прием договора подряда
+LOG=ON
+[end]
+
+
+[report]
+$LOG <hr><b>===>>> receive_6_dogpodr.cfg</b><br>
+$LOG object=<xmp>#Object#</xmp>
+$SET_PARAMETERS ERR_CODE=0; ERROR=; 
+
+$GET_DATA [check existing record] ??!ERROR
+$GET_DATA [create record] ??!REC_EXISTS
+$SET_PARAMETERS REC_ID=#Код#; ??!REC_ID
+$GET_DATA [update record] ??!ERROR&REC_EXISTS
+
+$SET_PARAMETERS ResultCode=3; Result=#ERROR#; ??ERROR
+[end]
+
+$SET_PARAMETERS ERROR=Отсутствует Код; ??!Код
+$SET_PARAMETERS ERROR=Отсутствует Наименование; ??!Наименование
+$CALL_SERVICE c=admin/infos/jinr_setDivParents; ??!ERROR
+
+
+============================================================================
+============================================================================
+============================================================================
+
+[check existing record]
+[end]
+
+select 'Y' as REC_EXISTS, id as REC_ID from info_10 
+where ID=#Код#
+
+
+[create record]
+[end]
+
+insert into info_10 (ID, pid, short_code, name, short_name, changed)
+values(#Код#, #РодительКод#, left('#Код#', 3), '#Наименование#', '#Наименование#', now());
+ 
+
+[update record]
+[end]
+
+update info_10 set pid=#РодительКод#, name='#Наименование#', changed=now() where ID=#Код#;
+
+

@@ -1,0 +1,80 @@
+test_batch_send.cfg
+
+[comments]
+descr=U: Тест пакетной посылки в шлюз
+input=
+output=
+parents=
+childs=
+testURL=?c=gateway/test_batch_send
+author=Куняев
+[end]
+
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=U:Batch-посылка документов
+LOG=ON 
+tableCfg=table_no
+[end]
+
+
+[report header]
+$INCLUDE dat/common.dat[head]
+</head><body style="padding:30px;">
+
+++++++++++++++++++ Шапка таблицы ПОСЫЛКИ документов +++++++++++++++++++++ ??
+$SET_PARAMETERS srn=1; rpp=9999;
+tm=#tm#
+<table class="tlist tblue" cellspacing=0>
+<tr>
+<th>id</th> 
+<th>Документ</th>
+<th>Статус</th> 
+<th>Содержание</th>
+<th>+++</th>
+<th>Результат</th> 
+<th>Dest.ID</th> 
+</tr>
+[end]
+
+[item]
+++++++++++++++++++ Строка таблицы - 1 документ +++++++++++++++++++++ ??
+$CALL_SERVICE c=gateway/post_doc; doc_id=#doc_id#; silent=Y;
+<tr class="pt
+oddRow ??oddRow=1
+"> <td style="padding:0;">#doc_id# </td>
+<td>#DOC_TYPE# №#NUMBER# от #DOC_DATE#</td> 
+<td>
+В процессе согласования ??STATUS=1
+На этапе завершения ??STATUS=2
+Завершен ??STATUS=3
+</td>
+<td>#TITLE#</td>
+<td>#DIVS#</td>
+<td>#ResultCode#: #Result#</td> 
+<td>#DestObjectID#</td> 
+</tr>
+[end]
+
+
+[report footer]
+</table>
+tm=#tm#
+[end]
+
+***************************** Шаблон SQL запроса ***************************
+
+[SQL]
+select
+dh.ID as doc_id
+, dh.TYPE_ID, dh.STATUS
+, dtp.NAME AS DOC_TYPE ??
+, dh.NUMBER, dh.TITLE, DATE_FORMAT(dh.doc_date,'#dateFormat#') as DOC_DATE 
+from d_list dh
+where type_id=6
+and dh.STATUS>0
+and dh.id=533 ??
+order by dh.modified desc 
+[end]
+

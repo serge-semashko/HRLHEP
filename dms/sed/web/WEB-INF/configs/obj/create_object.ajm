@@ -1,0 +1,37 @@
+create_object.cfg
+
+[comments]
+descr=U: Создание объекта
+
+input=doc_id - ID документа, COLLECTION_DOC_TYPE - тип дочернего объекта
+output=создает дочерний объект и вызывает edit_object
+parents=
+childs=
+test_URL=
+author=Куняев
+[end]
+
+
+[parameters]
+request_name=U:Сознание объекта
+[end]
+
+
+[report]
+$LOG ======= create_object ====== queryString=#queryString#;<br>
+$GET_DATA [create SQL]
+
+<script type="text/javascript">
+AjaxCall('edit_new_object_form', 'c=obj/edit_object&doc_id=#CHILD_OBJECT_ID#&container=edit_new_object_form&total_row_section=#total_row_section#', true);
+</script>
+[end]
+
+
+[create SQL]
+insert into d_list (pid, type_id, created, creator_id)
+values (#doc_id#, #COLLECTION_DOC_TYPE#, now(), #USER_ID#)
+;
+select LAST_INSERT_ID() as "CHILD_OBJECT_ID", 'd_data_#COLLECTION_DOC_TYPE#' as CHILD_TABLE_NAME
+; 
+insert into #CHILD_TABLE_NAME# (doc_id) values (#CHILD_OBJECT_ID#);
+[end]

@@ -1,0 +1,134 @@
+JINR/reports/czk_docs_table.ajm
+
+[comments]
+descr=U: Модуль вывода списка заявок для ЦЗК (вывод самой таблицы)
+
+input=
+output=HTML таблица документов
+parents=reports/czk_docs
+childs=docs/view_doc
+testURL=?c=reports/czk_docs_table
+author=Куняев
+[end]
+
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=U:Таблица заявок для ЦЗК
+LOG=ON 
+tableCfg=table_no
+[end]
+
+
+[report header]
+$INCLUDE dat/common.dat[check login]
+$INCLUDE [OK report header]  ??USER_ID>0|USER_ID<0
+[end]
+
+
+[OK report header]
+$SET_PARAMETERS srn=1; rpp=9999; 
+++++++++++++++++++ Шапка таблицы документов +++++++++++++++++++++ ??
+<table class="tlist tblue" cellspacing=0>
+<tr>
+    <th></th><th>№</th><th>Заявка</th><th>Содержание</th>
+    <th>Производитель&nbsp;продукции</th>
+    <th>Цена&nbsp;в&nbsp;$</th> 
+    <th>Подразд.</th><th>Создан</th><th>Ожидает</th> 
+</tr>
+$SET_PARAMETERS PREV_CZK_DAT=.;
+[end]
+
+
+[item]
+    $SET_PARAMETERS past=(назначенная дата заседания прошла); ??DDD=2
+    <tr><td colspan=9 class="divider"></td></tr>  ??DDD=2&!PREV_CZK_DAT=#CZK_DAT#&CZK_DAT
+    <tr><td colspan=9 class="divider subhead"><b>#CZK_DAT# #past#:</b></td></tr>  ??!PREV_CZK_DAT=#CZK_DAT#&CZK_DAT
+    <tr><td colspan=9 class="divider"></td></tr><tr><td colspan=7 class="divider subhead"><b>Дата не назначена:</b></td></tr>  ??!CZK_DAT&PREV_CZK_DAT
+    ++++++++++++++++++ Строка таблицы - 1 документ +++++++++++++++++++++ ??
+    <tr class="pt
+    oddRow ??oddRow=1
+    " onClick="$('##doc_overlay').show(); AjaxCall('doc_content', 'c=docs/view_doc&doc_id=#ID#&mode=popup', true);">
+
+        $INCLUDE tab_myDocs[linkedMark]
+        <td>#czk_nr#</td>
+        <td>
+            №#NUMBER#  ??NUMBER
+            от #DOC_DATE#  ??DOC_DATE
+            <br><small>#ID#</small>  ??USER_ID=2309|VU=2309
+        </td> 
+
+        <td>#TITLE#</td><td><div style="max-width:600px;">#POSTAV#</div></td>
+        <td class= "right nowrap" >#PRICE_USD#</td> 
+        <td>#DIVS#</td><td>#CREATED#, #CREATOR#</td> 
+        <td>
+            $GET_DATA [get waiting users SQL]  ??wf_id
+            #WAITING# #W_USERS#
+        </td>
+    </tr>
+    
+    $INCLUDE tab_myDocs.cfg[linkedData] ??!img=none
+    $SET_PARAMETERS PREV_CZK_DAT=#CZK_DAT#;
+[end]
+
+
+[report footer]
+<tr><td colspan=7 class="divider"></td></tr>
+</table>
+<br>&nbsp;
+
+[end]
+
+***************************** Шаблон SQL запроса ***************************
+
+[SQL]
+select
+dh.ID, dh.NUMBER, dh.TITLE, dh.STATUS, dh.DIVS
+    , dh.pid ??
+    , dh.num_children
+    , DATE_FORMAT(dat.czk_dat,'#dateFormat#') as "CZK_DAT", if(dat.czk_dat is null, 1, if(dat.czk_dat < date_sub(now(), interval 1 day), 2, 0)) as DDD
+    , dat.czk_nr
+    , DATE_FORMAT(dh.doc_date,'#dateFormat#') as DOC_DATE 
+    , dat.manufacturer as "POSTAV"
+    , replace(format(dat.summa_usd,2),',',' ') as "PRICE_USD" 
+
+    , DATE_FORMAT(dh.created,'#dateFormat#') as CREATED 
+    , dh.creator_id
+    , concat(ucr.F, ' ', left(IFNULL(ucr.I,''),1), '.', left(IFNULL(ucr.O,''),1),'.') as CREATOR
+    , DATE_FORMAT(dh.modified,'#dateFormat#') as MODIFIED
+    , dh.modifier_id 
+    , concat(umr.F, ' ', left(IFNULL(umr.I,''),1), '.', left(IFNULL(umr.O,''),1),'.') as MODIFIER
+    , wfl.id as "wf_id"
+
+    , concat( FORMAT(TIMESTAMPDIFF(day, dh.modified, now()), 0), 'д,') AS WAITING
+    , FORMAT(TIMESTAMPDIFF(hour, dh.modified, now())-TIMESTAMPDIFF(day, dh.modified, now())*24,0)) AS WAITING ??
+    , case when TIMESTAMPDIFF(day, dh.modified, now()) > 1 then 'LONG' ??
+
+from d_list dh
+    left join d_data_1 dat on dat.doc_id=dh.id
+    left join wf_list wfl on wfl.doc_id=dh.id
+    left join #table_users_full# ucr on ucr.id=dh.creator_id 
+    left join #table_users_full# umr on umr.id=dh.modifier_id 
+    join d_divs dd on (dd.doc_id=dh.id and dd.div_id=#f_div_id#) ??f_div_id
+
+where dh.TYPE_ID = 1
+    and dh.is_deleted=0 and dh.status=2
+    and dat.final_decision=3
+    and dh.NUMBER like '#f_doc_number#%' ??f_doc_number
+    and dh.id in(select doc_id from d_index where context like '%#f_search#%') ??f_search
+
+order by DDD, dat.czk_dat
+    , case when dat.czk_nr is null or length(dat.czk_nr)=0 then 'zzz' when length(dat.czk_nr)>1 then concat('z',dat.czk_nr) else dat.czk_nr end 
+    , dat.summa_usd desc
+[end]
+
+
+
+if(dat.czk_dat is null, 1, if(dat.czk_dat < date_sub(now(), interval 1 day), 2, 0))
+
+[get waiting users SQL]
+select fio(u.F, u.I, u.O) as W_USERS 
+from wf left join #table_users_full# u on u.id=wf.user_id
+where wf.wf_id=#wf_id# and not wf.started is null and wf.finished is null
+limit 1
+[end]

@@ -1,0 +1,287 @@
+[comments]
+descr=A: Форма (бланк) документа из списка типов документа
+
+input=type_id - ID типа документа (из таблицы d_types), 
+init_type_field_id - ID поля типа документа (из таблицы d_fields), на которое будет 
+поставлен фокус в форме. Если значение отсутствует или не верное, фокус ставится на 
+первое по порядку поле в форме.
+form_mode - режимы работы с формой (бланком) документа :
+"doc_field_mode" - преставление в виде полей документа и работа с их свойствами в смысле СЭД,
+"db_field_mode" - преставление в виде полей таблицы БД и работа с их свойствами в смысле SQL;
+ 
+output=HTML форма редактирования формы (бланка) документа, 
+parents=admin/doctypes/doctype_form_editor.cfg
+childs=
+test_URL=?c=admin/doctypes/doctype_form&type_id=1
+author=Яковлев, Куняев
+[end]
+
+
+[parameters]
+request_name=A: Редактирование полей формы (бланка) документа (Тип документа)
+service=dubna.walt.service.TableServiceSpecial
+tableCfg=table_no
+KeepLog=false
+ClearLog=true
+
+[end]
+
+
+[report header]
+$INCLUDE [OK report header] ??AR_SYS_ADMIN=1
+[end]
+
+[OK report header]
+$SET_PARAMETERS AR_R=Y; AR_W=Y;
+<small>#c#</small> ??debug=on
+<style>
+.f_act_0 {background-color:##c0c0c0}
+.f_act_1 {background-color:##b0FF80}
+.f_act_2 {background-color:##FFA060}
+.selected_field {border: 1px solid maroon; background-color:yellow;}
+</style>
+<input type=hidden name=type_id value='#type_id#'>
+<input type=hidden name=doc_id value='0'>
+
+$GET_DATA [init first field] ??!init_type_field_id
+$INCLUDE [init field] ??init_type_field_id
+
+<center>
+
+
+++++++++++++++++++ Шапка таблицы  +++++++++++++++++++++ ??
+<table width_="80%" class_="tlist" cellpadding=3 cellspacing=0 style="background-color:whitesmoke; ">  ??form_mode=doc_field_mode|!form_mode
+<table width="100%" class_="tlist" cellpadding=3 cellspacing=0 style="background-color:whitesmoke; ">  ??form_mode=db_field_mode
+
+[end]
+
+
+============== Вывод одного поля для редактирования ======= ??
+[item]
+<tr>
+<td class="
+selected_field ??ID=#INITIAL_TYPE_FIELD_ID#
+pt f_act_#FIELD_IS_ACTIVE# ??!ID=#INITIAL_TYPE_FIELD_ID#
+" onClick="AjaxCall('field_property_panel', 'c=admin/doctypes/doctype_field_property&mode=edit&type_field_id=#ID#');"> ??
+" onClick="AjaxCall('doctype_form_panel','c=admin/doctypes/doctype_form&type_id=#type_id#&init_type_field_id=#ID#&form_mode=doc_field_mode');">  ??form_mode=doc_field_mode|!form_mode
+" onClick="AjaxCall('doctype_form_panel','c=admin/doctypes/doctype_form&type_id=#type_id#&init_type_field_id=#ID#&form_mode=db_field_mode');">  ??form_mode=db_field_mode
+#NAME#: 
+
+
+</td>
+
+<td class="big bg_white bottom_dotted">
+$INCLUDE #FIELD_SRC_FILE#[#FIELD_SECTION#]??form_mode=doc_field_mode|!form_mode
+$INCLUDE [db_field specify info]  ??form_mode=db_field_mode
+</td>
+
+$INCLUDE [moveup movedn button]  ??form_mode=doc_field_mode|!form_mode
+
+</tr>
+[end]
+
+
+[db_field specify info]
+$GET_DATA [getDdFieldSpecifyInfo]
+#DB_COLUMN_NAME_FOR_FIELD_DB_NAME#
+</td><td class="big bg_white bottom_dotted">
+#DB_COLUMN_TYPE_FOR_FIELD_DB_NAME#
+[end]
+
+[moveup movedn button]
+<td class="center  bg_white" >
+<input type="button" class="butt1 pt" style="width:25;" value="&##9660;" onClick="AjaxCall('doctype_form_panel', 'c=admin/doctypes/doctype_field_operations&cop=movedn&type_field_id=#ID#');">
+</td>
+
+<td class="center  bg_white" >
+<input type="button" class="butt1 pt" style="width:25;" value="&##9650;" onClick="AjaxCall('doctype_form_panel', 'c=admin/doctypes/doctype_field_operations&cop=moveup&type_field_id=#ID#');">
+</td>
+[end]
+
+
+[input field_]
+<div style="border:solid 2px gray; height:25pt; width:#SIZE#*20pt;">.</div> ??TYPE=int|SIZE<64
+<div style="border:solid 2px gray; height:45pt; width:400pt;">.</div> ??TYPE=varchar&SIZE>63
+[end]
+
+[input field]
+<input size=#SIZE# name=#FIELD_DB_NAME# value="">  ??TYPE=int|SIZE<64
+<textarea cols=60 name=#FIELD_DB_NAME# rows=2 style="width:300pt; height:30pt;"></textarea> ??TYPE=varchar&SIZE>63
+[end]
+
+[info]
+$SET_PARAMETERS fn=#FIELD_DB_NAME#_id;
+<input type=hidden name="#FIELD_DB_NAME#_id" size=5 value="^#fn#">
+<input class="info_input" id=#FIELD_DB_NAME# name=#FIELD_DB_NAME# size=#SIZE#
+	info_id="#INFO_ID#" info_view="#INFO_VIEW#" info_type="#INFO_TYPE#" 
+searchFor='' ??
+value=""> 
+[end]
+
+
+[init field]
+$GET_DATA [try init field]
+$GET_DATA [init first field] ??COUNT_FIELD_ID<1
+[end]
+
+
+[report footer]
+#divider#
+
+++++++++++++ Конец формы редактирования записи ++++++++++ ??
+<tr><td class="center bg_white" colspan=4 style="padding:15px 0 15px 0;">
+
+<table cellspacing="0" cellpadding="0"  style="float:right; border:none;">
+<tr>
+<td><div class="wf_status selected_field"></div> - Редактируемое поле &nbsp; </td>
+<td><div class="wf_status f_act_1"></div> - Действующее &nbsp; </td>
+<td><div class="wf_status f_act_2"></div> - Вновь добавленное &nbsp; </td>
+<td><div class="wf_status f_act_0"></div> - Помечено к удалению &nbsp; </td>
+</tr>
+</table>
+
+</td></tr></table>
+
+<script>
++++++++++ Возврат результатов в вызывавшую страницу ++++ ??
+window.parent.getResult("doctype_form_panel", document.getElementById("result")); ??
+window.parent.loadFrame('c=admin/doctypes/doctype_field_property&type_field_id=#INITIAL_TYPE_FIELD_ID#','wf2'); ??
+AjaxCall('field_property_panel', 'c=admin/doctypes/doctype_field_property&mode=edit&type_field_id=#INITIAL_TYPE_FIELD_ID#');  ??form_mode=doc_field_mode|!form_mode
+AjaxCall('field_property_panel', 'c=admin/doctypes/doctype_field_db_name&type_field_id=#INITIAL_TYPE_FIELD_ID#');  ??form_mode=db_field_mode
+</script>
+[end]
+
+
+***************************** Шаблоны SQL запросов ***************************
+[try init field]
+select dtf.ID as INITIAL_TYPE_FIELD_ID
+, count(dtf.ID) as COUNT_FIELD_ID
+from d_fields dtf
+where dtf.Id = #init_type_field_id#
+and dtf.type_id = #type_id#
+;
+[end]
+
+[init first field]
+select dtf.ID as INITIAL_TYPE_FIELD_ID 
+from d_fields dtf
+where dtf.type_id = #type_id#
+order by dtf.nr
+group by dtf.nr  ??
+limit 1
+;
+[end]
+
+
+[preSQLs]
+select dtp.ID
+, dtp.name as DOC_TYPES_NAME 
+, dtp.IS_ACTIVE
+, dtp.CURR_DOC_TYPE_VERSION
+, dgr.GROUP_NAME
+, ifnull(DATE_FORMAT(dtp.start_date,'#dateFormat#'),'') as START_DATE
+, u.FIO as CREATOR
+, uu.FIO as MODIFIER 
+, ifnull(DATE_FORMAT(dtp.created,'#dateTimeFormat#'),'') as CREATED
+, ifnull(DATE_FORMAT(dtp.changed,'#dateTimeFormat#'),'') as MODIFIED
+from d_types dtp
+left join doc_groups dgr on dtp.group_id = dgr.Id
+left join #table_users_full# u on u.Id = dtp.creator_id
+left join #table_users_full# uu on uu.Id = dtp.modifier_id
+where dtp.Id = #type_id#
+;
+[end]
+
+
+[SQL]
+select /* doc data fields description */
+  dtf.ID
+, dtf.TYPE_ID
+, dtf.TYPE_ID AS DOC_TYPE_ID
+, dtf.FIELD_CATEGORY
+, dtf.NR
+, dtf.NAME
+, dtf.TYPE
+, dtf.FORM_FIELD_TYPE
+, dtf.SIZE
+, dtf.NULLS
+, dtf.FIELD_DB_NAME
+, dtf.IS_VISIBLE
+, dtf.INFO_ID
+, dtf.info_view_nr as INFO_VIEW
+, dtf.LX
+, dtf.LY
+, ifnull(dtf.lx, 400) as LX, ifnull(dtf.ly, 40) as LY, ROUND((ifnull(dtf.ly, 40) + 5)/15) as ROWS ??
+, dtf.is_active as FIELD_IS_ACTIVE
+, ifnull(DATE_FORMAT(dtf.created,'#dateTimeFormat#'),'') as CREATED
+, ifnull(DATE_FORMAT(dtf.modified,'#dateTimeFormat#'),'') as MODIFIED
+, dtf.creator_id
+, dtf.modifier_id
+, u.FIO as CREATOR
+, uu.FIO as MODIFIER
+, ft.src_file as "FIELD_SRC_FILE"
+, ft.section_w as "FIELD_SECTION"
+from d_fields dtf
+left join d_form_fields_types ft on (ft.id = dtf.form_field_type)
+left join #table_users_full# u on u.Id = dtf.creator_id
+left join #table_users_full# uu on uu.Id = dtf.modifier_id
+where dtf.type_id = #type_id#
+  and dtf.min_doc_type_version <= #CURR_DOC_TYPE_VERSION#
+  and dtf.max_doc_type_version >= #CURR_DOC_TYPE_VERSION#
+order by nr
+
+[end]
+
+
+
+[SQL________]
+select /* doc data fields description */
+ dtf.ID
+, dtf.TYPE_ID
+, dtf.FIELD_CATEGORY
+, dtf.NR
+, dtf.NAME
+, dtf.TYPE
+, dtf.FORM_FIELD_TYPE
+, dtf.SIZE
+, dtf.NULLS
+, dtf.INFO_ID
+, dtf.info_view_nr as INFO_VIEW
+, dtf.FIELD_DB_NAME
+, dtf.IS_VISIBLE
+, dtf.LX
+, dtf.LY
+, dtf.is_active as FIELD_IS_ACTIVE
+, ifnull(DATE_FORMAT(dtf.created,'#dateTimeFormat#'),'') as CREATED
+, ifnull(DATE_FORMAT(dtf.modified,'#dateTimeFormat#'),'') as MODIFIED
+, dtf.creator_id
+, dtf.modifier_id
+, u.FIO as CREATOR
+, uu.FIO as MODIFIER
+, ft.src_file as "FIELD_SRC_FILE", ft.section_w as "FIELD_SECTION"
+from d_fields dtf
+left join d_form_fields_types ft on (ft.id = dtf.form_field_type)
+left join #table_users_full# u on u.Id = dtf.creator_id
+left join #table_users_full# uu on uu.Id = dtf.modifier_id
+where dtf.type_id = #type_id#
+and dtf.min_doc_type_version <= #CURR_DOC_TYPE_VERSION#
+and dtf.max_doc_type_version >= #CURR_DOC_TYPE_VERSION#
+order by nr
+[end]
+
+
+
+
+[getDdFieldSpecifyInfo]
+select concat('<br> <b>', column_name) AS DB_COLUMN_NAME_FOR_FIELD_DB_NAME
+, concat('<br> (', column_type, ')') AS DB_COLUMN_TYPE_FOR_FIELD_DB_NAME
+from information_schema.columns
+where table_schema='dms'
+and table_name='d_data_#TYPE_ID#'
+and 
+(column_name='#FIELD_DB_NAME#'
+OR
+column_name LIKE '#FIELD_DB_NAME#_%')
+;
+
+[end]

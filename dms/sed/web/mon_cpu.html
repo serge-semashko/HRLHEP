@@ -1,0 +1,81 @@
+
+
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-draggable ui-resizable" style="position: absolute; height: 608.567px; width: 800px; top: 1601.33px; left: 287.5px; display: block;" tabindex="-1" role="dialog" aria-describedby="popup-dialog" aria-labelledby="ui-id-15">
+<div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
+<span id="ui-id-15" class="ui-dialog-title">One Minute Load Average</span>
+<button class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close" role="button" aria-disabled="false" title="close">
+<span class="ui-button-icon-primary ui-icon ui-icon-closethick"></span>
+<span class="ui-button-text">close</span>
+</button>
+</div>
+<div id="popup-dialog" class="ui-dialog-content ui-widget-content" style="width: 772px; min-height: 0px; max-height: none; height: 562px;">
+<div id="popup-dialog-navigation"></div>
+<div id="popup-dialog-content">
+  <script language="javascript" type="text/javascript" src="js/jquery.flot.min.js">
+  <script language="javascript" type="text/javascript" src="js/jquery.flot.crosshair.min.js">
+  <script language="javascript" type="text/javascript" src="js/jquery.flot.stack.min.js">
+  <script language="javascript" type="text/javascript" src="js/jquery.multiselect.js">
+  <script language="javascript" type="text/javascript" src="js/jquery.multiselect.filter.js">
+  <script language="javascript" type="text/javascript" src="js/jquery.flot.selection.min.js">
+  <script language="javascript" type="text/javascript" src="js/jquery.flot.time.min.js">
+  <script language="javascript" type="text/javascript" src="js/jquery.flot.events.js">
+  <script type="text/javascript" src="js/create-flot-graphs.js">
+  
+  <div id="inspect_graph_container" style="width: 752px;">
+<div id="placeholder" style="overflow: hidden; height: 411px; padding: 0px; position: relative;">
+<canvas class="flot-base" style="direction: ltr; position: absolute; left: 0px; top: 0px; width: 752px; height: 411px;" width="820" height="448"></canvas>
+<div class="flot-text" style="position: absolute; top: 0px; left: 0px; bottom: 0px; right: 0px; font-size: smaller; color: rgb(84, 84, 84);">
+<div class="flot-x-axis flot-x1-axis xAxis x1Axis" style="position: absolute; top: 0px; left: 0px; bottom: 0px; right: 0px; display: block;">
+<div class="flot-tick-label tickLabel" style="position: absolute; max-width: 53px; top: 392px; left: 52px; text-align: center;">19:35</div>
+<div class="flot-tick-label tickLabel" style="position: absolute; max-width: 53px; top: 392px; left: 110px; text-align: center;">19:40</div>
+<div class="flot-tick-label tickLabel" style="position: absolute; max-width: 53px; top: 392px; left: 169px; text-align: center;">19:45</div>
+<div class="flot-tick-label tickLabel" style="position: absolute; max-width: 53px; top: 392px; left: 228px; text-align: center;">19:50</div>
+<div class="flot-tick-label tickLabel" style="position: absolute; max-width: 53px; top: 392px; left: 286px; text-align: center;">19:55</div>
+<div class="flot-tick-label tickLabel" style="position: absolute; max-width: 53px; top: 392px; left: 345px; text-align: center;">20:00</div>
+<div class="flot-tick-label tickLabel" style="position: absolute; max-width: 53px; top: 392px; left: 404px; text-align: center;">20:05</div>
+<div class="flot-tick-label tickLabel" style="position: absolute; max-width: 53px; top: 392px; left: 462px; text-align: center;">20:10</div>
+<div class="flot-tick-label tickLabel" style="position: absolute; max-width: 53px; top: 392px; left: 521px; text-align: center;">20:15</div>
+<div class="flot-tick-label tickLabel" style="position: absolute; max-width: 53px; top: 392px; left: 580px; text-align: center;">20:20</div>
+<div class="flot-tick-label tickLabel" style="position: absolute; max-width: 53px; top: 392px; left: 638px; text-align: center;">20:25</div>
+<div class="flot-tick-label tickLabel" style="position: absolute; max-width: 53px; top: 392px; left: 697px; text-align: center;">20:30</div>
+</div>
+<div class="flot-y-axis flot-y1-axis yAxis y1Axis" style="position: absolute; top: 0px; left: 0px; bottom: 0px; right: 0px; display: block;">
+<div class="flot-tick-label tickLabel" style="position: absolute; top: 379px; left: 2px; text-align: right;">0.00</div>
+<div class="flot-tick-label tickLabel" style="position: absolute; top: 316px; left: 2px; text-align: right;">0.10</div>
+<div class="flot-tick-label tickLabel" style="position: absolute; top: 253px; left: 2px; text-align: right;">0.20</div>
+<div class="flot-tick-label tickLabel" style="position: absolute; top: 190px; left: 2px; text-align: right;">0.30</div>
+<div class="flot-tick-label tickLabel" style="position: absolute; top: 127px; left: 2px; text-align: right;">0.40</div>
+<div class="flot-tick-label tickLabel" style="position: absolute; top: 64px; left: 2px; text-align: right;">0.50</div>
+<div class="flot-tick-label tickLabel" style="position: absolute; top: 1px; left: 2px; text-align: right;">0.60</div>
+</div>
+</div>
+<canvas class="flot-overlay" style="direction: ltr; position: absolute; left: 0px; top: 0px; width: 752px; height: 411px;" width="820" height="448"></canvas>
+</div>
+<div id="spacer" style="height:5px;"></div>
+
+
+<div id="graphcontrols">
+<select id="select_series" name="select_series" multiple="multiple" style="display: none;">
+<option value="0" selected="selected"> lt-a2 last hour :: 0.00</option>
+</select>
+<button class="ui-multiselect ui-widget ui-state-default ui-corner-all" type="button" aria-haspopup="true" style="width: 225px;">
+<span class="ui-icon ui-icon-triangle-1-s"></span>
+<span>1 selected</span>
+</button>
+<span id="gopt" class="ui-buttonset" style="margin-left:10px;">
+<input id="line" class="ui-helper-hidden-accessible" name="gopt" type="radio">
+<label class="ui-button ui-widget ui-state-default ui-button-text-only ui-corner-left" style="font-size:0.825em;" for="line" role="button" aria-disabled="false" aria-pressed="false">
+<span class="ui-button-text">Line</span>
+</label>
+<input id="stack" class="ui-helper-hidden-accessible" name="gopt" checked="checked" type="radio">
+<label class="ui-button ui-widget ui-state-default ui-button-text-only ui-corner-right ui-state-active" style="font-size:0.825em" for="stack" role="button" aria-disabled="false" aria-pressed="true">
+<span class="ui-button-text">Stack</span>
+</label>
+</span>
+<input id="resetzoom" class="ui-button ui-widget ui-state-default ui-corner-all" style="font-size:0.825em;" value="Reset zoom" role="button" aria-disabled="false" type="button">
+</div>
+</div>
+
+</div>
+</div>
+

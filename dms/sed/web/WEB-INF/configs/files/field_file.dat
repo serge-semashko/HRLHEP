@@ -1,0 +1,333 @@
+files/field_file.dat
+
+[comments]
+descr=Поле документа типа "file" 
+author=Куняев
+input=FIELD_DB_NAME = имя поля из таблицы D_DATA_X, куда будет записан id файла при загрузке, doc_id = id документа, can_control=y показывать форму загрузки или кнопку удаления для тех, у кого есть права на редактирование
+output=В зависимости от того, загружен файл, или нет, возвращает либо ссылку на скачивание/удаление, либо форму загрузки.
+parents=docs/edit_doc.cfg
+childs=none
+[end]
+
+
+=============================================================
+================ тип поля "Файл-2" - 6 ================= ??
+=============================================================
+
+[file field]  ***** тип поля "Файл-2" (6) - и ввод и просмотр
+$SET_PARAMETERS file_list=single; NumTableRows=0; ??
+$INCLUDE files/field_file.dat[get file parameters]
+$SET_PARAMETERS NO_FILE_COMMENT=Y; ??INFO_ID=0
+
+<div id = "#FIELD_DB_NAME#-view">
+$CALL_SERVICE c=files/file_list; field_id=#FIELD_DB_NAME#;
+</div>
+</td></tr>
+
+$INCLUDE files/field_file.dat[new file form]  ??!mode=print&!mode=ext
+  ??&!NumTableRows>0
+
+$SET_PARAMETERS file_list=; NO_FILE_COMMENT=; NumTableRows=;
+[end]
+
+
+[new file form]
+$SET_PARAMETERS NO_FILE_COMMENT=Y; ??INFO_ID=0
+<tr id="#FIELD_DB_NAME#_new_file_form"
+style="display:none;"  ??NumTableRows>0|mode=print|mode=ext
+><td class="label bottom_dotted">Загрузить:</td><td class="bottom_dotted"> 
+6 - NO_FILE_COMMENT=#NO_FILE_COMMENT#; ??
+<input type = "file" FIELD_DB_NAME="#FIELD_DB_NAME#" id="#FIELD_DB_NAME#-file" file_list="stack" onChange="uploadFile(this);">   
+$INCLUDE files/field_file.dat[file comment] ??!NO_FILE_COMMENT
+[end]
+
+
+=============================================================
+================ тип поля "Стек Файлов" - 9 ================= ??
+=============================================================
+
+[file stack field]  ***** тип поля "Стек Файлов" - 9
+$SET_PARAMETERS file_list=stack; NumTableRows=0;
+$INCLUDE files/field_file.dat[get file parameters]
+
+<div id = "#FIELD_DB_NAME#-view">
+$CALL_SERVICE c=files/file_list; field_id=#FIELD_DB_NAME#;
+</div></td></tr>
+
+$INCLUDE files/field_file.dat[new version form]  ??!mode=print&!mode=ext
+9-NO_FILE_COMMENT=#NO_FILE_COMMENT#; ??
+
+$SET_PARAMETERS file_list=; NO_FILE_COMMENT=;
+[end]
+
+[new version form]
+$SET_PARAMETERS NO_FILE_COMMENT=Y; ??INFO_ID=0
+<tr
+style="display:none;"  ??mode=print|mode=ext
+><td class="label bottom_dotted">
+Загрузить: ??!NumTableRows>0
+Загрузить новую версию: ??NumTableRows>0
+</td><td class="bottom_dotted"> 
+<input type = "file" FIELD_DB_NAME="#FIELD_DB_NAME#" id="#FIELD_DB_NAME#-file" file_list="stack" onChange="uploadFile(this);" value="sss">   
+$INCLUDE files/field_file.dat[file comment] ??!NO_FILE_COMMENT
+[end]
+
+
+==============================================================================
+======================  Блок загрузки файлов-приложений ======================
+==============================================================================
+
+[attached files]
+$SET_PARAMETERS field_id=; form_hidden=; FIELD_DB_NAME=; FILE_LIST=Y;  file_list=list;
+
+<tr><td class="label">Приложения:</td><td><div id="doc_files_list-view" class="mw1000">
+FIELD_DB_NAME=#FIELD_DB_NAME#; ??
+$CALL_SERVICE c=files/file_list;
+</div></td></tr>
+
+<tr><td class="label">Загрузка приложения:</td><td class="bg_white_">  ??!mode=print&!mode=ext
+
+<input type = "file" id="attachment-file" file_list="list" onChange="uploadFile(this);">   ??!mode=print&!mode=ext
+$INCLUDE files/field_file.dat[file comment] ??!NO_FILE_COMMENT&!mode=print&!mode=ext
+===NO_FILE_COMMENT=#NO_FILE_COMMENT#; ??
+</td></tr> ??!mode=print&!mode=ext
+$INCLUDE files/field_file.dat[script]
+[end]
+
+
+=================================================================================
+=================================================================================
+=================================================================================
+[script]
+<script type="text/javascript">
+
+/** 
+  * обработчик изменений в файловом селекторе
+  *
+  */
+var uploadFile = function(but) {
+    but.id ??
+
+    if (but.value.length==0){ 
+        return;
+    }
+
+// имя поля таблицы данных док-а, куда грузим файл ??
+    var field_id=$("##" + but.id).attr("FIELD_DB_NAME");
+    if (typeof field_id == 'undefined') field_id="";
+    
+// file_list=list или stack, если грузим приложение или стек файлов, иначе - пусто ??
+    var file_list=$("##" + but.id).attr("file_list"); 
+    alert (typeof field_id + ' / ' + field_id + "; file_list=" + file_list + "; but.id=" + but.id); ??
+
+    $("##" + but.id).hide();
+    if(field_id)
+        $("##" + field_id + "-view").html("Загрузка...");
+    var files = but.files;
+
+//формируем формдату
+    var formData = new FormData();
+    var file = files[0];
+    formData.append('new_file', file, file.name);
+    formData.append('c','files/upload_file');     
+    formData.append('doc_id', '#doc_id#');
+    formData.append('field_id', field_id);
+    formData.append('file_comment',  $("##" + field_id + "-comment-text").val() );
+
+//собираем ajax
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '#ServerPath##ServletPath#', true); 
+    xhr.setRequestHeader("X-Requested-With","XMLHttpRequest");
+    xhr.onload = function () {
+//обработка ответа от сервиса загрузки
+        if (xhr.status === 200) {
+            var resp = xhr.responseText.trim();
+            if(resp.indexOf('ERROR') == 0) {
+                alert(resp);
+            }else{
+                $("##" + field_id + "-view").html(resp);
+            }
+            but.value="";
+            if(file_list) {
+                $("##" + but.id).show();
+                $("##" + field_id + "-file").show(); ??
+                $("##" + field_id + "-comment").show();
+                $("##" + field_id + "-comment-text").val("");
+                refreshFilesList(field_id); 
+            }
+            else {
+                $("##" + field_id + "-file").hide(); ??
+                $("##" + but.id).hide();
+                $("##" + field_id + "-comment").hide();
+            }
+        } else {
+            alert('Ошибка соединения!');
+        }
+    };
+//шлём ajax
+    xhr.send(formData);
+}
+
+
+/**
+ * Выполнить операцию с файлом:
+ * cop=delete - спросить и удалить,
+ * cop=
+ * 
+ */
+var fileOper = function(file_id, cop, field_id, file_list){
+    var targetDiv = "";
+    if(field_id == "") {
+        targetDiv="doc_files_list-view"; 
+    }   
+    else
+        targetDiv = field_id + "-view";
+    if(cop == 'delete'){
+        $('##file_' + file_id).addClass('bg_red');
+        if(!confirm ('Удалить файл?')) {
+            $('##file_' + file_id).removeClass('bg_red')
+            return;
+        }
+    }
+alert(targetDiv); ??
+    AjaxCall(targetDiv, "c=files/file_oper&file_id=" + file_id + "&cop=" + cop + "&field_id=" + field_id + "&file_list=" + file_list, true); 
+}
+
+/**
+ * Обновить список файлов
+ */
+
+var refreshFilesList = function(field_id){
+alert(field_id); ??
+    var targetDiv = "";
+    if(field_id == "") {
+        targetDiv="doc_files_list-view"; 
+        file_list = "list";
+    }   
+    else
+        targetDiv = field_id + "-view";
+    alert("field_id=" + field_id + "; file_list=" + file_list); ??
+alert(targetDiv); ??
+    AjaxCall(targetDiv, "c=files/file_list&doc_id=#doc_id#&field_id=" + field_id, true); 
+}
+
+</script>
+
+[end]
+
+
+------------------------- COMMON ---------------------
+[get file parameters]
+$SET_PARAMETERS FILE_ID_PARAM_NAME=#FIELD_DB_NAME#_id; form_hidden=;
+$SET_PARAMETERS FILE_ID = ^#FILE_ID_PARAM_NAME#; file_comment=^#FIELD_DB_NAME#;
+$SET_PARAMETERS form_hidden=Y;  ??FILE_ID
+$GET_DATA files/field_file.dat[get file info]  ??FILE_ID
+$SET_PARAMETERS NO_FILE_COMMENT=Y; ??INFO_ID=0
+[end]
+
+
+[get file info]
+SELECT f.id as "FILE_ID", f.norder, f.file_name, f.file_content_type, f.field_id, f.downloaded
+, date_format(f.upload_date,'%d.%m.%y %H:%i') as upload_date_fmtd, format_filesize(f.file_size) as human_bytes 
+, iof(u.F,u.I,u.O) as "UPLOADED_BY"
+FROM doc_files f
+left join #table_users_full# u on u.id = f.uploader_id
+
+where f.doc_id = #doc_id# and f.field_id = '#FIELD_DB_NAME#' and f.id = #FILE_ID#  ??!NEW_FILE_ID
+where f.id = #NEW_FILE_ID# ??NEW_FILE_ID
+;
+select form_field_type, INFO_ID
+from d_fields
+where type_id=#DOC_TYPE_ID# and field_db_name='#field_id#'
+[end]
+
+
+[file comment]  ***** Поле ввода комментария к файлу
+<div id = "#FIELD_DB_NAME#-comment"
+style="display:none;" ??form_hidden 
+>
+<div style="float:left; margin:7px;"><small>
+комментарий<br>к файлу: ??file_list
+Примечание: ??!file_list
+<br><i>(до #PARAM_LENGTH# симв.)</i> ??
+</small></div>
+<textarea name="#FIELD_DB_NAME#" id="#FIELD_DB_NAME#-comment-text" style="width:330pt; height:27pt; margin:7px 0 0 10px;" >
+^#FIELD_DB_NAME#  ??!file_list
+</textarea>
+<div style="clear:both; margin:10px;"></div>
+</div>
+[end]
+
+=============================================================
+=================== Старый тип поля "Файл" (был 6, сейчас 666) =====================
+=============================================================
+
+------------------------- FILE READ ---------------------
+
+[ZZZfile field r]  ***** тип поля "Файл" - 6 -R
+
+$INCLUDE files/field_file.cfg[get file parameters]
+file: FILE_ID=#FILE_ID#; FIELD_DB_NAME=#FIELD_DB_NAME#; file_comment="#file_comment#";<br> ??
+form_hidden=#form_hidden#; ??
+$SET_PARAMETERS form_hidden=Y;
+$INCLUDE files/field_file.cfg[file row]
+[end]
+
+
+[ZZZfile row]
+$SET_PARAMETERS AR_W=; AR_X=; ??mode=print|mode=ext
+<div id = "#FIELD_DB_NAME#-view" class="bg_white">
+<a title = "Размер: #human_bytes# Загружен:#upload_date_fmtd#, #UPLOADED_BY#" href = "?c=files/download_file&id=#FILE_ID#" target="_blank">#file_name#</a>   ??FILE_ID
+<span class="pt delcross"  title = "Удалить файл" onclick = "fileOper(#FILE_ID#,'delete','#field_id#', '');">X</span> ??FILE_ID&AR_W=Y|AR_X=Y
+<br><small>Примечание:</small> #file_comment#  ??file_comment&form_hidden 
+</div>
+[end]
+
+
+<br><small>Примечание:</small> #file_comment#  ??file_comment&!FILE_ID
+$SET_PARAMETERS file_comment=;
+
+------------------------- FILE WRITE ---------------------
+
+[ZZZfile field w]  ***** тип поля "Файл" - 6 - W
+$INCLUDE files/field_file.cfg[get file parameters]
+$INCLUDE files/field_file.cfg[file row]
+$INCLUDE files/field_file.cfg[file form]  ??AR_W=Y|AR_X=Y
+[end]
+
+
+[ZZZfile form]
+<input type = "file" FIELD_DB_NAME="#FIELD_DB_NAME#" id = "#FIELD_DB_NAME#-file" onChange="uploadFile(this);"
+style="display:none;" ??form_hidden 
+>   
+$INCLUDE files/field_file.cfg[file comment] ??!NO_FILE_COMMENT
+[end]
+
+
+[ZZZfile comment]
+<div id = "#FIELD_DB_NAME#-comment"
+style="display:none;" ??form_hidden 
+>
+<div style="float:left; margin:7px;"><small>
+комментарий<br>к файлу: ??file_list
+Примечание: ??!file_list
+<br><i>(до #PARAM_LENGTH# симв.)</i> ??
+</small></div>
+<textarea name="#FIELD_DB_NAME#" id="#FIELD_DB_NAME#-comment-text" style="width:330pt; height:27pt; margin:7px 0 0 10px;" >
+^#FIELD_DB_NAME#  ??!file_list
+</textarea>
+<div style="clear:both; margin:10px;"></div>
+</div>
+[end]
+
+
+------------------------- FILE SAVE ---------------------
+[ZZZfile field s]
+$LOG +++ save File Field Comment: #CUSTOM_FIELD_DB_NAME#='^#CUSTOM_FIELD_DB_NAME#';
+$GET_DATA files/field_file.cfg[updateFileFieldComment]
+[end]
+
+[ZZZupdateFileFieldComment]
+UPDATE d_data_#DOC_TYPE_ID# SET  #CUSTOM_FIELD_DB_NAME# = '^#CUSTOM_FIELD_DB_NAME#'  WHERE doc_id = #doc_id#;
+[end]
+

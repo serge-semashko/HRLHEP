@@ -1,0 +1,80 @@
+viewer/show_all_files.ajm
+
+[comments]
+descr=U: Показывает список всех файлов документа
+input=doc_id - ID документа
+parents= viewer/common_blocks.dat
+author=Куняев
+[end]
+
+[description]
+<ul>
+    <li></li>
+</ul>
+[end]
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+tableCfg=table_no
+LOG=ON
+[end]
+
+
+[report header]
+
+$CALL_SERVICE c=viewer/check_AR ??markup_id
+
+
+
+<script>
+$("##dialog").show(300);
+$("##dialog").draggable({handle: "##dialog_handler"}); 
+
+
+</script>   
+
+[end]
+
+[item]
+$SET_PARAMETERS field_id=;   ??field_id=null
+$GET_DATA  [get field descr] ??field_id
+$SET_PARAMETERS FIELD_DESCR=Приложения; file_list=; ??!field_id
+#FIELD_DESCR#
+$CALL_SERVICE c=files/file_list;
+[end]
+
+[report footer]
+<div style="padding-top:8px; text-align:center;"> 
+    <input type="button" class="butt1 pt" value="Закрыть" onClick="cancelButtonClick();">
+</div>
+
+<script>
+ $("##dialog").css({"left": 100, "top": 100, "width" : 1000});
+  $("##dialog_title").html("Список всех файлов документа:");
+
+viewFile=function(file_id){
+    AjaxCall("content", "c=viewer/show_file_body&file_id=" + file_id);
+}
+
+</script>
+[end]
+
+================================================================================
+============================= шаблоны запросов в БД ============================
+================================================================================
+
+
+[SQL]
+SELECT distinct field_id 
+from doc_files
+where doc_id=#doc_id#
+order by field_id desc
+[end]
+
+[get field descr]
+select name as "FIELD_DESCR", 'stack' as file_list
+from d_fields
+where
+type_id=1
+and field_db_name='#field_id#'
+[end]

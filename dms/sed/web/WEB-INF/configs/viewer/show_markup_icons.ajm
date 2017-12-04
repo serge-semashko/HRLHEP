@@ -1,0 +1,79 @@
+viewer/show_markup_icons.ajm
+
+[comments]
+descr=U: Вывод блока thumbnails  
+input=page_id - ID страницы, на которой отобразить маркапы, x0, y0 - левый верхний угол image, lx, ly - размеры image,  [author_id] - фильтр по автору
+parents=viewer/show_page.cfg
+author=Джавадзаде, Куняев
+[end]
+
+[description]
+Показывает на заданной странице все иконки markup'ов
+[end]
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+tableCfg=table_no
+LOG=OFF
+[end]
+
+
+[report header]
+[end]
+
+<i class="fa fa-comment-o"></i>
+
+[item]
+$LOG show_markup_icons: thmb=#thmb#; markup_nr=#markup_nr#; x=#X#, y=#Y#;<br>
+$INCLUDE [page_icon]  ??!thmb=Y
+$INCLUDE [thmb_icon]  ??thmb=Y
+[end]
+
+
+[page_icon]
+
+<span id="mkp_#markup_id#" class="fa-stack big_icon" style="left: #X#px; top: #Y#px;" 
+  onClick="event.stopPropagation(); showMarkupForm(#markup_id#, #X#, #Y#+30, #page_id#);" 
+>
+  <i class="fa fa-comment-o fa-stack-2x"></i>
+  <strong class="fa-stack-1x fa-stack-text fa-inverse blue" style="margin-left:7px;">#markup_nr#</strong>
+</span>
+
+[end]
+
+[thmb_icon]
+<div style="display:block; position:relative; left:#X#px; top:#Y#px; width:0; height:0; overflow:visible;">
+<img src="#imgPath#mark.png"></div>
+[end]
+
+
+
+[thmb_icon_ZZZ]
+<i class="fa fa-comment fa-1x small_icon" style="left:#X#px; top:#Y#px;"></i>
+[end]
+
+
+
+[report footer]
+<script> setStandardEvents(); </script>  ??!thmb=Y
+[end]
+
+
+================================================================================
+============================= шаблоны запросов в БД ============================
+================================================================================
+
+[SQL]
+SELECT m.id as "markup_id", m.page_id, m.markup_nr
+ , #w#*m.x_coordinate as "X"
+ , #h#*m.y_coordinate 
+    -22 ??!thmb=Y
+    -7 ??thmb=Y
+  as "Y"
+from doc_data_markups m
+where 
+m.page_id = #page_id# 
+and m.user_id = #author_id#  ??author_id
+order by m.markup_nr desc
+[end]
+

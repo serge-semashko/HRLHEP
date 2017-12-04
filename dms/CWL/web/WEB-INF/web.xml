@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app>
+
+    <display-name>login</display-name>
+    <description>
+	WebLogin
+    </description>
+
+    <servlet>
+        <servlet-name>cwl</servlet-name>
+        <servlet-class>jinr.cwl.Servlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>cwl</servlet-name>
+        <url-pattern>/cwl</url-pattern>
+    </servlet-mapping>
+
+<!--security-constraint>
+	<web-resource-collection>
+		<web-resource-name>Entire Application</web-resource-name>
+		<url-pattern>/*</url-pattern>
+	</web-resource-collection>
+	<user-data-constraint>
+		<transport-guarantee>CONFIDENTIAL</transport-guarantee>
+	</user-data-constraint>
+</security-constraint -->
+    
+</web-app>

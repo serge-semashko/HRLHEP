@@ -1,0 +1,60 @@
+
+================= SQLs  для II-го раздела ================================
+
+
+[Cross_2]
+$INCLUDE c2/budget_F6_2.dat[Cross_2_grp] ??!f_baz&!f_lab
+$INCLUDE c2/budget_F6_2.dat[Cross_2_baz] ??f_baz|f_lab
+[end]
+
+[Cross_2_grp]
+select distinct GRP_NAME, DIV from i_budget where razdel=2 and yr=20#q_yr# order by DIV
+[end]
+
+[Cross_2_baz]
+select distinct NAME, CODE from i_budget where razdel=2 and yr=20#q_yr# 
+and div=#f_lab# ??f_lab
+order by CODE
+[end]
+
+
+[SQL_2]
+SELECT 
+a.aggr||': '||ag.DES_SHORT as "AGGR" ??!f_aggr&!ssttype=not
+a.DES as SSTD ??f_aggr|ssttype=not
+,  ib.GRP_NAME as "BAZ" ??!f_baz&!f_lab
+,  ib.NAME as "BAZ_DIV" ??f_baz|f_lab
+,sum(summa) 
+/1000 ??scale=trub
+/(1000*#USD_RUB#)	??scale=tusd
+as "S" 
+, ib.DIV ??!f_baz&!f_lab
+, ib.code ??f_baz|f_lab
+FROM reg#q_yr#_v p 
+left join C2_STATI a on (a.code=p.sst and a.mark is null) 
+left join i_aggr ag on ag.code=a.aggr
+left join i_budget ib on (ib.code=p.lab and ib.YR=20#q_yr#
+and ib.div=#f_lab# ??f_lab
+)
+
+WHERE summa<>0
+#tpq#
+and ib.razdel=2 and p.ACC='25.03' 
+and not a.aggr is null ??ssttype=bud
+and a.aggr is null ??ssttype=not
+and a.aggr=#f_aggr# ??f_aggr
+
+
+group by  
+a.aggr  ??!f_aggr&!ssttype=not
+, ag.DES_SHORT ??!f_aggr&!ssttype=not
+, a.DES ??f_aggr|ssttype=not
+, ib.GRP_NAME, ib.DIV  ??!f_baz&!f_lab
+, ib.NAME, ib.code  ??f_baz|f_lab
+
+order by 
+a.aggr  ??!f_aggr&!ssttype=not
+a.DES ??f_aggr|ssttype=not
+, ib.DIV ??!f_baz&!f_lab
+, ib.code ??f_baz|f_lab
+[end]

@@ -1,0 +1,230 @@
+JINR/reports/dog_post_table.cfg
+
+[comments]
+descr=U: Модуль вывода списка договоров поставки ОИЯИ.
+
+input=
+output=HTML таблица документов
+parents=all_docs
+childs=docs/view_doc
+testURL=?c=JINR/reports/zajavka_table
+author=Куняев
+[end]
+
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=U:Таблица всех документов
+LOG=ON 
+tableCfg=table_no
+$INCLUDE dat/common.dat[rowLinks]
+[end]
+
+
+[report header]
+$INCLUDE dat/common.dat[check login]
+$INCLUDE [OK report header]  ??USER_ID>0|USER_ID<0
+[end]
+
+
+[OK report header]
+    $INCLUDE reports/all_docs.cfg[filters table start] ??!of=xl
+    $INCLUDE [custom filters]  ??!of=xl
+    $INCLUDE reports/all_docs.cfg[filters table end]  ??!of=xl
+    <table 
+        class="tlist tblue" cellspacing=0 ??!of=xl
+        border=1  ??of=xl
+    >
+    <tr>
+        <th class="srh" sr="dh.ID" style="width:1%;"></th>  ??!of=xl
+        <th class="srh" sr="ifnull(dh.doc_date, dh.created)" style_="width:10%;">№ договора</th>
+        <th class="srh" sr="dat.ext_number">Внешний&nbsp;№</th>
+        <th class="srh" sr="dat.nr_ADB">ADB2</th>
+        <th class="srh" sr="dh.status" style_="width:10%;">Статус</th> ??f_stat=-2
+        <th class="srh" sr="dh.DIVS" style_="width:5%;">Подр.</th>
+        <th class="srh" sr="dh.TITLE" style_="width:30%;">Содержание</th>
+        <th class="srh" sr="POSTAV">Контрагент</th>
+        <th class="srh" sr="dat.summa_usd" style_="width:5%;">Сумма&nbsp;в&nbsp;$</th> 
+        <th>Бюджетные коды</th> ??!of=xl
+        <th>Статья</th>    ??!f_doc_type_id=11
+        <th class="srh" sr="INITIATOR" style_="width:10%;">Инициатор закупки</th> 
+    </tr>
+[end]
+
+[custom filters]
+++++++++++++++++++ Дополнительные фильтры для договоров +++++++++++++++++++++ ??
+    <tr><td class= "right nowrap">Контрагент:</td><td><input size="30" name="f_kontrag" value="#f_kontrag#">
+       Внешний №: <input size="20" name="f_ext_number" value="#f_ext_number#">
+    </td></tr>
+    <tr><td class= "right nowrap">Содержание: </td><td><input size="30" name="f_content" value="#f_content#"></td></tr>
+    <tr><td class= "right nowrap">Бюджетный код: </td><td>
+        <style>
+          ##f_BC_list, ul.p0, ul.p0 li {display:inline; font-weight:normal; background-color:white;}
+        </style>
+        <span id="f_BC_list">#f_BC_text#
+           <a class="delcross" title="Удалить" onclick="$('##f_BC_id').val(''); $('##f_BC_text').val(''); $('##f_BC_list').html('')">X</a>  ??f_BC_id
+        </span>
+        <input type=hidden id="f_BC_id" name="f_BC_id" size=8 value="#f_BC_id#">
+        <input type=hidden id="f_BC_text" name="f_BC_text" size=20 value="#f_BC_text#"> 
+        <span class="info_input" id="f_BC" info_id="1005" searchFor="#f_BC_id#" info_view="1">выбрать</span> 
+        &nbsp; Статья бюджета: <input size="7" name="f_aggr" value="#f_aggr#">
+    </td>
+    </tr>
+    <tr><td class= "right nowrap" >Инициатор закупки: </td><td><input size="30" name="f_initiator" value="#f_initiator#"></td></tr>
+    </td></tr>
+[end]
+
+
+[item]
+    $INCLUDE tab_myDocs.cfg[linkedMark] ??!of=xl
+    <tr> ??of=xl
+
+    <td>
+    $INCLUDE reports/all_docs_table.cfg[mark]  ??MARKED
+
+    №#NUMBER#  ??NUMBER
+    от #DOC_DATE#  ??DOC_DATE
+    </td> 
+    <td>#ext_number#</td>
+    <td style="color:##000080;"
+        onClick="showADB(event, #nr_ADB#);" ??nr_ADB&!of=xl
+    >#nr_ADB#</td> 
+
+    $INCLUDE [status]  ??f_stat=-2
+
+    <td>#DIVS#</td>
+    <td class="tt" tt_text='#TITLE#' style="padding-right:0;"><div class="ellipsis">#TITLE#</div></td>
+    <td class="tt" tt_text='#POSTAV#' style="padding-right:0;"><div class="ellipsis">#POSTAV#</div></td>
+
+    <td class= "right nowrap" >
+        #PRICE_USD# ??!f_BC_id
+        #PRICE_USD_SRC# ??f_BC_id
+         (из #PRICE_USD#) ??!PRICE_USD_SRC=#PRICE_USD#&f_BC_id
+    </td> 
+
+    <td>#sources#</td> ??!of=xl&ZZZ
+    <td class="tt" tt_text='#sources#' style="padding-right:0;"><div class="ellipsis" style="max-width:160px;">#sources#</div></td>  ??!of=xl
+    <td class_= "nowrap" >#statia#</td>   ??!f_doc_type_id=11
+    <td>#INITIATOR#</td>
+
+    </tr>
+
+    $INCLUDE tab_myDocs.cfg[linkedData] ??!img=none&!of=xl
+    $SET_PARAMETERS MARKED=;
+[end]
+
+
+[status]
+    <td>
+    В процессе согласования ??STATUS=1
+    На этапе завершения ??STATUS=2
+    Завершен ??STATUS=3
+    </td>
+[end]
+
+
+[report footer]
+    $SET_PARAMETERS NumTableCols=11;
+
+    <script type="text/javascript">
+        var showADB=function(event, nr_ADB){
+            window.open("https://adb2.jinr.ru/adb/adb?c=doc/docView&type=ext&key=#tm#&DOC_ID=" + nr_ADB, "viewdoc" + nr_ADB); 
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        showSrt("#srt#","sup"); ??!desc
+        showSrt("#srt#","sdown"); ??desc
+    </script>
+[end]
+
+
+***************************** Шаблон SQL запроса ***************************
+
+[get totals SQL]
+    select replace(format(sum(src.summa_usd),2),',',' ') as "TOTAL_USD"
+     , count(distinct src.bc_id) as "TOTAL_SRC", count(distinct dh.id) as "TOTAL_RECS"
+    from d_list dh
+    left join d_data_1 dat on dat.doc_id=dh.id
+    left join d_list dph on dph.pid=dh.id and dph.is_deleted=0 and dph.type_id=7
+    left join d_data_7 src on src.doc_id=dph.id
+
+    $INCLUDE reports/all_docs.cfg[criteria] 
+    $INCLUDE JINR/reports/zajavka_table.cfg[custom criteria] 
+[end]
+
+
+;
+select count(distinct dh.id) as "TOTAL_RECS"
+from d_list dh
+left join d_data_1 dat on dat.doc_id=dh.id
+left join d_list dph on dph.pid=dh.id and dph.is_deleted=0 and dph.type_id=7
+left join d_data_7 src on src.doc_id=dph.id
+
+$INCLUDE reports/all_docs.cfg[criteria] 
+$INCLUDE JINR/reports/zajavka_table.cfg[custom criteria] 
+
+
+
+[SQL]
+    select
+    dh.ID, dh.TYPE_ID, dh.status, dtp.NAME AS DOC_TYPE, dh.pid, dh.num_children
+    , dh.NUMBER, dh.TITLE, dh.STATUS, dh.DIVS
+    , DATE_FORMAT(dh.doc_date,'#dateFormat#') as DOC_DATE 
+    , DATE_FORMAT(dh.created,'#dateFormat#') as CREATED 
+    , dh.creator_id
+
+    , concat(ucr.F, ' ', left(IFNULL(ucr.I,''),1), '.', left(IFNULL(ucr.O,''),1),'.') as CREATOR
+    , DATE_FORMAT(dh.modified,'#dateFormat#') as MODIFIED
+    , dh.modifier_id 
+    , concat(umr.F, ' ', left(IFNULL(umr.I,''),1), '.', left(IFNULL(umr.O,''),1),'.') as MODIFIER
+
+    , FIO(uin.F, uin.I, uin.O) as "INITIATOR"
+    , dat.dealinitiator as "INITIATOR" ??
+
+    , dat.ext_number, dat.nr_ADB 
+    , ifnull(dat.kontragent_text, concat('- ', dat.kontragent)) as "POSTAV" 
+    , dat.total_sum_curr as "VAL"
+    , replace(format(dat.total_sum_usd,2),',',' ') as "PRICE_USD"
+
+    , replace(format(src.summa_usd,2),',',' ') as "PRICE_USD_SRC" ??f_BC_id
+    , src.sources
+    ,src.statia
+
+    , dm.doc_id as "MARKED", a.user_id as "VIEWED", fyi.cnt, wfh.cnt as hist_cnt
+
+    from d_list dh
+    left join d_data_#f_doc_type_id# dat on dat.doc_id=dh.id
+
+    left join (select dph.pid 
+     , replace(GROUP_CONCAT(DISTINCT concat(src.bc_id,':',left(src.bc, 40),'<br>')),'<br>,','<br>') as "sources" 
+     , replace(GROUP_CONCAT(DISTINCT concat(statia,
+    ' (', src.statia_id,')', ??USER_ID=2309_ZZZ
+    '<br>')),'<br>,','<br>') as "statia" 
+    , src.statia_id
+    , src.bc_id, src.summa_usd ??f_BC_id
+    from  d_list dph join d_data_7 src on src.doc_id=dph.id
+    group by dph.pid, src.statia_id
+    , src.bc_id, src.summa_usd ??f_BC_id
+    ) src
+    on src.pid=dh.id
+
+    left join #table_users_full# uin on uin.id=dat.dealinitiator_id 
+
+    $INCLUDE reports/all_docs.cfg[criteria] 
+    $INCLUDE JINR/reports/dog_post_table.cfg[custom criteria] 
+
+    group by dh.id ??
+    order by #srt# #desc#, dh.modified desc
+[end]
+
+[custom criteria] 
+and dat.ext_number like '#f_ext_number#%' ??f_ext_number
+and dh.TITLE like '%#f_content#%'  ??f_content
+and dat.dealinitiator like '#f_initiator#%' ??f_initiator
+and (dat.kontragent_text like '%#f_kontrag#%' or dat.kontragent like '%#f_kontrag#%') ??f_kontrag
+and src.bc_id=#f_BC_id# ??f_BC_id
+and src.statia_id in(#f_aggr#)   ??f_aggr
+[end]
+
+

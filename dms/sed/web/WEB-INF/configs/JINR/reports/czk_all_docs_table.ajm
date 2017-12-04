@@ -1,0 +1,156 @@
+JINR/reports/czk_all_docs_table.ajm
+
+[comments]
+descr=U: Вывод списка старых заявок для ЦЗК (вывод самой таблицы)
+input=
+output=HTML таблица документов
+parents=reports/czk_docs
+childs=docs/view_doc
+author=Куняев
+[end]
+
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=U:Таблица заявок для ЦЗК
+LOG=ON 
+tableCfg=table_no
+
+    rowLink=|<a class=page href="javascript:goToRowA(#srn_i#);">#srn_i#-#ern_i#</a> ??!currentPage
+    rowLink=|<span class=actPage>#srn_i#-#ern_i#</span> ??currentPage
+    prevSetLink=<a class=page href="javascript:goToRowA(#srn_i#);"> <<< предыд. </a> 
+    nextSetLink=| <a class=page href="javascript:goToRowA(#srn_i#);"> следующие >>> </a>
+[end]
+
+
+[report header]
+    $INCLUDE dat/common.dat[check login]
+    $INCLUDE [OK report header]  ??USER_ID>0|USER_ID<0
+[end]
+
+
+[OK report header]
+    $SET_PARAMETERS srn=1; ??!srn
+    $SET_PARAMETERS rpp=20; 
+    $SET_PARAMETERS f_old_div_id=#f_div_id#;  ??!f_old_div_id
+    $GET_DATA JINR/reports/czk_all_docs_table[get div txt] ??f_old_div_id
+    <table class="tlist tblue" cellspacing=0>
+        <tr>
+            <th> </th>
+            <th>дата ЦЗК</th>    ??!ZK=lzk
+            <th>дата ЛЗК</th>    ??ZK=lzk
+            <th>Заявка</th>
+            <th>Содержание</th>
+            <th>Производитель&nbsp;продукции</th>
+            <th>Цена&nbsp;в&nbsp;$</th> 
+            <th>Подразд.</th><th>Создан</th>
+        </tr>
+
+        <tr style="background-color:##efefef">
+            <td> </td> <td> </td> 
+            <td><input name="f_old_req_nr" value="#f_old_req_nr#" style="width:95px;"></td>
+            <td><input name="f_old_title" value="#f_old_title#" style="width:100%; max-width:500px;"></td>
+            <td><input name="f_old_manufacturer" value="#f_old_manufacturer#" style="width:100%; max-width:600px;"></td>
+            <td> </td>
+            <td>
+                <input type=hidden name="f_old_div_id"  id="f_old_div_id" value="#f_old_div_id#">
+                <input type=hidden name="f_old_div_txt" id="f_old_div_txt"  value="#f_old_div_txt#">
+                <div class="info_input pt big bg_white" id="f_old_div" info_id="10" info_view="11"  callback="filterByDiv" 
+                    style="display: inline-block; width:60px; border:solid 1px gray;">#f_old_div_txt#&nbsp;</div>
+            </td>
+            <td><input name="f_old_dealinitiator" value="#f_old_dealinitiator#" style="width:200px;"></td>
+        </tr>
+[end]
+
+
+[item]
+    <tr class="pt
+        oddRow ??oddRow=1
+        " onClick="$('##doc_overlay').show(); AjaxCall('doc_content', 'c=docs/view_doc&doc_id=#ID#&mode=popup', true);">
+
+        $INCLUDE tab_myDocs[linkedMark]
+        <td>#CZK_DAT#
+            / #czk_nr# ??czk_nr
+        </td> 
+        <td>
+            №#NUMBER#  ??NUMBER
+            от #DOC_DATE#  ??DOC_DATE
+        </td> 
+        <td><div style="max-width:500px;">#TITLE#</div></td>
+        <td><div style="max-width:600px;">#POSTAV#</div></td>
+        <td class= "right nowrap" >#PRICE_USD#</td> 
+        <td>#DIVS#</td>
+        <td>#CREATED#, #CREATOR#</td> 
+    </tr>
+    $INCLUDE tab_myDocs.cfg[linkedData] ??!img=none
+    $SET_PARAMETERS PREV_CZK_DAT=#CZK_DAT#;
+[end]
+
+
+[report footer]
+    <tr><td colspan=8 class="divider"></td></tr>
+
+    <tr><td colspan=8 class="pager last">
+    $INCLUDE dat/common.dat[rpp]  ??!NumTableRows=0&ZZZ
+    Строки: #rowLinks# |
+    <input type=hidden name="rpp" value="#rpp#"> ??NumTableRows=0&ZZZ
+    </td></tr>
+    </table>
+    <br>&nbsp;
+[end]
+
+
+***************************** Шаблон SQL запроса ***************************
+
+[get div txt]
+    select short_name as "f_old_div_txt" 
+    from info_10
+    where id=#f_old_div_id#
+[end]
+
+
+[SQL]
+    select
+        dh.ID, dh.NUMBER, dh.TITLE, dh.STATUS, dh.DIVS
+        , DATE_FORMAT(dat.czk_dat,'#dateFormat#') as "CZK_DAT"
+        , dh.num_children
+        , dat.czk_nr
+        , DATE_FORMAT(dh.doc_date,'#dateFormat#') as DOC_DATE 
+        , dat.manufacturer as "POSTAV"
+        , replace(format(dat.summa_usd,2),',',' ') as "PRICE_USD" 
+
+        , DATE_FORMAT(dh.created,'#dateFormat#') as CREATED 
+        , dh.creator_id
+        , concat(ucr.F, ' ', left(IFNULL(ucr.I,''),1), '.', left(IFNULL(ucr.O,''),1),'.') as CREATOR
+        , DATE_FORMAT(dh.modified,'#dateFormat#') as MODIFIED
+        , dh.status AS "STATUS"
+        , wfl.id as "wf_id"
+
+        , concat( FORMAT(TIMESTAMPDIFF(day, dh.modified, now()), 0), 'д,') AS WAITING
+    from d_list dh
+        left join d_data_1 dat on dat.doc_id=dh.id
+        left join wf_list wfl on wfl.doc_id=dh.id
+        left join #table_users_full# ucr on ucr.id=dh.creator_id 
+        left join #table_users_full# umr on umr.id=dh.modifier_id ??
+        join d_divs dd on (dd.doc_id=dh.id and dd.div_id=#f_old_div_id#) ??f_old_div_id
+    where dh.TYPE_ID = 1
+        and dh.is_deleted=0 and dh.status=3
+        and dat.final_decision=3  ??!ZK=lzk
+        and dat.final_decision=2  ??ZK=lzk
+        $INCLUDE reports/all_docs[access_filter] ??ZK=lzk&!FULL_READ_ACCESS=Y
+
+        and dh.NUMBER like '#f_old_req_nr#%' ??f_old_req_nr
+        and dh.TITLE like '%#f_old_title#%' ??f_old_title
+        and dat.manufacturer like '%#f_old_manufacturer#%' ??f_old_manufacturer
+        and ucr.F like '%#f_old_dealinitiator#%'  ??f_old_dealinitiator
+
+        and dh.id in(select doc_id from d_index where context like '%#f_search#%') ??f_search
+
+    order by dat.czk_dat desc
+        , case when dat.czk_nr is null or length(dat.czk_nr)=0 then 'zzz' when length(dat.czk_nr)>1 then concat('z',dat.czk_nr) else dat.czk_nr end 
+        , dat.summa_usd desc
+[end]
+
+
+, dh.modifier_id 
+, concat(umr.F, ' ', left(IFNULL(umr.I,''),1), '.', left(IFNULL(umr.O,''),1),'.') as MODIFIER

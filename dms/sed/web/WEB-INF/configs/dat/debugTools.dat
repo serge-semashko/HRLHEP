@@ -1,0 +1,196 @@
+debugTools.dat
+
+[vu]
+<div id = "VUSER_list"></div>
+<input id="VUSER_id" name="VUSER_id" size=3 value="">
+<input type=hidden id="VUSER_text" name="VUSER_text" size=20 value="">
+<span class="info_input" id="VUSER" info_id="5" searchFor='none' info_view="1">VU</span> 
+
+<span class="pt" onClick="AjaxCall('tabs', 'c=sys/setVU&vu_id=' + document.getElementById('VUSER_id').value, true);">
+стать ??!q_vu_id
+сбросить ??q_vu_id
+</span> |
+<span class="pt" onClick="AjaxCall('tabs', 'c=sys/setVU&vu_id=8011', true);" >Босин</span> ??!USER_ID=8011
+<span class="pt" onClick="AjaxCall('tabs', 'c=sys/setVU&vu_id=9276', true);" >Егоров</span> ??!USER_ID=9276
+<span class="pt" onClick="AjaxCall('tabs', 'c=sys/setVU&vu_id=10473', true);" >Аурика</span> ??!USER_ID=10473
+<span class="pt" onClick="AjaxCall('tabs', 'c=sys/setVU&vu_id=1733', true);" >Кастеров</span> ??!USER_ID=1733
+<span class="pt" onClick="AjaxCall('tabs', 'c=sys/setVU&vu_id=4374', true);" >Харевич</span> ??!USER_ID=4374
+<span class="pt" onClick="AjaxCall('tabs', 'c=sys/setVU&vu_id=1030', true);" >Гусарова</span> ??!USER_ID=1030
+<span class="pt" onClick="AjaxCall('tabs', 'c=sys/setVU&vu_id=4211', true);" >Уварова</span> ??!USER_ID=4211
+<span class="pt" onClick="AjaxCall('tabs', 'c=sys/setVU&vu_id=11291', true);" >Трубников</span> ??!USER_ID=11291
+<span class="pt" onClick="AjaxCall('tabs', 'c=sys/setVU&vu_id=9056', true);" >Морозов</span> ??!USER_ID=9056
+<span class="pt" onClick="AjaxCall('tabs', 'c=sys/setVU&vu_id=5782', true);" >Цымбулов</span> ??!USER_ID=5782
+<span class="pt" onClick="AjaxCall('tabs', 'c=sys/setVU&vu_id=1753', true);" >Кекелидзе</span> ??!USER_ID=1753
+<span class="pt" onClick="AjaxCall('tabs', 'c=sys/setVU&vu_id=10547', true);" >Скодорова</span> ??!USER_ID=10547
+<span class="pt" onClick="AjaxCall('tabs', 'c=sys/setVU&vu_id=1523', true);" >Иванова</span> ??!USER_ID=1523
+<span class="pt" onClick="AjaxCall('tabs', 'c=sys/setVU&vu_id=2245', true);" >Кузьменкова</span> ??!USER_ID=2245
+<span class="pt" onClick="AjaxCall('tabs', 'c=sys/setVU&vu_id=11318', true);" >Аржанова</span> ??!USER_ID=11318
+q_vu_id=#q_vu_id#;
+<a href="#ServletPath#?c=sys/showLog_noDB" target=_blank>LOG</a><br>
+[end]
+
+
+[info test]
+<div class=pt onClick="$('##debugTools,##debug').toggle()" style="margin-top:0px;">sys</div>
+<div id="debugTools" style="font-size:7pt; display:none;">
+--------------- ОТЛАДКА - моделирование вызова справочников ------------- ??
+<b>Тесты справочников:</b> <br>
+юзеры:<br> 
+
+<input id="TEST_MULTI_USER_id" name="TEST_MULTI_USER_id" size=3 value="">
+<input type=hidden id="TEST_MULTI_USER_text" name="TEST_MULTI_USER_text" size=20 value=""> 
+<span class="info_input" id="TEST_MULTI_USER" info_id="5" searchFor='none' info_view="4">multi</span> 
+<div id = "TEST_MULTI_USER_list">+++</div>
+
+
+<input id="TEST_EDITABLE_USER_id" name="TEST_EDITABLE_USER_id" size=3 value="">
+<input id="TEST_EDITABLE_USER_text" name="TEST_EDITABLE_USER_text" size=30 value="">
+<span class="info_input" id="TEST_EDITABLE_USER" info_id="5" searchFor='none' info_view="7">editable</span> 
+
+<hr>
+
+<div id = "PERSON_list"></div>
+<input id="PERSON_id" name="PERSON_id" size=10 value="">
+<input id="PERSON_text" name="PERSON_text" size=15 value="">
+<span class="info_input" id="PERSON" info_id="11" searchFor='none' info_view="2">сотрудники</span> 
+<br>
+<span id = "tst_KONTRAGENT_list"></span>
+<input id="tst_KONTRAGENT_id" name="tst_KONTRAGENT_id" size=10 value="">
+<input id="tst_KONTRAGENT_text" name="tst_KONTRAGENT_text" size=15 value="">
+<span class="info_input" id="tst_KONTRAGENT" info_id="21" searchFor='none' info_view="2">контрагенты</span> 
+<hr>
+
+Подразделения: 
+<input name="test_div_id" size=5 value="" id="test_div_id">
+<input class="info_input" size=25 id="test_div" name="test_div" info_id="10" info_view="10" value="">
+
+лаборатория: <input name="test_lab_id" size=5 value="">
+<div class="info_input pt big bg_white" id="test_lab" info_id="10" info_view="11" 
+style="display: inline-block; width:100px; border:solid 1px gray; ">выбрать</div>
+
+Проект: <input name="test_project_id" size=5 value="">
+<div class="info_input pt big bg_white" id="test_project" info_id="1008" info_view="11" 
+style="display: inline-block; width:100px; height:20px; border:solid 1px gray; ">выбрать</div>
+
+<a target=_blank href="#ServletPath#?c=JINR/info_project_item">
+Раздел проекта</a>
+
+<hr>
+Справочник БК:
+<div id = "test_BC_list"></div>
+<input id="test_BC_id" name="test_BC_id" size=8 value="">
+<input id="test_BC_text" name="test_BC_text" size=20 value="">
+<span class="info_input" id="test_BC" info_id="1005" searchFor="none" info_view="1">бюдж.код</span> 
+
+Дата:<input id="date_test"  type="text" size=10 name=doc_date value="" onKeyUp="fixDate(this);" onChange="checkDate(this);"> 
+<span class="pt" onClick="increase(event);"> + </span>
+<span class="pt" onClick="decrease(event);"> - </span>
+
+<span class="pt" onClick="reset(event);"> 1 </span>
+<span class="pt" onClick="font24(event, '18px');"> 2 </span>
+<span class="pt" onClick="font24(event, '24px');"> 3 </span>
+<br>#excludeFromLog#
+</div>
+
+
+
+<script>
+ $("##date_test").datepick({yearRange:	'c-2:c+7', showSpeed: 'fast'});
+
+var increase = function(event) {
+    event.preventDefault();
+    $('##body').zoomtext({increment: "+=3"});
+}
+
+var decrease=function(event) {
+     event.preventDefault();
+     $('##body').zoomtext({increment: "-=3"});
+}
+
+var font24=function(event, size){
+     event.preventDefault();
+     $('##body').zoomtext({increment: size});
+     }
+
+var reset=function(event){
+     event.preventDefault();
+     $('##body').zoomtext({recovery: true});
+     }
+
+/*
+
+$(function()
+ {
+   $('#increase').click(function(event)
+     {event.preventDefault();
+     $('#content').zoomtext({increment: "+=1"});
+     }
+   );
+
+   $('#reset').click(function(event)
+     {event.preventDefault();
+     $('#content').zoomtext({recovery: true});
+     }
+   );
+
+  $('#decrease').click(function(event)
+     {event.preventDefault();
+     $('#content').zoomtext({increment: "-=3"});
+     }
+   );
+  $('#font24').click(function(event)
+     {event.preventDefault();
+     $('#content').zoomtext({increment: "24px"});
+     }
+   );
+   $('#increase_мах').click(function(event)
+     {event.preventDefault()
+     $('#content').zoomtext({increment: "+=5", max : 0,skip : '*'});
+     }
+   );
+ }
+)
+/**/
+
+</script>
+
+
+[end]
+
+
+[debug links]
+<hr> ??debug=on
+<div id="debug"  style="font-size:7pt; display:none;">Debug tools:
+
+<form name="debugForm" 
+method="POST" enctype="multipart/form-data" ??
+target="wf2">
+<input type=hidden name=c value="sys/setDebugMode">
+----------------- Вспомогательное - отладка --------------- ??
+<a href="#ServletPath#?c=sys/showLog_noDB" target=_blank>LOG</a>
+<a href="#ContextPath#/#logFileName#" target=_blank>log</a> 
+ | <a href="#ServletPath#?c=sys/request_log" target=_blank>LOG запросов</a>
+ | <a href="#ServletPath#?c=sys/cfgdoc/main_noDB" target=_blank>CFG DOC</a>
+ | <a href="#ServletPath#?c=sys/cleanDB" target=_blank>CleanDB</a> ??USER_ID=2309
+ | <a href="http://lt-a3.jinr.ru/sed/dubna">A3</a> 
+ | <a href="http://ak0211.jinr.ru:8084/sed/dubna">211</a>
+ | <a href="http://ak132.jinr.ru:8080/sed/dubna">132</a>
+
+ | <a href="#ServletPath#?c=free/main_css_noDB" target=_blank>CSS</a>
+ | <a href="#ServletPath#?c=free/main_js_noDB" target=_blank>JS</a>
+ | &nbsp; USER_ID: #USER_ID#; FIO: #user_FIO# 
+$INCLUDE dat/debugTools.dat[play] ??VU=2309|USER_ID=2309&!VU
+</form>
+</div>
+[end]
+
+[play]
+<input type=checkbox name="setPlayMode" onClick="document.debugForm.submit();"
+checked ??playMode
+>play
+[end]
+
+[VU] 
+$CALL_SERVICE c=svs/get_user_info; requested_user_id=#VU#;
+<br>(#u_IOF#)
+[end]

@@ -1,0 +1,67 @@
+wf/show_wf_template.ajm
+
+
+[comments]
+descr=S: Показать шаблон workflow для типа документов. 
+Для админов
+input=[wf_template_id] - ID шаблона wf или [doc_type_id] - ID типа документа
+output=
+parents=
+childs=
+author=Куняев
+[end]
+
+[parameters]
+request_name=A:отображение wf template#doc_id#
+service=dubna.walt.service.TableServiceSpecial
+tableCfg=table_no
+KeepLog=false
+ClearLog=true
+[end]
+
+
+[report header]
+    $GET_DATA [get wf header]
+    Шаблон маршрута документа <b>#DOC_TYPE#</b><br>
+    <small>( ??wf_name|wf_description
+    название:<b> #wf_name#</b> ??wf_name
+    описание:<b> #wf_description#</b> ??wf_description
+    )</small> ??wf_name|wf_description
+    <br>
+[end]
+
+[item]
+    шаг #step#: #ROLE_NAME# / #TARGET_TYPE#
+    <small>(справочник "#INFO_NAME#")</small> ??INFO_NAME
+    <br>
+    $SET_PARAMETERS INFO_ID=;
+[end]
+
+[report footer]
+[end]
+
+==============================================================
+==============================================================
+==============================================================
+[preSQLs]
+    select id as wf_template_id from wf_templates_list where doc_type_id=#doc_type_id#  ??!wf_template_id
+[end]
+
+[get wf header]
+    select wt.wf_name, wt.wf_description
+     , dt.name as "DOC_TYPE"
+    from wf_templates_list wt 
+    left join d_types dt on dt.id=wt.doc_type_id
+    where wt.id=#wf_template_id#;
+[end]
+
+[SQL]
+    select wt.step, r.name as "ROLE_NAME", tt.type as "TARGET_TYPE"
+         ,i.name as "INFO_NAME", i.id as "INFO_ID"
+    from wf_templates wt
+        left join a_roles r on r.id=wt.role_id
+        left join a_target_types tt on tt.id=wt.role_target_type_id
+        left join i_infos i on i.id = tt.info_id
+    where wt.wf_template_id=#wf_template_id#
+    order by step
+[end]

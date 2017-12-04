@@ -1,0 +1,101 @@
+[comments]
+descr=A: Вывод списка "Типы документов" (вывод самой таблицы)
+input=none
+output=HTML таблица документов
+parents=admin/doctypes/doctypes.cfg
+childs=admin/doctypes/doctype_panel.cfg
+testURL=?c=admin/doctypes/doctypes_table
+author=Яковлев, Куняев
+[end]
+
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=A:Типы документов
+tableCfg=table_no
+$INCLUDE dat/common.dat[rowLinks]
+[end]
+
+
+
+[report header]
++++++++ временно - открыто всем. Потом - проверить R и RW права пользователя +++ ??
+$SET_PARAMETERS RWACC=Y; RACC=Y;
+$INCLUDE [OK report header]  ??RACC
+[end]
+
+
+[OK report header]
++++++++ сортировка таблицы по умолчанию ++++ ??
+$SET_PARAMETERS srt=dtp.ID; desc=; ??!srt
++++++++ начальная строка и кол-во строк на странице по умолчанию ++++ ??
+$SET_PARAMETERS srn=1; rpp=9999;
+
+
+<center>
+<input type=hidden name="srn" value="#srn#"> 
+<input type=hidden name="srt" value="#srt#">
+<input type=hidden name="desc" value="#desc#">
+
+++++++++++++++++++ Шапка таблицы пользователей +++++++++++++++++++++ ??
+<table class="tlist tblue" cellspacing=0>
+<tr>
+<th class="srh" sr="dtp.ID">id</th>
+<th class="srh" sr="DOC_TYPES_NAME">Название типа документа</th>
+<th class="srh" sr="dgr.GROUP_NAME">Группа типов документов</th>
+<th class="srh" sr="dtp.IS_ACTIVE">Активность</th>
+<th class="srh" sr="START_DATE">С какой даты применяется</th>
+<th class="srh" sr="tl.NUM_TEMPLATES">Шаблонов Workflow</th>
+</tr>
+[end]
+
+
+[item]
+++++++++++++++++++ Строка таблицы - 1 пользователь +++++++++++++++++++++ ??
+<tr class="pt
+oddRow ??oddRow=1
+" onClick="AjaxCall('c_doctypes', 'c=admin/doctypes/doctype_panel&type_id=#ID#');">
+
+<td class=small>#ID#</td>
+<td>#DOC_TYPES_NAME#</td>
+<td>#GROUP_NAME#</td>
+<td class="bg_green">Рабочий</td> ??IS_ACTIVE=1
+<td class="bg_red">Не рабочий</td> ??!IS_ACTIVE=1
+<td>#START_DATE#</td>
+<td>#NUM_TEMPLATES#</td>
+</tr>
+[end]
+
+
+[report footer]
+<tr><td colspan=8 class="pager">
+$INCLUDE dat/common.dat[rpp]  ??!NumTableRows=0
+<input type=hidden name="rpp" value="#rpp#"> ??NumTableRows=0
+</td></tr>
+</table>
+</div>
+
+
++++++++++ Скрипт возврата результатов в вызывавшую страницу ++++ ??
+<script>
+showSrt("#srt#","sup"); ??!desc
+showSrt("#srt#","sdown"); ??desc
+</script>
+[end]
+
+
+***************************** Шаблон SQL запроса ***************************
+[SQL]
+select dtp.ID
+, dtp.name as DOC_TYPES_NAME 
+, dtp.IS_ACTIVE
+, dgr.GROUP_NAME
+, DATE_FORMAT(dtp.start_date,'#dateFormat#') as START_DATE
+, tl.NUM_TEMPLATES
+from d_types dtp
+left join doc_groups dgr on dtp.group_id = dgr.Id
+left join wf_templates_list wftl on dtp.Id = wftl.doc_type_id ??
+left join (select doc_type_id, count(id) as "NUM_TEMPLATES" 
+    from wf_templates_list group by doc_type_id) tl on tl.doc_type_id = dtp.id
+order by #srt# #desc# 
+[end]

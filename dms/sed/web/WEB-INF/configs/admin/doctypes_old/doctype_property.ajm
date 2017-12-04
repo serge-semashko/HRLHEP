@@ -1,0 +1,227 @@
+[comments]
+descr=A: Редактирование свойств типа документа
+
+input=type_id - ID типа документа (из таблицы d_types)
+output=HTML форма редактирования свойств типа документа, 
+parents=admin/doctypes/doctype_panel.cfg
+childs=admin/doctypes/doctype_field_property.cfg, admin/doctypes/doctype_form.cfg
+test_URL=?c=admin/doctypes/doctype_property&type_id=1
+author=Яковлев, Куняев
+[end]
+
+
+[parameters]
+request_name=A: Редактирование свойств типа документа
+tableCfg=table_no ??
+KeepLog=false
+ClearLog=true
+
+divider=<tr><td colspan=2 class="bg_white" style="height:10px; border-top:solid 1px gray;"></td></tr>
+[end]
+
+[report]
+++++ временно - открыто всем. Потом - проверить R и RW права пользователя +++ ??
+$SET_PARAMETERS RWACC=Y; RACC=Y;
+$INCLUDE [report_]  ??RACC
+[end]
+
+
+[report_]
+$INCLUDE [do save] ??cop=save
+$INCLUDE [form] ??!cop=save
+[end]
+
+[form]
+<body>
+<div id="result">
+#c# ??debug=on
+<center>
+<form name="popupForm" method="POST" enctype="multipart/form-data" target="wf">
+<input type=hidden name="type_id" value="#ID#">
+<input type=hidden name="c" value="#c#">
+<input type=hidden name="cop" value="">
+
+<table border=0 bgcolor=white cellpadding=4 style="border:solid 1px gray;">
+
+<tr><td class=label right>ID:</td><td> <input size=5 name="f_type_id" value="#ID#" readonly="readonly"> &nbsp; 
+</td></tr>
+<tr><td class=label>#^doc_type#:</td><td> <input size=40 name="f_name" value="#NAME#"> &nbsp; 
+</td></tr>
+
+<tr><td class=label>Группа документов:</td><td>
+<select name=f_group_id style="font-size:9pt;"
+><option value="0">без группы</option>
+#DOC_GROUP_NAME#</select>
+</td></tr>
+
+<tr><td class=label>Текущая версия <br> формы документа:</td><td> <input size=5 name="f_curr_doc_type_version" value="#CURR_DOC_TYPE_VERSION#"> &nbsp; 
+</td></tr>
+
+$INCLUDE [rights to create] ??
+
+<tr><td class=label>Секция, определяющая специфическое <br> финальное решение по документу
+:</td><td> <input size=40 name="f_custom_final_decision" value="#CUSTOM_FINAL_DECISION#"> &nbsp; 
+</td></tr>
+<tr><td class=label>Модуль вывода списка документов <br> этого типа во вкладке "Все Документы"
+:</td><td> <input size=40 name="f_modul_table" value="#MODUL_TABLE#"> &nbsp; 
+</td></tr>
+<tr><td class=label>Модуль вывода списка документов <br> этого типа во вкладке "Мониторинг"
+:</td><td> <input size=40 name="f_monitor_table" value="#MONITOR_TABLE#"> &nbsp; 
+</td></tr>
+
+
+<tr><td class=label style="white-space:nowrap;" nowrap>Автонумерация документа:</td><td>
+<input type=radio name=f_is_autonumber value="1" 
+checked  ??IS_AUTONUMBER=1
+>Да
+<input type=radio name=f_is_autonumber value="0" 
+checked  ??IS_AUTONUMBER=0
+>Нет
+</td></tr>
+
+$INCLUDE [is hidden] ??
+
+<tr><td class=label>Сортировка:</td><td> <input size=5 name="f_sort" value="#SORT#"> &nbsp; 
+</td></tr>
+
+</table>
+<br>
+
+<input type="button" class="butt1" style="width:120;" value="Закрыть" onClick="HideDialog();">  ??RACC
+
+<input type="button" class="butt1" style="width:120;" value="Сохранить" onClick="document.popupForm.cop.value='save'; document.popupForm.submit(); HideDialog();">  ??RWACC
+<input type="button" class="butt1" style="width:120;" value="Сохранить" onClick="doSubmit('save', '#c#');">  ??RWACC_ZZZ
+
+</form>
+</div>
+
++++++++++ Скрипт возврата результатов в вызывавшую страницу ++++ ??
+<script>
+window.parent.ShowDialog(true); 
+window.parent.showMsg("##dialog_title", "Свойства документа");
+window.parent.centerDialog();  
+</script>
+
+</body></html>
+[end]
+
+[rights to create]
+<tr><td class=label>Права на создание документа:</td><td> <input size=40 name="f_rights_to_create_doc" value="#rights_to_create_doc#"> &nbsp; 
+</td></tr>
+
+
+
+
+
+[info_dd]
+$SET_PARAMETERS item_id_param=#FIELD_DB_NAME#_id
+$SET_PARAMETERS text_val=^#FIELD_DB_NAME#; val_id=^#item_id_param#
+$GET_DATA dat/doc_fields_info.dat[get info type] ??INFO_VIEW
+$INCLUDE dat/doc_fields_info.dat[info_multi] ??MULTI=1
+$INCLUDE dat/doc_fields_info.dat[info_dd_single] ??!MULTI=1
+[end]
+
+
+[info_dd_single]
+<input type=hidden name="#FIELD_DB_NAME#_id" id="#FIELD_DB_NAME#_id" size=5 value="#val_id#">
+<input type=hidden name="#FIELD_DB_NAME#" size=25 value="#text_val#">
+<div class="info_input pt big bg_white" id="#FIELD_DB_NAME#" info_id="#INFO_ID#" info_view="#INFO_VIEW#" info_type="3" searchFor='none' 
+style="display: inline-block; width:#LX#px; height:#LY#px; border:solid 1px gray;">#text_val#
+выбрать ??!text_val
+</div>
+[end]
+
+[info_multi]
+$SET_PARAMETERS fn=#FIELD_DB_NAME#_id;
+<input type=hidden id=#FIELD_DB_NAME#_id name="#FIELD_DB_NAME#_id" size=25 value="^#fn#">
+<input type=hidden id=#FIELD_DB_NAME# name=#FIELD_DB_NAME# size=#SIZE#
+	info_id="#INFO_ID#" info_view="#INFO_VIEW#" info_type="#INFO_TYPE#" 
+value="^#FIELD_DB_NAME#" mand="#mand#">
+$CALL_SERVICE c=svs/info_show_ms;info_id=#INFO_ID#;view=#view#;requesterId=#FIELD_DB_NAME#;selVals=^#fn#;
+[end]
+
+
+
+
+
+[end]
+
+[is hidden]
+<tr><td class=label style="white-space:nowrap;" nowrap> (is_hidden):</td><td>
+<input type=radio name=f_is_hidden value="0" 
+checked  ??IS_HIDDEN=0
+>Обычный тип
+<br>
+<input type=radio name=f_is_hidden value="1" 
+checked  ??IS_HIDDEN=1
+>Составная часть других типов
+</td></tr>
+[end]
+
+
+[do save]
+$GET_DATA [update property]
+
+<script>
++++++ Сабмит родительской формы. +++ ??
+window.parent.AjaxCall("c_doctypes", "c=admin/doctypes/doctype_panel&type_id=#type_id#", true); ??!ERROR     
+
+</script>
+
+[end]
+
+
+[preSQLs]
+select dtp.ID
+, dtp.name as NAME 
+, dtp.IS_ACTIVE
+, dtp.GROUP_ID
+, dgr.GROUP_NAME
+, dtp.CURR_DOC_TYPE_VERSION
+, dtp.CUSTOM_FINAL_DECISION
+, dtp.MODUL_TABLE
+, dtp.MONITOR_TABLE
+, dtp.IS_AUTONUMBER
+, dtp.IS_HIDDEN
+, dtp.SORT
+
+, dtp.rights_to_create_doc
+
+, ifnull(DATE_FORMAT(dtp.start_date,'#dateFormat#'),'') as START_DATE
+, u.FIO as CREATOR
+, uu.FIO as MODIFIER 
+, ifnull(DATE_FORMAT(dtp.created,'#dateTimeFormat#'),'') as CREATED
+, ifnull(DATE_FORMAT(dtp.changed,'#dateTimeFormat#'),'') as MODIFIED
+from d_types dtp
+left join doc_groups dgr on dtp.group_id = dgr.Id
+left join #table_users_full# u on u.Id = dtp.creator_id
+left join #table_users_full# uu on uu.Id = dtp.modifier_id
+where dtp.Id = #type_id#
+;
+
+select concat('<option value=', cast(id as char)
+, case when id=#GROUP_ID# then ' selected' else '' end ??GROUP_ID
+, '>', group_name, '</option>') as DOC_GROUP_NAME
+from doc_groups 
+order by sort
+;
+[end]
+
+[update property]
+update d_types set
+  name = '#f_name#'
+, group_id = '#f_group_id#'
+, curr_doc_type_version = '#f_curr_doc_type_version#'
+, rights_to_create_doc = '#f_rights_to_create_doc#' ??
+, custom_final_decision = '#f_custom_final_decision#' ??f_custom_final_decision
+, custom_final_decision = NULL ??!f_custom_final_decision
+, modul_table = '#f_modul_table#' ??f_modul_table
+, monitor_table = '#f_monitor_table#' ??f_monitor_table
+, is_autonumber = '#f_is_autonumber#'
+, sort = '#f_sort#'
+, changed = now()
+, modifier_id=#USER_ID#
+
+where d_types.Id = #type_id#
+;
+[end]

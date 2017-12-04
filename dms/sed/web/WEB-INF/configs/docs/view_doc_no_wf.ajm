@@ -1,0 +1,117 @@
+docs/view_doc_no_wf.cfg
+[comments]
+descr=U: Просмотр документа
+
+input=doc_id - ID документа (из таблицы d_list)
+output=HTML форма просмотра документа, 
+parents=docs/docs_in_progress_table.cfg
+childs=docs/doc_user_action.cfg, docs/doc_final_action.cfg
+test_URL=?c=docs/view_doc&doc_id=1
+author=Куняев
+[end]
+
+
+[parameters]
+request_name=U:Просмотр документа
+service=jinr.sed.ServiceViewDoc
+tableCfg=table_no
+LOG=ON
+SYS_FIELDS=DOC_ID, IS_ACTIVE, DATE_FORMAT(modified,'#dateTimeFormat#') as DOC_MODIFIED, VERSION
+SYS_FIELDS_TYPES=int,int,varchar,int
+divider=<tr><td colspan=2 class="divider"></td></tr> 
+[end]
+
+
+[report header]
+<tr><th class="center bg_white big" colspan=2>================= view_doc_no_wf.cfg ==================</td></tr> ??
+[end]
+
+
+
+
+============== Вывод одного поля  ======= ??
+[item]
+    <tr id="item_#FIELD_ID#" class="doc_item"><td class="label bottom_dotted" width="30%" nowrap>
+        <div style="float:left; background-color: ##ffe0e0; border:solid 1px red; padding:2px;">помечено на удаление</div> ??IS_ACTIVE=0
+        <div style="float:left; background-color: ##ffffc0; border:solid 1px ##c0c000; padding:2px;">новое</div> ??IS_ACTIVE=2
+        #NAME#:</td> 
+        <td width="70%" class="big bg_white bottom_dotted"
+            style="padding:0;" ??FIELD_SECTION=bc_list_read
+            >
+            #FIELD_SRC_FILE#[#FIELD_SECTION#]  ??
+            $INCLUDE #FIELD_SRC_FILE#[#FIELD_SECTION#]
+        </td>
+        <td class="item_num" style="display:none; width:20px;">#NR#</td> 
+    </tr>
+[end]
+
+
+[report footer]
+$INCLUDE [report footer_] ??AR_R=Y
+[end]
+
+[report footer_]
++++++++ Блок загрузки файлов-приложений и скрипты работы с файлами ++++++++ ??
+$INCLUDE files/field_file.dat[attached files]
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ ??
+
+$INCLUDE docs/view_doc.cfg[print forms] ??!mode=print
+
+#divider#
+<tr><td class="label">Документ создан:</td>
+<td class="bg_white nowrap" nowrap>
+#CREATOR#, #CREATED#, <a href="mailTo:#CRE_MAIL#?subject=Ваш документ #DOC_TYPE# в СЭД">#CRE_MAIL#</a>, т.#CRE_PHONE#
+</td></tr>
+
+<tr><td class="label">Комментарий:</td><td class="big bg_white">#INITIATOR_COMMENT#</td></tr> ??INITIATOR_COMMENT
+#divider#
+
+$CALL_SERVICE c=docs/show_users_comments 
+
+$INCLUDE [buttons bar] 
+   ??!mode=popup
+</table></center>
+
+<div id="doc_send_div" style="float:right; display:none; margin:0 50px 0 100px; border-bottom:solid 1px gray;"></div>
+<div style="clear:both;"></div>
+
+[end]
+
+
+[buttons bar]
+#divider#<tr><td class="center bg_white nowrap" colspan=2 style="padding:15px 0 0px 0; border-bottom:solid 1px gray;">
+
+$INCLUDE [buttons row]  ??!mode=ext
+
+$GET_DATA docs/view_doc.cfg[check sent FYI] 
+<br>&nbsp; ??!NUM_SENT_FYI>0
+<div class="pt" onClick="$('##doc_send_div').toggle(); AjaxCall('doc_send_div', 'c=docs/show_sent_history&doc_id=#doc_id#');"  style="border-bottom:solid 1px gray; float:right; margin-top:10pt; padding:2px;"> история рассылки для ознакомления >></div> ??NUM_SENT_FYI>0
+<div style="clear:both;"></div>
+</td></tr>
+[end]
+
+
+[buttons row]
+
+<input type="button" class="butt1 pt" style="width:200; margin-right:200px;" onClick="AjaxCall('c_myDocs', 'c=tab_myDocs');" value='Назад в "Мои Документы"'>  ??
+<input type="button" class="butt1 pt" style="width:150px; margin-right:150px;" onClick="showDoc(false); " value='Закрыть документ'> 
+
+<input type="button" class="butt1 pt" style="width:120;" value="Изменить" onClick="AjaxCall('doc_content', 'c=docs/edit_doc&doc_id=#doc_id#');"> ??AR_W=Y
+<input type="button" class="butt1 pt" style="width:120;" value="Изменить" onClick="AjaxCall('c_myDocs', 'c=docs/edit_doc&doc_id=#doc_id#');"> ??AR_W=Y_ZZZ
+
+<input type="button" class="butt1 pt" style="width:120;" value="Ознакомить" onClick="AjaxCall('popupCont', 'c=docs/sendFYI&doc_id=#doc_id#');"> 
+
+<input type="button" class="butt1 pt" style="width:120;" value="Удалить" onClick="if(confirm('Удалить этот документ?')) AjaxCall('c_myDocs', 'c=docs/delete_doc&doc_id=#doc_id#', true);">    ??AR_W=Y&!is_deleted=1
+
+[end]
+
+
+==============================================================================
+***************************** Шаблоны SQL запросов ***************************
+==============================================================================
+
+
+[SQL]
+$INCLUDE docs/view_doc.cfg[SQL_] ??AR_R=Y
+[end]
+

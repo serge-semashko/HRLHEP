@@ -1,0 +1,297 @@
+wf/edit_wf_for_doc.ajm
+
+[comments]
+descr=S: Редактировать рабочее workflow для документа. 
+input=doc_id - ID документа
+output=Показывает рабочее workflow документа с кнопками редактирования не стартованных шагов.
+parents=
+childs=
+testURL=?c=wf/edit_wf_for_doc&doc_id=1
+call=
+author=Куняев
+[end]
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=A:редактирование wf для док. #doc_id#
+tableCfg=table_no
+LOG=ON
+[end]
+
+
+[report header]
+    $CALL_SERVICE c=svs/get_user_info; requested_user_id=#USER_ID#  ??
+
+    $GET_DATA wf/edit_wf_for_doc.cfg[get wf id]  
+    $INCLUDE [process action] ??cop&AR_SYS_ADMIN=1
+    $SET_PARAMETERS passed_steps=;
+
+    $INCLUDE [table headers] ??WF_ID
+[end]
+
+[table headers]
+    <fieldset style="border:dotted 1px gray; margin-right:200px;"><legend class="bg_white"><b>Маршрут документа:</b>
+    #WF_ID# ??AR_SYS_ADMIN=1
+    </legend>
+    <table class="tlist noborder"  cellpadding=0 cellspacing=0>
+    <tr><th>Шаг</th>
+    <th width=120>Роль</th> 
+    <th>пользователи</th> ??
+    <th>Пользователь</th>
+    <th>Удалить шаг</th> 
+    <th>Вставить шаг</th> 
+    </tr>
+[end]
+
+prev_role_id=#role_id#; prev_role_target_id=#role_target_id#; PREV_TARGET_NAME=TARGET_NAME; PREV_STEP=#step#;
+
+[item]
+    $LOG ++++++++++++++++++++ step_id=#step_id#;<br>
+    $SET_PARAMETERS st=style="border-top:solid 1px gray&##59"; ??!PREV_STEP=#step#
+    $SET_PARAMETERS st=; ??PREV_STEP=#step#&prev_role_id=#role_id#
+
+    $SET_PARAMETERS cl=;
+    $SET_PARAMETERS cl=bg_gray; ??STARTED|!is_active=1
+      |criteria=1  ??
+    $SET_PARAMETERS cl=#cl# inactive; ??!is_active=1
+
+    $SET_PARAMETERS passed_steps=#step_id#; ??!passed_steps
+    $SET_PARAMETERS passed_steps=#passed_steps#,#step_id#; ??passed_steps
+
+    $INCLUDE wf/show_wf_for_doc.cfg[item_beginning] ??!step_id=#NEW_STEP_ID#
+    $GET_DATA [get next step]
+    $SET_PARAMETERS passed_steps=#passed_steps#,#next_step_id#; NEXT_STARTED=; ??next_is_active=0
+    $LOG passed_steps=#passed_steps#;<br>
+    $SET_PARAMETERS STEP_CHANGED=Y; ??next_step_nr>#step#
+    $INCLUDE [buttons] 
+      ??!step_id=#NEW_STEP_ID#
+
+    $INCLUDE [item_edit]    ??cop=add&step_id=#NEW_STEP_ID#
+
+    </tr>
+
+    <tr><td colspan=5> step_id=#step_id#; step=#step#; next_step_nr=#next_step_nr#; ??
+     next_is_active=#next_is_active#;criteria=#criteria#; next_criteria=#next_criteria#; ??
+    NEXT_STARTED=#NEXT_STARTED#; STEP_CHANGED=#STEP_CHANGED#; </td></tr> ??
+
+
+    $SET_PARAMETERS NEXT_STEP_ID=#step_id#;  ??!NEXT_STEP_ID&STARTED&!result_code
+    $SET_PARAMETERS prev_role_id=#role_id#; prev_role_target_id=#role_target_id#; PREV_TARGET_NAME=#TARGET_NAME#; PREV_STEP=#step#;
+    $SET_PARAMETERS role_id=; ROLE_NAME=; INFO_ID=; role_target_id=; user_id=; u_FIO=; result_code=; result=; STARTED=; TARGET_NAME=; PREV_STEP=#step#; criteria=;
+    $SET_PARAMETERS u_roles=; u_posts=; next_step_id=; next_criteria=; NEXT_STARTED=; STEP_CHANGED=; next_step_nr=;
+[end]
+
+
+&criteria=100
+
+$INCLUDE [add button] ??!NEXT_STARTED&criteria=1&next_criteria=100&step_type=0&next_is_active=1
+
+[buttons]
+    <td class="middle" #st#>
+    $INCLUDE [del button] ??!STARTED&is_active=1
+      ??&step_type=0
+    $INCLUDE [restore button] ??!STARTED&!is_active=1&modifier_id>0
+    </td>
+
+    <td class="bottom" #st#>
+    $INCLUDE [add button] ??!NEXT_STARTED&!step=#next_step_nr#|!next_step_nr
+      ??&STEP_CHANGED 
+        ??&step_type=0&next_is_active=1
+    </td>
+[end]
+
+&criteria=100
+
+[item_edit]
+    <tr><td id="NEW_USER_ID" class="center" #st#>
+    <input name="NEW_STEP" class="xpc" size=2 value="#step#">
+    <input type=hidden id="STEP_USER_id" name="STEP_USER_id" size=3 value="">
+    <input type=hidden name="ADDED_STEP_ID" size=10 value="#NEW_STEP_ID#"> 
+    </td>
+
+    <td class=small #st#>
+    </td>
+
+    <td #st# colspan=1>
+    <span id = "STEP_USER_list"></span>
+    <span class="info_input" id="STEP_USER" info_id="5" searchFor='none' info_view="1">Выбрать</span> 
+    <input type=hidden id="STEP_USER_text" name="STEP_USER_text" size=20 value=""> 
+
+    <input type="button" class="butt1 pt" style="width:100;" value="Сохранить" onClick="AjaxCall('doc_wf', 'c=wf/edit_wf_for_doc&doc_id=#doc_id#&cop=setUser&step_id=#NEW_STEP_ID#',true,'NEW_USER_ID');"> ??ZZZZZ
+
+    </td>
+
+    <td #st# colspan=2>?#comment#</td>
+[end]
+
+[report footer]
+    <tr><td colspan=8 class="center" style="border-top:solid 1px gray&##59">
+    user_roles:#user_roles#; ??
+    <input type="button" class="butt1 pt" style="width:100;" 
+        value="OK"  ??cop
+        value="Отмена" ??!cop
+        onClick="AjaxCall('doc_wf', 'c=wf/edit_wf_for_doc&doc_id=#doc_id#&cop=setUser&step_id=#NEW_STEP_ID#',true,'NEW_USER_ID');"> ??cop=add&NEW_STEP_ID
+        onClick="AjaxCall('doc_wf', 'c=wf/show_wf_for_doc&doc_id=#doc_id#');"> ??!cop=add|!NEW_STEP_ID
+
+    <input type="button" class="butt1 pt" style="width:150;" value="Удалить маршрут" onClick="if(confirm('Маршрут будет удален. Продолжить?')) AjaxCall('doc_wf', 'c=wf/edit_wf_for_doc&doc_id=#doc_id#&cop=deleteWF',true);"> ??USER_ID=2309
+    <input type="button" class="butt1 pt" style="width:150;" value="Перестроить маршрут" onClick="if(confirm('Старый маршрут будет удален. Продолжить?')) AjaxCall('doc_wf', 'c=wf/edit_wf_for_doc&doc_id=#doc_id#&cop=rebuildWF',true);"> ??USER_ID=2309
+    </td></tr>
+    </table></fieldset> ??WF_ID
+    #ERROR#
+    $INCLUDE [select user script] ??cop=add&NEW_STEP_ID
+[end]
+
+[select user script]
+    <script type="text/javascript">
+        doShowSprav(); 
+        AjaxCall("d_spravCont", "c=svs/info_show&info_id=5&info_view=1&requesterId=STEP_USER&irpp=10");
+
+
+        var customSelectInfoRow=function(el, text){
+            HideDialog(); ??
+            hideSprav(); 
+            AjaxCall('doc_wf', 'c=wf/edit_wf_for_doc&doc_id=#doc_id#&cop=setUser&step_id=#NEW_STEP_ID#',true,'NEW_USER_ID');
+        }
+    </script>
+[end]
+
+[del button]
+    <span class="pt" onClick="if(confirm('Удалить из маршрута шаг #step#: #USER_IOF#?')) AjaxCall('doc_wf', 'c=wf/edit_wf_for_doc&doc_id=#doc_id#&cop=del&step_id=#step_id#');">
+    <i class="fa fa-times clr-red" aria-hidden="true"></i> удалить</span>
+[end]
+
+
+[restore button]
+    <span class="pt bg_white" onClick="if(confirm('Вернуть в маршрут шаг #step#: #USER_IOF#?')) AjaxCall('doc_wf', 'c=wf/edit_wf_for_doc&doc_id=#doc_id#&cop=restore&step_id=#step_id#');">
+    <i class="fa fa-undo" aria-hidden="true"></i> Вернуть шаг</span>
+[end]
+
+
+[add button]
+    <div class="pt bg_white" style="position:relative; top:12px; border:dotted 1px grey; border-radius:11px;" onClick="AjaxCall('doc_wf', 'c=wf/edit_wf_for_doc&doc_id=#doc_id#&cop=add&step_id=#step_id#');"> 
+    <i class="fa fa-arrow-circle-left clr-green" aria-hidden="true"></i> вставить</div>
+[end]
+
+
+[process action]
+    $GET_DATA [start transaction] 
+    $GET_DATA [delete step] ??cop=del
+    $GET_DATA [restore step] ??cop=restore
+    $GET_DATA [add step] ??cop=add
+    $GET_DATA [set user] ??cop=setUser&STEP_USER_id&ADDED_STEP_ID
+    $INCLUDE [delete WF]  ??cop=deleteWF
+    $GET_DATA [commit]
+    $INCLUDE [rebuildWF]    ??cop=rebuildWF
+[end]
+
+[delete WF]
+    $SET_PARAMETERS OLD_WF_ID=#WF_ID#;
+    $GET_DATA wf/create_wf_for_doc.cfg[delete existing wf]
+    <script type="text/javascript">
+        $("##doc_wf").html("");
+    </script>
+[end]
+
+[rebuildWF]
+    $SET_PARAMETERS OLD_WF_ID=; ??
+    $GET_DATA sys/getARUD_.cfg[getDocInfoSQL]
+    $GET_DATA wf/create_wf_for_doc.cfg[delete existing wf] ??
+    $CALL_SERVICE c=wf/create_wf_for_doc
+    <script type="text/javascript">
+        AjaxCall('doc_wf', 'c=wf/show_wf_for_doc&doc_id=#doc_id#'); 
+    </script>
+[end]
+
+==============================================================
+==============================================================
+==============================================================
+[get wf id]
+    select id as "WF_ID" from wf_list where doc_id=#doc_id#
+[end]
+
+
+
+[add step]
+    select step from wf where id=#step_id#
+    ;
+    select max(step)+1 as "NEW_STEP" from wf 
+    where wf_id=#WF_ID# and step<=#step# and is_active=1
+    ;
+    select 'Y' as "DO_SHIFT" from wf where wf_id=#WF_ID# and step=#NEW_STEP# and is_active=1 limit 1
+    ;
+    update wf set step=step+1 where wf_id=#WF_ID# and step>=#NEW_STEP# ??DO_SHIFT
+    ;
+    insert into wf (wf_id, step, user_id, modifier_comment, modified, modifier_id, creator_id)
+    values(#WF_ID#, #NEW_STEP#, 0, concat("Добавлено: #user_IOF#,<br>", DATE_FORMAT(now(),'#dateTimeFormat#') )
+    , now(), #USER_ID#, #USER_ID#)
+    ;
+    select LAST_INSERT_ID() as "NEW_STEP_ID"
+    ;
+[end]
+
+[set user]
+    update wf set 
+        step=#NEW_STEP#, ??NEW_STEP
+        user_id=#STEP_USER_id# 
+    where id=#ADDED_STEP_ID#;
+[end]
+
+
+[delete step]
+    select step as "DELETED_STEP" from wf where id=#step_id# and creator_id=#USER_ID#
+    ;
+    select 'Y' as "NO_SHIFT" from wf where wf_id=#WF_ID# and step=#DELETED_STEP# and id<>#step_id#  limit 1 ??DELETED_STEP
+    ;
+    update wf set step=step-1 where wf_id=#WF_ID# and step>#DELETED_STEP# ??DELETED_STEP&!NO_SHIFT
+    ;
+    delete from wf where id=#step_id# and creator_id=#USER_ID#
+    ;
+    update wf set is_active=0, 
+        modifier_comment=concat("Удалено: #user_IOF#,<br>", DATE_FORMAT(now(),'#dateTimeFormat#') )
+        modifier_comment=concat(case when modifier_comment='' then ''  when modifier_comment is null then '' else concat(modifier_comment,'<br>') end, "Удалено: #user_IOF#,<br>", DATE_FORMAT(now(),'#dateTimeFormat#') ) ??
+    , modified=now(), modifier_id=#USER_ID#
+    where id=#step_id#
+[end]
+
+
+[restore step]
+    update wf set is_active=1, modifier_comment="", modified=now(), modifier_id=0 where id=#step_id#
+[end]
+
+
+[SQL]
+    $INCLUDE wf/show_wf_for_doc[SQL_] ??WF_ID
+[end]
+
+[get next step]
+select wf.id as next_step_id,  wf.step as next_step_nr
+    , wf.step_type as next_step_type
+    , wf.criteria as next_criteria
+    , wf.is_active as next_is_active
+    , result_code, result
+    , if(wf.started is null, '', DATE_FORMAT(wf.started,'#shortDateTimeFormat#')) as "NEXT_STARTED"
+
+from wf left join a_roles r on r.id=wf.role_id
+
+where wf.wf_id=#WF_ID# and wf.id not in(#passed_steps#)
+    and wf.is_active=1
+order by wf.step, wf.is_active desc, wf.id limit 1
+[end]
+
+
+[start transaction]
+    lock tables wf_list write, wf write;
+    START TRANSACTION;
+[end]
+
+[commit]
+    COMMIT;   ??!ERROR
+    $INCLUDE [do rollback] ??ERROR
+    unlock tables;
+[end]
+
+[do rollback]
+    ROLLBACK; 
+    select max(id)+1 as NEXT_ID from wf;
+    ALTER TABLE wf AUTO_INCREMENT = #NEXT_ID#;
+[end]

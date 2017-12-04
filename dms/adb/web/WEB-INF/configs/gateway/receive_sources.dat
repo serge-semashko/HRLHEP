@@ -1,0 +1,95 @@
+gateway/receive_sources.dat
+
+
+++++++++ В случае одного источника ++++++++
+[setBC]
+$SET_PARAMETERS PID=#DOC_ID#; 
+$GET_DATA gateway/receive_sources.dat[delete old children]  ??PID>0
+$SET_PARAMETERS BC=#src_type_id.1.bc_id#; project_item_id=#src_type_id.1.project_item_id#;
+$SET_PARAMETERS BC=null; ??!BC
+$SET_PARAMETERS project_item_id=null; ??!project_item_id
+
+$SET_PARAMETERS aggr=#src_type_id.1.statia_id#;
+
+$LOG3 <b>+++++++ Источник: </b> BC=#BC#; project_item_id=#project_item_id#; aggr=#aggr#; <br>
+$GET_DATA gateway/receive_sources.dat[setBC_SQL]
+[end]
+
+
+
+++++++++ В случае нескольких источников ++++++++
+
+[set sources]
+$SET_PARAMETERS PID=#DOC_ID#; src_type_id.count=0;
+$GET_DATA gateway/receive_sources.dat[delete old children] ??PID>0
+$INCLUDE gateway/receive_sources.dat[createChildren]   ??!ERROR
+$GET_DATA gateway/receive_sources.dat[update Parent]  ??!ERROR
+$SET_PARAMETERS DOC_ID=#PID#;
+[end]
+
+[createChildren]
+$LOG <b>receive_sources.dat[createChildren]:</b> src_type_id.count=#src_type_id.count#; src_type_id.items=#src_type_id.items#;<br>
+$EXECUTE_LOOP child_nr; #src_type_id.items#; gateway/receive_sources.dat[create child]
+[end]
+
+
+[create child]
+
+$SET_PARAMETERS tmp=src_type_id.#child_nr#.bc_id; tp=src_type_id.#child_nr#.project_item_id; atmp=src_type_id.#child_nr#.statia_id; 
+$SET_PARAMETERS BC=^#tmp#; project_item_id=^#tp#; aggr=^#atmp#; LAB_CODE=; INITIATOR_COMMENT=^#tcom#;
+$SET_PARAMETERS BC=null; ??!BC
+$SET_PARAMETERS project_item_id=null; ??!project_item_id
+$LOG3 <b>+++++++ child_nr=#child_nr#;</b> BC=#BC#; project_item_id=#project_item_id#; aggr=#aggr#; <br>
+
+$SET_PARAMETERS ts=src_type_id.#child_nr#.summa; tc=src_type_id.#child_nr#.summa_curr; tr=src_type_id.#child_nr#.summa_rub; tu=src_type_id.#child_nr#.summa_usd; te=src_type_id.#child_nr#.summa_eur; tcom=src_type_id.#child_nr#.INITIATOR_COMMENT;
+$SET_PARAMETERS summa=^#ts#; summa_curr=^#tc#; summa_rub=^#tr#; summa_usd=^#tu#; summa_eur=^#te#;
+$LOG3 total_sum=#total_sum#; total_sum_curr=^#tc#; total_sum_rub=^#tr#; total_sum_usd=^#tu#; total_sum_eur=^#te#;<br>
+$LOG3 COMMENT: +++++++ tcom=#tcom#; '^#tcom#';<br>
+
+$SET_PARAMETERS ERROR=Отсутствует валюта; ??!summa_curr
+$SET_PARAMETERS ERROR=Отсутствует сумма; ??!summa
+
+
+$GET_DATA gateway/receive_sources.dat[get LAB_CODE] ??BC&!ERROR
+$SET_PARAMETERS LAB_CODE=#PARENT_LAB_CODE#;  ??!LAB_CODE&!ERROR
+
++++++ Создаем такой же документ, как и родительский (его потомка) +++++??
+$GET_DATA gateway/receive.cfg[create doc]  ??!ERROR
++++++ обновляем док. этого типа. т.е., выполняем запрос из вызвавшего модуля +++++??
+$SET_PARAMETERS DOC_ID=#NEW_DOC_ID#; ??!ERROR&ZZZ
+$GET_DATA [update doc]      ??!ERROR
+
+$LOG3 child_nr=#child_nr#; BC=#BC#; aggr=#aggr#; <br>
+$GET_DATA gateway/receive_sources.dat[setBC_SQL] ??!ERROR
+
+[end]
+
+===============================================================================
+===============================================================================
+===============================================================================
+[get LAB_CODE]
+select LAB_CODE from bc where code=#BC#
+[end]
+
+
+[update Parent]
+update docs d set 
+ sum_children=(select sum(summa_rub) from docs c where c.pid=#PID# and c.DOC_STATUS <> 5) 
+,num_children=(select count(doc_id) from docs c where c.pid=#PID# and c.DOC_STATUS <> 5) 
+where d.doc_id=#PID#
+[end]
+
+
+[delete old children]
+update docs set DOC_STATUS=5 where PID=#PID# and CREATOR_ID=3
+[end]
+
+
+
+[setBC_SQL]
+update docs set BC=#BC#, PROJECT_ID=#project_item_id#
+, AGGR=(select trim(to_char(#aggr#,'00')) from dual) ??aggr
+, AGGR='' ??!aggr
+where DOC_ID=#DOC_ID#
+[end]
+

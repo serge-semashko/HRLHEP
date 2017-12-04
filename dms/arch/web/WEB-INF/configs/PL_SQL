@@ -1,0 +1,179 @@
+CREATE OR REPLACE  
+FUNCTION checkAccRights(folder_ID int, user_ID int) RETURN NUMBER IS
+ TYPE ref_cursor IS REF CURSOR;
+ cur ref_cursor;
+ pos number;
+ pFolder number;
+BEGIN
+ pos:=0;
+   OPEN cur FOR
+       ' SELECT nvl(max(Rights),0) FROM UserRightsOnTree WHERE USER_ID=' || user_ID || ' AND TREE_ID=' || folder_ID;
+ FETCH cur INTO pos;
+ CLOSE cur;
+ IF pos=0 THEN
+  SELECT PID INTO pFolder FROM Tree WHERE ID=folder_ID;
+  IF pFolder>-1 THEN
+   pos := checkAccRights(pFolder, user_ID);
+  END IF;
+ END IF;
+ RETURN pos;
+END checkAccRights;
+/
+
+CREATE OR REPLACE 
+PROCEDURE addRightsForTree(inTreeID NUMBER, ingID NUMBER, inrID NUMBER, inRight NUMBER) IS
+ CURSOR rtID_cur (inG NUMBER, inR NUMBER, inRight NUMBER) IS
+  SELECT Rt_ID FROM Rights WHERE G_ID=ingID AND R_ID=inrID AND Rights=inRight;
+ rtID_rec rtID_cur%ROWTYPE;
+ newID NUMBER;
+BEGIN
+    --dbms_output.put_line('BEGINFUNCTINO');
+ OPEN rtID_cur (ingID,inrID,inRight);
+    FETCH rtID_cur INTO rtID_rec;
+ --dbms_output.put_line('rtID_cur%ROWCOUNT - ' || rtID_cur%ROWCOUNT);
+ IF rtID_cur%ROWCOUNT=0 THEN
+  SELECT rightsID_seq.NEXTVAL INTO newID FROM dual;
+  INSERT INTO Rights (Rt_ID, G_ID, R_ID, Rights) VALUES (newID,ingID,inrID,inRight);
+     DELETE FROM TreeRights WHERE Rt_ID IN (SELECT r.Rt_ID FROM Rights r, TreeRights rt
+               WHERE r.Rt_ID = rt.Rt_ID AND (r.R_ID=inrID) AND (r.G_ID=ingID) AND (rt.Tree_ID=inTreeID));
+     --dbms_output.put_line('inTreeID - ' || inTreeID);
+     --dbms_output.put_line('newID - ' || newID);
+     INSERT INTO TreeRights (Tree_ID, Rt_ID) VALUES (inTreeID, newID);
+    ELSIF rtID_cur%ROWCOUNT>=1 THEN
+     DELETE FROM TreeRights WHERE Rt_ID IN (SELECT r.Rt_ID FROM Rights r, TreeRights rt
+               WHERE r.Rt_ID = rt.Rt_ID AND (r.R_ID=inrID) AND (r.G_ID=ingID) AND (rt.Tree_ID=inTreeID));
+     --dbms_output.put_line('inTreeID - ' || inTreeID);
+     --dbms_output.put_line('rtID_rec.Rt_ID - ' || rtID_rec.Rt_ID);
+
+     INSERT INTO TreeRights (Tree_ID, Rt_ID) VALUES (inTreeID, rtID_rec.Rt_ID);
+ END IF;
+    --dbms_output.put_line('ENDFUNCTINO');
+ COMMIT;
+ CLOSE rtID_cur;
+END;
+/
+
+CREATE OR REPLACE 
+PROCEDURE addRightsForUser(inUserID NUMBER, ingID NUMBER, inrID NUMBER) IS
+ TYPE ref_cursor IS REF CURSOR;
+ cur ref_cursor;
+ pos NUMBER;
+BEGIN
+ IF ingID<0 THEN RETURN; END IF;
+ IF inrID<0 THEN RETURN; END IF;
+
+ OPEN cur FOR 'select g_id from Groups where g_id='||ingID;
+ FETCH cur INTO pos;
+ IF cur%ROWCOUNT=0 THEN RETURN; END IF;
+ CLOSE cur;
+ OPEN cur FOR 'select r_id from Roles where r_id='||inrID;
+ FETCH cur INTO pos;
+ IF cur%ROWCOUNT=0 THEN RETURN; END IF;
+ CLOSE cur;
+
+ OPEN cur FOR 'select User_id from UserRights where r_id=' || inrID || ' AND g_id=' || ingID || ' AND User_ID=' || inUserID;
+ FETCH cur INTO pos;
+ IF cur%ROWCOUNT=0 THEN
+  INSERT INTO UserRights (USER_ID, G_ID, R_ID) VALUES (inUserID, ingID, inrID);
+ END IF;
+ CLOSE cur;
+END;
+/
+
+CREATE OR REPLACE 
+PROCEDURE addRightsForUserOnTree(inUserID NUMBER, inTreeID NUMBER, inRight NUMBER) IS
+ TYPE ref_cursor IS REF CURSOR;
+ cur ref_cursor;
+ pos NUMBER;
+BEGIN
+ IF inTreeID<0 THEN RETURN; END IF;
+ IF inUserID<0 THEN RETURN; END IF;
+
+ OPEN cur FOR 'select ID from Tree where id='||inTreeID;
+ FETCH cur INTO pos;
+ IF cur%ROWCOUNT=0 THEN RETURN; END IF;
+ CLOSE cur;
+ OPEN cur FOR 'select ID from Users where id='||inUserID;
+ FETCH cur INTO pos;
+ IF cur%ROWCOUNT=0 THEN RETURN; END IF;
+ CLOSE cur;
+
+ OPEN cur FOR 'select Rights from UserRightsOnTree where USER_ID=' || inUserID || ' AND TREE_ID=' || inTreeID;
+ FETCH cur INTO pos;
+ dbms_output.put_line(pos);
+ IF cur%ROWCOUNT=0 THEN
+  INSERT INTO UserRightsOnTree (USER_ID, TREE_ID, RIGHTS) VALUES (inUserID, inTreeID, inRight);
+ ELSE
+  IF pos<>inRight THEN
+   UPDATE UserRightsOnTree SET Rights=inRight WHERE USER_ID=inUserID AND TREE_ID=inTreeID;
+  END IF;
+ END IF;
+ CLOSE cur;
+END;
+/
+
+CREATE OR REPLACE 
+FUNCTION get_labs (ID int, SEPARATOR varchar2)
+return varchar2
+is
+BEGIN
+DECLARE
+  TYPE ref_cursor IS REF CURSOR;
+  cur ref_cursor;
+  r varchar2(512);
+  result varchar2(1024);
+BEGIN
+  --OPEN cur FOR 'select t.des as DES, t.id as ID from tree t where t.id!=0  connect by prior t.pid=t.id start with t.id='||ID||'  order by rownum desc';
+  --OPEN cur FOR 'select t.des as DES, t.id as ID from tree t connect by prior t.pid=t.id start with t.id='||ID||'  order by rownum desc';
+OPEN cur FOR 'select l.div from labs l, doc_lab dl where dl.lab_code=l.code and dl.doc_id='||ID;
+LOOP
+fetch cur into r;
+ exit when cur%NOTFOUND;
+ result:=result||r||SEPARATOR;
+    dbms_output.put_line ('r:'||r);
+ -- dbms_output.put_line ('result:'||result);
+END LOOP;
+
+close cur;
+return result;
+END;
+END get_labs;
+/
+
+CREATE OR REPLACE 
+FUNCTION get_path (ID int, SEPARATOR varchar2, a_beg varchar2 , a_end varchar2,id_chr varchar2)
+return varchar2
+is
+BEGIN
+DECLARE
+  TYPE ref_cursor IS REF CURSOR;
+  cur ref_cursor;
+  r varchar2(2048);
+  r1 varchar2(2048);
+  result varchar2(4096);
+ i number;
+BEGIN
+  --OPEN cur FOR 'select t.des as DES, t.id as ID from tree t where t.id!=0  connect by prior t.pid=t.id start with t.id='||ID||'  order by rownum desc';
+  OPEN cur FOR 'select t.des as DES, t.id as ID from tree t connect by prior t.pid=t.id start with t.id='||ID||'  order by rownum desc';
+i:=0;
+LOOP
+r := '';
+r1:= '';
+fetch cur into r,r1;
+exit when cur%NOTFOUND;
+IF i>0 THEN
+ result:=result||SEPARATOR||REPLACE(a_beg,id_chr,r1)||r||REPLACE(a_end,id_chr,r1);
+    -- dbms_output.put_line ('r:'||r);
+ -- dbms_output.put_line ('result:'||result);
+ELSE
+ result:=result||REPLACE(a_beg,id_chr,r1)||r||REPLACE(a_end,id_chr,r1);
+END IF;
+
+i:=i+1;
+END LOOP;
+
+close cur;
+return result;
+END;
+END get_path;
+/

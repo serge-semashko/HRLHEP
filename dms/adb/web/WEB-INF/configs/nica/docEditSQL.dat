@@ -1,0 +1,397 @@
+[resetPlat]
+update docs set
+PLAT_1=null, DAT_PLAT_1=null, DAT_OPL1=null, PAYED=null ??cop=rp1
+PLAT_2=null, DAT_PLAT_2=null, DAT_OPL2=null  ??cop=rp2
+where doc_id=#DOC_ID#
+[end]
+
+[get doc script]
+$INCLUDE nica/docEditSQL.dat[getDocSQL] ??ACC_OK
+	
+select NAME_SHORT as RECEIVER from i_kontragent where code=#RECEIVER_C#  ??RECEIVER_C&!RECEIVER
+;
+$INCLUDE doc/getBcInfo.cfg[BcInfoSQL] ??BC
+$INCLUDE doc/docEditSQL.dat[get doc types] ??type=ext|type=xp|type=mnts|type=nal
+$INCLUDE doc/docEditSQL.dat[get reestr] ??type=xp&BUH_ENABLED=Y&!DOC_TYPE=8
+[end]
+
+[getDocSQL]
+SELECT 
+	to_char(SYSDATE, 'DD.MM.YYYY') TODAY
+	,to_char(DOC_DATE, 'DD.MM.YYYY') DOC_DATE, EXT_DOC_NR
+	,to_char(REG_DATE, 'DD.MM.YYYY HH24:MI') REG_DATE, to_char(REG_DATE, 'YY') as DOC_YR
+	,DOC_ID,PID,doc_type,doc_status 
+	,BC, LAB_CODE, IS_TOTAL, IS_LOCKED, PAYER,RECEIVER,INN_RECEIVER,RECEIVER_C,INFO
+    ,SUMMA_CURR,CURR_CODE
+	,to_char(SUMMA_RUB,'99G999G999G990D00') as SUMMA_RUB ??
+	,to_char(SUMMA_RUB,'99999999990D00') as SUMMA_RUB
+	,to_char(SUMMA_USD,'999999990D00') as SUMMA_USD
+	,to_char(SUMMA_EUR,'999999990D00') as SUMMA_EUR
+	,c.fio as CREATOR, m.fio as MODIFIER,to_char(MODIF_DATE, 'DD.MM.YYYY HH24:MI') MODIF_DATE
+	,d.chief_sgn, d.chief_code
+	, to_char(d.CHIEF_DATE, 'DD.MM.YYYY') as CHIEF_DATE
+	, d.signed, d.comments
+	,d.approval, d.approval_c, to_char(d.approval_date, 'DD.MM.YYYY') approval_date
+    ,to_char(d.sent, 'DD.MM.YYYY HH24:MI') sent_date
+
+    ,decode(trim(d.sent), trim(sysdate), 'Y','N') as SENT_TODAY
+
+	, d.aggr, d.cons, d.action_history, d.dat_buh
+
+	,to_char(d.PAYED,'DD.MM.YYYY') as PAYED
+	,PLAT_1, to_char(d.DAT_PLAT_1,'DD.MM.YYYY') as DAT_PLAT_1, to_char(d.DAT_OPL1,'DD.MM.YYYY') as DAT_OPL1
+	,PLAT_2, to_char(d.DAT_PLAT_2,'DD.MM.YYYY') as DAT_PLAT_2,to_char(d.DAT_OPL2,'DD.MM.YYYY') as DAT_OPL2
+	,to_char(d.DAT_PLAT_1,'MM') as REG_MM, to_char(d.DAT_PLAT_1,'YYYY') as REG_YYYY
+	,to_char(RATE,'999999990D0000') as RATE ??
+	,case when CURR_CODE=810 then ''
+	 else to_char(SUMMA_RUB/(SUMMA_CURR+.001),'999999990D0000') 
+	 end as RATE
+
+  ,is_total, is_problem, IS_REZERV
+	, NEED_TO_CHECK ??
+  , NUM_CHILDREN, to_char(SUM_CHILDREN, '99999999990D00') as SUM_CHILDREN
+  , VIDOPER, IS_KREDIT
+, d.PROJECT_ID
+
+	,to_char(FACT_RUB,'99999999990D00') as FACT_RUB
+	,to_char(FACT_USD,'99999999990D00') as FACT_USD
+	,to_char(FACT_EUR,'99999999990D00') as FACT_EUR
+ , FACT_DAT	??
+ , REQ1, to_char(d.REQ1_DAT,'DD.MM.YYYY') as REQ1_DAT, to_char(d.REQ1_DAT,'YY') as REQ1_YR
+ , REQ2, to_char(d.REQ2_DAT,'DD.MM.YYYY') as REQ2_DAT, to_char(d.REQ2_DAT,'YY') as REQ2_YR
+ , LINK
+
+FROM docs d, users c, users m 
+WHERE doc_id=#DOC_ID#
+	AND c.id(+)=creator_id
+	AND m.id(+)=MODIFIER_ID
+	and d.PROJECT_ID in (select ID from nica_wbs_wu connect by prior id=pid start with id in(#A_NICA#)) ??NICA_ONLY&A_NICA	
+	;
+[end]
+
+[get doc types]
+select '<option value="'||id||'">'||doc_type||'</option>' DOC_TYPES 
+from doc_types 
+where id 
+  not in (7,8)    ??type=ext&PID=0
+  not in (8)      ??type=ext&!PID=0
+  not in (1,5,7,99) ??type=xp
+  not in (7,8) ??type=mnts
+  in (5)      ??type=mntsXXX
+  in (7)      ??type=nal
+order by srt;
+[end]
+
+[get reestr]
+select 
+  decode(VIDOPER, 'm','Ï‡Ú-','u','ÛÒÎ-','e','‚Á.','? ')||
+  '<a href="javascript:setParent('||doc_id||')">'||doc_id||'</a> ' as REESTR_ID
+from docs
+where doc_type=8
+  and RECEIVER_C='#RECEIVER_C#'
+  and to_char(DOC_DATE,'mm.yyyy')='#REG_MM#.#REG_YYYY#'
+  and VIDOPER='#VIDOPER#' ??
+order by VIDOPER
+[end]
+
+
+[insert script]
+$SET_PARAMETERS NEW_ID=1  ??!NEW_ID
+;
+$SET_PARAMETERS payer=Œ»ﬂ» ??!payer
+;
+$SET_PARAMETERS bc=571 ??!bc
+;
+SELECT nvl(max(doc_id),0)+1 as NEW_ID, to_char(SYSDATE,'DD.MM.YYYY') as REG_DATE
+FROM docs 
+WHERE to_char(REG_DATE,'YYYY')=to_char(SYSDATE,'YYYY') ??
+;
+insert into docs (DOC_ID,PID,CREATOR_ID,REG_DATE, doc_status
+	,doc_type, aggr, cons ??cop=child
+  ,DOC_DATE,ext_doc_nr,bc,payer,receiver,receiver_c,inn_receiver,info,comments ??!cop=clone&!cop=child
+  , IS_KREDIT  ??IS_KREDIT
+  ,lab_code, IS_TOTAL
+	,summa_rub  ??summa_rub
+	,summa_curr ??summa_curr
+	,curr_code  ??curr_code
+  
+  ,PLAT_1,PAYED,DAT_PLAT_1  ??DAT_PLAT_1&PLAT_1
+  ,PLAT_2,DAT_PLAT_2  ??DAT_PLAT_2&PLAT_2
+  ,RATE ??RATE
+	,PROJECT_ID  ??!cop=clone&!cop=child
+)
+values(#NEW_ID#
+	,0  ??!PID|!cop=child
+	,#PID# 		    ??PID&cop=child
+	, #USER_ID#
+	, sysdate 	 
+	 ??q_yr=#CURR_YR#
+	, to_date('01.01.20#q_yr#','DD.MM.YYYY') ??!q_yr=#CURR_YR#&ZZZ
+	, 1
+  ,#doc_type#, '#aggr#','#cons#'   ??cop=child
+	
+	, to_date('#doc_date#','DD.MM.YYYY')  ??doc_date&!cop=clone&!cop=child
+	, null  ??!doc_date&!cop=clone&!cop=child
+	,'#ext_doc_nr#', #bc#, '#payer#', '#receiver#', '#receiver_c#', '#inn_receiver#','#info#','#comments#' ??!cop=clone&!cop=child
+  , 'y'  ??IS_KREDIT
+  ,'#lab_code#'
+  , 'Y'  ??IS_TOTAL
+  , ''   ??!IS_TOTAL
+	,#summa_rub#  ??summa_rub
+	,#summa_curr# ??summa_curr
+	,#curr_code#  ??curr_code
+
+  ,'#PLAT_1#',to_date('#DAT_PLAT_1#','dd.mm.yyyy'), to_date('#DAT_PLAT_1#','dd.mm.yyyy')  ??DAT_PLAT_1&PLAT_1
+  ,'#PLAT_2#',to_date('#DAT_PLAT_2#','dd.mm.yyyy')  ??DAT_PLAT_2&PLAT_2
+  ,RATE=#RATE# ??RATE
+	, #PROJECT_ID#  ??!cop=clone&!cop=child
+);
+
+$SET_PARAMETERS lab_code=#lab_code#; EXT_DOC_NR=#ext_doc_nr#; DOC_DATE=#doc_date#; SRC_ID=#DOC_ID#; BC=#bc#; PAYER=#payer#; RECEIVER=#receiver#; RECEIVER_C=#receiver_c#; INN_RECEIVER=#inn_receiver#; INFO=#info#; DOC_STATUS=1; COMMENTS=#comments#; ??cop=clone|cop=child
+$SET_PARAMETERS DOC_TYPE=#doc_type#; DOC_STATUS=#doc_status#; SUMMA_RUB=#summa_rub#; SUMMA_CURR=#summa_curr#; CURR_CODE=#curr_code#; AGGR=#aggr#; CONS=#cons#; ??cop=clone|cop=child
+$SET_PARAMETERS CHIEF_SGN=#chief_sgn#; CHIEF_CODE=#chief_code#; CHIEF_DATE=#chief_date#; SIGNED=#signed#; APPROVAL_C=#approval_c#; APPROVAL_DATE=#approval_date# 	??cop=clone|cop=child
+
+$INCLUDE doc/docEditSQL.dat[calculate equiv$] ??!cop=clone&!cop=child&!cop=c&DOC_ID
+[end]
+
+
+[update script]
+$INCLUDE doc/docEditSQL.dat[get summa_rub]  ??summa_curr&!summa_rub
+;
+UPDATE docs
+SET 
+	doc_date=to_date('#doc_date#','DD.MM.YYYY')	??doc_date
+	doc_date=null			??!doc_date
+	,doc_type=#doc_type#
+  , doc_status=#doc_status# ??
+	,MODIFIER_ID=#USER_ID#, modif_date=sysdate
+	,pid=#PID#	??PID
+	,pid=0 		??!PID
+	,ext_doc_nr='#ext_doc_nr#', payer='#payer#'
+  , bc=#bc# ??bc
+  , bc=null         ??!bc
+  , LAB_CODE='#lab_code#'
+  , IS_TOTAL='Y'  ??IS_TOTAL
+  , IS_TOTAL='', SUM_SCALE=1, IS_REZERV=0   ??!IS_TOTAL
+	, IS_REZERV=0, SUM_SCALE=0 ??IS_TOTAL&!IS_REZERV
+	, IS_REZERV=1, SUM_SCALE=1 ??IS_TOTAL&IS_REZERV
+  , IS_LOCKED='Y' ??IS_LOCKED&UNLOCK_ENEBLED
+  , IS_LOCKED='L' ??IS_LOCKED&!UNLOCK_ENEBLED
+  , IS_LOCKED=''  ??!IS_LOCKED
+	,NEED_TO_CHECK='Y' ??!VERIFIED=Y&!IS_ADMIN&ZZZ
+	,NEED_TO_CHECK='N' ??VERIFIED=Y_ZZZ
+	, receiver='#receiver#', inn_receiver='#inn_receiver#', receiver_c='#receiver_c#'
+	,info='#info#'
+	,summa_rub=#summa_rub#  ??summa_rub
+	,summa_rub=null         ??!summa_rub
+	,summa_curr=#summa_curr# ??summa_curr
+	,summa_curr=null        ??!summa_curr
+
+    ,sum_children=#summa_rub#, num_children=0 ??summa_rub&!IS_TOTAL
+
+	,curr_code=#curr_code#
+	, aggr='#aggr#', cons='#cons#'
+
+	,approval='#approval#', approval_c='#approval_c#'
+	,approval_date=to_date('#approval_date#','dd.mm.yyyy')  ??approval_date
+	,approval_date=null  ??!approval_date
+
+	,chief_sgn='#chief_sgn#', chief_code='#chief_code#'
+	,CHIEF_DATE=to_date('#chief_date#','dd.mm.yyyy')  ??chief_date
+	,CHIEF_DATE=null  ??!chief_date
+
+  ,is_problem='Y' ??is_problem
+  ,is_problem=''  ??!is_problem
+	,signed='#signed#', comments='#comments#'
+	
+	,payed=reg_date, dat_plat_1=reg_date ??doc_type=7&!PLAT_1
+	,payed=null     ??xxx!doc_type=7&!PLAT_1
+	, PROJECT_ID=#PROJECT_ID# ??PROJECT_ID
+	, PROJECT_ID=null ??!PROJECT_ID
+$INCLUDE doc/docEditSQL.dat[set plat]  ??cop=up|type=xp
+
+	, DAT_BUH=sysdate  ??buh=on&BUH_ENABLED
+	, DAT_BUH=null  	  ??!buh=on&BUH_ENABLED
+    , DOC_SUBTYPE=1 ??type=xp
+    , DOC_SUBTYPE=0 ??!type=xp
+    , VIDOPER = '#VIDOPER#'  ??VIDOPER
+    , IS_KREDIT='y'  ??IS_KREDIT
+    , IS_KREDIT='n'  ??!IS_KREDIT
+WHERE doc_id=#DOC_ID#;
+
+$INCLUDE doc/docEditSQL.dat[set history] ??!USER_ID=1
+
+$INCLUDE doc/docEditSQL.dat[calculate equiv$]
+
+select to_char(sysdate,'HH24:MI') as SAVED_AT from dual;
+
+$INCLUDE doc/docEditSQL.dat[set prix] ??cop=uprix
+$INCLUDE doc/docEditSQL.dat[calculate children] ??IS_TOTAL
+$INCLUDE doc/docEditSQL.dat[calculate parent] ??PID&!PID=0
+$INCLUDE doc/docEditSQL.dat[set plat children]  ??cop=up|type=xp	
+[end]
+
+
+[calculate children]
+update docs d
+set sum_children=(select sum(summa_rub) from docs c where c.pid=#DOC_ID# and c.DOC_STATUS <> 5)
+,num_children=(select count(doc_id) from docs c where c.pid=#DOC_ID#  and c.DOC_STATUS <> 5)
+where d.doc_id=#DOC_ID#
+;
+select '#IS_REZERV#' as IIIII from dual;
+update docs set 
+ IS_REZERV=1, SUM_SCALE=0 ??!IS_REZERV=1
+ IS_REZERV=0, SUM_SCALE=1 ??IS_REZERV=1
+where pid=#DOC_ID#
+;
+$INCLUDE doc/docEditSQL.dat[setVidOper] ??type=xp
+[end]
+
+[setVidOper]
+update docs d
+set 
+ VIDOPER = '#VIDOPER#'  ??VIDOPER
+ , IS_KREDIT='y'  ??IS_KREDIT=y
+where d.pid=#DOC_ID#
+;
+[end]
+
+[calculate parent]
+update docs d
+set sum_children=(select sum(summa_rub) from docs c where c.pid=#PID# and c.DOC_STATUS <> 5)
+,num_children=(select count(doc_id) from docs c where c.pid=#PID# and c.DOC_STATUS <> 5)
+where d.doc_id=#PID#
+;
+[end]
+
+
+[update Children] 
+select to_char(dat_buh,'DD.MM.YYYY HH24:MI') as DAT_BUH
+from docs where doc_id=#DOC_ID#
+;
+update docs set DAT_BUH=
+  to_date('#DAT_BUH#','DD.MM.YYYY HH24:MI') ??DAT_BUH
+  null ??!DAT_BUH
+	,action_history = action_history||'#NOW#, #FIO#: '
+	  || '==> #action#;<br>' ??action
+	  || 'ËÁÏÂÌÂÌ;<br>' ??!action&action_history
+where pid=#DOC_ID#
+;
+[end]
+
+[set plat children]
+update docs set
+ PLAT_1='#PLAT_1#'
+,PAYED=to_date('#DAT_PLAT_1#','dd.mm.yyyy')  ??DAT_PLAT_1&PLAT_1
+,DAT_PLAT_1=to_date('#DAT_PLAT_1#','dd.mm.yyyy')  ??DAT_PLAT_1&PLAT_1
+,DAT_PLAT_1=null, PAYED=null  ??!DAT_PLAT_1
+
+,PLAT_2='#PLAT_2#'
+,DAT_PLAT_2=to_date('#DAT_PLAT_2#','dd.mm.yyyy')  ??DAT_PLAT_2&PLAT_2
+,DAT_PLAT_2=null  ??!DAT_PLAT_2
+,RATE=#RATE# ??RATE
+
+DAT_OPL1 DAT_OPL2 RATE ??
+where pid=#DOC_ID#
+  and not IS_PROBLEM='Y'
+[end]
+
+[set plat]
+,PLAT_1=substr('#PLAT_1#',1,10)
+,PAYED=to_date('#DAT_PLAT_1#','dd.mm.yyyy')  ??DAT_PLAT_1&PLAT_1
+,PAYED=null   ??!DAT_PLAT_1|!PLAT_1
+,DAT_PLAT_1=to_date('#DAT_PLAT_1#','dd.mm.yyyy')  ??DAT_PLAT_1&PLAT_1
+,DAT_PLAT_1=null  ??!DAT_PLAT_1
+
+,PLAT_2='#PLAT_2#'
+,DAT_PLAT_2=to_date('#DAT_PLAT_2#','dd.mm.yyyy')  ??DAT_PLAT_2&PLAT_2
+,DAT_PLAT_2=null  ??!DAT_PLAT_2
+,RATE=#RATE# ??RATE
+[end]
+
+[get summa_rub]
+select round(#summa_curr#*curr_rate,2) as "summa_rub"
+from i_rate_desc r
+where r.curr_code=#curr_code# 
+  and r.d_dat <= SYSDATE and rownum=1
+[end]
+
+[set prix]
+delete from prixod where doc_id=#DOC_ID#;
+$INCLUDE doc/docEditSQL.dat[insert prix] ??PRIX_STORE|PRIX_MOL|PRIX_NAKL#|PRIX_DAT
+[end]
+
+[insert prix]
+insert into prixod (DOC_ID
+, SKL 	??PRIX_STORE
+, FIO 	??PRIX_MOL
+, NAKL 	??PRIX_NAKL
+, DAT 	??PRIX_DAT
+)
+values (#DOC_ID#
+, #PRIX_STORE# ??PRIX_STORE
+, '#PRIX_MOL#' ??PRIX_MOL
+, '#PRIX_NAKL#' ??PRIX_NAKL
+, to_date('#PRIX_DAT#','dd.mm.yyyy') ??PRIX_DAT
+)
+[end]
+
+[get prixod]
+SELECT SKL as PRIX_STORE, FIO as PRIX_MOL, NAKL as PRIX_NAKL
+, to_char(DAT, 'dd.mm.yyyy') as PRIX_DAT
+FROM prixod 
+WHERE DOC_ID=#DOC_ID#;
+[end]
+
+
+
+[calculate equiv$]
+$INCLUDE doc/docEditSQL.dat[calc usd]   ??curr_code=840
+$INCLUDE doc/docEditSQL.dat[calc rub]   ??curr_code=810
+$INCLUDE doc/docEditSQL.dat[calc other] ??!curr_code=810&!curr_code=840
+[end]
+
+[calc usd]
+update docs d set d.summa_usd=round(d.summa_curr,2) 
+, summa_eur=round(d.summa_curr*(select curr_rate from i_rate_desc r
+  where r.curr_code=840 and r.d_dat <= d.modif_date and rownum=1)
+ /(select curr_rate from i_rate_desc r
+  where r.curr_code=978 and r.d_dat <= d.modif_date and rownum=1),2)  
+where d.doc_id=#DOC_ID#;
+[end]
+
+[calc rub]
+update docs d set summa_usd=round(d.summa_rub
+  /(select curr_rate from i_rate_desc r where r.curr_code=840
+	and r.d_dat <= d.modif_date and rownum=1),2)
+  , summa_eur=round(d.summa_rub
+  /(select curr_rate from i_rate_desc r where r.curr_code=978
+	and r.d_dat <= d.modif_date and rownum=1),2)
+where doc_id=#DOC_ID#;
+[end]
+
+
+[calc other]
+update docs d
+set summa_usd=round(d.summa_curr*(select curr_rate from i_rate_desc r
+where r.curr_code=d.curr_code and r.d_dat <= d.modif_date and rownum=1)
+ /(select curr_rate from i_rate_desc r
+  where r.curr_code=840 and r.d_dat <= d.modif_date and rownum=1),2)
+  
+, summa_eur=round(d.summa_curr*(select curr_rate from i_rate_desc r
+where r.curr_code=d.curr_code and r.d_dat <= d.modif_date and rownum=1)
+ /(select curr_rate from i_rate_desc r
+  where r.curr_code=978 and r.d_dat <= d.modif_date and rownum=1),2)  
+where doc_id=#DOC_ID#;
+[end]
+
+
+
+[delete script]
+UPDATE docs SET doc_status=5, action_history = action_history||'#NOW#, #FIO#: '|| '==> ”ƒ¿À≈Õ<br>' WHERE doc_id=#DOC_ID#;  ??cop=d
+DELETE from docs WHERE doc_id=#DOC_ID#;  ??cop=p
+
+$INCLUDE doc/docEditSQL.dat[calculate parent] 
+[end]
+
+	

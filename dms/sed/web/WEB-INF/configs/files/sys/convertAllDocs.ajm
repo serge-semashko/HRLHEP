@@ -1,0 +1,42 @@
+files/sys/convertAllDocs.cfg
+
+http://ak0211.jinr.ru:8084/sed/dubna?c=files/sys/convertAllDocs
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+tableCfg=table_no
+LOG=ON
+[end]
+
+
+[report header]
+$INCLUDE viewer/common_blocks.dat[head]  *** Блок <head>...</head>
+$SET_PARAMETERS verbose=1;
+<body>
+[end]
+
+[item]
+$CALL_SERVICE c=files/sys/convertDocFiles;
+[end]
+
+[report footer]
+<br>All files.<br>
+======================<br>
+</body></html>
+[end]
+
+
+
+=========================================
+
+[SQL]
+select f.id as "file_id", f.doc_id
+from doc_files f
+join d_list d on d.id=f.doc_id and d.is_deleted=0
+left join doc_file_pages p on p.file_id=f.id
+where not f.file_size is null
+and p.id is null ??
+and f.doc_id > 1000 
+order by f.doc_id desc, f.id desc
+[end]
+

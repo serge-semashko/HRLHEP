@@ -1,0 +1,185 @@
+info_project_item.cfg
+
+[comments]
+descr=U: Справочник для выбора пункта проекта
+input=searchFor - ID выбранного ранее пункта, prev_prj_id - запомненный в сессии нач.пункт.
+output=Вставка скриптом выбранного пункта в вызвавшую форму редактирования ИФ
+parents=obj/edit_object.cfg
+childs=JINR/getProjectPath.cfg
+test_URL=
+author=Куняев
+[end]
+
+[description]
+Вызывается при редактировании источника финансирования<br>
+<ul>
+<li>Если в источнике был задан пункт (searchFor), то он ставится, как начальный выбранный (prj_id)</li>
+<li>Текущий выбранный пункт сохраняется в сессии. Очищается при сохранении ИФ.</li>
+<li>Выводится путь от корня до текущего пункта (</li>
+<li>Выводится список дочерних элементов текущего пункта по текущему году или по всем годам</li>
+<li>Кнопка "Выбрать" разрешена только для WU текущего или следующих лет. 
+По ее клику выбранные ID и код скриптом вставляются в форму, вызвавшую справочник в элементы
+##project_item_list (отображение) ##project_item_text (сохранение текста) и в ##project_item_id (сохранение ID)
+Б.дшЮ
+</ul>
+[end]
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+debug=off
+LOG=ON
+tableCfg=this
+wrapperTable=none
+table_beg=none
+table_end=none
+wrapperTableEnd=none
+ROOT_ID=0
+thsnDelimiter=&nbsp;
+[end]
+
+ 
+
+[report header]
+$CALL_SERVICE c=nica/i_getCurrVersion  ??
+$SET_PARAMETERS VER=9;
+
+$SET_PARAMETERS prj_id=#searchFor#; ??searchFor&!searchFor=none
+$SET_PARAMETERS prj_id=; ??prj_id=undefined
+$SET_PARAMETERS_SESSION prev_prj_id=#prj_id#;  ??prj_id
+$SET_PARAMETERS prj_id=#prev_prj_id#;  ??!prj_id
+$SET_PARAMETERS prj_id=; ??prj_id=none
+$SET_PARAMETERS prj_id=#ROOT_ID# ??!prj_id
+
+$SET_PARAMETERS f_yr=#CURR_YR#; ??!f_yr
+$SET_PARAMETERS f_yr=;    ??f_yr=ALL
+
+$LOG3 ***** info_project_item.cfg: prj_id=#prj_id#; f_yr=#f_yr#;<br>
+
+$INCLUDE [style]
+
+<form name="infoForm" method="POST" enctype="multipart/form-data" onSubmit="return setCurrItemId(#prj_id#);">
+
+<div id=currSelection>
+$CALL_SERVICE c=JINR/getProjectPath; TYP=;
+
+<br><center><input class=button type=button value="Выбрать" 
+disabled ??CURR_DAT_STATUS=PAST|!CURR_TYP=WU
+  ??!LIST=Y&!NODE_PLAN=0.0
+onClick="setProjectItem();">&nbsp;&nbsp;
+
+<input class=button type=button value="Отмена" onClick="hideSprav();">
+</center></div>
+
+<div 
+style="visibility:hidden;"  ??!CURR_TYP=WBS
+><b>Дочерние элементы:</b> &nbsp;
+(<input type=radio name=f_yr value="#CURR_YR#" onClick="setCurrItemId(#prj_id#);"
+checked ??f_yr=#CURR_YR#
+>20#CURR_YR#г.
+<input type=radio name=f_yr value="" onClick="setCurrItemId(#prj_id#, 'ALL');"
+checked ??!f_yr=#CURR_YR#
+disabled ??!showAll&ZZZ
+>все)
+</div>
+</form>
+
+<div id="child_list">
+[end]
+
+[item]  ***** строка дочернего пункта 
+<div id='d_#ID#' class="#DAT_STATUS# pt" onClick="setCurrItemId(#ID#)">
+<img width="12" height="12" border="0" src="#imgPath#task1_12.gif"> ??CURR_TYP=WU
+#SORT#; ??
+<b>#CODE#</b> <small>(#START# - #FINISH#)</small> #TITLE#
+&nbsp; <small>(#RESP# #DEPUTY#)</small> ??RESP|DEPUTY
+</div>
+[end]
+
+[report footer]
+</div> 
+
+<script type="text/javascript">
+/**
+ *  Вызов себя с новым текущим пунктом
+ */
+var setCurrItemId = function(id)
+{
+    var yr= "ALL";
+    if(document.infoForm.f_yr[0].checked) yr= #CURR_YR#
+    AjaxCall("d_spravCont", "c=JINR/info_project_item&prj_id=" + id + "&f_yr=" + yr, true);
+}
+
+/**
+ *  Возврат выбранного пункта в вызывающий модуль
+ */
+var setProjectItem = function()
+{
+    $("##project_item_list").html("<b>#CURR_CODE#</b>"
+    + " <a class='delcross' delfrom='project_item_id' delval='#prj_id#' delfromtext='project_item_text' onclick='delSelectedInfoItemFromChoice(this)' title='Удалить'>✖</a>" 
+);
+    $("##project_item_text").val("NICA:#CURR_CODE#");
+    $("##project_item_id").val("#prj_id#");
+    hideSprav();
+}
+
+</script>
+[end]
+
+
+[style]
+<style>
+##currSelection {background-color: whitesmoke; border:solid 1px ##808080; margin:1px; padding:3px;} 
+##prjPath {margin:0 20px 0 20px;}
+##child_list div {padding:2px; FONT-SIZE: 11pt; border-top:solid 1px ##a0a0a0;}
+fieldset.selectedProject {border:solid 1px black; background-color:white;}
+.ppath { cursor:pointer;  color: ##000080; FONT-SIZE: 10pt; color: #0000B0; FONT-FAMILY: Verdana, Arial, sans-serif; }
+.ppath_a {cursor:pointer; color: ##FF0000; text-decoration: underline; background-color: ##FFFFA0; FONT-SIZE: 10pt; color: #0000B0; FONT-FAMILY: Verdana, Arial, sans-serif;}
+.selector {padding: 1px 0 1px 20px; border-top:solid 1px gray; }
+.selector_a {padding: 1px 0 1px 20px; background-color: ##FFFFA0; text-decoration: underline; border-top:solid 1px gray;}
+.pp0 {display:inline;}
+.pp1 {margin:0 0 0 20px;}
+.pp2 {margin:0 0 0 40px;}
+.pp3 {margin:0 0 0 60px;}
+.pp4 {margin:0 0 0 80px;}
+.pp_a {color: ##FF0000; text-decoration: underline; background-color: ##FFFFA0; }
+.PAST {background-color: ##e8e8e8;}
+.CURRENT {background-color: ##c8FFc0;}
+.FUTURE  {background-color: ##d8f0FF;}
+table.tmoney td {text-align:right; FONT-SIZE: 11pt;}
+table.tmoney tr.neg {color:red; }
+table.tmoney tr.pos {color:green; }
+
+##d_spravCont .sel {background-color:##FFF8B0; } 
+</style>
+
+[end]
+
+========================================================
+[preSQLs]
+select extract(year from now()) - 2000 as CURR_YR
+[end]
+
+[SQL]
+select ID, TITLE, RESP, DEPUTY, CODE, ACTIVE, TYP
+, cast(replace(replace(code ,'.','') ,'X','') as UNSIGNED) as "SORT" 
+, DATE_FORMAT(date_start,'#dateFormat#') as "START" 
+, DATE_FORMAT(date_finish,'#dateFormat#') as "FINISH" 
+, case 
+	when (extract(year from date_finish)<20#f_yr#) then 'PAST'
+	when ( extract(year from date_start) = 20#f_yr#) then 'CURRENT'
+	else 'FUTURE'
+	end as "DAT_STATUS"
+from projects.structure 
+where pid=#prj_id#
+and active>0 
+	??!showAll
+and extract(year from date_start) <= 20#f_yr# ??f_yr
+and extract(year from date_finish) >= 20#f_yr# ??f_yr
+order by SORT ??
+order by cast(replace(replace(code ,'.','') ,'X','') as UNSIGNED)
+[end]
+
+	when (date_start<now() and date_finish<now()) then 'PAST'
+	when (now() between date_start and date_finish) then 'CURRENT'
+	else 'FUTURE'
+	end as "DAT_STATUS"

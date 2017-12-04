@@ -1,0 +1,177 @@
+JINR/reports/zajavka4dogovor.cfg
+
+[comments]
+descr=U: Модуль вывода завершенных заявок без договоров (для СМТС-договоры)
+input=
+output=HTML таблица списка документов
+parents=tab_myDocs.cfg
+childs=docs/view_doc
+author=Куняев
+[end]
+
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=U:Список заявок
+LOG=ON
+tableCfg=table_no
+$INCLUDE dat/common.dat[rowLinks]
+[end]
+
+
+[report header]
+    $INCLUDE dat/common.dat[check login]
+    $INCLUDE [OK report header]  ??USER_ID>0|USER_ID<0
+[end]
+
+
+[OK report header]
+    $SET_PARAMETERS srt=dh.doc_date;  ??!srt
+    $SET_PARAMETERS srn_sav=#srn#; rpp_sav=#rpp#
+    $SET_PARAMETERS srn=1; rpp=9999; report=sign;
+    $GET_DATA JINR/reports/zajavka4dogovor[count docs]
+
+    Показаны заявки, завершенные <b>позднее 08.02.2017</b>, по которым не был создан договор в СЭД.<br> ??
+    Для поиска нужно ввести в поле под заголовком колонки, что искать в этой колонке, и нажать &lt;Enter&gt;.<br> ??
+    Для сортировки по колонке - кликнуть в заголовок колонки.<br><br> ??
+    Чтобы <b>убрать</b> из списка заявку, по которой договор был оформлен в бумажном виде (не через СЭД) нужно открыть документ и поставить в нем галочку "Бумажный договор" (внизу, рядом с кнопками).<br> ??
+    Чтобы <b>вернуть</b> убранную заявку нужно найти ее в этом списке по номеру заявки или во "всех документах", открыть её и снять галочку.  ??
+    <table class="tlist tgreen" cellspacing=0>
+
+    <tr>
+        <th>Заявка</th>
+        <th>Содержание</th>
+        <th>Контрагент</th>
+        <th>Сумма&nbsp;$</th>
+        <th>Решение</th>
+        <th>Подразделение</th>
+        <th>Инициатор</th>
+        <th>Ожидает</th>
+    </tr>
+    $INCLUDE [filters row]   ??NUM_DOCS_4_DOG>7
+[end]
+
+[filters row]
+    <tr style="background-color:##efefef">
+        <td><input name="f_req_nr" value="#f_req_nr#" onChange="getReq4DogData();" style="width:95px;"></td>
+        <td><input name="f_title" value="#f_title#" onChange="getReq4DogData();" style="width:400px;"></td>
+        <td><input name="f_manufacturer" value="#f_manufacturer#" onChange="getReq4DogData();" style="width:350px;"></td>
+        <td> </td>
+        <td>
+        <select name="f_decision" onChange="getReq4DogData();">
+            <option value=""></option>
+            <option value="1"
+            selected  ??f_decision=1
+            >без конкурса</option>
+            <option value="2"
+            selected  ??f_decision=2
+            >ЛЗК</option>
+            <option value="3"
+            selected  ??f_decision=3
+            >ЦЗК</option>
+        </td>
+
+        <td>
+            <input type=hidden name="f_req_div_id" id="f_req_div_id" value="#f_req_div_id#">
+            <input type=hidden name="f_req_div_txt" id="f_req_div_txt"  value="#f_req_div_txt#">
+            <div class="info_input pt big bg_white" id="f_req_div" info_id="10" info_view="11" callback="filterReqByDiv"
+                style="display: inline-block; width:60px; border:solid 1px gray;">#f_req_div_txt#&nbsp;</div>
+            </td>
+
+        <td><input name="f_dealinitiator" value="#f_dealinitiator#" onChange="submitForm();" style="width:200px;"></td>
+        <td></td>
+    </tr>
+[end]
+
+
+[item]
+<tr class="pt
+    oddRow ??oddRow=1
+    " onClick="$('##doc_overlay').show(); AjaxCall('doc_content', 'c=docs/view_doc&doc_id=#ID#&mode=popup', true);">
+    <td>#NUMBER#&nbsp;от&nbsp;#DOC_DATE#</td> 
+    <td class="tt" tt_text='#TITLE#'><div class="ellipsis">#TITLE#</div></td>
+    <td class="tt" tt_text='#POSTAV#'><div class="ellipsis">#POSTAV#</div></td>
+    <td class="right">#PRICE_USD#</td>
+    $INCLUDE [decision]
+    <td class="center">#DIVS#</td>
+    <td class="pl">#INITIATOR#</td>
+    <td class="nowrap pl
+    bg_red ??WAITING_LEVEL=LONG
+    ">#WAITING#ч,</td>
+</tr>
+[end]
+
+
+[decision]
+<td>
+    без конкурса ??DECISION=1
+    ЛЗК ??DECISION=2
+    ЦЗК ??DECISION=3
+</td>
+[end]
+
+
+[report footer]
+</table>
+
+<script>
+    $("##NUM_DOCS_4_DOG").html("#NUM_DOCS_4_DOG#");
+    toggleDiv('docs_4dogovor', 200); ??NUM_DOCS_4_DOG=0
+</script>
+[end]
+
+
+***************************** Шаблон SQL запроса ***************************
+[SQL]
+    select distinct
+        dh.ID
+        , DATE_FORMAT(dh.doc_date,'#dateFormat#') as DOC_DATE 
+        , dh.NUMBER, dh.TITLE
+        , dat.final_decision as "DECISION"
+        , dat.dealinitiator as "INITIATOR"
+        , dat.manufacturer as "POSTAV"
+        , dat.summa_usd as "VAL" ??
+        , replace(format(dat.summa_usd,2),',',' ') as "PRICE_USD"
+        , dh.DIVS, dh.is_deleted
+        , concat(FORMAT(TIMESTAMPDIFF(day, dh.modified, now()), 0), 'д'
+           , FORMAT(TIMESTAMPDIFF(hour, dh.modified, now())-TIMESTAMPDIFF(day, dh.modified, now())*24,0)) AS WAITING 
+        , case when TIMESTAMPDIFF(day, dh.modified, now()) > 5 then 'LONG'
+          else 'SHORT'
+          end AS WAITING_LEVEL 
+        , dh.doc_date,  dat.summa_usd, dms.dh.modified
+    from d_list dh
+        join d_data_1 dat on dat.doc_id=dh.id
+        join d_divs dd on (dd.doc_id=dh.id and dd.div_id=#f_req_div_id#) ??f_req_div_id
+        left join d_list dc on (dc.pid=dh.id and dc.type_id in(8,10,11,12) and dc.is_deleted=0)
+    $INCLUDE [common criteria]
+        and dh.NUMBER=#f_req_nr#  ??f_req_nr
+        and dh.TITLE like '%#f_title#%' ??f_title
+        and dat.manufacturer like '%#f_manufacturer#%' ??f_manufacturer
+        and dat.dealinitiator like '%#f_dealinitiator#%' ??f_dealinitiator
+        and dat.final_decision=#f_decision# ??f_decision
+    order by #srt# #desc#
+[end]
+
+
+[count docs]
+    select count(dh.ID) as NUM_DOCS_4_DOG
+    from d_list dh  
+        left join d_list dc on (dc.pid=dh.id and dc.type_id in(8,10,11,12) and dc.is_deleted=0)
+        left join d_data_1 dat on dat.doc_id=dh.id
+    $INCLUDE [common criteria]
+[end]
+
+
+[common criteria]
+where dh.ID>0 
+    and dh.id=9014 ??
+    and dh.is_deleted=0 
+    and dh.status=3
+    and dh.id>4500 
+    and dh.modified > STR_TO_DATE('08.02.2017', '%d.%m.%Y')  ??!f_req_nr&ZZZ
+    and dc.id is null  
+    and dat.paper_dog=0  ??!f_req_nr
+        and dat.final_decision in(1,2)  ??!ROLE_SMTS_DOG
+        $INCLUDE reports/all_docs[access_filter]    ??!ROLE_SMTS_DOG
+[end]
+

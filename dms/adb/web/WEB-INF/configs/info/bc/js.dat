@@ -1,0 +1,99 @@
+[cookies]
+<script>
+function setLongCookie(name,value,hours)
+{
+  var exp=new Date();
+  exp.setHours(exp.getHours()+hours);
+  document.cookie=name+"="+escape(value)+"; path=/; expires="+exp.toGMTString()+";"
+}
+
+function setCookie(name, value)
+{
+//  alert ("Set cookie "+name+"="+value);
+  if (getCookie(name) != value)
+	  document.cookie = name + "=" + escape(value) + "; path=/;"
+}
+
+function getCookie(name)
+{
+  var search = name+"="
+//alert ("Cookies:"+document.cookie);
+  if (document.cookie.length > 0)  // if there are any cookies
+  {
+    offset = document.cookie.indexOf( search)
+    if (offset != -1)         // if cookie exists
+    {
+      offset += search.length
+      end = document.cookie.indexOf(";", offset)
+      if (end == -1) end = document.cookie.length
+      return unescape( document.cookie.substring( offset, end))
+    }
+  }
+  return null;
+}
+</SCRIPT>
+[end]
+
+[dd]
+<SCRIPT>
+function getSelectedVal(dd)
+{ return dd.options[dd.selectedIndex].value;
+}
+
+function getSelectedText(dd)
+{ return dd.options[dd.selectedIndex].text;
+}
+
+function selectOptionByVal(dd,val)
+{
+	if (typeof dd != "object") return;
+	var opt=dd.options;
+	if (typeof opt != "object") return;
+
+	if (val != "None")
+	{
+	  var valU=val;
+    if (typeof valU == "string") valU=valU.toUpperCase();
+
+		for (i=0; i < opt.length; i++)
+		{
+			if ((opt[i].value.toUpperCase() == valU) ||
+					(opt[i].text.toUpperCase() == valU))
+			{
+				opt[i].selected=true;
+				return;
+			}
+		}
+	}
+}
+</SCRIPT>
+[end]
+
+[window]
+function openWindow(param,name,w,h)
+{
+var tm = (new Date()).getTime();
+
+var s=window.location.href;
+var i = s.indexOf("?");
+if (i > 0)
+  s = s.substring(0,s.indexOf("?") + 1);
+else
+  s = s + "?";
+s = s + param + "&tm=" + tm;
+//alert (s);
+var win= window.open( s, name,
+"Editor" + tm, ??
+"toolbar=no,location=no,directories=no," +
+"status=no,menubar=no,scrollbars=yes," +
+"resizable=yes,copyhistory=yes," +
+"width="+w+",height="+h);
+//win.location.href=s;
+}
+
+function refrSelf()
+{ window.focus();
+//	history.go(0);
+	document.theForm.submit();
+}
+[end]

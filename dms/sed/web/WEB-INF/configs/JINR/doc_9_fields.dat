@@ -1,0 +1,95 @@
+JINR/doc_9_fields.dat
+
+===== Поля документа "Доп.соглашение к договору поставки" (doc_type=9) =====
+
+==================== Изменения договора затрагивают: ======================
+[changes_read]
+$GET_DATA JINR/doc_9_fields.dat[get changes]
+#changes#
+[end]
+
+[changes_write]
+$GET_DATA JINR/doc_9_fields.dat[get changes]
+$LOG <b>READ: ch_cont=#ch_cont#, ch_summ=#ch_summ#, ch_pay=#ch_pay#, ch_time=#ch_time#, ch_other=#ch_other#; </b><br>
+
+<input type=checkbox name="ch_cont" value="1" onClick="ch_click(this);"
+checked ??ch_cont=1
+> Предмет договора<br>
+
+<input type=checkbox name="ch_summ" value="1" onClick="ch_click(this);"
+checked ??ch_summ=1
+> Сумму договора<br>
+
+<input type=checkbox name="ch_pay" value="1" onClick="ch_click(this);"
+checked ??ch_pay=1
+> Порядок оплаты<br>
+
+<input type=checkbox name="ch_time" value="1" onClick="ch_click(this);"
+checked ??ch_time=1
+> Сроки выполнения обязательств<br>
+
+<input type=checkbox name="ch_other" value="1" onClick="ch_click(this);"
+checked ??ch_other=1
+> Прочие условия договора<br>
+
+<script>
+var ch_click = function(cb){
+if(cb.name=="ch_summ") {
+    if(cb.checked) $(".embedded_object").show(200);
+    else $(".embedded_object").hide(200);
+}
+alert(cb.name + ":" + cb.checked); ??
+}
+</script>
+[end]
+
+[get changes]
+select ch_cont, ch_summ, ch_pay, ch_time, ch_other
+from d_data_9
+where id=#DOC_DATA_RECORD_ID#
+[end]
+
+[changes_save]
+$LOG <b>ch_cont=#ch_cont#, ch_summ=#ch_summ#, ch_pay=#ch_pay#, ch_time=#ch_time#, ch_other=#ch_other#; </b><br>
+$GET_DATA JINR/doc_9_fields.dat[set changes]
+[end]
+
+[set changes]
+update d_data_9 set
+changes=concat(''
+,'- Предмет договора<br>'  ??ch_cont=1
+,'- Сумму договора<br>'  ??ch_summ=1
+,'- Порядок оплаты<br>'  ??ch_pay=1
+,'- Сроки выполнения обязательств<br>'  ??ch_time=1
+,'- Прочие условия договора<br>'  ??ch_other=1
+)
+, ch_cont=1 ??ch_cont
+, ch_cont=0 ??!ch_cont
+, ch_summ=1 ??ch_summ
+, ch_summ=0 ??!ch_summ
+, ch_pay=1 ??ch_pay
+, ch_pay=0 ??!ch_pay
+, ch_time=1 ??ch_time
+, ch_time=0 ??!ch_time
+, ch_other=1 ??ch_other
+, ch_other=0 ??!ch_other
+where id=#DOC_DATA_RECORD_ID#
+[end]
+
+
+==================== Источники финансирования: ======================
+
+[bc_list_read]
+$SET_PARAMETERS css_modificator=display:none; ??!ch_summ=1
+$INCLUDE JINR/_common_fields.dat[bc_list_read] 
+[end]
+
+[bc_list_write] 
+$SET_PARAMETERS css_modificator=display:none; ??!ch_summ=1
+$INCLUDE JINR/_common_fields.dat[bc_list_write] 
+[end]
+
+
+[bc_list_save]
+$INCLUDE JINR/_common_fields.dat[bc_list_save] 
+[end]

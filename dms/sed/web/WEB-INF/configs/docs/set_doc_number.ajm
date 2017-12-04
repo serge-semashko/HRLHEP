@@ -1,0 +1,140 @@
+set_doc_number.cfg
+
+
+
+
+[report]
+$INCLUDE [autoregister] ??auto=y
+$INCLUDE [div_register]  ??!auto=y
+[end]
+
+$INCLUDE [manualregister] ??!auto=y&!DIV_NUMBER
+
+--------------------------------------------------------------------------------
+--------------------------- manual div register --------------------------------------
+--------------------------------------------------------------------------------
+[div_register]  ***** ручная регистрация номера в лаборатории
+
+$INCLUDE [set div_number]  ??cop=save
+$INCLUDE [div_form]     ??!DOC_DATE&!DIV_NUMBER|!DIV_CODE
+$INCLUDE [change botton] ??DOC_DATE
+[end]
+
+[div_form]
+$GET_DATA [get div code]  
+№ 
+#DIV_CODE# 
+<input class="big" id="DIV_CODE" name="DIV_CODE" size=3>  ??!DIV_CODE
+- <input class="big" id="DIV_NUMBER" name="DIV_NUMBER" value="#DIV_NUMBER#" size=3>  
+
+<button class="butt1 pt" id="register_button" onclick = "
+ event.preventDefault(); event.stopPropagation();  ??
+if(confirm('Присвоить документу номер и дату')) ??
+ {
+    AjaxCall('doc_reg_number', 'c=docs/set_doc_number&cop=save&doc_id=#doc_id#&DIV_CODE=#DIV_CODE#'
+   + $('##DIV_CODE').val() ??!DIV_CODE
+  + '&DIV_NUMBER=' + $('##DIV_NUMBER').val(), true);
+ $('##register_button').hide(200);
+}">Сохранить</button><br>
+
+[end]
+
+[get div code]
+try: select LPAD(format(floor(div_id / 1000), 0), 3, '0') as "DIV_CODE"
+from d_divs where doc_id=#doc_id#
+order by div_id
+;
+try: select SUBSTRING(number, 5) as "DIV_NUMBER" from d_list where id=#doc_id#
+[end]
+
+[change botton]
+<button class="butt1 pt" id="register_button" onclick = "
+event.preventDefault(); event.stopPropagation(); ??
+    AjaxCall('doc_reg_number', 'c=docs/set_doc_number&doc_id=#doc_id#', true); $('##register_button').hide(200); ">Изменить </button><br>
+[end]
+
+[set div_number]
+$GET_DATA [set div doc number SQL]
+$GET_DATA [get doc number]
+№#NUMBER# от #DOC_DATE#
+$INCLUDE [change botton]  ??
+[end]
+
+[set div doc number SQL]
+update d_list set 
+number='#DIV_CODE#-#DIV_NUMBER#', doc_date=now() ??DIV_NUMBER
+number=null, doc_date=null  ??!DIV_NUMBER
+where id=#doc_id#
+[end]
+
+--------------------------------------------------------------------------------
+--------------------------- autoregister --------------------------------------
+--------------------------------------------------------------------------------
+[autoregister]
+$GET_DATA [auto set doc number SQL]
+№#NUMBER# от #DOC_DATE#
+$CALL_SERVICE c=docs/doc_out_files; 
+
+<script type="text/javascript">
+  $('##register_button').hide(200);
+  AjaxCall('out-file-list-tab', 'c=docs/out_files_list.cfg&doc_id=#doc_id#', true);
+  AjaxCall("c_settings", "c=gateway/post_doc&doc_id=#doc_id#", true); ??POST_DOC_AT_STEP=1&!ERROR&NUMBER&DOC_DATE
+</script>
+[end]
+
+[auto set doc number SQL]
+select type_id as DOC_TYPE_ID from d_list where id=#doc_id#
+;
+select ifnull(max(CONVERT(ifnull(number,0),UNSIGNED INTEGER))+1,1) as NUMBER, DATE_FORMAT(now(), '#dateFormat#') as DOC_DATE
+ ,'Y' as REFRESH_PRINT_FORM
+from d_list where type_id=#DOC_TYPE_ID# and id<>#doc_id# and extract(year from now())=extract(year from doc_date)
+;
+update d_list set number=#NUMBER#, doc_date=now() where id=#doc_id# 
+;
+[end]
+
+--------------------------------------------------------------------------------
+--------------------------- manualregister - не исп. ---------------------------
+--------------------------------------------------------------------------------
+[manualregister]
+$INCLUDE [enter number form] ??!cop=doIt
+$INCLUDE [set number] ??cop=doIt
+[end]
+
+[enter number form]
+$GET_DATA [get doc number]
+№<input name=NUMBER size=5 value="#NUMBER#">
+дата: <input name=DOC_DATE id=DOC_DATE size=9 value="#DOC_DATE#" onKeyUp="fixDate(this);" onChange="checkDate(this);">
+<input type=hidden name=cop value="doIt"> ??
+<button class="butt1 pt" id="register_button" onclick = "event.preventDefault(); event.stopPropagation(); 
+    AjaxCall('doc_reg_number', 'c=docs/set_doc_number&doc_id=#doc_id#&cop=doIt', true, 'doc_reg_number'); $('##register_button').hide(200); ">Сохранить</button>
+
+<script>
+ $("##DOC_DATE").datepick({yearRange:	'c-2:c+7', showSpeed: 'fast'});
+</script>
+
+[end]
+
+
+[set number]
+$SET_PARAMETERS NUMBER=null;  ??!NUMBER
+$GET_DATA [manual set doc number SQL]
+№#NUMBER# от #DOC_DATE#
+<button class="butt1 pt" id="register_button" onclick = "event.preventDefault(); event.stopPropagation(); 
+    AjaxCall('doc_reg_number', 'c=docs/set_doc_number&doc_id=#doc_id#', true); $('##register_button').hide(200); ">Изменить </button>
+
+[end]
+
+[get doc number]
+select number as NUMBER, DATE_FORMAT(doc_date,'#dateFormat#') as DOC_DATE
+from d_list where id=#doc_id# 
+;
+[end]
+
+[manual set doc number SQL]
+update d_list set number=#NUMBER#, 
+doc_date=STR_TO_DATE('#DOC_DATE#','#dateFormat#')  ??DOC_DATE
+doc_date=now()  ??!DOC_DATE
+where id=#doc_id# 
+;
+[end]

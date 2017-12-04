@@ -1,0 +1,18 @@
+body{
+font: 14px Tahoma; 
+margin:0;
+background: #FFF;
+padding:0px;
+
+}
+.whatsnew{
+
+}
+.whatsnew li{
+ padding-bottom:2em;
+
+}
+.whatsnew img{
+max-height:300px;
+max-width:300px;
+}

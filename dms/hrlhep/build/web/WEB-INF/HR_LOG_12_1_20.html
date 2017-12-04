@@ -1,0 +1,2113 @@
+<html>
+    <head>
+        <title>HR LHEP Log</title>
+        <META http-equiv=Content-Type content="text/html; charset=utf-8">
+        <style>
+            body{background-color:#eefff4;}
+            xmp {margin:0;} 
+            .pt {cursor:pointer;} 
+            span.req_start {border:solid 1px red; font-weight:bold; background-color:#FFFFA0;}
+            span.req_end {border:solid 1px red; font-weight:bold; background-color:#D0FFB0;}
+            div.req {display:none; border:solid 1px red; padding:4px; background-color:white;}
+
+            span.ss_start {border:solid 1px red; background-color:#D0E8FF;}
+            span.ss_back {border:solid 1px blue; background-color:#D0FFB0;}
+            div.ss {display:none; border:solid 1px green; border-right:none; padding:6px; margin-left:5px;}
+        </style>
+        <script type="text/javascript">
+            var toggleDiv = function (id) {
+                var d = document.getElementById(id);
+                if (d.style.display === "block")
+                    d.style.display = "none";
+                else
+                    d.style.display = "block";
+            };
+        </script>
+    </head><body>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_24");'>Request_HR_LHEP_24 (edit/personal) DONE! (220ms)</span> <BR>
+<b>$INCLUDE </b>dat/common.dat[rowLinks]<BR>
+$$$$$$$$$$ prevSetLink=<a class=page href="javascript:; goToRow();"> <<< предыд. </a></div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_25");'> Request_HR_LHEP_25 [01.12 20:00:10] : 0:0:0:0:0:0:0:1 c=tab_personal_table</span><div id='Request_HR_LHEP_25' class='req'> queryString:c=tab_personal_table&srn=1&srt=sotr.FIO&fio=егостаева &rpp=20&ajax=Y; log=true; session inactive=min;<br><b>$INCLUDE </b>[criteria]<BR>
+<br> <b>SQL: [[get Totals] (1) ]:</b><xmp>select count(*) as "NUM_RECORDS"
+from sotrudniki sotr
+where 1=1
+and sotr.FIO like 'егостаева%'
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+NUM_RECORDS=0</xmp>------ SQL done, 4ms.<br><BR>
+<b>$INCLUDE </b>[criteria]<BR>
+ SQL: [SQL]<BR>
+<b>$INCLUDE </b>[criteria]<BR>
+<br> <b>SQL: [SQL]:</b><xmp>select sotr.tab_n, sotr.FIO, sotr.history_contract, sotr.stepen, sotr.otdel, sotr.shtat_direct
+, sotr.division, sotr.div_code, sotr.post, date_format(sotr.dr,'%d.%m.%Y') birthday
+, sotr.usl_truda, sotr.usl_rab, sotr.category, sotr.grazhdan, date_format(sotr.nachalo_rab,'%d.%m.%Y') nachalo_rab
+, date_format(sotr.okonch_rab,'%d.%m.%Y') okonch_rab, sotr.otdel, sotr.shtat_direct
+, sotr.sovmeshenie
+, ((YEAR(CURRENT_DATE)-YEAR(dr))-(DATE_FORMAT(CURRENT_DATE, '%m%d')<DATE_FORMAT(dr, '%m%d'))) AS age
+from sotrudniki sotr
+where 1=1
+and sotr.FIO like 'егостаева%'
+order by sotr.FIO
+</xmp> <b> Processed in 4ms. </b><br> <b> NumTableRows=0; </b><BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_25");'>Request_HR_LHEP_25 (tab_personal_table) DONE! (173ms)</span> <BR>
+<b>$INCLUDE </b>dat/common.dat[rowLinks]<BR>
+$$$$$$$$$$ prevSetLink=<a class=page href="javascript:; goToRow();"> <<< предыд. </a></div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_26");'> Request_HR_LHEP_26 [01.12 20:00:22] : 0:0:0:0:0:0:0:1 c=tab_personal_table</span><div id='Request_HR_LHEP_26' class='req'> queryString:c=tab_personal_table&srn=1&srt=sotr.FIO&fio=легостаева &rpp=20&ajax=Y; log=true; session inactive=min;<br><b>$INCLUDE </b>[criteria]<BR>
+<br> <b>SQL: [[get Totals] (1) ]:</b><xmp>select count(*) as "NUM_RECORDS"
+from sotrudniki sotr
+where 1=1
+and sotr.FIO like 'легостаева%'
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+NUM_RECORDS=1</xmp>------ SQL done, 3ms.<br><BR>
+<b>$INCLUDE </b>[criteria]<BR>
+ SQL: [SQL]<BR>
+<b>$INCLUDE </b>[criteria]<BR>
+<br> <b>SQL: [SQL]:</b><xmp>select sotr.tab_n, sotr.FIO, sotr.history_contract, sotr.stepen, sotr.otdel, sotr.shtat_direct
+, sotr.division, sotr.div_code, sotr.post, date_format(sotr.dr,'%d.%m.%Y') birthday
+, sotr.usl_truda, sotr.usl_rab, sotr.category, sotr.grazhdan, date_format(sotr.nachalo_rab,'%d.%m.%Y') nachalo_rab
+, date_format(sotr.okonch_rab,'%d.%m.%Y') okonch_rab, sotr.otdel, sotr.shtat_direct
+, sotr.sovmeshenie
+, ((YEAR(CURRENT_DATE)-YEAR(dr))-(DATE_FORMAT(CURRENT_DATE, '%m%d')<DATE_FORMAT(dr, '%m%d'))) AS age
+from sotrudniki sotr
+where 1=1
+and sotr.FIO like 'легостаева%'
+order by sotr.FIO
+</xmp> <b> Processed in 3ms. </b><br> <b> NumTableRows=1; </b><BR>
+<b>$INCLUDE </b>dat/common.dat[rpp]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_26");'>Request_HR_LHEP_26 (tab_personal_table) DONE! (425ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_27");'> Request_HR_LHEP_27 [01.12 20:00:39] : 0:0:0:0:0:0:0:1 c=tab_salary</span><div id='Request_HR_LHEP_27' class='req'> queryString:c=tab_salary&ajax=Y; log=true; session inactive=min;<br><br> <b>SQL: [[get dropdowns] (1) ]:</b><xmp>select distinct concat('<option value="', otdel, '" '
+, case when otdel='' then 'selected' else '' end
+, '>' , otdel, '</option>') as OTDEL
+from sotrudniki
+order by otdel
+</xmp><xmp>***** 38 record(s) retrieved. Filled 1 parameters: 
+OTDEL=<option value="АБ" >АБ</option><option value="ГСиК" >ГСиК</option><option value="ДСН" >ДСН</option><option value="ИЭО" >ИЭО</option><option value="КО" >КО</option><option value="НИКО" >НИКО</option><option value="НИОСЭН" >НИОСЭН</option><option value="НМО КТС" >НМО КТС</option><option value="НТОП" >НТОП</option><option value="НЭО ИиКН" >НЭО ИиКН</option><option value="НЭО СМиТ" >НЭО СМиТ</option><option value="НЭО ФCMS" >НЭО ФCMS</option><option value="НЭОАФИ" >НЭОАФИ</option><option value="НЭОИФПУ" >НЭОИФПУ</option><option value="НЭОЛКЛ" >НЭОЛКЛ</option><option value="НЭОМД (MPD)" >НЭОМД (MPD)</option><option value="НЭОРЭС" >НЭОРЭС</option><option value="НЭОСФМС" >НЭОСФМС</option><option value="НЭОУС" >НЭОУС</option><option value="НЭОФТИ на LHC" >НЭОФТИ на LHC</option><option value="НЭОФТИ на RHIC" >НЭОФТИ на RHIC</option><option value="НЭОФТИ" >НЭОФТИ</option><option value="Отделение №1 Ускорительное" >Отделение №1 Ускорительное</option><option value="Отделение №2 Нуклотрон-NICA" >Отделение №2 Нуклотрон-NICA</option><option value="Отделение №3 - Физики адронов" >Отделение №3 - Физики адронов</option><option value="Отделение №5-НМИиИ" >Отделение №5-НМИиИ</option><option value="Отделение №6 - ГИ" >Отделение №6 - ГИ</option><option value="ПФБ" >ПФБ</option><option value="рук-во ЛФВЭ" >рук-во ЛФВЭ</option><option value="СДС" >СДС</option><option value="СКИ" >СКИ</option><option value="СНЭО" >СНЭО</option><option value="СРС" >СРС</option><option value="ССД" >ССД</option><option value="СФ АТЛАС" >СФ АТЛАС</option><option value="СФСКЯ" >СФСКЯ</option><option value="ХО" >ХО</option><option value="ЦОЭП" >ЦОЭП</option></xmp>------ SQL done, 7ms.<br><BR>
+<br> <b>SQL: [[get dropdowns] (2) ]:</b><xmp>select distinct concat('<option value="', post, '" '
+, case when post='' then 'selected' else '' end
+, '>' , post, '</option>') as POST
+from sotrudniki
+order by post
+</xmp><xmp>***** 111 record(s) retrieved. Filled 1 parameters: 
+POST=<option value="аппаратчик ожижения водорода и гелия" >аппаратчик ожижения водорода и гелия</option><option value="ведущий инженер по охране труда" >ведущий инженер по охране труда</option><option value="ведущий инженер" >ведущий инженер</option><option value="ведущий конструктор" >ведущий конструктор</option><option value="ведущий научный сотрудник" >ведущий научный сотрудник</option><option value="ведущий программист" >ведущий программист</option><option value="ведущий технолог" >ведущий технолог</option><option value="ведущий экономист" >ведущий экономист</option><option value="ведущий электроник" >ведущий электроник</option><option value="гальваник" >гальваник</option><option value="главный инженер лаборатории" >главный инженер лаборатории</option><option value="главный инженер установки" >главный инженер установки</option><option value="главный научный сотрудник" >главный научный сотрудник</option><option value="главный технический специалист" >главный технический специалист</option><option value="гравер" >гравер</option><option value="директор лаборатории" >директор лаборатории</option><option value="заведующий складом" >заведующий складом</option><option value="заведующий техническим архивом" >заведующий техническим архивом</option><option value="заведующий хозяйством" >заведующий хозяйством</option><option value="заместитель главного инженера лаборатории" >заместитель главного инженера лаборатории</option><option value="заместитель директора лаборатории по научной работе" >заместитель директора лаборатории по научной работе</option><option value="заместитель начальника отдела" >заместитель начальника отдела</option><option value="заместитель начальника отделения по научной работе" >заместитель начальника отделения по научной работе</option><option value="заместитель начальника цеха" >заместитель начальника цеха</option><option value="заточник" >заточник</option><option value="и.о.ведущего научного сотрудника" >и.о.ведущего научного сотрудника</option><option value="и.о.научного сотрудника" >и.о.научного сотрудника</option><option value="и.о.начальника сектора" >и.о.начальника сектора</option><option value="и.о.старшего научного сотрудника" >и.о.старшего научного сотрудника</option><option value="инженер" >инженер</option><option value="инженер-конструктор 1 категории" >инженер-конструктор 1 категории</option><option value="инженер-конструктор 2 категории" >инженер-конструктор 2 категории</option><option value="инженер-конструктор 3 категории" >инженер-конструктор 3 категории</option><option value="инженер-конструктор" >инженер-конструктор</option><option value="инженер-программист 1 категории" >инженер-программист 1 категории</option><option value="инженер-программист" >инженер-программист</option><option value="инженер-технолог 1 категории" >инженер-технолог 1 категории</option><option value="инженер-технолог 3 категории" >инженер-технолог 3 категории</option><option value="инженер-технолог" >инженер-технолог</option><option value="инженер-электроник 1 категории" >инженер-электроник 1 категории</option><option value="инженер-электроник 2 категории" >инженер-электроник 2 категории</option><option value="инженер-электроник" >инженер-электроник</option><option value="кладовщик инструментальной кладовой" >кладовщик инструментальной кладовой</option><option value="консультант при дирекции лаборатории" >консультант при дирекции лаборатории</option><option value="консультант" >консультант</option><option value="лаборант обработки фильмовой информации физического эксперимента" >лаборант обработки фильмовой информации физического эксперимента</option><option value="лаборант ускорительной установки" >лаборант ускорительной установки</option><option value="лаборант физической лаборатории" >лаборант физической лаборатории</option><option value="лаборант химико-технологических исследований" >лаборант химико-технологических исследований</option><option value="лаборант" >лаборант</option><option value="маляр" >маляр</option><option value="мастер" >мастер</option><option value="машинист компрессорных установок" >машинист компрессорных установок</option><option value="машинист по стирке и ремонту спецодежды" >машинист по стирке и ремонту спецодежды</option><option value="механик цеха" >механик цеха</option><option value="механик экспериментальных стендов и установок" >механик экспериментальных стендов и установок</option><option value="младший научный сотрудник" >младший научный сотрудник</option><option value="монтажник радиоэлектронной аппаратуры и приборов" >монтажник радиоэлектронной аппаратуры и приборов</option><option value="монтажник санитарно-технических систем и оборудования" >монтажник санитарно-технических систем и оборудования</option><option value="монтажник технологического оборудования и связанных с ним конструкций" >монтажник технологического оборудования и связанных с ним конструкций</option><option value="научный сотрудник" >научный сотрудник</option><option value="начальник бюро" >начальник бюро</option><option value="начальник группы" >начальник группы</option><option value="начальник отдела " >начальник отдела </option><option value="начальник отдела" >начальник отдела</option><option value="начальник отделения" >начальник отделения</option><option value="начальник сектора" >начальник сектора</option><option value="начальник службы" >начальник службы</option><option value="начальник цеха" >начальник цеха</option><option value="переводчик" >переводчик</option><option value="плотник" >плотник</option><option value="подсобный рабочий" >подсобный рабочий</option><option value="полировщик" >полировщик</option><option value="помощник директора лаборатории по капитальному строительству" >помощник директора лаборатории по капитальному строительству</option><option value="помощник директора лаборатории по общим вопросам" >помощник директора лаборатории по общим вопросам</option><option value="помощник директора лаборатории по финансовым вопросам" >помощник директора лаборатории по финансовым вопросам</option><option value="помощник начальника цеха по хозяйственным вопросам" >помощник начальника цеха по хозяйственным вопросам</option><option value="почетный директор лаборатории" >почетный директор лаборатории</option><option value="сверловщик" >сверловщик</option><option value="секретарь-референт" >секретарь-референт</option><option value="слесарь аварийно-восстановительных работ" >слесарь аварийно-восстановительных работ</option><option value="слесарь механосборочных работ" >слесарь механосборочных работ</option><option value="слесарь по контрольно-измерительным приборам и автоматике" >слесарь по контрольно-измерительным приборам и автоматике</option><option value="слесарь по ремонту и обслуживанию систем вентиляции и кондиционирования" >слесарь по ремонту и обслуживанию систем вентиляции и кондиционирования</option><option value="слесарь-ремонтник" >слесарь-ремонтник</option><option value="слесарь-сборщик радиоэлектронной аппаратуры и приборов" >слесарь-сборщик радиоэлектронной аппаратуры и приборов</option><option value="советник при дирекции лаборатории" >советник при дирекции лаборатории</option><option value="советник" >советник</option><option value="станочник широкого профиля" >станочник широкого профиля</option><option value="старший инженер" >старший инженер</option><option value="старший инспектор" >старший инспектор</option><option value="старший лаборант" >старший лаборант</option><option value="старший лаборант, имеющий высшее образование" >старший лаборант, имеющий высшее образование</option><option value="старший мастер" >старший мастер</option><option value="старший научный сотрудник" >старший научный сотрудник</option><option value="старший переводчик" >старший переводчик</option><option value="старший техник" >старший техник</option><option value="старший товаровед" >старший товаровед</option><option value="старший экономист" >старший экономист</option><option value="столяр" >столяр</option><option value="техник" >техник</option><option value="токарь" >токарь</option><option value="тракторист" >тракторист</option><option value="уборщик производственных помещений" >уборщик производственных помещений</option><option value="ученый секретарь лаборатории" >ученый секретарь лаборатории</option><option value="фрезеровщик" >фрезеровщик</option><option value="художник" >художник</option><option value="электрогазосварщик" >электрогазосварщик</option><option value="электромонтер по обслуживанию электрооборудования" >электромонтер по обслуживанию электрооборудования</option><option value="электромонтер по ремонту и обслуживанию электрооборудования" >электромонтер по ремонту и обслуживанию электрооборудования</option><option value="электросварщик ручной сварки" >электросварщик ручной сварки</option></xmp>------ SQL done, 12ms.<br><BR>
+<br> <b>SQL: [[get dropdowns] (3) ]:</b><xmp>select distinct concat('<option value="', category, '" '
+, case when category='' then 'selected' else '' end
+, '>' , category, '</option>') as CATEGORIES
+from sotrudniki
+order by category
+</xmp>XXXXXXXX Exception: java.sql.SQLException: Expression #1 of ORDER BY clause is not in SELECT list, references column 'hrlhep.sotrudniki.category' which is not in SELECT list; this is incompatible with DISTINCT; SQL: 'select distinct concat('<option value="', category, '" ' , case when category='' then 'selected' else '' end , '>' , category, '</option>') as CATEGORIES from sotrudniki order by category'<BR>
+XXXXXXXX FATAL Exception - QUIT <BR>
+<br><span class='ss_start pt'  onClick='toggleDiv("tab_salary_table1512147639443");'> $CALL_SERVICE: <b>tab_salary.cfg => tab_salary_table</b> (request:HR_LHEP_27)</span><div id='tab_salary_table1512147639443' class='ss'><br> <b>SQL: [[get Totals] (1) ]:</b><xmp>select sum(ifnull(oklad.oklad,0)+ifnull(oklad.kompens,0)+ifnull(oklad.dopl_stepen,0)
++ifnull(oklad.personal_nadbav,0)+ifnull(oklad.perconal_imen_nadbav,0)
++ifnull(oklad.premija_rabochim+oklad.sovmeshenie,0)) as SUM_OTDEL
+from sotrudniki sotr
+left join oklad on sotr.tab_n=oklad.tab_n
+where 1=1
+order by sotr.FIO
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+SUM_OTDEL=2577268.00</xmp>------ SQL done, 5ms.<br><BR>
+<br> <b>SQL: [[get Totals] (2) ]:</b><xmp>select sum(ifnull(oklad.oklad,0)+ifnull(oklad.kompens,0)+ifnull(oklad.dopl_stepen,0)
++ifnull(oklad.personal_nadbav,0)+ifnull(oklad.perconal_imen_nadbav,0)
++ifnull(oklad.premija_rabochim+oklad.sovmeshenie,0)) as SUM_OTDELENIE
+from sotrudniki sotr
+left join oklad on sotr.tab_n=oklad.tab_n
+where 1=1
+order by sotr.FIO
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+SUM_OTDELENIE=2577268.00</xmp>------ SQL done, 5ms.<br><BR>
+<br> <b>SQL: [[get Totals] (3) ]:</b><xmp>select sum(ifnull(oklad.oklad,0)+ifnull(oklad.kompens,0)+ifnull(oklad.dopl_stepen,0)
++ifnull(oklad.personal_nadbav,0)+ifnull(oklad.perconal_imen_nadbav,0)
++ifnull(oklad.premija_rabochim+oklad.sovmeshenie,0)) as SUM_CATEGORY
+from sotrudniki sotr
+left join oklad on sotr.tab_n=oklad.tab_n
+where 1=1
+order by sotr.FIO
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+SUM_CATEGORY=2577268.00</xmp>------ SQL done, 4ms.<br><BR>
+ SQL: [SQL]<BR>
+<br> <b>SQL: [SQL]:</b><xmp>select sotr.person_id, sotr.tab_n, sotr.F, sotr.I, sotr.O, sotr.FIO, sotr.otdel
+, sotr.division, sotr.shtat_direct, sotr.post, sotr.category, oklad.year
+, oklad.oklad, oklad.kompens, oklad.dopl_stepen, oklad.personal_nadbav
+, oklad.perconal_imen_nadbav, oklad.premija_rabochim, oklad.sovmeshenie
+, ifnull(oklad.oklad,0)+ifnull(oklad.kompens,0)+ifnull(oklad.dopl_stepen,0)
++ifnull(oklad.personal_nadbav,0)+ifnull(oklad.perconal_imen_nadbav,0)
++ifnull(oklad.premija_rabochim+oklad.sovmeshenie,0) as itogo
+from sotrudniki sotr
+left join oklad on sotr.tab_n=oklad.tab_n
+where 1=1
+order by sotr.FIO
+</xmp> <b> Processed in 660ms. </b><br> <b> NumTableRows=200; </b><BR>
+<b>$INCLUDE </b>dat/common.dat[rpp]<BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("tab_salary_table1512147639443");'> BACK: <b>tab_salary_table => tab_salary.cfg; (884ms.)</b></span><BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_27");'>Request_HR_LHEP_27 (tab_salary) DONE! (1113ms)</span> <BR>
+<b>$INCLUDE </b>dat/common.dat[rowLinks]<BR>
+$$$$$$$$$$ prevSetLink=<a class=page href="javascript:; goToRow();"> <<< предыд. </a></div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_28");'> Request_HR_LHEP_28 [01.12 20:00:54] : 0:0:0:0:0:0:0:1 c=tab_salary_table</span><div id='Request_HR_LHEP_28' class='req'> queryString:c=tab_salary_table&srn=1&srt=sotr.FIO&fio=легостаева &rpp=20&ajax=Y; log=true; session inactive=min;<br><br> <b>SQL: [[get Totals] (1) ]:</b><xmp>select sum(ifnull(oklad.oklad,0)+ifnull(oklad.kompens,0)+ifnull(oklad.dopl_stepen,0)
++ifnull(oklad.personal_nadbav,0)+ifnull(oklad.perconal_imen_nadbav,0)
++ifnull(oklad.premija_rabochim+oklad.sovmeshenie,0)) as SUM_OTDEL
+from sotrudniki sotr
+left join oklad on sotr.tab_n=oklad.tab_n
+where 1=1
+order by sotr.FIO
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+SUM_OTDEL=2577268.00</xmp>------ SQL done, 5ms.<br><BR>
+<br> <b>SQL: [[get Totals] (2) ]:</b><xmp>select sum(ifnull(oklad.oklad,0)+ifnull(oklad.kompens,0)+ifnull(oklad.dopl_stepen,0)
++ifnull(oklad.personal_nadbav,0)+ifnull(oklad.perconal_imen_nadbav,0)
++ifnull(oklad.premija_rabochim+oklad.sovmeshenie,0)) as SUM_OTDELENIE
+from sotrudniki sotr
+left join oklad on sotr.tab_n=oklad.tab_n
+where 1=1
+order by sotr.FIO
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+SUM_OTDELENIE=2577268.00</xmp>------ SQL done, 4ms.<br><BR>
+<br> <b>SQL: [[get Totals] (3) ]:</b><xmp>select sum(ifnull(oklad.oklad,0)+ifnull(oklad.kompens,0)+ifnull(oklad.dopl_stepen,0)
++ifnull(oklad.personal_nadbav,0)+ifnull(oklad.perconal_imen_nadbav,0)
++ifnull(oklad.premija_rabochim+oklad.sovmeshenie,0)) as SUM_CATEGORY
+from sotrudniki sotr
+left join oklad on sotr.tab_n=oklad.tab_n
+where 1=1
+order by sotr.FIO
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+SUM_CATEGORY=2577268.00</xmp>------ SQL done, 4ms.<br><BR>
+ SQL: [SQL]<BR>
+<br> <b>SQL: [SQL]:</b><xmp>select sotr.person_id, sotr.tab_n, sotr.F, sotr.I, sotr.O, sotr.FIO, sotr.otdel
+, sotr.division, sotr.shtat_direct, sotr.post, sotr.category, oklad.year
+, oklad.oklad, oklad.kompens, oklad.dopl_stepen, oklad.personal_nadbav
+, oklad.perconal_imen_nadbav, oklad.premija_rabochim, oklad.sovmeshenie
+, ifnull(oklad.oklad,0)+ifnull(oklad.kompens,0)+ifnull(oklad.dopl_stepen,0)
++ifnull(oklad.personal_nadbav,0)+ifnull(oklad.perconal_imen_nadbav,0)
++ifnull(oklad.premija_rabochim+oklad.sovmeshenie,0) as itogo
+from sotrudniki sotr
+left join oklad on sotr.tab_n=oklad.tab_n
+where 1=1
+and sotr.FIO like 'легостаева%'
+order by sotr.FIO
+</xmp> <b> Processed in 3ms. </b><br> <b> NumTableRows=1; </b><BR>
+<b>$INCLUDE </b>dat/common.dat[rpp]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_28");'>Request_HR_LHEP_28 (tab_salary_table) DONE! (145ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_29");'> Request_HR_LHEP_29 [01.12 20:01:5] : 0:0:0:0:0:0:0:1 c=edit/salary</span><div id='Request_HR_LHEP_29' class='req'> queryString:c=edit/salary&tab_n=155768&ajax=Y; log=true; session inactive=min;<br><br> <b>SQL: [[getRecord] (1) ]:</b><xmp>select sotr.FIO, sotr.tab_n, sotr.post, oklad.year
+, oklad.oklad, oklad.kompens, oklad.dopl_stepen, oklad.personal_nadbav
+, oklad.perconal_imen_nadbav, oklad.premija_rabochim, oklad.sovmeshenie
+, ifnull(oklad.oklad,0)+ifnull(oklad.kompens,0)+ifnull(oklad.dopl_stepen,0)
++ifnull(oklad.personal_nadbav,0)+ifnull(oklad.perconal_imen_nadbav,0)
++ifnull(oklad.premija_rabochim,0)+ifnull(oklad.sovmeshenie,0) summa
+from sotrudniki sotr
+left join oklad on sotr.tab_n=oklad.tab_n
+where sotr.tab_n=155768
+</xmp><xmp>***** 1 record(s) retrieved. Filled 4 parameters: 
+FIO=Легостаева Ксения Сергеевна  
+tab_n=155768
+post=инженер
+summa=0.00</xmp>------ SQL done, 3ms.<br><BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_29");'>Request_HR_LHEP_29 (edit/salary) DONE! (86ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_30");'> Request_HR_LHEP_30 [01.12 20:03:11] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_30' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=1&Command=PutObject&ObjectType=7&SrcObjectID=26731&GateObjectID=125307&ClientObjectID=250270&Time=01.12.2017 11:57:56&Object={
+"ФИО": "Альбин Юрий Валерианович",
+"ТабельныйНомер": "280589",
+"ИсточникаКомплектования": "958f5b1c-1c3d-11e2-ab6e-000e0ce597c9",
+"ИсточникаКомплектованияКод": "000000261",
+"ИсточникКомплектованияНаименование": "по свободному найму",
+"УсловияРаботы": "ed6502ec-437f-11e2-993a-000e0ce597c9",
+"УсловияРаботыКод": "000000354",
+"Условия.....; log=true; session inactive=min;<br><hr>gateway/receive.cfg<br>gateway/receive.cfg: ClientID=1; Command=PutObject; ObjectType=7; ObjectID=; GlobalID=; ClientObjectID=250270;<br> Разряд=<BR>
+ ФизЛицоКод=0000000122<BR>
+ ДатаНачалаРаботы=15.02.2008 00:00:00<BR>
+ ФизЛицо=0009d30c-0fa8-11e2-9f27-000e0ce597c9<BR>
+ Пол=Мужской<BR>
+ ТарифнаяСетка=<BR>
+ УсловияТрудаНаименование=допустимые<BR>
+ ГражданствоНаименование=РОССИЯ<BR>
+ УсловияТрудаДата=01.09.2016 00:00:00<BR>
+ КартаСОУТ=№ 390 от 01.11.2015<BR>
+ Подразделение=fb62b202-d7c1-11e1-bad5-e0cb4eda5b1f<BR>
+ ГрафикРаботы=Пятидневка по 8 часов (8ч.)<BR>
+ УслДатаОк=<BR>
+ ИсточникаКомплектования=958f5b1c-1c3d-11e2-ab6e-000e0ce597c9<BR>
+ Оклад=28750<BR>
+ СрокПолномочий=<BR>
+ Должность=6b3c7311-d7c1-11e1-bad5-e0cb4eda5b1f<BR>
+ ДатаОкончанияРаботы=12.01.2021 00:00:00<BR>
+ ТарифнаяСеткаНаименование=<BR>
+ ПодразделениеНаименование=Сектор №3 химия трансактиноидов<BR>
+ ГражданствоКод=643<BR>
+ ПометкаУдаления=Нет<BR>
+ ИНН=290120397311<BR>
+ УсловияТруда=6faced06-1c3e-11e2-ab6e-000e0ce597c9<BR>
+ ДолжностьДата=13.01.2018 00:00:00<BR>
+ ФИО=Альбин Юрий Валерианович<BR>
+ УсловияТрудаКод=000000277<BR>
+ ДатаОклада=01.04.2017 00:00:00<BR>
+ СтранаНаименование=<BR>
+ УсловияРаботыНаименование=по сроч.труд. договору, на опр срок. Ст.58 п.2 ТК<BR>
+ ШтатНаименование=Основной штат<BR>
+ ДатаРождения=17.03.1985 00:00:00<BR>
+ СтранаКод=<BR>
+ УсловияРаботы=ed6502ec-437f-11e2-993a-000e0ce597c9<BR>
+ ИсточникаКомплектованияКод=000000261<BR>
+ ШтатКод=000000282<BR>
+ УсловияРаботыКод=000000354<BR>
+ ПФР=122-597-593 77<BR>
+ ДолжностьКод=000000433<BR>
+ Штат=6faced0c-1c3e-11e2-ab6e-000e0ce597c9<BR>
+ ПричинаУвольнения=<BR>
+ Гражданство=982d33e2-bee6-453a-992e-11d13fa66fa7<BR>
+ ИсточникКомплектованияНаименование=по свободному найму<BR>
+ ТарифнаяСеткаКод=<BR>
+ ТабельныйНомер=280589<BR>
+ УсловияРаботыДата=01.05.2013 00:00:00<BR>
+ Страна=<BR>
+ ПодразделениеДата=13.01.2018 00:00:00<BR>
+ ДатаУвольнения=<BR>
+ ДатаГрафика=13.01.2018 00:00:00<BR>
+ ДолжностьНаименование=инженер<BR>
+ ТипДеятельности=Специалисты<BR>
+ ПодразделениеКод=523000<BR>
+* JSON Keys=Разряд, ФизЛицоКод, ДатаНачалаРаботы, ФизЛицо, Пол, ТарифнаяСетка, УсловияТрудаНаименование, ГражданствоНаименование, УсловияТрудаДата, КартаСОУТ, Подразделение, ГрафикРаботы, УслДатаОк, ИсточникаКомплектования, Оклад, СрокПолномочий, Должность, ДатаОкончанияРаботы, ТарифнаяСеткаНаименование, ПодразделениеНаименование, ГражданствоКод, ПометкаУдаления, ИНН, УсловияТруда, ДолжностьДата, ФИО, УсловияТрудаКод, ДатаОклада, СтранаНаименование, УсловияРаботыНаименование, ШтатНаименование, ДатаРождения, СтранаКод, УсловияРаботы, ИсточникаКомплектованияКод, ШтатКод, УсловияРаботыКод, ПФР, ДолжностьКод, Штат, ПричинаУвольнения, Гражданство, ИсточникКомплектованияНаименование, ТарифнаяСеткаКод, ТабельныйНомер, УсловияРаботыДата, Страна, ПодразделениеДата, ДатаУвольнения, ДатаГрафика, ДолжностьНаименование, ТипДеятельности, ПодразделениеКод<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+log <p style="font-family:verdana;color:red;">>#######</p> ####### sss <br>log1 ############## sss <br>log2 ############## sss <br>log3 ############## sss<br><hr>gateway/receive.cfg[process receive] ObjectType=7<br><br><span class='ss_start pt'  onClick='toggleDiv("gateway/receive_7_sotrudnik1512147791445");'> $CALL_SERVICE: <b>gateway/receive.cfg => gateway/receive_7_sotrudnik</b> (request:HR_LHEP_30)</span><div id='gateway/receive_7_sotrudnik1512147791445' class='ss'><hr><b>receive_7_sotrudnik</b><br><b>$INCLUDE </b>[set defaults]<BR>
+<br> <b>SQL: [[check non-staff] (1) ]:</b><xmp>select case when '280589' like 'д%' then 'Y' else '' end as "NON-STAFF"
+</xmp><xmp>***** 1 record(s) retrieved. Filled 0 parameters: </xmp>------ SQL done, 10ms.<br><BR>
+<b>$INCLUDE </b>[process]<BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[check existing record] (1) ]:</b><xmp>select 'Y' as REC_EXISTS, id as REC_ID from info_11
+where ID=280589
+</xmp><xmp>***** 1 record(s) retrieved. Filled 2 parameters: 
+REC_EXISTS=Y
+REC_ID=280589</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (1) ]:</b><xmp>select SUBSTRING_INDEX('Альбин Юрий Валерианович ', ' ', 1) AS F
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+F=Альбин</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (2) ]:</b><xmp>select replace('Альбин Юрий Валерианович ', 'Альбин ','') AS IO
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+IO=Юрий Валерианович </xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (3) ]:</b><xmp>select SUBSTRING_INDEX('Юрий Валерианович ', ' ', 1) AS I
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+I=Юрий</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (4) ]:</b><xmp>select replace('Юрий Валерианович ', 'Юрий ','') AS O
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+O=Валерианович </xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (5) ]:</b><xmp></xmp><b>$INCLUDE </b>[PutObject]<BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[update record] (1) ]:</b><xmp>update info_11 set person_id=0000000122, F='Альбин', I='Юрий', O='Валерианович'
+, div_code=523000, division='Сектор №3 химия трансактиноидов', post='инженер', usl_rab='по сроч.труд. договору, на опр срок. Ст.58 п.2 ТК'
+, FIO='Альбин Юрий Валерианович', changed=now()
+where ID=280589
+</xmp> DONE! 1 record(s) affected------ SQL done, 0ms.<br><BR>
+<br><span class='ss_start pt'  onClick='toggleDiv("gateway/jinr_setPersonPosts1512147791476");'> $CALL_SERVICE: <b>gateway/receive_7_sotrudnik.cfg => gateway/jinr_setPersonPosts</b> (request:HR_LHEP_30)</span><div id='gateway/jinr_setPersonPosts1512147791476' class='ss'><br> <b>SQL: [[clear posts] (1) ]:</b><xmp>update info_11 set posts=''
+where person_id=0000000122
+</xmp> DONE! 1 record(s) affected------ SQL done, 10ms.<br><BR>
+ SQL: [SQL]<BR>
+<br> <b>SQL: [SQL]:</b><xmp>select p.id as "TAB_NOM", p.person_id as "KOD_FIZLICA", p.posts as "POSTS"
+, d.path as DIV_NAME, d.id as div_code
+, p.post as POST
+from info_11 p
+left join info_10 d on d.id=p.div_code
+where p.is_deleted=0
+and p.person_id=0000000122
+order by p.person_id
+</xmp> <b> Processed in 0ms. </b><br><br> <b>SQL: [[setPosts] (1) ]:</b><xmp>select distinct posts as "POSTS", id
+from info_11
+where person_id=122
+order by id
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+id=280589</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [[setPosts] (2) ]:</b><xmp>update info_11 set
+posts='ЛЯР / Сектор №3 химия трансактиноидов, инженер'
+where person_id=122
+</xmp> DONE! 1 record(s) affected------ SQL done, 0ms.<br><BR>
+ <b> NumTableRows=1; </b><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/jinr_setPersonPosts1512147791476");'> BACK: <b>gateway/jinr_setPersonPosts => gateway/receive_7_sotrudnik.cfg; (10ms.)</b></span><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/receive_7_sotrudnik1512147791445");'> BACK: <b>gateway/receive_7_sotrudnik => gateway/receive.cfg; (41ms.)</b></span><BR>
+<hr>----- gateway/receive.cfg[report]: ERR_CODE=0; ERROR=; <br>+++++<b>$INCLUDE </b>gateway/receive[OK]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_30");'>Request_HR_LHEP_30 (gateway/receive) DONE! (311ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_31");'> Request_HR_LHEP_31 [01.12 20:03:11] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_31' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=1&Command=PutObject&ObjectType=7&SrcObjectID=409fd306-0fb8-11e2-9f27-000e0ce597c9&GateObjectID=119685&ClientObjectID=48947&Time=01.12.2017 12:13:59&Object={
+"ФИО": "Лукин Евгений Валерьевич",
+"ТабельныйНомер": "262721",
+"ИсточникаКомплектования": "958f5b1c-1c3d-11e2-ab6e-000e0ce597c9",
+"ИсточникаКомплектованияКод": "000000261",
+"ИсточникКомплектованияНаименование": "по свободному найму",
+"УсловияРаботы": "ed6502ec-437f-11e2-993a-000e0ce597c9",
+"УсловияРабо.....; log=true; session inactive=min;<br><hr>gateway/receive.cfg<br>gateway/receive.cfg: ClientID=1; Command=PutObject; ObjectType=7; ObjectID=; GlobalID=; ClientObjectID=48947;<br> Разряд=<BR>
+ ФизЛицоКод=0000002502<BR>
+ ДатаНачалаРаботы=01.08.2006 00:00:00<BR>
+ ФизЛицо=603e76dc-0fa8-11e2-9f27-000e0ce597c9<BR>
+ Пол=Мужской<BR>
+ ТарифнаяСетка=<BR>
+ УсловияТрудаНаименование=вредные, подкласс 3.1<BR>
+ ГражданствоНаименование=РОССИЯ<BR>
+ УсловияТрудаДата=01.01.2016 00:00:00<BR>
+ КартаСОУТ=№ 46А от 19.11.2014<BR>
+ Подразделение=6bed7441-8242-11e2-93f0-0025907d24fa<BR>
+ ГрафикРаботы=7 часов 12 минут (7ч. 12мин.)<BR>
+ УслДатаОк=02.01.2050 00:00:00<BR>
+ ИсточникаКомплектования=958f5b1c-1c3d-11e2-ab6e-000e0ce597c9<BR>
+ Оклад=27560<BR>
+ СрокПолномочий=<BR>
+ Должность=28cd7a83-560e-11e5-9444-0025907d24fa<BR>
+ ДатаОкончанияРаботы=31.12.2020 00:00:00<BR>
+ ТарифнаяСеткаНаименование=<BR>
+ ПодразделениеНаименование=Группа №3 ДН-12<BR>
+ ГражданствоКод=643<BR>
+ ПометкаУдаления=Нет<BR>
+ ИНН=441402732267<BR>
+ УсловияТруда=9702b131-40cb-11e5-9440-0025907d24fa<BR>
+ ДолжностьДата=10.01.2018 00:00:00<BR>
+ ФИО=Лукин Евгений Валерьевич<BR>
+ УсловияТрудаКод=506586<BR>
+ ДатаОклада=01.04.2017 00:00:00<BR>
+ СтранаНаименование=<BR>
+ УсловияРаботыНаименование=по сроч.труд. договору, на опр срок. Ст.58 п.2 ТК<BR>
+ ШтатНаименование=Основной штат<BR>
+ ДатаРождения=11.05.1982 00:00:00<BR>
+ СтранаКод=<BR>
+ УсловияРаботы=ed6502ec-437f-11e2-993a-000e0ce597c9<BR>
+ ИсточникаКомплектованияКод=000000261<BR>
+ ШтатКод=000000282<BR>
+ УсловияРаботыКод=000000354<BR>
+ ПФР=133-926-047 56<BR>
+ ДолжностьКод=000001013<BR>
+ Штат=6faced0c-1c3e-11e2-ab6e-000e0ce597c9<BR>
+ ПричинаУвольнения=<BR>
+ Гражданство=982d33e2-bee6-453a-992e-11d13fa66fa7<BR>
+ ИсточникКомплектованияНаименование=по свободному найму<BR>
+ ТарифнаяСеткаКод=<BR>
+ ТабельныйНомер=262721<BR>
+ УсловияРаботыДата=01.05.2013 00:00:00<BR>
+ Страна=<BR>
+ ПодразделениеДата=10.01.2018 00:00:00<BR>
+ ДатаУвольнения=<BR>
+ ДатаГрафика=10.01.2018 00:00:00<BR>
+ ДолжностьНаименование=инженер<BR>
+ ТипДеятельности=Специалисты<BR>
+ ПодразделениеКод=402013<BR>
+* JSON Keys=Разряд, ФизЛицоКод, ДатаНачалаРаботы, ФизЛицо, Пол, ТарифнаяСетка, УсловияТрудаНаименование, ГражданствоНаименование, УсловияТрудаДата, КартаСОУТ, Подразделение, ГрафикРаботы, УслДатаОк, ИсточникаКомплектования, Оклад, СрокПолномочий, Должность, ДатаОкончанияРаботы, ТарифнаяСеткаНаименование, ПодразделениеНаименование, ГражданствоКод, ПометкаУдаления, ИНН, УсловияТруда, ДолжностьДата, ФИО, УсловияТрудаКод, ДатаОклада, СтранаНаименование, УсловияРаботыНаименование, ШтатНаименование, ДатаРождения, СтранаКод, УсловияРаботы, ИсточникаКомплектованияКод, ШтатКод, УсловияРаботыКод, ПФР, ДолжностьКод, Штат, ПричинаУвольнения, Гражданство, ИсточникКомплектованияНаименование, ТарифнаяСеткаКод, ТабельныйНомер, УсловияРаботыДата, Страна, ПодразделениеДата, ДатаУвольнения, ДатаГрафика, ДолжностьНаименование, ТипДеятельности, ПодразделениеКод<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+log <p style="font-family:verdana;color:red;">>#######</p> ####### sss <br>log1 ############## sss <br>log2 ############## sss <br>log3 ############## sss<br><hr>gateway/receive.cfg[process receive] ObjectType=7<br><br><span class='ss_start pt'  onClick='toggleDiv("gateway/receive_7_sotrudnik1512147791746");'> $CALL_SERVICE: <b>gateway/receive.cfg => gateway/receive_7_sotrudnik</b> (request:HR_LHEP_31)</span><div id='gateway/receive_7_sotrudnik1512147791746' class='ss'><hr><b>receive_7_sotrudnik</b><br><b>$INCLUDE </b>[set defaults]<BR>
+<br> <b>SQL: [[check non-staff] (1) ]:</b><xmp>select case when '262721' like 'д%' then 'Y' else '' end as "NON-STAFF"
+</xmp><xmp>***** 1 record(s) retrieved. Filled 0 parameters: </xmp>------ SQL done, 0ms.<br><BR>
+<b>$INCLUDE </b>[process]<BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[check existing record] (1) ]:</b><xmp>select 'Y' as REC_EXISTS, id as REC_ID from info_11
+where ID=262721
+</xmp><xmp>***** 1 record(s) retrieved. Filled 2 parameters: 
+REC_EXISTS=Y
+REC_ID=262721</xmp>------ SQL done, 10ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (1) ]:</b><xmp>select SUBSTRING_INDEX('Лукин Евгений Валерьевич ', ' ', 1) AS F
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+F=Лукин</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (2) ]:</b><xmp>select replace('Лукин Евгений Валерьевич ', 'Лукин ','') AS IO
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+IO=Евгений Валерьевич </xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (3) ]:</b><xmp>select SUBSTRING_INDEX('Евгений Валерьевич ', ' ', 1) AS I
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+I=Евгений</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (4) ]:</b><xmp>select replace('Евгений Валерьевич ', 'Евгений ','') AS O
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+O=Валерьевич </xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (5) ]:</b><xmp></xmp><b>$INCLUDE </b>[PutObject]<BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[update record] (1) ]:</b><xmp>update info_11 set person_id=0000002502, F='Лукин', I='Евгений', O='Валерьевич'
+, div_code=402013, division='Группа №3 ДН-12', post='инженер', usl_rab='по сроч.труд. договору, на опр срок. Ст.58 п.2 ТК'
+, FIO='Лукин Евгений Валерьевич', changed=now()
+where ID=262721
+</xmp> DONE! 1 record(s) affected------ SQL done, 30ms.<br><BR>
+<br><span class='ss_start pt'  onClick='toggleDiv("gateway/jinr_setPersonPosts1512147791796");'> $CALL_SERVICE: <b>gateway/receive_7_sotrudnik.cfg => gateway/jinr_setPersonPosts</b> (request:HR_LHEP_31)</span><div id='gateway/jinr_setPersonPosts1512147791796' class='ss'><br> <b>SQL: [[clear posts] (1) ]:</b><xmp>update info_11 set posts=''
+where person_id=0000002502
+</xmp> DONE! 1 record(s) affected------ SQL done, 0ms.<br><BR>
+ SQL: [SQL]<BR>
+<br> <b>SQL: [SQL]:</b><xmp>select p.id as "TAB_NOM", p.person_id as "KOD_FIZLICA", p.posts as "POSTS"
+, d.path as DIV_NAME, d.id as div_code
+, p.post as POST
+from info_11 p
+left join info_10 d on d.id=p.div_code
+where p.is_deleted=0
+and p.person_id=0000002502
+order by p.person_id
+</xmp> <b> Processed in 10ms. </b><br><br> <b>SQL: [[setPosts] (1) ]:</b><xmp>select distinct posts as "POSTS", id
+from info_11
+where person_id=2502
+order by id
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+id=262721</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [[setPosts] (2) ]:</b><xmp>update info_11 set
+posts='ЛНФ / Отделение нейтронных исследований и разработок в области конденсированных сред / Научно-экспериментальный отдел нейтронных исследований конденсированных сред / Сектор №1 дифрактометрии / Группа №3 ДН-12, инженер'
+where person_id=2502
+</xmp> DONE! 1 record(s) affected------ SQL done, 0ms.<br><BR>
+ <b> NumTableRows=1; </b><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/jinr_setPersonPosts1512147791796");'> BACK: <b>gateway/jinr_setPersonPosts => gateway/receive_7_sotrudnik.cfg; (10ms.)</b></span><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/receive_7_sotrudnik1512147791746");'> BACK: <b>gateway/receive_7_sotrudnik => gateway/receive.cfg; (60ms.)</b></span><BR>
+<hr>----- gateway/receive.cfg[report]: ERR_CODE=0; ERROR=; <br>+++++<b>$INCLUDE </b>gateway/receive[OK]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_31");'>Request_HR_LHEP_31 (gateway/receive) DONE! (163ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_32");'> Request_HR_LHEP_32 [01.12 20:03:11] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_32' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=1&Command=PutObject&ObjectType=7&SrcObjectID=150447&GateObjectID=125422&ClientObjectID=48947&Time=01.12.2017 12:28:56&Object={
+"ФИО": "Землякова Ольга Васильевна",
+"ТабельныйНомер": "150446",
+"ИсточникаКомплектования": "958f5b1c-1c3d-11e2-ab6e-000e0ce597c9",
+"ИсточникаКомплектованияКод": "000000261",
+"ИсточникКомплектованияНаименование": "по свободному найму",
+"УсловияРаботы": "ed6502ec-437f-11e2-993a-000e0ce597c9",
+"УсловияРаботыКод": "000000354",
+"Услов.....; log=true; session inactive=min;<br><hr>gateway/receive.cfg<br>gateway/receive.cfg: ClientID=1; Command=PutObject; ObjectType=7; ObjectID=; GlobalID=; ClientObjectID=48947;<br> Разряд=<BR>
+ ФизЛицоКод=0000009336<BR>
+ ДатаНачалаРаботы=01.01.2015 00:00:00<BR>
+ ФизЛицо=bb5d2266-aaad-11e4-9432-0025907d24fa<BR>
+ Пол=Женский<BR>
+ ТарифнаяСетка=<BR>
+ УсловияТрудаНаименование=допустимые<BR>
+ ГражданствоНаименование=РОССИЯ<BR>
+ УсловияТрудаДата=01.01.2015 00:00:00<BR>
+ КартаСОУТ=№ 38 от 16.09.2016<BR>
+ Подразделение=608447f9-e2c9-11e1-a86a-e0cb4eda5b7d<BR>
+ ГрафикРаботы=4 часа (4ч.)<BR>
+ УслДатаОк=<BR>
+ ИсточникаКомплектования=958f5b1c-1c3d-11e2-ab6e-000e0ce597c9<BR>
+ Оклад=28100<BR>
+ СрокПолномочий=<BR>
+ Должность=6b3c72c0-d7c1-11e1-bad5-e0cb4eda5b1f<BR>
+ ДатаОкончанияРаботы=02.11.2018 00:00:00<BR>
+ ТарифнаяСеткаНаименование=<BR>
+ ПодразделениеНаименование=Кухня и столовая<BR>
+ ГражданствоКод=643<BR>
+ ПометкаУдаления=Нет<BR>
+ ИНН=910312287663<BR>
+ УсловияТруда=6faced06-1c3e-11e2-ab6e-000e0ce597c9<BR>
+ ДолжностьДата=03.11.2017 00:00:00<BR>
+ ФИО=Землякова Ольга Васильевна<BR>
+ УсловияТрудаКод=000000277<BR>
+ ДатаОклада=03.11.2017 00:00:00<BR>
+ СтранаНаименование=<BR>
+ УсловияРаботыНаименование=по сроч.труд. договору, на опр срок. Ст.58 п.2 ТК<BR>
+ ШтатНаименование=Основной штат<BR>
+ ДатаРождения=18.08.1963 00:00:00<BR>
+ СтранаКод=<BR>
+ УсловияРаботы=ed6502ec-437f-11e2-993a-000e0ce597c9<BR>
+ ИсточникаКомплектованияКод=000000261<BR>
+ ШтатКод=000000282<BR>
+ УсловияРаботыКод=000000354<BR>
+ ПФР=182-684-233 93<BR>
+ ДолжностьКод=000000352<BR>
+ Штат=6faced0c-1c3e-11e2-ab6e-000e0ce597c9<BR>
+ ПричинаУвольнения=<BR>
+ Гражданство=982d33e2-bee6-453a-992e-11d13fa66fa7<BR>
+ ИсточникКомплектованияНаименование=по свободному найму<BR>
+ ТарифнаяСеткаКод=<BR>
+ ТабельныйНомер=150446<BR>
+ УсловияРаботыДата=01.01.2015 00:00:00<BR>
+ Страна=<BR>
+ ПодразделениеДата=03.11.2017 00:00:00<BR>
+ ДатаУвольнения=<BR>
+ ДатаГрафика=03.11.2017 00:00:00<BR>
+ ДолжностьНаименование=заведующий производством<BR>
+ ТипДеятельности=Руководители<BR>
+ ПодразделениеКод=999020<BR>
+* JSON Keys=Разряд, ФизЛицоКод, ДатаНачалаРаботы, ФизЛицо, Пол, ТарифнаяСетка, УсловияТрудаНаименование, ГражданствоНаименование, УсловияТрудаДата, КартаСОУТ, Подразделение, ГрафикРаботы, УслДатаОк, ИсточникаКомплектования, Оклад, СрокПолномочий, Должность, ДатаОкончанияРаботы, ТарифнаяСеткаНаименование, ПодразделениеНаименование, ГражданствоКод, ПометкаУдаления, ИНН, УсловияТруда, ДолжностьДата, ФИО, УсловияТрудаКод, ДатаОклада, СтранаНаименование, УсловияРаботыНаименование, ШтатНаименование, ДатаРождения, СтранаКод, УсловияРаботы, ИсточникаКомплектованияКод, ШтатКод, УсловияРаботыКод, ПФР, ДолжностьКод, Штат, ПричинаУвольнения, Гражданство, ИсточникКомплектованияНаименование, ТарифнаяСеткаКод, ТабельныйНомер, УсловияРаботыДата, Страна, ПодразделениеДата, ДатаУвольнения, ДатаГрафика, ДолжностьНаименование, ТипДеятельности, ПодразделениеКод<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+log <p style="font-family:verdana;color:red;">>#######</p> ####### sss <br>log1 ############## sss <br>log2 ############## sss <br>log3 ############## sss<br><hr>gateway/receive.cfg[process receive] ObjectType=7<br><br><span class='ss_start pt'  onClick='toggleDiv("gateway/receive_7_sotrudnik1512147791899");'> $CALL_SERVICE: <b>gateway/receive.cfg => gateway/receive_7_sotrudnik</b> (request:HR_LHEP_32)</span><div id='gateway/receive_7_sotrudnik1512147791899' class='ss'><hr><b>receive_7_sotrudnik</b><br><b>$INCLUDE </b>[set defaults]<BR>
+<br> <b>SQL: [[check non-staff] (1) ]:</b><xmp>select case when '150446' like 'д%' then 'Y' else '' end as "NON-STAFF"
+</xmp><xmp>***** 1 record(s) retrieved. Filled 0 parameters: </xmp>------ SQL done, 0ms.<br><BR>
+<b>$INCLUDE </b>[process]<BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[check existing record] (1) ]:</b><xmp>select 'Y' as REC_EXISTS, id as REC_ID from info_11
+where ID=150446
+</xmp><xmp>***** 1 record(s) retrieved. Filled 2 parameters: 
+REC_EXISTS=Y
+REC_ID=150446</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (1) ]:</b><xmp>select SUBSTRING_INDEX('Землякова Ольга Васильевна ', ' ', 1) AS F
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+F=Землякова</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (2) ]:</b><xmp>select replace('Землякова Ольга Васильевна ', 'Землякова ','') AS IO
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+IO=Ольга Васильевна </xmp>------ SQL done, 10ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (3) ]:</b><xmp>select SUBSTRING_INDEX('Ольга Васильевна ', ' ', 1) AS I
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+I=Ольга</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (4) ]:</b><xmp>select replace('Ольга Васильевна ', 'Ольга ','') AS O
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+O=Васильевна </xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (5) ]:</b><xmp></xmp><b>$INCLUDE </b>[PutObject]<BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[update record] (1) ]:</b><xmp>update info_11 set person_id=0000009336, F='Землякова', I='Ольга', O='Васильевна'
+, div_code=999020, division='Кухня и столовая', post='заведующий производством', usl_rab='по сроч.труд. договору, на опр срок. Ст.58 п.2 ТК'
+, FIO='Землякова Ольга Васильевна', changed=now()
+where ID=150446
+</xmp> DONE! 1 record(s) affected------ SQL done, 0ms.<br><BR>
+<br><span class='ss_start pt'  onClick='toggleDiv("gateway/jinr_setPersonPosts1512147791909");'> $CALL_SERVICE: <b>gateway/receive_7_sotrudnik.cfg => gateway/jinr_setPersonPosts</b> (request:HR_LHEP_32)</span><div id='gateway/jinr_setPersonPosts1512147791909' class='ss'><br> <b>SQL: [[clear posts] (1) ]:</b><xmp>update info_11 set posts=''
+where person_id=0000009336
+</xmp> DONE! 1 record(s) affected------ SQL done, 0ms.<br><BR>
+ SQL: [SQL]<BR>
+<br> <b>SQL: [SQL]:</b><xmp>select p.id as "TAB_NOM", p.person_id as "KOD_FIZLICA", p.posts as "POSTS"
+, d.path as DIV_NAME, d.id as div_code
+, p.post as POST
+from info_11 p
+left join info_10 d on d.id=p.div_code
+where p.is_deleted=0
+and p.person_id=0000009336
+order by p.person_id
+</xmp> <b> Processed in 10ms. </b><br><br> <b>SQL: [[setPosts] (1) ]:</b><xmp>select distinct posts as "POSTS", id
+from info_11
+where person_id=9336
+order by id
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+id=150446</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [[setPosts] (2) ]:</b><xmp>update info_11 set
+posts='Пансионат / Кухня и столовая, заведующий производством'
+where person_id=9336
+</xmp> DONE! 1 record(s) affected------ SQL done, 0ms.<br><BR>
+ <b> NumTableRows=1; </b><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/jinr_setPersonPosts1512147791909");'> BACK: <b>gateway/jinr_setPersonPosts => gateway/receive_7_sotrudnik.cfg; (20ms.)</b></span><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/receive_7_sotrudnik1512147791899");'> BACK: <b>gateway/receive_7_sotrudnik => gateway/receive.cfg; (30ms.)</b></span><BR>
+<hr>----- gateway/receive.cfg[report]: ERR_CODE=0; ERROR=; <br>+++++<b>$INCLUDE </b>gateway/receive[OK]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_32");'>Request_HR_LHEP_32 (gateway/receive) DONE! (107ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_33");'> Request_HR_LHEP_33 [01.12 20:03:12] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_33' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=1&Command=PutObject&ObjectType=7&SrcObjectID=5d2dbd2c-0fb8-11e2-9f27-000e0ce597c9&GateObjectID=117263&ClientObjectID=130572&Time=01.12.2017 15:10:05&Object={
+"ФИО": "Шеффцюк Христиан",
+"ТабельныйНомер": "76720",
+"ИсточникаКомплектования": "958f5b10-1c3d-11e2-ab6e-000e0ce597c9",
+"ИсточникаКомплектованияКод": "000000249",
+"ИсточникКомплектованияНаименование": "по направлению ПП или организации",
+"УсловияРаботы": "ed6502ec-437f-11e2-993a-000e0ce597c9",
+"Услов.....; log=true; session inactive=min;<br><hr>gateway/receive.cfg<br>gateway/receive.cfg: ClientID=1; Command=PutObject; ObjectType=7; ObjectID=; GlobalID=; ClientObjectID=130572;<br> Разряд=<BR>
+ ФизЛицоКод=0000004626<BR>
+ ДатаНачалаРаботы=19.05.1997 00:00:00<BR>
+ ФизЛицо=b96d6d3e-0fa8-11e2-9f27-000e0ce597c9<BR>
+ Пол=Мужской<BR>
+ ТарифнаяСетка=<BR>
+ УсловияТрудаНаименование=вредные, подкласс 3.1<BR>
+ ГражданствоНаименование=ГЕРМАНИЯ<BR>
+ УсловияТрудаДата=01.01.2016 00:00:00<BR>
+ КартаСОУТ=№ 68 от 19.11.2014<BR>
+ Подразделение=6bed7442-8242-11e2-93f0-0025907d24fa<BR>
+ ГрафикРаботы=7 часов 12 минут (7ч. 12мин.)<BR>
+ УслДатаОк=02.01.2050 00:00:00<BR>
+ ИсточникаКомплектования=958f5b10-1c3d-11e2-ab6e-000e0ce597c9<BR>
+ Оклад=20890<BR>
+ СрокПолномочий=<BR>
+ Должность=05054a8f-56de-11e5-9444-0025907d24fa<BR>
+ ДатаОкончанияРаботы=31.12.2018 00:00:00<BR>
+ ТарифнаяСеткаНаименование=<BR>
+ ПодразделениеНаименование=Группа №4 СКАТ<BR>
+ ГражданствоКод=276<BR>
+ ПометкаУдаления=Нет<BR>
+ ИНН=<BR>
+ УсловияТруда=9702b131-40cb-11e5-9440-0025907d24fa<BR>
+ ДолжностьДата=10.01.2018 00:00:00<BR>
+ ФИО=Шеффцюк Христиан<BR>
+ УсловияТрудаКод=506586<BR>
+ ДатаОклада=01.04.2017 00:00:00<BR>
+ СтранаНаименование=ГЕРМАНИЯ<BR>
+ УсловияРаботыНаименование=по сроч.труд. договору, на опр срок. Ст.58 п.2 ТК<BR>
+ ШтатНаименование=Штат дирекции<BR>
+ ДатаРождения=30.04.1965 00:00:00<BR>
+ СтранаКод=276<BR>
+ УсловияРаботы=ed6502ec-437f-11e2-993a-000e0ce597c9<BR>
+ ИсточникаКомплектованияКод=000000249<BR>
+ ШтатКод=000000283<BR>
+ УсловияРаботыКод=000000354<BR>
+ ПФР=<BR>
+ ДолжностьКод=000001138<BR>
+ Штат=6faced0d-1c3e-11e2-ab6e-000e0ce597c9<BR>
+ ПричинаУвольнения=<BR>
+ Гражданство=3aec409e-0639-11e2-8352-e0cb4eda5b1f<BR>
+ ИсточникКомплектованияНаименование=по направлению ПП или организации<BR>
+ ТарифнаяСеткаКод=<BR>
+ ТабельныйНомер=76720<BR>
+ УсловияРаботыДата=01.05.2013 00:00:00<BR>
+ Страна=3aec409e-0639-11e2-8352-e0cb4eda5b1f<BR>
+ ПодразделениеДата=10.01.2018 00:00:00<BR>
+ ДатаУвольнения=<BR>
+ ДатаГрафика=10.01.2018 00:00:00<BR>
+ ДолжностьНаименование=начальник группы<BR>
+ ТипДеятельности=Руководители<BR>
+ ПодразделениеКод=402014<BR>
+* JSON Keys=Разряд, ФизЛицоКод, ДатаНачалаРаботы, ФизЛицо, Пол, ТарифнаяСетка, УсловияТрудаНаименование, ГражданствоНаименование, УсловияТрудаДата, КартаСОУТ, Подразделение, ГрафикРаботы, УслДатаОк, ИсточникаКомплектования, Оклад, СрокПолномочий, Должность, ДатаОкончанияРаботы, ТарифнаяСеткаНаименование, ПодразделениеНаименование, ГражданствоКод, ПометкаУдаления, ИНН, УсловияТруда, ДолжностьДата, ФИО, УсловияТрудаКод, ДатаОклада, СтранаНаименование, УсловияРаботыНаименование, ШтатНаименование, ДатаРождения, СтранаКод, УсловияРаботы, ИсточникаКомплектованияКод, ШтатКод, УсловияРаботыКод, ПФР, ДолжностьКод, Штат, ПричинаУвольнения, Гражданство, ИсточникКомплектованияНаименование, ТарифнаяСеткаКод, ТабельныйНомер, УсловияРаботыДата, Страна, ПодразделениеДата, ДатаУвольнения, ДатаГрафика, ДолжностьНаименование, ТипДеятельности, ПодразделениеКод<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+log <p style="font-family:verdana;color:red;">>#######</p> ####### sss <br>log1 ############## sss <br>log2 ############## sss <br>log3 ############## sss<br><hr>gateway/receive.cfg[process receive] ObjectType=7<br><br><span class='ss_start pt'  onClick='toggleDiv("gateway/receive_7_sotrudnik1512147792029");'> $CALL_SERVICE: <b>gateway/receive.cfg => gateway/receive_7_sotrudnik</b> (request:HR_LHEP_33)</span><div id='gateway/receive_7_sotrudnik1512147792029' class='ss'><hr><b>receive_7_sotrudnik</b><br><b>$INCLUDE </b>[set defaults]<BR>
+<br> <b>SQL: [[check non-staff] (1) ]:</b><xmp>select case when '76720' like 'д%' then 'Y' else '' end as "NON-STAFF"
+</xmp><xmp>***** 1 record(s) retrieved. Filled 0 parameters: </xmp>------ SQL done, 10ms.<br><BR>
+<b>$INCLUDE </b>[process]<BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[check existing record] (1) ]:</b><xmp>select 'Y' as REC_EXISTS, id as REC_ID from info_11
+where ID=76720
+</xmp><xmp>***** 1 record(s) retrieved. Filled 2 parameters: 
+REC_EXISTS=Y
+REC_ID=76720</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (1) ]:</b><xmp>select SUBSTRING_INDEX('Шеффцюк Христиан ', ' ', 1) AS F
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+F=Шеффцюк</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (2) ]:</b><xmp>select replace('Шеффцюк Христиан ', 'Шеффцюк ','') AS IO
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+IO=Христиан </xmp>------ SQL done, 10ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (3) ]:</b><xmp>select SUBSTRING_INDEX('Христиан ', ' ', 1) AS I
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+I=Христиан</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (4) ]:</b><xmp>select replace('Христиан ', 'Христиан ','') AS O
+</xmp><xmp>***** 1 record(s) retrieved. Filled 0 parameters: </xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (5) ]:</b><xmp></xmp><b>$INCLUDE </b>[PutObject]<BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[update record] (1) ]:</b><xmp>update info_11 set person_id=0000004626, F='Шеффцюк', I='Христиан', O=''
+, div_code=402014, division='Группа №4 СКАТ', post='начальник группы', usl_rab='по сроч.труд. договору, на опр срок. Ст.58 п.2 ТК'
+, FIO='Шеффцюк Христиан', changed=now()
+where ID=76720
+</xmp> DONE! 1 record(s) affected------ SQL done, 0ms.<br><BR>
+<br><span class='ss_start pt'  onClick='toggleDiv("gateway/jinr_setPersonPosts1512147792049");'> $CALL_SERVICE: <b>gateway/receive_7_sotrudnik.cfg => gateway/jinr_setPersonPosts</b> (request:HR_LHEP_33)</span><div id='gateway/jinr_setPersonPosts1512147792049' class='ss'><br> <b>SQL: [[clear posts] (1) ]:</b><xmp>update info_11 set posts=''
+where person_id=0000004626
+</xmp> DONE! 1 record(s) affected------ SQL done, 0ms.<br><BR>
+ SQL: [SQL]<BR>
+<br> <b>SQL: [SQL]:</b><xmp>select p.id as "TAB_NOM", p.person_id as "KOD_FIZLICA", p.posts as "POSTS"
+, d.path as DIV_NAME, d.id as div_code
+, p.post as POST
+from info_11 p
+left join info_10 d on d.id=p.div_code
+where p.is_deleted=0
+and p.person_id=0000004626
+order by p.person_id
+</xmp> <b> Processed in 0ms. </b><br><br> <b>SQL: [[setPosts] (1) ]:</b><xmp>select distinct posts as "POSTS", id
+from info_11
+where person_id=4626
+order by id
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+id=76720</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [[setPosts] (2) ]:</b><xmp>update info_11 set
+posts='ЛНФ / Отделение нейтронных исследований и разработок в области конденсированных сред / Научно-экспериментальный отдел нейтронных исследований конденсированных сред / Сектор №1 дифрактометрии / Группа №4 СКАТ, начальник группы'
+where person_id=4626
+</xmp> DONE! 1 record(s) affected------ SQL done, 0ms.<br><BR>
+ <b> NumTableRows=1; </b><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/jinr_setPersonPosts1512147792049");'> BACK: <b>gateway/jinr_setPersonPosts => gateway/receive_7_sotrudnik.cfg; (10ms.)</b></span><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/receive_7_sotrudnik1512147792029");'> BACK: <b>gateway/receive_7_sotrudnik => gateway/receive.cfg; (30ms.)</b></span><BR>
+<hr>----- gateway/receive.cfg[report]: ERR_CODE=0; ERROR=; <br>+++++<b>$INCLUDE </b>gateway/receive[OK]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_33");'>Request_HR_LHEP_33 (gateway/receive) DONE! (150ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_34");'> Request_HR_LHEP_34 [01.12 20:03:12] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_34' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=1&Command=PutObject&ObjectType=7&SrcObjectID=39a611c0-0fb8-11e2-9f27-000e0ce597c9&GateObjectID=116851&ClientObjectID=130572&Time=01.12.2017 15:10:04&Object={
+"ФИО": "Неов Димитр Стойков",
+"ТабельныйНомер": "114095",
+"ИсточникаКомплектования": "cc850aa4-27fe-11e2-ab6e-000e0ce597c9",
+"ИсточникаКомплектованияКод": "000000312",
+"ИсточникКомплектованияНаименование": "по направлению ППП Республики Болгария",
+"УсловияРаботы": "ed6502ec-437f-11e2-993a-000e0ce597c9".....; log=true; session inactive=min;<br><hr>gateway/receive.cfg<br>gateway/receive.cfg: ClientID=1; Command=PutObject; ObjectType=7; ObjectID=; GlobalID=; ClientObjectID=130572;<br> Разряд=<BR>
+ ФизЛицоКод=0000002905<BR>
+ ДатаНачалаРаботы=28.09.2011 00:00:00<BR>
+ ФизЛицо=76e00893-0fa8-11e2-9f27-000e0ce597c9<BR>
+ Пол=Мужской<BR>
+ ТарифнаяСетка=<BR>
+ УсловияТрудаНаименование=вредные, подкласс 3.1<BR>
+ ГражданствоНаименование=БОЛГАРИЯ<BR>
+ УсловияТрудаДата=02.12.2015 00:00:00<BR>
+ КартаСОУТ=№ 20А от 19.11.2014<BR>
+ Подразделение=6bed7440-8242-11e2-93f0-0025907d24fa<BR>
+ ГрафикРаботы=7 часов 12 минут (7ч. 12мин.)<BR>
+ УслДатаОк=<BR>
+ ИсточникаКомплектования=cc850aa4-27fe-11e2-ab6e-000e0ce597c9<BR>
+ Оклад=35510<BR>
+ СрокПолномочий=<BR>
+ Должность=0fb9cf59-562f-11e5-9444-0025907d24fa<BR>
+ ДатаОкончанияРаботы=01.12.2018 00:00:00<BR>
+ ТарифнаяСеткаНаименование=<BR>
+ ПодразделениеНаименование=Группа №2 ДН-2<BR>
+ ГражданствоКод=100<BR>
+ ПометкаУдаления=Нет<BR>
+ ИНН=<BR>
+ УсловияТруда=9702b131-40cb-11e5-9440-0025907d24fa<BR>
+ ДолжностьДата=02.12.2017 00:00:00<BR>
+ ФИО=Неов Димитр Стойков<BR>
+ УсловияТрудаКод=506586<BR>
+ ДатаОклада=01.04.2017 00:00:00<BR>
+ СтранаНаименование=БОЛГАРИЯ<BR>
+ УсловияРаботыНаименование=по сроч.труд. договору, на опр срок. Ст.58 п.2 ТК<BR>
+ ШтатНаименование=Штат дирекции<BR>
+ ДатаРождения=10.10.1972 00:00:00<BR>
+ СтранаКод=100<BR>
+ УсловияРаботы=ed6502ec-437f-11e2-993a-000e0ce597c9<BR>
+ ИсточникаКомплектованияКод=000000312<BR>
+ ШтатКод=000000283<BR>
+ УсловияРаботыКод=000000354<BR>
+ ПФР=<BR>
+ ДолжностьКод=000001054<BR>
+ Штат=6faced0d-1c3e-11e2-ab6e-000e0ce597c9<BR>
+ ПричинаУвольнения=<BR>
+ Гражданство=4697c048-0fae-11e2-9f27-000e0ce597c9<BR>
+ ИсточникКомплектованияНаименование=по направлению ППП Республики Болгария<BR>
+ ТарифнаяСеткаКод=<BR>
+ ТабельныйНомер=114095<BR>
+ УсловияРаботыДата=01.05.2013 00:00:00<BR>
+ Страна=4697c048-0fae-11e2-9f27-000e0ce597c9<BR>
+ ПодразделениеДата=02.12.2017 00:00:00<BR>
+ ДатаУвольнения=<BR>
+ ДатаГрафика=02.12.2017 00:00:00<BR>
+ ДолжностьНаименование=старший научный сотрудник<BR>
+ ТипДеятельности=Научные и научно-педагогические работники<BR>
+ ПодразделениеКод=402012<BR>
+* JSON Keys=Разряд, ФизЛицоКод, ДатаНачалаРаботы, ФизЛицо, Пол, ТарифнаяСетка, УсловияТрудаНаименование, ГражданствоНаименование, УсловияТрудаДата, КартаСОУТ, Подразделение, ГрафикРаботы, УслДатаОк, ИсточникаКомплектования, Оклад, СрокПолномочий, Должность, ДатаОкончанияРаботы, ТарифнаяСеткаНаименование, ПодразделениеНаименование, ГражданствоКод, ПометкаУдаления, ИНН, УсловияТруда, ДолжностьДата, ФИО, УсловияТрудаКод, ДатаОклада, СтранаНаименование, УсловияРаботыНаименование, ШтатНаименование, ДатаРождения, СтранаКод, УсловияРаботы, ИсточникаКомплектованияКод, ШтатКод, УсловияРаботыКод, ПФР, ДолжностьКод, Штат, ПричинаУвольнения, Гражданство, ИсточникКомплектованияНаименование, ТарифнаяСеткаКод, ТабельныйНомер, УсловияРаботыДата, Страна, ПодразделениеДата, ДатаУвольнения, ДатаГрафика, ДолжностьНаименование, ТипДеятельности, ПодразделениеКод<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+log <p style="font-family:verdana;color:red;">>#######</p> ####### sss <br>log1 ############## sss <br>log2 ############## sss <br>log3 ############## sss<br><hr>gateway/receive.cfg[process receive] ObjectType=7<br><br><span class='ss_start pt'  onClick='toggleDiv("gateway/receive_7_sotrudnik1512147792229");'> $CALL_SERVICE: <b>gateway/receive.cfg => gateway/receive_7_sotrudnik</b> (request:HR_LHEP_34)</span><div id='gateway/receive_7_sotrudnik1512147792229' class='ss'><hr><b>receive_7_sotrudnik</b><br><b>$INCLUDE </b>[set defaults]<BR>
+<br> <b>SQL: [[check non-staff] (1) ]:</b><xmp>select case when '114095' like 'д%' then 'Y' else '' end as "NON-STAFF"
+</xmp><xmp>***** 1 record(s) retrieved. Filled 0 parameters: </xmp>------ SQL done, 0ms.<br><BR>
+<b>$INCLUDE </b>[process]<BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[check existing record] (1) ]:</b><xmp>select 'Y' as REC_EXISTS, id as REC_ID from info_11
+where ID=114095
+</xmp><xmp>***** 1 record(s) retrieved. Filled 2 parameters: 
+REC_EXISTS=Y
+REC_ID=114095</xmp>------ SQL done, 10ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (1) ]:</b><xmp>select SUBSTRING_INDEX('Неов Димитр Стойков ', ' ', 1) AS F
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+F=Неов</xmp>------ SQL done, 10ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (2) ]:</b><xmp>select replace('Неов Димитр Стойков ', 'Неов ','') AS IO
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+IO=Димитр Стойков </xmp>------ SQL done, 10ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (3) ]:</b><xmp>select SUBSTRING_INDEX('Димитр Стойков ', ' ', 1) AS I
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+I=Димитр</xmp>------ SQL done, 10ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (4) ]:</b><xmp>select replace('Димитр Стойков ', 'Димитр ','') AS O
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+O=Стойков </xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (5) ]:</b><xmp></xmp><b>$INCLUDE </b>[PutObject]<BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[update record] (1) ]:</b><xmp>update info_11 set person_id=0000002905, F='Неов', I='Димитр', O='Стойков'
+, div_code=402012, division='Группа №2 ДН-2', post='старший научный сотрудник', usl_rab='по сроч.труд. договору, на опр срок. Ст.58 п.2 ТК'
+, FIO='Неов Димитр Стойков', changed=now()
+where ID=114095
+</xmp> DONE! 1 record(s) affected------ SQL done, 10ms.<br><BR>
+<br><span class='ss_start pt'  onClick='toggleDiv("gateway/jinr_setPersonPosts1512147792279");'> $CALL_SERVICE: <b>gateway/receive_7_sotrudnik.cfg => gateway/jinr_setPersonPosts</b> (request:HR_LHEP_34)</span><div id='gateway/jinr_setPersonPosts1512147792279' class='ss'><br> <b>SQL: [[clear posts] (1) ]:</b><xmp>update info_11 set posts=''
+where person_id=0000002905
+</xmp> DONE! 1 record(s) affected------ SQL done, 0ms.<br><BR>
+ SQL: [SQL]<BR>
+<br> <b>SQL: [SQL]:</b><xmp>select p.id as "TAB_NOM", p.person_id as "KOD_FIZLICA", p.posts as "POSTS"
+, d.path as DIV_NAME, d.id as div_code
+, p.post as POST
+from info_11 p
+left join info_10 d on d.id=p.div_code
+where p.is_deleted=0
+and p.person_id=0000002905
+order by p.person_id
+</xmp> <b> Processed in 10ms. </b><br><br> <b>SQL: [[setPosts] (1) ]:</b><xmp>select distinct posts as "POSTS", id
+from info_11
+where person_id=2905
+order by id
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+id=114095</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [[setPosts] (2) ]:</b><xmp>update info_11 set
+posts='ЛНФ / Отделение нейтронных исследований и разработок в области конденсированных сред / Научно-экспериментальный отдел нейтронных исследований конденсированных сред / Сектор №1 дифрактометрии / Группа №2 ДН-2, старший научный сотрудник'
+where person_id=2905
+</xmp> DONE! 1 record(s) affected------ SQL done, 10ms.<br><BR>
+ <b> NumTableRows=1; </b><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/jinr_setPersonPosts1512147792279");'> BACK: <b>gateway/jinr_setPersonPosts => gateway/receive_7_sotrudnik.cfg; (30ms.)</b></span><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/receive_7_sotrudnik1512147792229");'> BACK: <b>gateway/receive_7_sotrudnik => gateway/receive.cfg; (80ms.)</b></span><BR>
+<hr>----- gateway/receive.cfg[report]: ERR_CODE=0; ERROR=; <br>+++++<b>$INCLUDE </b>gateway/receive[OK]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_34");'>Request_HR_LHEP_34 (gateway/receive) DONE! (270ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_35");'> Request_HR_LHEP_35 [01.12 20:03:12] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_35' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=1&Command=PutObject&ObjectType=8&SrcObjectID=f28aabff-e0d5-11e3-9413-0025907d24fa&GateObjectID=125482&ClientObjectID=130572&Time=01.12.2017 15:10:29&Object={
+"Код": "0000008677",
+"Наименование": "Фомин Алексей Юрьевич",
+"ПометкаУдаления": "Нет",
+"Образование": [
+{
+"ВидОбразования": "1807654f-dfc4-4521-b0e4-a45a0c6d0d06",
+"ВидОбразованияКод": "00",
+"ВидОбразованияНаименование": "Начальное профессиональное образование",
+"УчебноеЗаведение": "5ed3b759-1cd2-1.....; log=true; session inactive=min;<br><hr>gateway/receive.cfg<br>gateway/receive.cfg: ClientID=1; Command=PutObject; ObjectType=8; ObjectID=; GlobalID=; ClientObjectID=130572;<br> Наименование=Фомин Алексей Юрьевич<BR>
+ ПометкаУдаления=Нет<BR>
+<br><b>*** UNKNOWN ARRAY:</b> Образование;<BR>
+<br><b>*** ARRAY: </b>Образование:<BR>
+ ...* Образование.1.СпециальностьНаименование=<BR>
+ ...* Образование.1.ВидОбразованияНаименование=Начальное профессиональное образование<BR>
+ ...* Образование.1.ГодОкончания=2013<BR>
+ ...* Образование.1.ВидОбразованияКод=00<BR>
+ ...* Образование.1.УчебноеЗаведениеНаименование=МУПОЧ  "ДУБНА"<BR>
+ ...* Образование.1.ВидОбразования=1807654f-dfc4-4521-b0e4-a45a0c6d0d06<BR>
+ ...* Образование.1.Квалификация=<BR>
+ ...* Образование.1.СпециальностьКод=<BR>
+ ...* Образование.1.Диплом=<BR>
+ ...* Образование.1.Специальность=<BR>
+ ...* Образование.1.УчебноеЗаведение=5ed3b759-1cd2-11e2-ab6e-000e0ce597c9<BR>
+ ...* Образование.1.УчебноеЗаведениеКод=000000006<BR>
+<b> ...* ARRAY TOTAL: </b>Образование.count=1; Образование.items=1;<br><BR>
+<br><b>*** UNKNOWN ARRAY:</b> ПерсональныеДанные;<BR>
+<br><b>*** ARRAY: </b>ПерсональныеДанные:<BR>
+ ...* ПерсональныеДанные.1.ПаспортаДата=06.03.2009 00:00:00<BR>
+ ...* ПерсональныеДанные.1.ПаспортНомер=228799<BR>
+ ...* ПерсональныеДанные.1.ТипаПенсииКод=000000289<BR>
+ ...* ПерсональныеДанные.1.Гражданство=982d33e2-bee6-453a-992e-11d13fa66fa7<BR>
+ ...* ПерсональныеДанные.1.КоличествоДетей=<BR>
+ ...* ПерсональныеДанные.1.ДатаРождения=05.03.1995 00:00:00<BR>
+ ...* ПерсональныеДанные.1.Пол=Мужской<BR>
+ ...* ПерсональныеДанные.1.СемейногоПоложения=d630fea7-12aa-11e2-ab6e-000e0ce597c9<BR>
+ ...* ПерсональныеДанные.1.СемейногоПоложенияКод=1<BR>
+ ...* ПерсональныеДанные.1.МестоРождения=0,Дубна,,Московская,РФ<BR>
+ ...* ПерсональныеДанные.1.Адрес=<BR>
+ ...* ПерсональныеДанные.1.СемейноеПоложениеНаименование=Никогда не состоял (не состояла в браке)<BR>
+ ...* ПерсональныеДанные.1.ГражданствоНаименование=РОССИЯ<BR>
+ ...* ПерсональныеДанные.1.ПаспортСерия=46  08<BR>
+ ...* ПерсональныеДанные.1.ГражданствоКод=643<BR>
+ ...* ПерсональныеДанные.1.ТипПенсииНаименование=не пенсионер<BR>
+ ...* ПерсональныеДанные.1.ИНН=501006250475<BR>
+ ...* ПерсональныеДанные.1.ИмеетСудимость=<BR>
+ ...* ПерсональныеДанные.1.УчастникВойны=<BR>
+ ...* ПерсональныеДанные.1.СтраховойНомерПФР=157-266-901 91<BR>
+ ...* ПерсональныеДанные.1.ПаспорКемВыдан=ТП №2 ОУФМС России по Моск.обл. в г.Дубне<BR>
+ ...* ПерсональныеДанные.1.АдресПоПрописке=141983, Московская обл, Дубна г, Карла Маркса ул, дом № 31, кв.7<BR>
+ ...* ПерсональныеДанные.1.ТипаПенсии=b9cec3eb-1f43-11e2-ab6e-000e0ce597c9<BR>
+<b> ...* ARRAY TOTAL: </b>ПерсональныеДанные.count=1; ПерсональныеДанные.items=1;<br><BR>
+ Код=0000008677<BR>
+<br><b>*** UNKNOWN ARRAY:</b> Стажи;<BR>
+<br><b>*** ARRAY: </b>Стажи:<BR>
+ ...* Стажи.1.РазмерДней=<BR>
+ ...* Стажи.1.ДатаОтсчета=28.05.2014 00:00:00<BR>
+ ...* Стажи.1.ВидСтажа=ba17f8b8-7432-49b2-a8d9-af1b2d17cdfa<BR>
+ ...* Стажи.1.ВидСтажаКод=00004<BR>
+ ...* Стажи.1.РазмерМесяцев=<BR>
+ ...* Стажи.1.ВидСтажаНаименование=Страховой стаж для оплаты больничных листов<BR>
+ ...* Стажи.2.РазмерДней=<BR>
+ ...* Стажи.2.ДатаОтсчета=28.05.2014 00:00:00<BR>
+ ...* Стажи.2.ВидСтажа=f4619d6c-5da3-45d4-9dac-3e6e16a4b88e<BR>
+ ...* Стажи.2.ВидСтажаКод=00003<BR>
+ ...* Стажи.2.РазмерМесяцев=<BR>
+ ...* Стажи.2.ВидСтажаНаименование=Стаж на надбавку за выслугу лет<BR>
+<b> ...* ARRAY TOTAL: </b>Стажи.count=2; Стажи.items=1,2;<br><BR>
+* JSON Keys=Наименование, ПометкаУдаления, Образование, ПерсональныеДанные, Код, Стажи<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+log <p style="font-family:verdana;color:red;">>#######</p> ####### sss <br>log1 ############## sss <br>log2 ############## sss <br>log3 ############## sss<br><hr>gateway/receive.cfg[process receive] ObjectType=8<br><br><span class='ss_start pt'  onClick='toggleDiv("gateway/receive_8_fizlitso1512147792459");'> $CALL_SERVICE: <b>gateway/receive.cfg => gateway/receive_8_fizlitso</b> (request:HR_LHEP_35)</span><div id='gateway/receive_8_fizlitso1512147792459' class='ss'><hr><b>===>>> receive_8_fizlitco</b><br><br> <b>SQL: [[check existing record] (1) ]:</b><xmp>select 'Y' as REC_EXISTS, id as REC_ID, is_manual from i_fizlitsa
+where ID=0000008677
+</xmp><xmp>***** 1 record(s) retrieved. Filled 3 parameters: 
+REC_EXISTS=Y
+REC_ID=8677
+is_manual=0</xmp>------ SQL done, 10ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (1) ]:</b><xmp>select SUBSTRING_INDEX('Фомин Алексей Юрьевич ', ' ', 1) AS F
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+F=Фомин</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (2) ]:</b><xmp>select replace('Фомин Алексей Юрьевич ', 'Фомин ','') AS IO
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+IO=Алексей Юрьевич </xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (3) ]:</b><xmp>select SUBSTRING_INDEX('Алексей Юрьевич ', ' ', 1) AS I
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+I=Алексей</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (4) ]:</b><xmp>select replace('Алексей Юрьевич ', 'Алексей ','') AS O
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+O=Юрьевич </xmp>------ SQL done, 10ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (5) ]:</b><xmp></xmp><b>$INCLUDE </b>[PutObject]<BR>
+<br> <b>SQL: [[update record] (1) ]:</b><xmp>update i_fizlitsa set F='Фомин', I='Алексей', O='Юрьевич'
+, dr=STR_TO_DATE('05.03.1995 00:00:00', '%d.%m.%Y %H:%i:%s')
+, strana='РОССИЯ', sex=''
+, is_deleted=0, changed=now()
+where ID=0000008677
+</xmp> DONE! 1 record(s) affected------ SQL done, 20ms.<br><BR>
+<br> <b>SQL: [[update record] (2) ]:</b><xmp></xmp></div><span class='ss_back pt'  onClick='toggleDiv("gateway/receive_8_fizlitso1512147792459");'> BACK: <b>gateway/receive_8_fizlitso => gateway/receive.cfg; (40ms.)</b></span><BR>
+<hr>----- gateway/receive.cfg[report]: ERR_CODE=0; ERROR=; <br>+++++<b>$INCLUDE </b>gateway/receive[OK]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_35");'>Request_HR_LHEP_35 (gateway/receive) DONE! (120ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_36");'> Request_HR_LHEP_36 [01.12 20:03:12] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_36' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=1&Command=PutObject&ObjectType=7&SrcObjectID=39a6114e-0fb8-11e2-9f27-000e0ce597c9&GateObjectID=116958&ClientObjectID=130572&Time=01.12.2017 15:50:06&Object={
+"ФИО": "Морозова Галина Михайловна",
+"ТабельныйНомер": "3326",
+"ИсточникаКомплектования": "958f5b1c-1c3d-11e2-ab6e-000e0ce597c9",
+"ИсточникаКомплектованияКод": "000000261",
+"ИсточникКомплектованияНаименование": "по свободному найму",
+"УсловияРаботы": "ed6502ea-437f-11e2-993a-000e0ce597c9",
+"УсловияРаб.....; log=true; session inactive=min;<br><hr>gateway/receive.cfg<br>gateway/receive.cfg: ClientID=1; Command=PutObject; ObjectType=7; ObjectID=; GlobalID=; ClientObjectID=130572;<br> Разряд=<BR>
+ ФизЛицоКод=0000002797<BR>
+ ДатаНачалаРаботы=17.05.1971 00:00:00<BR>
+ ФизЛицо=6f0aef37-0fa8-11e2-9f27-000e0ce597c9<BR>
+ Пол=Женский<BR>
+ ТарифнаяСетка=<BR>
+ УсловияТрудаНаименование=допустимые<BR>
+ ГражданствоНаименование=РОССИЯ<BR>
+ УсловияТрудаДата=01.05.2013 00:00:00<BR>
+ КартаСОУТ=№ 822 от 06.02.2015<BR>
+ Подразделение=a299b383-e2da-11e1-a86a-e0cb4eda5b7d<BR>
+ ГрафикРаботы=Пятидневка по 8 часов (8ч.)<BR>
+ УслДатаОк=<BR>
+ ИсточникаКомплектования=958f5b1c-1c3d-11e2-ab6e-000e0ce597c9<BR>
+ Оклад=<BR>
+ СрокПолномочий=<BR>
+ Должность=6b3c7330-d7c1-11e1-bad5-e0cb4eda5b1f<BR>
+ ДатаОкончанияРаботы=<BR>
+ ТарифнаяСеткаНаименование=<BR>
+ ПодразделениеНаименование=Сектор №2 идентификации элементарных частиц<BR>
+ ГражданствоКод=643<BR>
+ ПометкаУдаления=Нет<BR>
+ ИНН=501004011506<BR>
+ УсловияТруда=6faced06-1c3e-11e2-ab6e-000e0ce597c9<BR>
+ ДолжностьДата=06.12.2017 00:00:00<BR>
+ ФИО=Морозова Галина Михайловна<BR>
+ УсловияТрудаКод=000000277<BR>
+ ДатаОклада=06.12.2017 00:00:00<BR>
+ СтранаНаименование=<BR>
+ УсловияРаботыНаименование=постоянно, на неопределенный срок<BR>
+ ШтатНаименование=Основной штат<BR>
+ ДатаРождения=27.01.1950 00:00:00<BR>
+ СтранаКод=<BR>
+ УсловияРаботы=ed6502ea-437f-11e2-993a-000e0ce597c9<BR>
+ ИсточникаКомплектованияКод=000000261<BR>
+ ШтатКод=000000282<BR>
+ УсловияРаботыКод=000000352<BR>
+ ПФР=003-860-848 38<BR>
+ ДолжностьКод=000000464<BR>
+ Штат=6faced0c-1c3e-11e2-ab6e-000e0ce597c9<BR>
+ ПричинаУвольнения=По собственному желанию в связи с выходом на пенсию<BR>
+ Гражданство=982d33e2-bee6-453a-992e-11d13fa66fa7<BR>
+ ИсточникКомплектованияНаименование=по свободному найму<BR>
+ ТарифнаяСеткаКод=<BR>
+ ТабельныйНомер=3326<BR>
+ УсловияРаботыДата=01.05.2013 00:00:00<BR>
+ Страна=<BR>
+ ПодразделениеДата=06.12.2017 00:00:00<BR>
+ ДатаУвольнения=05.12.2017 00:00:00<BR>
+ ДатаГрафика=06.12.2017 00:00:00<BR>
+ ДолжностьНаименование=лаборант<BR>
+ ТипДеятельности=Специалисты<BR>
+ ПодразделениеКод=121020<BR>
+* JSON Keys=Разряд, ФизЛицоКод, ДатаНачалаРаботы, ФизЛицо, Пол, ТарифнаяСетка, УсловияТрудаНаименование, ГражданствоНаименование, УсловияТрудаДата, КартаСОУТ, Подразделение, ГрафикРаботы, УслДатаОк, ИсточникаКомплектования, Оклад, СрокПолномочий, Должность, ДатаОкончанияРаботы, ТарифнаяСеткаНаименование, ПодразделениеНаименование, ГражданствоКод, ПометкаУдаления, ИНН, УсловияТруда, ДолжностьДата, ФИО, УсловияТрудаКод, ДатаОклада, СтранаНаименование, УсловияРаботыНаименование, ШтатНаименование, ДатаРождения, СтранаКод, УсловияРаботы, ИсточникаКомплектованияКод, ШтатКод, УсловияРаботыКод, ПФР, ДолжностьКод, Штат, ПричинаУвольнения, Гражданство, ИсточникКомплектованияНаименование, ТарифнаяСеткаКод, ТабельныйНомер, УсловияРаботыДата, Страна, ПодразделениеДата, ДатаУвольнения, ДатаГрафика, ДолжностьНаименование, ТипДеятельности, ПодразделениеКод<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+log <p style="font-family:verdana;color:red;">>#######</p> ####### sss <br>log1 ############## sss <br>log2 ############## sss <br>log3 ############## sss<br><hr>gateway/receive.cfg[process receive] ObjectType=7<br><br><span class='ss_start pt'  onClick='toggleDiv("gateway/receive_7_sotrudnik1512147792611");'> $CALL_SERVICE: <b>gateway/receive.cfg => gateway/receive_7_sotrudnik</b> (request:HR_LHEP_36)</span><div id='gateway/receive_7_sotrudnik1512147792611' class='ss'><hr><b>receive_7_sotrudnik</b><br><b>$INCLUDE </b>[set defaults]<BR>
+<br> <b>SQL: [[check non-staff] (1) ]:</b><xmp>select case when '3326' like 'д%' then 'Y' else '' end as "NON-STAFF"
+</xmp><xmp>***** 1 record(s) retrieved. Filled 0 parameters: </xmp>------ SQL done, 2ms.<br><BR>
+<b>$INCLUDE </b>[process]<BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[check existing record] (1) ]:</b><xmp>select 'Y' as REC_EXISTS, id as REC_ID from info_11
+where ID=3326
+</xmp><xmp>***** 1 record(s) retrieved. Filled 2 parameters: 
+REC_EXISTS=Y
+REC_ID=3326</xmp>------ SQL done, 1ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (1) ]:</b><xmp>select SUBSTRING_INDEX('Морозова Галина Михайловна ', ' ', 1) AS F
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+F=Морозова</xmp>------ SQL done, 1ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (2) ]:</b><xmp>select replace('Морозова Галина Михайловна ', 'Морозова ','') AS IO
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+IO=Галина Михайловна </xmp>------ SQL done, 1ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (3) ]:</b><xmp>select SUBSTRING_INDEX('Галина Михайловна ', ' ', 1) AS I
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+I=Галина</xmp>------ SQL done, 1ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (4) ]:</b><xmp>select replace('Галина Михайловна ', 'Галина ','') AS O
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+O=Михайловна </xmp>------ SQL done, 1ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (5) ]:</b><xmp></xmp><b>$INCLUDE </b>[DeleteObject]<BR>
+<br> <b>SQL: [[mark deleted] (1) ]:</b><xmp>update info_11 set is_deleted=1, changed=now() where ID=3326
+</xmp> DONE! 1 record(s) affected------ SQL done, 1ms.<br><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/receive_7_sotrudnik1512147792611");'> BACK: <b>gateway/receive_7_sotrudnik => gateway/receive.cfg; (14ms.)</b></span><BR>
+<hr>----- gateway/receive.cfg[report]: ERR_CODE=0; ERROR=; <br>+++++<b>$INCLUDE </b>gateway/receive[OK]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_36");'>Request_HR_LHEP_36 (gateway/receive) DONE! (111ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_37");'> Request_HR_LHEP_37 [01.12 20:03:12] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_37' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=1&Command=PutObject&ObjectType=7&SrcObjectID=565ee62d-0fb8-11e2-9f27-000e0ce597c9&GateObjectID=116737&ClientObjectID=35807&Time=01.12.2017 16:00:07&Object={
+"ФИО": "Каширин Владимир Александрович",
+"ТабельныйНомер": "175803",
+"ИсточникаКомплектования": "958f5b1c-1c3d-11e2-ab6e-000e0ce597c9",
+"ИсточникаКомплектованияКод": "000000261",
+"ИсточникКомплектованияНаименование": "по свободному найму",
+"УсловияРаботы": "ed6502ec-437f-11e2-993a-000e0ce597c9",
+"Услов.....; log=true; session inactive=min;<br><hr>gateway/receive.cfg<br>gateway/receive.cfg: ClientID=1; Command=PutObject; ObjectType=7; ObjectID=; GlobalID=; ClientObjectID=35807;<br> Разряд=<BR>
+ ФизЛицоКод=0000012595<BR>
+ ДатаНачалаРаботы=24.11.2017 00:00:00<BR>
+ ФизЛицо=624b9d16-c9df-11e7-948b-0025907d24fa<BR>
+ Пол=Мужской<BR>
+ ТарифнаяСетка=<BR>
+ УсловияТрудаНаименование=допустимые<BR>
+ ГражданствоНаименование=РОССИЯ<BR>
+ УсловияТрудаДата=15.11.2017 00:00:00<BR>
+ КартаСОУТ=№ 717 от 05.02.2015<BR>
+ Подразделение=ea276f46-e2d1-11e1-a86a-e0cb4eda5b7d<BR>
+ ГрафикРаботы=Пятидневка по 8 часов (8ч.)<BR>
+ УслДатаОк=<BR>
+ ИсточникаКомплектования=958f5b1c-1c3d-11e2-ab6e-000e0ce597c9<BR>
+ Оклад=30000<BR>
+ СрокПолномочий=<BR>
+ Должность=6b3c7311-d7c1-11e1-bad5-e0cb4eda5b1f<BR>
+ ДатаОкончанияРаботы=23.11.2018 00:00:00<BR>
+ ТарифнаяСеткаНаименование=<BR>
+ ПодразделениеНаименование=Сектор №1 научных разработок<BR>
+ ГражданствоКод=643<BR>
+ ПометкаУдаления=Нет<BR>
+ ИНН=501000143050<BR>
+ УсловияТруда=6faced06-1c3e-11e2-ab6e-000e0ce597c9<BR>
+ ДолжностьДата=15.11.2017 00:00:00<BR>
+ ФИО=Каширин Владимир Александрович<BR>
+ УсловияТрудаКод=000000277<BR>
+ ДатаОклада=15.11.2017 00:00:00<BR>
+ СтранаНаименование=<BR>
+ УсловияРаботыНаименование=по сроч.труд. договору, на опр срок. Ст.58 п.2 ТК<BR>
+ ШтатНаименование=Основной штат<BR>
+ ДатаРождения=14.12.1953 00:00:00<BR>
+ СтранаКод=<BR>
+ УсловияРаботы=ed6502ec-437f-11e2-993a-000e0ce597c9<BR>
+ ИсточникаКомплектованияКод=000000261<BR>
+ ШтатКод=000000282<BR>
+ УсловияРаботыКод=000000354<BR>
+ ПФР=003-865-921 50<BR>
+ ДолжностьКод=000000433<BR>
+ Штат=6faced0c-1c3e-11e2-ab6e-000e0ce597c9<BR>
+ ПричинаУвольнения=<BR>
+ Гражданство=982d33e2-bee6-453a-992e-11d13fa66fa7<BR>
+ ИсточникКомплектованияНаименование=по свободному найму<BR>
+ ТарифнаяСеткаКод=<BR>
+ ТабельныйНомер=175803<BR>
+ УсловияРаботыДата=15.11.2017 00:00:00<BR>
+ Страна=<BR>
+ ПодразделениеДата=15.11.2017 00:00:00<BR>
+ ДатаУвольнения=<BR>
+ ДатаГрафика=15.11.2017 00:00:00<BR>
+ ДолжностьНаименование=инженер<BR>
+ ТипДеятельности=Специалисты<BR>
+ ПодразделениеКод=117010<BR>
+* JSON Keys=Разряд, ФизЛицоКод, ДатаНачалаРаботы, ФизЛицо, Пол, ТарифнаяСетка, УсловияТрудаНаименование, ГражданствоНаименование, УсловияТрудаДата, КартаСОУТ, Подразделение, ГрафикРаботы, УслДатаОк, ИсточникаКомплектования, Оклад, СрокПолномочий, Должность, ДатаОкончанияРаботы, ТарифнаяСеткаНаименование, ПодразделениеНаименование, ГражданствоКод, ПометкаУдаления, ИНН, УсловияТруда, ДолжностьДата, ФИО, УсловияТрудаКод, ДатаОклада, СтранаНаименование, УсловияРаботыНаименование, ШтатНаименование, ДатаРождения, СтранаКод, УсловияРаботы, ИсточникаКомплектованияКод, ШтатКод, УсловияРаботыКод, ПФР, ДолжностьКод, Штат, ПричинаУвольнения, Гражданство, ИсточникКомплектованияНаименование, ТарифнаяСеткаКод, ТабельныйНомер, УсловияРаботыДата, Страна, ПодразделениеДата, ДатаУвольнения, ДатаГрафика, ДолжностьНаименование, ТипДеятельности, ПодразделениеКод<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+log <p style="font-family:verdana;color:red;">>#######</p> ####### sss <br>log1 ############## sss <br>log2 ############## sss <br>log3 ############## sss<br><hr>gateway/receive.cfg[process receive] ObjectType=7<br><br><span class='ss_start pt'  onClick='toggleDiv("gateway/receive_7_sotrudnik1512147792710");'> $CALL_SERVICE: <b>gateway/receive.cfg => gateway/receive_7_sotrudnik</b> (request:HR_LHEP_37)</span><div id='gateway/receive_7_sotrudnik1512147792710' class='ss'><hr><b>receive_7_sotrudnik</b><br><b>$INCLUDE </b>[set defaults]<BR>
+<br> <b>SQL: [[check non-staff] (1) ]:</b><xmp>select case when '175803' like 'д%' then 'Y' else '' end as "NON-STAFF"
+</xmp><xmp>***** 1 record(s) retrieved. Filled 0 parameters: </xmp>------ SQL done, 10ms.<br><BR>
+<b>$INCLUDE </b>[process]<BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[check existing record] (1) ]:</b><xmp>select 'Y' as REC_EXISTS, id as REC_ID from info_11
+where ID=175803
+</xmp><xmp>***** 0 record(s) retrieved. Filled 0 parameters: </xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (1) ]:</b><xmp>select SUBSTRING_INDEX('Каширин Владимир Александрович ', ' ', 1) AS F
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+F=Каширин</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (2) ]:</b><xmp>select replace('Каширин Владимир Александрович ', 'Каширин ','') AS IO
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+IO=Владимир Александрович </xmp>------ SQL done, 10ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (3) ]:</b><xmp>select SUBSTRING_INDEX('Владимир Александрович ', ' ', 1) AS I
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+I=Владимир</xmp>------ SQL done, 10ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (4) ]:</b><xmp>select replace('Владимир Александрович ', 'Владимир ','') AS O
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+O=Александрович </xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (5) ]:</b><xmp></xmp><b>$INCLUDE </b>[PutObject]<BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[create record] (1) ]:</b><xmp>insert into info_11 (ID, person_id, F, I, O, changed)
+values(175803, 0000012595, 'Каширин','Владимир','Александрович', now())
+</xmp> DONE! 1 record(s) affected------ SQL done, 10ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[update record] (1) ]:</b><xmp>update info_11 set person_id=0000012595, F='Каширин', I='Владимир', O='Александрович'
+, div_code=117010, division='Сектор №1 научных разработок', post='инженер', usl_rab='по сроч.труд. договору, на опр срок. Ст.58 п.2 ТК'
+, FIO='Каширин Владимир Александрович', changed=now()
+where ID=175803
+</xmp> DONE! 1 record(s) affected------ SQL done, 10ms.<br><BR>
+<br><span class='ss_start pt'  onClick='toggleDiv("gateway/jinr_setPersonPosts1512147792760");'> $CALL_SERVICE: <b>gateway/receive_7_sotrudnik.cfg => gateway/jinr_setPersonPosts</b> (request:HR_LHEP_37)</span><div id='gateway/jinr_setPersonPosts1512147792760' class='ss'><br> <b>SQL: [[clear posts] (1) ]:</b><xmp>update info_11 set posts=''
+where person_id=0000012595
+</xmp> DONE! 1 record(s) affected------ SQL done, 20ms.<br><BR>
+ SQL: [SQL]<BR>
+<br> <b>SQL: [SQL]:</b><xmp>select p.id as "TAB_NOM", p.person_id as "KOD_FIZLICA", p.posts as "POSTS"
+, d.path as DIV_NAME, d.id as div_code
+, p.post as POST
+from info_11 p
+left join info_10 d on d.id=p.div_code
+where p.is_deleted=0
+and p.person_id=0000012595
+order by p.person_id
+</xmp> <b> Processed in 10ms. </b><br><br> <b>SQL: [[setPosts] (1) ]:</b><xmp>select distinct posts as "POSTS", id
+from info_11
+where person_id=12595
+order by id
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+id=175803</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [[setPosts] (2) ]:</b><xmp>update info_11 set
+posts='ЛФВЭ / Отделение №1 Ускорительное  / Научно-исследовательский криогенный отдел / Сектор №1 научных разработок , инженер'
+where person_id=12595
+</xmp> DONE! 1 record(s) affected------ SQL done, 0ms.<br><BR>
+ <b> NumTableRows=1; </b><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/jinr_setPersonPosts1512147792760");'> BACK: <b>gateway/jinr_setPersonPosts => gateway/receive_7_sotrudnik.cfg; (30ms.)</b></span><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/receive_7_sotrudnik1512147792710");'> BACK: <b>gateway/receive_7_sotrudnik => gateway/receive.cfg; (80ms.)</b></span><BR>
+<hr>----- gateway/receive.cfg[report]: ERR_CODE=0; ERROR=; <br>+++++<b>$INCLUDE </b>gateway/receive[OK]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_37");'>Request_HR_LHEP_37 (gateway/receive) DONE! (163ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_38");'> Request_HR_LHEP_38 [01.12 20:03:12] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_38' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=1&Command=PutObject&ObjectType=7&SrcObjectID=116737&GateObjectID=125503&ClientObjectID=35807&Time=01.12.2017 16:05:05&Object={
+"ФИО": "Каширин Владимир Александрович",
+"ТабельныйНомер": "175803",
+"ИсточникаКомплектования": "958f5b1c-1c3d-11e2-ab6e-000e0ce597c9",
+"ИсточникаКомплектованияКод": "000000261",
+"ИсточникКомплектованияНаименование": "по свободному найму",
+"УсловияРаботы": "ed6502ec-437f-11e2-993a-000e0ce597c9",
+"УсловияРаботыКод": "000000354",
+"У.....; log=true; session inactive=min;<br><hr>gateway/receive.cfg<br>gateway/receive.cfg: ClientID=1; Command=PutObject; ObjectType=7; ObjectID=; GlobalID=; ClientObjectID=35807;<br> Разряд=<BR>
+ ФизЛицоКод=0000012595<BR>
+ ДатаНачалаРаботы=24.11.2017 00:00:00<BR>
+ ФизЛицо=624b9d16-c9df-11e7-948b-0025907d24fa<BR>
+ Пол=Мужской<BR>
+ ТарифнаяСетка=<BR>
+ УсловияТрудаНаименование=допустимые<BR>
+ ГражданствоНаименование=РОССИЯ<BR>
+ УсловияТрудаДата=15.11.2017 00:00:00<BR>
+ КартаСОУТ=№ 717 от 05.02.2015<BR>
+ Подразделение=ea276f46-e2d1-11e1-a86a-e0cb4eda5b7d<BR>
+ ГрафикРаботы=Пятидневка по 8 часов (8ч.)<BR>
+ УслДатаОк=<BR>
+ ИсточникаКомплектования=958f5b1c-1c3d-11e2-ab6e-000e0ce597c9<BR>
+ Оклад=30000<BR>
+ СрокПолномочий=<BR>
+ Должность=6b3c7311-d7c1-11e1-bad5-e0cb4eda5b1f<BR>
+ ДатаОкончанияРаботы=23.11.2018 00:00:00<BR>
+ ТарифнаяСеткаНаименование=<BR>
+ ПодразделениеНаименование=Сектор №1 научных разработок<BR>
+ ГражданствоКод=643<BR>
+ ПометкаУдаления=Нет<BR>
+ ИНН=501000143050<BR>
+ УсловияТруда=6faced06-1c3e-11e2-ab6e-000e0ce597c9<BR>
+ ДолжностьДата=15.11.2017 00:00:00<BR>
+ ФИО=Каширин Владимир Александрович<BR>
+ УсловияТрудаКод=000000277<BR>
+ ДатаОклада=15.11.2017 00:00:00<BR>
+ СтранаНаименование=<BR>
+ УсловияРаботыНаименование=по сроч.труд. договору, на опр срок. Ст.58 п.2 ТК<BR>
+ ШтатНаименование=Основной штат<BR>
+ ДатаРождения=14.12.1953 00:00:00<BR>
+ СтранаКод=<BR>
+ УсловияРаботы=ed6502ec-437f-11e2-993a-000e0ce597c9<BR>
+ ИсточникаКомплектованияКод=000000261<BR>
+ ШтатКод=000000282<BR>
+ УсловияРаботыКод=000000354<BR>
+ ПФР=003-865-921 50<BR>
+ ДолжностьКод=000000433<BR>
+ Штат=6faced0c-1c3e-11e2-ab6e-000e0ce597c9<BR>
+ ПричинаУвольнения=<BR>
+ Гражданство=982d33e2-bee6-453a-992e-11d13fa66fa7<BR>
+ ИсточникКомплектованияНаименование=по свободному найму<BR>
+ ТарифнаяСеткаКод=<BR>
+ ТабельныйНомер=175803<BR>
+ УсловияРаботыДата=15.11.2017 00:00:00<BR>
+ Страна=<BR>
+ ПодразделениеДата=15.11.2017 00:00:00<BR>
+ ДатаУвольнения=<BR>
+ ДатаГрафика=15.11.2017 00:00:00<BR>
+ ДолжностьНаименование=инженер<BR>
+ ТипДеятельности=Специалисты<BR>
+ ПодразделениеКод=117010<BR>
+* JSON Keys=Разряд, ФизЛицоКод, ДатаНачалаРаботы, ФизЛицо, Пол, ТарифнаяСетка, УсловияТрудаНаименование, ГражданствоНаименование, УсловияТрудаДата, КартаСОУТ, Подразделение, ГрафикРаботы, УслДатаОк, ИсточникаКомплектования, Оклад, СрокПолномочий, Должность, ДатаОкончанияРаботы, ТарифнаяСеткаНаименование, ПодразделениеНаименование, ГражданствоКод, ПометкаУдаления, ИНН, УсловияТруда, ДолжностьДата, ФИО, УсловияТрудаКод, ДатаОклада, СтранаНаименование, УсловияРаботыНаименование, ШтатНаименование, ДатаРождения, СтранаКод, УсловияРаботы, ИсточникаКомплектованияКод, ШтатКод, УсловияРаботыКод, ПФР, ДолжностьКод, Штат, ПричинаУвольнения, Гражданство, ИсточникКомплектованияНаименование, ТарифнаяСеткаКод, ТабельныйНомер, УсловияРаботыДата, Страна, ПодразделениеДата, ДатаУвольнения, ДатаГрафика, ДолжностьНаименование, ТипДеятельности, ПодразделениеКод<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+log <p style="font-family:verdana;color:red;">>#######</p> ####### sss <br>log1 ############## sss <br>log2 ############## sss <br>log3 ############## sss<br><hr>gateway/receive.cfg[process receive] ObjectType=7<br><br><span class='ss_start pt'  onClick='toggleDiv("gateway/receive_7_sotrudnik1512147792884");'> $CALL_SERVICE: <b>gateway/receive.cfg => gateway/receive_7_sotrudnik</b> (request:HR_LHEP_38)</span><div id='gateway/receive_7_sotrudnik1512147792884' class='ss'><hr><b>receive_7_sotrudnik</b><br><b>$INCLUDE </b>[set defaults]<BR>
+<br> <b>SQL: [[check non-staff] (1) ]:</b><xmp>select case when '175803' like 'д%' then 'Y' else '' end as "NON-STAFF"
+</xmp><xmp>***** 1 record(s) retrieved. Filled 0 parameters: </xmp>------ SQL done, 2ms.<br><BR>
+<b>$INCLUDE </b>[process]<BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[check existing record] (1) ]:</b><xmp>select 'Y' as REC_EXISTS, id as REC_ID from info_11
+where ID=175803
+</xmp><xmp>***** 1 record(s) retrieved. Filled 2 parameters: 
+REC_EXISTS=Y
+REC_ID=175803</xmp>------ SQL done, 2ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (1) ]:</b><xmp>select SUBSTRING_INDEX('Каширин Владимир Александрович ', ' ', 1) AS F
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+F=Каширин</xmp>------ SQL done, 2ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (2) ]:</b><xmp>select replace('Каширин Владимир Александрович ', 'Каширин ','') AS IO
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+IO=Владимир Александрович </xmp>------ SQL done, 1ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (3) ]:</b><xmp>select SUBSTRING_INDEX('Владимир Александрович ', ' ', 1) AS I
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+I=Владимир</xmp>------ SQL done, 2ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (4) ]:</b><xmp>select replace('Владимир Александрович ', 'Владимир ','') AS O
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+O=Александрович </xmp>------ SQL done, 2ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (5) ]:</b><xmp></xmp><b>$INCLUDE </b>[PutObject]<BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[update record] (1) ]:</b><xmp>update info_11 set person_id=0000012595, F='Каширин', I='Владимир', O='Александрович'
+, div_code=117010, division='Сектор №1 научных разработок', post='инженер', usl_rab='по сроч.труд. договору, на опр срок. Ст.58 п.2 ТК'
+, FIO='Каширин Владимир Александрович', changed=now()
+where ID=175803
+</xmp> DONE! 1 record(s) affected------ SQL done, 2ms.<br><BR>
+<br><span class='ss_start pt'  onClick='toggleDiv("gateway/jinr_setPersonPosts1512147792908");'> $CALL_SERVICE: <b>gateway/receive_7_sotrudnik.cfg => gateway/jinr_setPersonPosts</b> (request:HR_LHEP_38)</span><div id='gateway/jinr_setPersonPosts1512147792908' class='ss'><br> <b>SQL: [[clear posts] (1) ]:</b><xmp>update info_11 set posts=''
+where person_id=0000012595
+</xmp> DONE! 1 record(s) affected------ SQL done, 5ms.<br><BR>
+ SQL: [SQL]<BR>
+<br> <b>SQL: [SQL]:</b><xmp>select p.id as "TAB_NOM", p.person_id as "KOD_FIZLICA", p.posts as "POSTS"
+, d.path as DIV_NAME, d.id as div_code
+, p.post as POST
+from info_11 p
+left join info_10 d on d.id=p.div_code
+where p.is_deleted=0
+and p.person_id=0000012595
+order by p.person_id
+</xmp> <b> Processed in 2ms. </b><br><br> <b>SQL: [[setPosts] (1) ]:</b><xmp>select distinct posts as "POSTS", id
+from info_11
+where person_id=12595
+order by id
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+id=175803</xmp>------ SQL done, 1ms.<br><BR>
+<br> <b>SQL: [[setPosts] (2) ]:</b><xmp>update info_11 set
+posts='ЛФВЭ / Отделение №1 Ускорительное  / Научно-исследовательский криогенный отдел / Сектор №1 научных разработок , инженер'
+where person_id=12595
+</xmp> DONE! 1 record(s) affected------ SQL done, 2ms.<br><BR>
+ <b> NumTableRows=1; </b><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/jinr_setPersonPosts1512147792908");'> BACK: <b>gateway/jinr_setPersonPosts => gateway/receive_7_sotrudnik.cfg; (16ms.)</b></span><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/receive_7_sotrudnik1512147792884");'> BACK: <b>gateway/receive_7_sotrudnik => gateway/receive.cfg; (41ms.)</b></span><BR>
+<hr>----- gateway/receive.cfg[report]: ERR_CODE=0; ERROR=; <br>+++++<b>$INCLUDE </b>gateway/receive[OK]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_38");'>Request_HR_LHEP_38 (gateway/receive) DONE! (111ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_39");'> Request_HR_LHEP_39 [01.12 20:03:13] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_39' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=1&Command=PutObject&ObjectType=8&SrcObjectID=624b9d16-c9df-11e7-948b-0025907d24fa&GateObjectID=125504&ClientObjectID=35807&Time=01.12.2017 16:05:28&Object={
+"Код": "0000012595",
+"Наименование": "Каширин Владимир Александрович",
+"ПометкаУдаления": "Нет",
+"ПерсональныеДанные": [
+{
+"ДатаРождения": "14.12.1953 00:00:00",
+"Пол": "Мужской",
+"МестоРождения": "",
+"ИНН": "501000143050",
+"СтраховойНомерПФР": "003-865-921 50",
+"СемейногоПоложения": "",
+"Семейног.....; log=true; session inactive=min;<br><hr>gateway/receive.cfg<br>gateway/receive.cfg: ClientID=1; Command=PutObject; ObjectType=8; ObjectID=; GlobalID=; ClientObjectID=35807;<br> Наименование=Каширин Владимир Александрович<BR>
+ ПометкаУдаления=Нет<BR>
+<br><b>*** UNKNOWN ARRAY:</b> ПерсональныеДанные;<BR>
+<br><b>*** ARRAY: </b>ПерсональныеДанные:<BR>
+ ...* ПерсональныеДанные.1.ПаспортаДата=13.11.2003 00:00:00<BR>
+ ...* ПерсональныеДанные.1.ПаспортНомер=860089<BR>
+ ...* ПерсональныеДанные.1.ТипаПенсииКод=<BR>
+ ...* ПерсональныеДанные.1.Гражданство=982d33e2-bee6-453a-992e-11d13fa66fa7<BR>
+ ...* ПерсональныеДанные.1.КоличествоДетей=<BR>
+ ...* ПерсональныеДанные.1.ДатаРождения=14.12.1953 00:00:00<BR>
+ ...* ПерсональныеДанные.1.Пол=Мужской<BR>
+ ...* ПерсональныеДанные.1.СемейногоПоложения=<BR>
+ ...* ПерсональныеДанные.1.СемейногоПоложенияКод=<BR>
+ ...* ПерсональныеДанные.1.МестоРождения=<BR>
+ ...* ПерсональныеДанные.1.Адрес=<BR>
+ ...* ПерсональныеДанные.1.СемейноеПоложениеНаименование=<BR>
+ ...* ПерсональныеДанные.1.ГражданствоНаименование=РОССИЯ<BR>
+ ...* ПерсональныеДанные.1.ПаспортСерия=46 05<BR>
+ ...* ПерсональныеДанные.1.ГражданствоКод=643<BR>
+ ...* ПерсональныеДанные.1.ТипПенсииНаименование=<BR>
+ ...* ПерсональныеДанные.1.ИНН=501000143050<BR>
+ ...* ПерсональныеДанные.1.ИмеетСудимость=<BR>
+ ...* ПерсональныеДанные.1.УчастникВойны=<BR>
+ ...* ПерсональныеДанные.1.СтраховойНомерПФР=003-865-921 50<BR>
+ ...* ПерсональныеДанные.1.ПаспорКемВыдан=Дубненским ГОВД Московской области<BR>
+ ...* ПерсональныеДанные.1.АдресПоПрописке=141981, Московская обл, Дубна г, Энтузиастов ул, дом № 3б, кв.310<BR>
+ ...* ПерсональныеДанные.1.ТипаПенсии=<BR>
+<b> ...* ARRAY TOTAL: </b>ПерсональныеДанные.count=1; ПерсональныеДанные.items=1;<br><BR>
+ Код=0000012595<BR>
+* JSON Keys=Наименование, ПометкаУдаления, ПерсональныеДанные, Код<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+log <p style="font-family:verdana;color:red;">>#######</p> ####### sss <br>log1 ############## sss <br>log2 ############## sss <br>log3 ############## sss<br><hr>gateway/receive.cfg[process receive] ObjectType=8<br><br><span class='ss_start pt'  onClick='toggleDiv("gateway/receive_8_fizlitso1512147793013");'> $CALL_SERVICE: <b>gateway/receive.cfg => gateway/receive_8_fizlitso</b> (request:HR_LHEP_39)</span><div id='gateway/receive_8_fizlitso1512147793013' class='ss'><hr><b>===>>> receive_8_fizlitco</b><br><br> <b>SQL: [[check existing record] (1) ]:</b><xmp>select 'Y' as REC_EXISTS, id as REC_ID, is_manual from i_fizlitsa
+where ID=0000012595
+</xmp><xmp>***** 0 record(s) retrieved. Filled 0 parameters: </xmp>------ SQL done, 6ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (1) ]:</b><xmp>select SUBSTRING_INDEX('Каширин Владимир Александрович ', ' ', 1) AS F
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+F=Каширин</xmp>------ SQL done, 1ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (2) ]:</b><xmp>select replace('Каширин Владимир Александрович ', 'Каширин ','') AS IO
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+IO=Владимир Александрович </xmp>------ SQL done, 1ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (3) ]:</b><xmp>select SUBSTRING_INDEX('Владимир Александрович ', ' ', 1) AS I
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+I=Владимир</xmp>------ SQL done, 1ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (4) ]:</b><xmp>select replace('Владимир Александрович ', 'Владимир ','') AS O
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+O=Александрович </xmp>------ SQL done, 1ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (5) ]:</b><xmp></xmp><b>$INCLUDE </b>[PutObject]<BR>
+<br> <b>SQL: [[create record] (1) ]:</b><xmp>insert into i_fizlitsa (ID, F, I, O, dr, strana, sex, changed)
+values(0000012595, 'Каширин', 'Владимир', 'Александрович'
+, STR_TO_DATE('14.12.1953 00:00:00', '%d.%m.%Y %H:%i:%s')
+, 'РОССИЯ', ''
+, now())
+</xmp> DONE! 1 record(s) affected------ SQL done, 2ms.<br><BR>
+<br> <b>SQL: [[create record] (2) ]:</b><xmp></xmp></div><span class='ss_back pt'  onClick='toggleDiv("gateway/receive_8_fizlitso1512147793013");'> BACK: <b>gateway/receive_8_fizlitso => gateway/receive.cfg; (16ms.)</b></span><BR>
+<hr>----- gateway/receive.cfg[report]: ERR_CODE=0; ERROR=; <br>+++++<b>$INCLUDE </b>gateway/receive[OK]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_39");'>Request_HR_LHEP_39 (gateway/receive) DONE! (91ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_40");'> Request_HR_LHEP_40 [01.12 20:03:13] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_40' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=1&Command=PutObject&ObjectType=8&SrcObjectID=0cef37a6-c60a-11e7-948a-0025907d24fa&GateObjectID=125505&ClientObjectID=35807&Time=01.12.2017 16:10:27&Object={
+"Код": "0000012583",
+"Наименование": "Свидетелева Миляуша Исмагиловна",
+"ПометкаУдаления": "Нет",
+"ПерсональныеДанные": [
+{
+"ДатаРождения": "19.06.1992 00:00:00",
+"Пол": "Женский",
+"МестоРождения": "",
+"ИНН": "164511415236",
+"СтраховойНомерПФР": "150-722-119 22",
+"СемейногоПоложения": "",
+"Семейно.....; log=true; session inactive=min;<br><hr>gateway/receive.cfg<br>gateway/receive.cfg: ClientID=1; Command=PutObject; ObjectType=8; ObjectID=; GlobalID=; ClientObjectID=35807;<br> Наименование=Свидетелева Миляуша Исмагиловна<BR>
+ ПометкаУдаления=Нет<BR>
+<br><b>*** UNKNOWN ARRAY:</b> ПерсональныеДанные;<BR>
+<br><b>*** ARRAY: </b>ПерсональныеДанные:<BR>
+ ...* ПерсональныеДанные.1.ПаспортаДата=16.10.2015 00:00:00<BR>
+ ...* ПерсональныеДанные.1.ПаспортНомер=935547<BR>
+ ...* ПерсональныеДанные.1.ТипаПенсииКод=<BR>
+ ...* ПерсональныеДанные.1.Гражданство=982d33e2-bee6-453a-992e-11d13fa66fa7<BR>
+ ...* ПерсональныеДанные.1.КоличествоДетей=<BR>
+ ...* ПерсональныеДанные.1.ДатаРождения=19.06.1992 00:00:00<BR>
+ ...* ПерсональныеДанные.1.Пол=Женский<BR>
+ ...* ПерсональныеДанные.1.СемейногоПоложения=<BR>
+ ...* ПерсональныеДанные.1.СемейногоПоложенияКод=<BR>
+ ...* ПерсональныеДанные.1.МестоРождения=<BR>
+ ...* ПерсональныеДанные.1.Адрес=<BR>
+ ...* ПерсональныеДанные.1.СемейноеПоложениеНаименование=<BR>
+ ...* ПерсональныеДанные.1.ГражданствоНаименование=РОССИЯ<BR>
+ ...* ПерсональныеДанные.1.ПаспортСерия=92 15<BR>
+ ...* ПерсональныеДанные.1.ГражданствоКод=643<BR>
+ ...* ПерсональныеДанные.1.ТипПенсииНаименование=<BR>
+ ...* ПерсональныеДанные.1.ИНН=164511415236<BR>
+ ...* ПерсональныеДанные.1.ИмеетСудимость=<BR>
+ ...* ПерсональныеДанные.1.УчастникВойны=<BR>
+ ...* ПерсональныеДанные.1.СтраховойНомерПФР=150-722-119 22<BR>
+ ...* ПерсональныеДанные.1.ПаспорКемВыдан=ОУФМС России по Республике Татарстан в Бугульминском районе<BR>
+ ...* ПерсональныеДанные.1.АдресПоПрописке=423227, Татарстан Республика, Бугульминский р-н, Батыр д, Луговая ул, дом № 47<BR>
+ ...* ПерсональныеДанные.1.ТипаПенсии=<BR>
+<b> ...* ARRAY TOTAL: </b>ПерсональныеДанные.count=1; ПерсональныеДанные.items=1;<br><BR>
+ Код=0000012583<BR>
+* JSON Keys=Наименование, ПометкаУдаления, ПерсональныеДанные, Код<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+log <p style="font-family:verdana;color:red;">>#######</p> ####### sss <br>log1 ############## sss <br>log2 ############## sss <br>log3 ############## sss<br><hr>gateway/receive.cfg[process receive] ObjectType=8<br><br><span class='ss_start pt'  onClick='toggleDiv("gateway/receive_8_fizlitso1512147793124");'> $CALL_SERVICE: <b>gateway/receive.cfg => gateway/receive_8_fizlitso</b> (request:HR_LHEP_40)</span><div id='gateway/receive_8_fizlitso1512147793124' class='ss'><hr><b>===>>> receive_8_fizlitco</b><br><br> <b>SQL: [[check existing record] (1) ]:</b><xmp>select 'Y' as REC_EXISTS, id as REC_ID, is_manual from i_fizlitsa
+where ID=0000012583
+</xmp><xmp>***** 0 record(s) retrieved. Filled 0 parameters: </xmp>------ SQL done, 6ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (1) ]:</b><xmp>select SUBSTRING_INDEX('Свидетелева Миляуша Исмагиловна ', ' ', 1) AS F
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+F=Свидетелева</xmp>------ SQL done, 1ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (2) ]:</b><xmp>select replace('Свидетелева Миляуша Исмагиловна ', 'Свидетелева ','') AS IO
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+IO=Миляуша Исмагиловна </xmp>------ SQL done, 1ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (3) ]:</b><xmp>select SUBSTRING_INDEX('Миляуша Исмагиловна ', ' ', 1) AS I
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+I=Миляуша</xmp>------ SQL done, 1ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (4) ]:</b><xmp>select replace('Миляуша Исмагиловна ', 'Миляуша ','') AS O
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+O=Исмагиловна </xmp>------ SQL done, 1ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (5) ]:</b><xmp></xmp><b>$INCLUDE </b>[PutObject]<BR>
+<br> <b>SQL: [[create record] (1) ]:</b><xmp>insert into i_fizlitsa (ID, F, I, O, dr, strana, sex, changed)
+values(0000012583, 'Свидетелева', 'Миляуша', 'Исмагиловна'
+, STR_TO_DATE('19.06.1992 00:00:00', '%d.%m.%Y %H:%i:%s')
+, 'РОССИЯ', ''
+, now())
+</xmp> DONE! 1 record(s) affected------ SQL done, 2ms.<br><BR>
+<br> <b>SQL: [[create record] (2) ]:</b><xmp></xmp></div><span class='ss_back pt'  onClick='toggleDiv("gateway/receive_8_fizlitso1512147793124");'> BACK: <b>gateway/receive_8_fizlitso => gateway/receive.cfg; (17ms.)</b></span><BR>
+<hr>----- gateway/receive.cfg[report]: ERR_CODE=0; ERROR=; <br>+++++<b>$INCLUDE </b>gateway/receive[OK]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_40");'>Request_HR_LHEP_40 (gateway/receive) DONE! (90ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_41");'> Request_HR_LHEP_41 [01.12 20:03:13] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_41' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=1&Command=PutObject&ObjectType=7&SrcObjectID=0cef37a7-c60a-11e7-948a-0025907d24fa&GateObjectID=116888&ClientObjectID=35807&Time=01.12.2017 16:25:07&Object={
+"ФИО": "Свидетелева Миляуша Исмагиловна",
+"ТабельныйНомер": "175721",
+"ИсточникаКомплектования": "958f5b1c-1c3d-11e2-ab6e-000e0ce597c9",
+"ИсточникаКомплектованияКод": "000000261",
+"ИсточникКомплектованияНаименование": "по свободному найму",
+"УсловияРаботы": "ed6502ec-437f-11e2-993a-000e0ce597c9",
+"Усло.....; log=true; session inactive=min;<br><hr>gateway/receive.cfg<br>gateway/receive.cfg: ClientID=1; Command=PutObject; ObjectType=7; ObjectID=; GlobalID=; ClientObjectID=35807;<br> Разряд=<BR>
+ ФизЛицоКод=0000012583<BR>
+ ДатаНачалаРаботы=20.11.2017 00:00:00<BR>
+ ФизЛицо=0cef37a6-c60a-11e7-948a-0025907d24fa<BR>
+ Пол=Женский<BR>
+ ТарифнаяСетка=<BR>
+ УсловияТрудаНаименование=допустимые<BR>
+ ГражданствоНаименование=РОССИЯ<BR>
+ УсловияТрудаДата=20.11.2017 00:00:00<BR>
+ КартаСОУТ=№ 981 от 06.02.2015<BR>
+ Подразделение=6405b266-6962-11e3-9403-0025907d24fa<BR>
+ ГрафикРаботы=Пятидневка по 8 часов (8ч.)<BR>
+ УслДатаОк=<BR>
+ ИсточникаКомплектования=958f5b1c-1c3d-11e2-ab6e-000e0ce597c9<BR>
+ Оклад=25000<BR>
+ СрокПолномочий=<BR>
+ Должность=6b3c7311-d7c1-11e1-bad5-e0cb4eda5b1f<BR>
+ ДатаОкончанияРаботы=19.05.2018 00:00:00<BR>
+ ТарифнаяСеткаНаименование=<BR>
+ ПодразделениеНаименование=Группа №1 вакуумного и криогенного обеспечения<BR>
+ ГражданствоКод=643<BR>
+ ПометкаУдаления=Нет<BR>
+ ИНН=164511415236<BR>
+ УсловияТруда=6faced06-1c3e-11e2-ab6e-000e0ce597c9<BR>
+ ДолжностьДата=20.11.2017 00:00:00<BR>
+ ФИО=Свидетелева Миляуша Исмагиловна<BR>
+ УсловияТрудаКод=000000277<BR>
+ ДатаОклада=20.11.2017 00:00:00<BR>
+ СтранаНаименование=<BR>
+ УсловияРаботыНаименование=по сроч.труд. договору, на опр срок. Ст.58 п.2 ТК<BR>
+ ШтатНаименование=Основной штат<BR>
+ ДатаРождения=19.06.1992 00:00:00<BR>
+ СтранаКод=<BR>
+ УсловияРаботы=ed6502ec-437f-11e2-993a-000e0ce597c9<BR>
+ ИсточникаКомплектованияКод=000000261<BR>
+ ШтатКод=000000282<BR>
+ УсловияРаботыКод=000000354<BR>
+ ПФР=150-722-119 22<BR>
+ ДолжностьКод=000000433<BR>
+ Штат=6faced0c-1c3e-11e2-ab6e-000e0ce597c9<BR>
+ ПричинаУвольнения=<BR>
+ Гражданство=982d33e2-bee6-453a-992e-11d13fa66fa7<BR>
+ ИсточникКомплектованияНаименование=по свободному найму<BR>
+ ТарифнаяСеткаКод=<BR>
+ ТабельныйНомер=175721<BR>
+ УсловияРаботыДата=20.11.2017 00:00:00<BR>
+ Страна=<BR>
+ ПодразделениеДата=20.11.2017 00:00:00<BR>
+ ДатаУвольнения=<BR>
+ ДатаГрафика=20.11.2017 00:00:00<BR>
+ ДолжностьНаименование=инженер<BR>
+ ТипДеятельности=Специалисты<BR>
+ ПодразделениеКод=129030<BR>
+* JSON Keys=Разряд, ФизЛицоКод, ДатаНачалаРаботы, ФизЛицо, Пол, ТарифнаяСетка, УсловияТрудаНаименование, ГражданствоНаименование, УсловияТрудаДата, КартаСОУТ, Подразделение, ГрафикРаботы, УслДатаОк, ИсточникаКомплектования, Оклад, СрокПолномочий, Должность, ДатаОкончанияРаботы, ТарифнаяСеткаНаименование, ПодразделениеНаименование, ГражданствоКод, ПометкаУдаления, ИНН, УсловияТруда, ДолжностьДата, ФИО, УсловияТрудаКод, ДатаОклада, СтранаНаименование, УсловияРаботыНаименование, ШтатНаименование, ДатаРождения, СтранаКод, УсловияРаботы, ИсточникаКомплектованияКод, ШтатКод, УсловияРаботыКод, ПФР, ДолжностьКод, Штат, ПричинаУвольнения, Гражданство, ИсточникКомплектованияНаименование, ТарифнаяСеткаКод, ТабельныйНомер, УсловияРаботыДата, Страна, ПодразделениеДата, ДатаУвольнения, ДатаГрафика, ДолжностьНаименование, ТипДеятельности, ПодразделениеКод<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+log <p style="font-family:verdana;color:red;">>#######</p> ####### sss <br>log1 ############## sss <br>log2 ############## sss <br>log3 ############## sss<br><hr>gateway/receive.cfg[process receive] ObjectType=7<br><br><span class='ss_start pt'  onClick='toggleDiv("gateway/receive_7_sotrudnik1512147793228");'> $CALL_SERVICE: <b>gateway/receive.cfg => gateway/receive_7_sotrudnik</b> (request:HR_LHEP_41)</span><div id='gateway/receive_7_sotrudnik1512147793228' class='ss'><hr><b>receive_7_sotrudnik</b><br><b>$INCLUDE </b>[set defaults]<BR>
+<br> <b>SQL: [[check non-staff] (1) ]:</b><xmp>select case when '175721' like 'д%' then 'Y' else '' end as "NON-STAFF"
+</xmp><xmp>***** 1 record(s) retrieved. Filled 0 parameters: </xmp>------ SQL done, 0ms.<br><BR>
+<b>$INCLUDE </b>[process]<BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[check existing record] (1) ]:</b><xmp>select 'Y' as REC_EXISTS, id as REC_ID from info_11
+where ID=175721
+</xmp><xmp>***** 1 record(s) retrieved. Filled 2 parameters: 
+REC_EXISTS=Y
+REC_ID=175721</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (1) ]:</b><xmp>select SUBSTRING_INDEX('Свидетелева Миляуша Исмагиловна ', ' ', 1) AS F
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+F=Свидетелева</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (2) ]:</b><xmp>select replace('Свидетелева Миляуша Исмагиловна ', 'Свидетелева ','') AS IO
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+IO=Миляуша Исмагиловна </xmp>------ SQL done, 10ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (3) ]:</b><xmp>select SUBSTRING_INDEX('Миляуша Исмагиловна ', ' ', 1) AS I
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+I=Миляуша</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (4) ]:</b><xmp>select replace('Миляуша Исмагиловна ', 'Миляуша ','') AS O
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+O=Исмагиловна </xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (5) ]:</b><xmp></xmp><b>$INCLUDE </b>[PutObject]<BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[update record] (1) ]:</b><xmp>update info_11 set person_id=0000012583, F='Свидетелева', I='Миляуша', O='Исмагиловна'
+, div_code=129030, division='Группа №1 вакуумного и криогенного обеспечения', post='инженер', usl_rab='по сроч.труд. договору, на опр срок. Ст.58 п.2 ТК'
+, FIO='Свидетелева Миляуша Исмагиловна', changed=now()
+where ID=175721
+</xmp> DONE! 1 record(s) affected------ SQL done, 0ms.<br><BR>
+<br><span class='ss_start pt'  onClick='toggleDiv("gateway/jinr_setPersonPosts1512147793258");'> $CALL_SERVICE: <b>gateway/receive_7_sotrudnik.cfg => gateway/jinr_setPersonPosts</b> (request:HR_LHEP_41)</span><div id='gateway/jinr_setPersonPosts1512147793258' class='ss'><br> <b>SQL: [[clear posts] (1) ]:</b><xmp>update info_11 set posts=''
+where person_id=0000012583
+</xmp> DONE! 1 record(s) affected------ SQL done, 0ms.<br><BR>
+ SQL: [SQL]<BR>
+<br> <b>SQL: [SQL]:</b><xmp>select p.id as "TAB_NOM", p.person_id as "KOD_FIZLICA", p.posts as "POSTS"
+, d.path as DIV_NAME, d.id as div_code
+, p.post as POST
+from info_11 p
+left join info_10 d on d.id=p.div_code
+where p.is_deleted=0
+and p.person_id=0000012583
+order by p.person_id
+</xmp> <b> Processed in 0ms. </b><br><br> <b>SQL: [[setPosts] (1) ]:</b><xmp>select distinct posts as "POSTS", id
+from info_11
+where person_id=12583
+order by id
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+id=175721</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [[setPosts] (2) ]:</b><xmp>update info_11 set
+posts='ЛФВЭ / Отделение №1 Ускорительное  / Научно-экспериментальный отдел сверхпроводящих магнитов и технологий / Группа №1 вакуумного и криогенного обеспечения, инженер'
+where person_id=12583
+</xmp> DONE! 1 record(s) affected------ SQL done, 0ms.<br><BR>
+ <b> NumTableRows=1; </b><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/jinr_setPersonPosts1512147793258");'> BACK: <b>gateway/jinr_setPersonPosts => gateway/receive_7_sotrudnik.cfg; (10ms.)</b></span><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/receive_7_sotrudnik1512147793228");'> BACK: <b>gateway/receive_7_sotrudnik => gateway/receive.cfg; (40ms.)</b></span><BR>
+<hr>----- gateway/receive.cfg[report]: ERR_CODE=0; ERROR=; <br>+++++<b>$INCLUDE </b>gateway/receive[OK]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_41");'>Request_HR_LHEP_41 (gateway/receive) DONE! (151ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_42");'> Request_HR_LHEP_42 [01.12 20:03:13] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_42' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=1&Command=PutObject&ObjectType=8&SrcObjectID=125505&GateObjectID=125509&ClientObjectID=35807&Time=01.12.2017 16:25:30&Object={
+"Код": "0000012583",
+"Наименование": "Свидетелева Миляуша Исмагиловна",
+"ПометкаУдаления": "Нет",
+"ПерсональныеДанные": [
+{
+"ДатаРождения": "19.06.1992 00:00:00",
+"Пол": "Женский",
+"МестоРождения": "",
+"ИНН": "164511415236",
+"СтраховойНомерПФР": "150-722-119 22",
+"СемейногоПоложения": "",
+"СемейногоПоложенияКод": "",
+"Семейно.....; log=true; session inactive=min;<br><hr>gateway/receive.cfg<br>gateway/receive.cfg: ClientID=1; Command=PutObject; ObjectType=8; ObjectID=; GlobalID=; ClientObjectID=35807;<br> Наименование=Свидетелева Миляуша Исмагиловна<BR>
+ ПометкаУдаления=Нет<BR>
+<br><b>*** UNKNOWN ARRAY:</b> ПерсональныеДанные;<BR>
+<br><b>*** ARRAY: </b>ПерсональныеДанные:<BR>
+ ...* ПерсональныеДанные.1.ПаспортаДата=16.10.2015 00:00:00<BR>
+ ...* ПерсональныеДанные.1.ПаспортНомер=935547<BR>
+ ...* ПерсональныеДанные.1.ТипаПенсииКод=<BR>
+ ...* ПерсональныеДанные.1.Гражданство=982d33e2-bee6-453a-992e-11d13fa66fa7<BR>
+ ...* ПерсональныеДанные.1.КоличествоДетей=<BR>
+ ...* ПерсональныеДанные.1.ДатаРождения=19.06.1992 00:00:00<BR>
+ ...* ПерсональныеДанные.1.Пол=Женский<BR>
+ ...* ПерсональныеДанные.1.СемейногоПоложения=<BR>
+ ...* ПерсональныеДанные.1.СемейногоПоложенияКод=<BR>
+ ...* ПерсональныеДанные.1.МестоРождения=<BR>
+ ...* ПерсональныеДанные.1.Адрес=<BR>
+ ...* ПерсональныеДанные.1.СемейноеПоложениеНаименование=<BR>
+ ...* ПерсональныеДанные.1.ГражданствоНаименование=РОССИЯ<BR>
+ ...* ПерсональныеДанные.1.ПаспортСерия=92 15<BR>
+ ...* ПерсональныеДанные.1.ГражданствоКод=643<BR>
+ ...* ПерсональныеДанные.1.ТипПенсииНаименование=<BR>
+ ...* ПерсональныеДанные.1.ИНН=164511415236<BR>
+ ...* ПерсональныеДанные.1.ИмеетСудимость=<BR>
+ ...* ПерсональныеДанные.1.УчастникВойны=<BR>
+ ...* ПерсональныеДанные.1.СтраховойНомерПФР=150-722-119 22<BR>
+ ...* ПерсональныеДанные.1.ПаспорКемВыдан=ОУФМС России по Республике Татарстан в Бугульминском районе<BR>
+ ...* ПерсональныеДанные.1.АдресПоПрописке=423227, Татарстан Республика, Бугульминский р-н, Батыр д, Луговая ул, дом № 47<BR>
+ ...* ПерсональныеДанные.1.ТипаПенсии=<BR>
+<b> ...* ARRAY TOTAL: </b>ПерсональныеДанные.count=1; ПерсональныеДанные.items=1;<br><BR>
+ Код=0000012583<BR>
+* JSON Keys=Наименование, ПометкаУдаления, ПерсональныеДанные, Код<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+log <p style="font-family:verdana;color:red;">>#######</p> ####### sss <br>log1 ############## sss <br>log2 ############## sss <br>log3 ############## sss<br><hr>gateway/receive.cfg[process receive] ObjectType=8<br><br><span class='ss_start pt'  onClick='toggleDiv("gateway/receive_8_fizlitso1512147793379");'> $CALL_SERVICE: <b>gateway/receive.cfg => gateway/receive_8_fizlitso</b> (request:HR_LHEP_42)</span><div id='gateway/receive_8_fizlitso1512147793379' class='ss'><hr><b>===>>> receive_8_fizlitco</b><br><br> <b>SQL: [[check existing record] (1) ]:</b><xmp>select 'Y' as REC_EXISTS, id as REC_ID, is_manual from i_fizlitsa
+where ID=0000012583
+</xmp><xmp>***** 1 record(s) retrieved. Filled 3 parameters: 
+REC_EXISTS=Y
+REC_ID=12583
+is_manual=0</xmp>------ SQL done, 10ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (1) ]:</b><xmp>select SUBSTRING_INDEX('Свидетелева Миляуша Исмагиловна ', ' ', 1) AS F
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+F=Свидетелева</xmp>------ SQL done, 10ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (2) ]:</b><xmp>select replace('Свидетелева Миляуша Исмагиловна ', 'Свидетелева ','') AS IO
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+IO=Миляуша Исмагиловна </xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (3) ]:</b><xmp>select SUBSTRING_INDEX('Миляуша Исмагиловна ', ' ', 1) AS I
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+I=Миляуша</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (4) ]:</b><xmp>select replace('Миляуша Исмагиловна ', 'Миляуша ','') AS O
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+O=Исмагиловна </xmp>------ SQL done, 10ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (5) ]:</b><xmp></xmp><b>$INCLUDE </b>[PutObject]<BR>
+<br> <b>SQL: [[update record] (1) ]:</b><xmp>update i_fizlitsa set F='Свидетелева', I='Миляуша', O='Исмагиловна'
+, dr=STR_TO_DATE('19.06.1992 00:00:00', '%d.%m.%Y %H:%i:%s')
+, strana='РОССИЯ', sex=''
+, is_deleted=0, changed=now()
+where ID=0000012583
+</xmp> DONE! 1 record(s) affected------ SQL done, 20ms.<br><BR>
+<br> <b>SQL: [[update record] (2) ]:</b><xmp></xmp></div><span class='ss_back pt'  onClick='toggleDiv("gateway/receive_8_fizlitso1512147793379");'> BACK: <b>gateway/receive_8_fizlitso => gateway/receive.cfg; (50ms.)</b></span><BR>
+<hr>----- gateway/receive.cfg[report]: ERR_CODE=0; ERROR=; <br>+++++<b>$INCLUDE </b>gateway/receive[OK]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_42");'>Request_HR_LHEP_42 (gateway/receive) DONE! (130ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_43");'> Request_HR_LHEP_43 [01.12 20:03:13] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_43' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=1&Command=PutObject&ObjectType=7&SrcObjectID=41425&GateObjectID=125519&ClientObjectID=35807&Time=01.12.2017 16:45:06&Object={
+"ФИО": "Давыдов Дмитрий Валерьевич",
+"ТабельныйНомер": "175723",
+"ИсточникаКомплектования": "958f5b1c-1c3d-11e2-ab6e-000e0ce597c9",
+"ИсточникаКомплектованияКод": "000000261",
+"ИсточникКомплектованияНаименование": "по свободному найму",
+"УсловияРаботы": "ed6502ec-437f-11e2-993a-000e0ce597c9",
+"УсловияРаботыКод": "000000354",
+"Услови.....; log=true; session inactive=min;<br><hr>gateway/receive.cfg<br>gateway/receive.cfg: ClientID=1; Command=PutObject; ObjectType=7; ObjectID=; GlobalID=; ClientObjectID=35807;<br> Разряд=<BR>
+ ФизЛицоКод=0000012410<BR>
+ ДатаНачалаРаботы=20.11.2017 00:00:00<BR>
+ ФизЛицо=4f5ca565-9ea8-11e7-9487-0025907d24fa<BR>
+ Пол=Мужской<BR>
+ ТарифнаяСетка=<BR>
+ УсловияТрудаНаименование=допустимые<BR>
+ ГражданствоНаименование=РОССИЯ<BR>
+ УсловияТрудаДата=20.11.2017 00:00:00<BR>
+ КартаСОУТ=№ 65 от 03.02.2015<BR>
+ Подразделение=fb62b20d-d7c1-11e1-bad5-e0cb4eda5b1f<BR>
+ ГрафикРаботы=Пятидневка по 8 часов (8ч.)<BR>
+ УслДатаОк=<BR>
+ ИсточникаКомплектования=958f5b1c-1c3d-11e2-ab6e-000e0ce597c9<BR>
+ Оклад=31000<BR>
+ СрокПолномочий=<BR>
+ Должность=6b3c73b2-d7c1-11e1-bad5-e0cb4eda5b1f<BR>
+ ДатаОкончанияРаботы=19.11.2018 00:00:00<BR>
+ ТарифнаяСеткаНаименование=<BR>
+ ПодразделениеНаименование=Научно-технологический отдел ускорителей<BR>
+ ГражданствоКод=643<BR>
+ ПометкаУдаления=Нет<BR>
+ ИНН=501006403410<BR>
+ УсловияТруда=6faced06-1c3e-11e2-ab6e-000e0ce597c9<BR>
+ ДолжностьДата=20.11.2017 00:00:00<BR>
+ ФИО=Давыдов Дмитрий Валерьевич<BR>
+ УсловияТрудаКод=000000277<BR>
+ ДатаОклада=20.11.2017 00:00:00<BR>
+ СтранаНаименование=<BR>
+ УсловияРаботыНаименование=по сроч.труд. договору, на опр срок. Ст.58 п.2 ТК<BR>
+ ШтатНаименование=Основной штат<BR>
+ ДатаРождения=16.05.1991 00:00:00<BR>
+ СтранаКод=<BR>
+ УсловияРаботы=ed6502ec-437f-11e2-993a-000e0ce597c9<BR>
+ ИсточникаКомплектованияКод=000000261<BR>
+ ШтатКод=000000282<BR>
+ УсловияРаботыКод=000000354<BR>
+ ПФР=142-464-697 67<BR>
+ ДолжностьКод=000000594<BR>
+ Штат=6faced0c-1c3e-11e2-ab6e-000e0ce597c9<BR>
+ ПричинаУвольнения=<BR>
+ Гражданство=982d33e2-bee6-453a-992e-11d13fa66fa7<BR>
+ ИсточникКомплектованияНаименование=по свободному найму<BR>
+ ТарифнаяСеткаКод=<BR>
+ ТабельныйНомер=175723<BR>
+ УсловияРаботыДата=20.11.2017 00:00:00<BR>
+ Страна=<BR>
+ ПодразделениеДата=20.11.2017 00:00:00<BR>
+ ДатаУвольнения=<BR>
+ ДатаГрафика=20.11.2017 00:00:00<BR>
+ ДолжностьНаименование=старший техник<BR>
+ ТипДеятельности=Специалисты<BR>
+ ПодразделениеКод=531000<BR>
+* JSON Keys=Разряд, ФизЛицоКод, ДатаНачалаРаботы, ФизЛицо, Пол, ТарифнаяСетка, УсловияТрудаНаименование, ГражданствоНаименование, УсловияТрудаДата, КартаСОУТ, Подразделение, ГрафикРаботы, УслДатаОк, ИсточникаКомплектования, Оклад, СрокПолномочий, Должность, ДатаОкончанияРаботы, ТарифнаяСеткаНаименование, ПодразделениеНаименование, ГражданствоКод, ПометкаУдаления, ИНН, УсловияТруда, ДолжностьДата, ФИО, УсловияТрудаКод, ДатаОклада, СтранаНаименование, УсловияРаботыНаименование, ШтатНаименование, ДатаРождения, СтранаКод, УсловияРаботы, ИсточникаКомплектованияКод, ШтатКод, УсловияРаботыКод, ПФР, ДолжностьКод, Штат, ПричинаУвольнения, Гражданство, ИсточникКомплектованияНаименование, ТарифнаяСеткаКод, ТабельныйНомер, УсловияРаботыДата, Страна, ПодразделениеДата, ДатаУвольнения, ДатаГрафика, ДолжностьНаименование, ТипДеятельности, ПодразделениеКод<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+log <p style="font-family:verdana;color:red;">>#######</p> ####### sss <br>log1 ############## sss <br>log2 ############## sss <br>log3 ############## sss<br><hr>gateway/receive.cfg[process receive] ObjectType=7<br><br><span class='ss_start pt'  onClick='toggleDiv("gateway/receive_7_sotrudnik1512147793539");'> $CALL_SERVICE: <b>gateway/receive.cfg => gateway/receive_7_sotrudnik</b> (request:HR_LHEP_43)</span><div id='gateway/receive_7_sotrudnik1512147793539' class='ss'><hr><b>receive_7_sotrudnik</b><br><b>$INCLUDE </b>[set defaults]<BR>
+<br> <b>SQL: [[check non-staff] (1) ]:</b><xmp>select case when '175723' like 'д%' then 'Y' else '' end as "NON-STAFF"
+</xmp><xmp>***** 1 record(s) retrieved. Filled 0 parameters: </xmp>------ SQL done, 0ms.<br><BR>
+<b>$INCLUDE </b>[process]<BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[check existing record] (1) ]:</b><xmp>select 'Y' as REC_EXISTS, id as REC_ID from info_11
+where ID=175723
+</xmp><xmp>***** 1 record(s) retrieved. Filled 2 parameters: 
+REC_EXISTS=Y
+REC_ID=175723</xmp>------ SQL done, 10ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (1) ]:</b><xmp>select SUBSTRING_INDEX('Давыдов Дмитрий Валерьевич ', ' ', 1) AS F
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+F=Давыдов</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (2) ]:</b><xmp>select replace('Давыдов Дмитрий Валерьевич ', 'Давыдов ','') AS IO
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+IO=Дмитрий Валерьевич </xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (3) ]:</b><xmp>select SUBSTRING_INDEX('Дмитрий Валерьевич ', ' ', 1) AS I
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+I=Дмитрий</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (4) ]:</b><xmp>select replace('Дмитрий Валерьевич ', 'Дмитрий ','') AS O
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+O=Валерьевич </xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (5) ]:</b><xmp></xmp><b>$INCLUDE </b>[PutObject]<BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[update record] (1) ]:</b><xmp>update info_11 set person_id=0000012410, F='Давыдов', I='Дмитрий', O='Валерьевич'
+, div_code=531000, division='Научно-технологический отдел ускорителей', post='старший техник', usl_rab='по сроч.труд. договору, на опр срок. Ст.58 п.2 ТК'
+, FIO='Давыдов Дмитрий Валерьевич', changed=now()
+where ID=175723
+</xmp> DONE! 1 record(s) affected------ SQL done, 0ms.<br><BR>
+<br><span class='ss_start pt'  onClick='toggleDiv("gateway/jinr_setPersonPosts1512147793559");'> $CALL_SERVICE: <b>gateway/receive_7_sotrudnik.cfg => gateway/jinr_setPersonPosts</b> (request:HR_LHEP_43)</span><div id='gateway/jinr_setPersonPosts1512147793559' class='ss'><br> <b>SQL: [[clear posts] (1) ]:</b><xmp>update info_11 set posts=''
+where person_id=0000012410
+</xmp> DONE! 1 record(s) affected------ SQL done, 0ms.<br><BR>
+ SQL: [SQL]<BR>
+<br> <b>SQL: [SQL]:</b><xmp>select p.id as "TAB_NOM", p.person_id as "KOD_FIZLICA", p.posts as "POSTS"
+, d.path as DIV_NAME, d.id as div_code
+, p.post as POST
+from info_11 p
+left join info_10 d on d.id=p.div_code
+where p.is_deleted=0
+and p.person_id=0000012410
+order by p.person_id
+</xmp> <b> Processed in 0ms. </b><br><br> <b>SQL: [[setPosts] (1) ]:</b><xmp>select distinct posts as "POSTS", id
+from info_11
+where person_id=12410
+order by id
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+id=175723</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [[setPosts] (2) ]:</b><xmp>update info_11 set
+posts='ЛЯР / Служба главного инженера / Научно-технологический отдел ускорителей, старший техник'
+where person_id=12410
+</xmp> DONE! 1 record(s) affected------ SQL done, 0ms.<br><BR>
+ <b> NumTableRows=1; </b><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/jinr_setPersonPosts1512147793559");'> BACK: <b>gateway/jinr_setPersonPosts => gateway/receive_7_sotrudnik.cfg; (10ms.)</b></span><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/receive_7_sotrudnik1512147793539");'> BACK: <b>gateway/receive_7_sotrudnik => gateway/receive.cfg; (30ms.)</b></span><BR>
+<hr>----- gateway/receive.cfg[report]: ERR_CODE=0; ERROR=; <br>+++++<b>$INCLUDE </b>gateway/receive[OK]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_43");'>Request_HR_LHEP_43 (gateway/receive) DONE! (120ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_44");'> Request_HR_LHEP_44 [01.12 20:03:13] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_44' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=1&Command=PutObject&ObjectType=8&SrcObjectID=0000012410&GateObjectID=125520&ClientObjectID=35807&Time=01.12.2017 16:45:29&Object={
+"Код": "0000012410",
+"Наименование": "Давыдов Дмитрий Валерьевич",
+"ПометкаУдаления": "Нет",
+"ПерсональныеДанные": [
+{
+"ДатаРождения": "16.05.1991 00:00:00",
+"Пол": "Мужской",
+"МестоРождения": "",
+"ИНН": "501006403410",
+"СтраховойНомерПФР": "142-464-697 67",
+"СемейногоПоложения": "",
+"СемейногоПоложенияКод": "",
+"Семейное.....; log=true; session inactive=min;<br><hr>gateway/receive.cfg<br>gateway/receive.cfg: ClientID=1; Command=PutObject; ObjectType=8; ObjectID=; GlobalID=; ClientObjectID=35807;<br> Наименование=Давыдов Дмитрий Валерьевич<BR>
+ ПометкаУдаления=Нет<BR>
+<br><b>*** UNKNOWN ARRAY:</b> ПерсональныеДанные;<BR>
+<br><b>*** ARRAY: </b>ПерсональныеДанные:<BR>
+ ...* ПерсональныеДанные.1.ПаспортаДата=19.05.2011 00:00:00<BR>
+ ...* ПерсональныеДанные.1.ПаспортНомер=308978<BR>
+ ...* ПерсональныеДанные.1.ТипаПенсииКод=<BR>
+ ...* ПерсональныеДанные.1.Гражданство=982d33e2-bee6-453a-992e-11d13fa66fa7<BR>
+ ...* ПерсональныеДанные.1.КоличествоДетей=<BR>
+ ...* ПерсональныеДанные.1.ДатаРождения=16.05.1991 00:00:00<BR>
+ ...* ПерсональныеДанные.1.Пол=Мужской<BR>
+ ...* ПерсональныеДанные.1.СемейногоПоложения=<BR>
+ ...* ПерсональныеДанные.1.СемейногоПоложенияКод=<BR>
+ ...* ПерсональныеДанные.1.МестоРождения=<BR>
+ ...* ПерсональныеДанные.1.Адрес=<BR>
+ ...* ПерсональныеДанные.1.СемейноеПоложениеНаименование=<BR>
+ ...* ПерсональныеДанные.1.ГражданствоНаименование=РОССИЯ<BR>
+ ...* ПерсональныеДанные.1.ПаспортСерия=46 11<BR>
+ ...* ПерсональныеДанные.1.ГражданствоКод=643<BR>
+ ...* ПерсональныеДанные.1.ТипПенсииНаименование=<BR>
+ ...* ПерсональныеДанные.1.ИНН=501006403410<BR>
+ ...* ПерсональныеДанные.1.ИмеетСудимость=<BR>
+ ...* ПерсональныеДанные.1.УчастникВойны=<BR>
+ ...* ПерсональныеДанные.1.СтраховойНомерПФР=142-464-697 67<BR>
+ ...* ПерсональныеДанные.1.ПаспорКемВыдан=ТП № 1 ОУФМС России по Московской обл. по городскому округу Дубна<BR>
+ ...* ПерсональныеДанные.1.АдресПоПрописке=141985, Московская обл, Дубна г, академика Б.М.Понтекорво ул, дом № 5, кв.22<BR>
+ ...* ПерсональныеДанные.1.ТипаПенсии=<BR>
+<b> ...* ARRAY TOTAL: </b>ПерсональныеДанные.count=1; ПерсональныеДанные.items=1;<br><BR>
+ Код=0000012410<BR>
+* JSON Keys=Наименование, ПометкаУдаления, ПерсональныеДанные, Код<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+log <p style="font-family:verdana;color:red;">>#######</p> ####### sss <br>log1 ############## sss <br>log2 ############## sss <br>log3 ############## sss<br><hr>gateway/receive.cfg[process receive] ObjectType=8<br><br><span class='ss_start pt'  onClick='toggleDiv("gateway/receive_8_fizlitso1512147793679");'> $CALL_SERVICE: <b>gateway/receive.cfg => gateway/receive_8_fizlitso</b> (request:HR_LHEP_44)</span><div id='gateway/receive_8_fizlitso1512147793679' class='ss'><hr><b>===>>> receive_8_fizlitco</b><br><br> <b>SQL: [[check existing record] (1) ]:</b><xmp>select 'Y' as REC_EXISTS, id as REC_ID, is_manual from i_fizlitsa
+where ID=0000012410
+</xmp><xmp>***** 0 record(s) retrieved. Filled 0 parameters: </xmp>------ SQL done, 10ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (1) ]:</b><xmp>select SUBSTRING_INDEX('Давыдов Дмитрий Валерьевич ', ' ', 1) AS F
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+F=Давыдов</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (2) ]:</b><xmp>select replace('Давыдов Дмитрий Валерьевич ', 'Давыдов ','') AS IO
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+IO=Дмитрий Валерьевич </xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (3) ]:</b><xmp>select SUBSTRING_INDEX('Дмитрий Валерьевич ', ' ', 1) AS I
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+I=Дмитрий</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (4) ]:</b><xmp>select replace('Дмитрий Валерьевич ', 'Дмитрий ','') AS O
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+O=Валерьевич </xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (5) ]:</b><xmp></xmp><b>$INCLUDE </b>[PutObject]<BR>
+<br> <b>SQL: [[create record] (1) ]:</b><xmp>insert into i_fizlitsa (ID, F, I, O, dr, strana, sex, changed)
+values(0000012410, 'Давыдов', 'Дмитрий', 'Валерьевич'
+, STR_TO_DATE('16.05.1991 00:00:00', '%d.%m.%Y %H:%i:%s')
+, 'РОССИЯ', ''
+, now())
+</xmp> DONE! 1 record(s) affected------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [[create record] (2) ]:</b><xmp></xmp></div><span class='ss_back pt'  onClick='toggleDiv("gateway/receive_8_fizlitso1512147793679");'> BACK: <b>gateway/receive_8_fizlitso => gateway/receive.cfg; (10ms.)</b></span><BR>
+<hr>----- gateway/receive.cfg[report]: ERR_CODE=0; ERROR=; <br>+++++<b>$INCLUDE </b>gateway/receive[OK]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_44");'>Request_HR_LHEP_44 (gateway/receive) DONE! (80ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_45");'> Request_HR_LHEP_45 [01.12 20:03:13] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_45' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=1&Command=PutObject&ObjectType=8&SrcObjectID=415a76bb-d504-11e7-948c-0025907d24fa&GateObjectID=125528&ClientObjectID=35807&Time=01.12.2017 17:05:30&Object={
+"Код": "0000008593",
+"Наименование": "Вълков Стефан Цветанов",
+"ПометкаУдаления": "Нет",
+"Образование": [
+{
+"ВидОбразования": "e55e3b58-60ef-4006-b0eb-a6fd3c5ec3a0",
+"ВидОбразованияКод": "07",
+"ВидОбразованияНаименование": "Высшее образование - специалитет, магистратура",
+"УчебноеЗаведение": "d4d2c28.....; log=true; session inactive=min;<br><hr>gateway/receive.cfg<br>gateway/receive.cfg: ClientID=1; Command=PutObject; ObjectType=8; ObjectID=; GlobalID=; ClientObjectID=35807;<br> Наименование=Вълков Стефан Цветанов<BR>
+ ПометкаУдаления=Нет<BR>
+<br><b>*** UNKNOWN ARRAY:</b> Образование;<BR>
+<br><b>*** ARRAY: </b>Образование:<BR>
+ ...* Образование.1.СпециальностьНаименование=физика<BR>
+ ...* Образование.1.ВидОбразованияНаименование=Высшее образование - специалитет, магистратура<BR>
+ ...* Образование.1.ГодОкончания=2012<BR>
+ ...* Образование.1.ВидОбразованияКод=07<BR>
+ ...* Образование.1.УчебноеЗаведениеНаименование=Софийский университет "св. Климент Охридски", Болгария<BR>
+ ...* Образование.1.ВидОбразования=e55e3b58-60ef-4006-b0eb-a6fd3c5ec3a0<BR>
+ ...* Образование.1.Квалификация=магистр<BR>
+ ...* Образование.1.СпециальностьКод=010701<BR>
+ ...* Образование.1.Диплом=серия А-2012СУ №219269<BR>
+ ...* Образование.1.Специальность=d3e03aa0-16bc-11e2-ab6e-000e0ce597c9<BR>
+ ...* Образование.1.УчебноеЗаведение=d4d2c28e-9f9c-11e3-940a-0025907d24fa<BR>
+ ...* Образование.1.УчебноеЗаведениеКод=000000902<BR>
+<b> ...* ARRAY TOTAL: </b>Образование.count=1; Образование.items=1;<br><BR>
+<br><b>*** UNKNOWN ARRAY:</b> ПерсональныеДанные;<BR>
+<br><b>*** ARRAY: </b>ПерсональныеДанные:<BR>
+ ...* ПерсональныеДанные.1.ПаспортаДата=25.10.2016 00:00:00<BR>
+ ...* ПерсональныеДанные.1.ПаспортНомер=384374079<BR>
+ ...* ПерсональныеДанные.1.ТипаПенсииКод=000000289<BR>
+ ...* ПерсональныеДанные.1.Гражданство=4697c048-0fae-11e2-9f27-000e0ce597c9<BR>
+ ...* ПерсональныеДанные.1.КоличествоДетей=<BR>
+ ...* ПерсональныеДанные.1.ДатаРождения=10.01.1987 00:00:00<BR>
+ ...* ПерсональныеДанные.1.Пол=Мужской<BR>
+ ...* ПерсональныеДанные.1.СемейногоПоложения=d630fea7-12aa-11e2-ab6e-000e0ce597c9<BR>
+ ...* ПерсональныеДанные.1.СемейногоПоложенияКод=1<BR>
+ ...* ПерсональныеДанные.1.МестоРождения=0,г.София,,,Республика Болгария<BR>
+ ...* ПерсональныеДанные.1.Адрес=<BR>
+ ...* ПерсональныеДанные.1.СемейноеПоложениеНаименование=Никогда не состоял (не состояла в браке)<BR>
+ ...* ПерсональныеДанные.1.ГражданствоНаименование=БОЛГАРИЯ<BR>
+ ...* ПерсональныеДанные.1.ПаспортСерия=<BR>
+ ...* ПерсональныеДанные.1.ГражданствоКод=100<BR>
+ ...* ПерсональныеДанные.1.ТипПенсииНаименование=не пенсионер<BR>
+ ...* ПерсональныеДанные.1.ИНН=<BR>
+ ...* ПерсональныеДанные.1.ИмеетСудимость=<BR>
+ ...* ПерсональныеДанные.1.УчастникВойны=<BR>
+ ...* ПерсональныеДанные.1.СтраховойНомерПФР=<BR>
+ ...* ПерсональныеДанные.1.ПаспорКемВыдан=МВР София Республика Болгария<BR>
+ ...* ПерсональныеДанные.1.АдресПоПрописке=<BR>
+ ...* ПерсональныеДанные.1.ТипаПенсии=b9cec3eb-1f43-11e2-ab6e-000e0ce597c9<BR>
+<b> ...* ARRAY TOTAL: </b>ПерсональныеДанные.count=1; ПерсональныеДанные.items=1;<br><BR>
+ Код=0000008593<BR>
+* JSON Keys=Наименование, ПометкаУдаления, Образование, ПерсональныеДанные, Код<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+log <p style="font-family:verdana;color:red;">>#######</p> ####### sss <br>log1 ############## sss <br>log2 ############## sss <br>log3 ############## sss<br><hr>gateway/receive.cfg[process receive] ObjectType=8<br><br><span class='ss_start pt'  onClick='toggleDiv("gateway/receive_8_fizlitso1512147793789");'> $CALL_SERVICE: <b>gateway/receive.cfg => gateway/receive_8_fizlitso</b> (request:HR_LHEP_45)</span><div id='gateway/receive_8_fizlitso1512147793789' class='ss'><hr><b>===>>> receive_8_fizlitco</b><br><br> <b>SQL: [[check existing record] (1) ]:</b><xmp>select 'Y' as REC_EXISTS, id as REC_ID, is_manual from i_fizlitsa
+where ID=0000008593
+</xmp><xmp>***** 1 record(s) retrieved. Filled 3 parameters: 
+REC_EXISTS=Y
+REC_ID=8593
+is_manual=0</xmp>------ SQL done, 10ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (1) ]:</b><xmp>select SUBSTRING_INDEX('Вълков Стефан Цветанов ', ' ', 1) AS F
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+F=Вълков</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (2) ]:</b><xmp>select replace('Вълков Стефан Цветанов ', 'Вълков ','') AS IO
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+IO=Стефан Цветанов </xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (3) ]:</b><xmp>select SUBSTRING_INDEX('Стефан Цветанов ', ' ', 1) AS I
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+I=Стефан</xmp>------ SQL done, 10ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (4) ]:</b><xmp>select replace('Стефан Цветанов ', 'Стефан ','') AS O
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+O=Цветанов </xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (5) ]:</b><xmp></xmp><b>$INCLUDE </b>[PutObject]<BR>
+<br> <b>SQL: [[update record] (1) ]:</b><xmp>update i_fizlitsa set F='Вълков', I='Стефан', O='Цветанов'
+, dr=STR_TO_DATE('10.01.1987 00:00:00', '%d.%m.%Y %H:%i:%s')
+, strana='БОЛГАРИЯ', sex=''
+, is_deleted=0, changed=now()
+where ID=0000008593
+</xmp> DONE! 1 record(s) affected------ SQL done, 20ms.<br><BR>
+<br> <b>SQL: [[update record] (2) ]:</b><xmp></xmp></div><span class='ss_back pt'  onClick='toggleDiv("gateway/receive_8_fizlitso1512147793789");'> BACK: <b>gateway/receive_8_fizlitso => gateway/receive.cfg; (50ms.)</b></span><BR>
+<hr>----- gateway/receive.cfg[report]: ERR_CODE=0; ERROR=; <br>+++++<b>$INCLUDE </b>gateway/receive[OK]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_45");'>Request_HR_LHEP_45 (gateway/receive) DONE! (128ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_46");'> Request_HR_LHEP_46 [01.12 20:03:13] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_46' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=1&Command=PutObject&ObjectType=7&SrcObjectID=28480&GateObjectID=125306&ClientObjectID=155768&Time=01.12.2017 17:35:08&Object={
+"ФИО": "Несипбай Айжан",
+"ТабельныйНомер": "165066",
+"ИсточникаКомплектования": "7f9083d3-436c-11e2-993a-000e0ce597c9",
+"ИсточникаКомплектованияКод": "000000337",
+"ИсточникКомплектованияНаименование": "по направлению ППП Республики Казахстан",
+"УсловияРаботы": "ed6502ec-437f-11e2-993a-000e0ce597c9",
+"УсловияРаботыКод": "000000354",.....; log=true; session inactive=min;<br><hr>gateway/receive.cfg<br>gateway/receive.cfg: ClientID=1; Command=PutObject; ObjectType=7; ObjectID=; GlobalID=; ClientObjectID=155768;<br> Разряд=<BR>
+ ФизЛицоКод=0000011367<BR>
+ ДатаНачалаРаботы=14.10.2016 00:00:00<BR>
+ ФизЛицо=0e959497-913e-11e6-946c-0025907d24fa<BR>
+ Пол=Женский<BR>
+ ТарифнаяСетка=<BR>
+ УсловияТрудаНаименование=допустимые<BR>
+ ГражданствоНаименование=КАЗАХСТАН<BR>
+ УсловияТрудаДата=14.10.2016 00:00:00<BR>
+ КартаСОУТ=№ 501 от 03.12.2015<BR>
+ Подразделение=fb62b257-d7c1-11e1-bad5-e0cb4eda5b1f<BR>
+ ГрафикРаботы=Пятидневка по 8 часов (8ч.)<BR>
+ УслДатаОк=<BR>
+ ИсточникаКомплектования=7f9083d3-436c-11e2-993a-000e0ce597c9<BR>
+ Оклад=<BR>
+ СрокПолномочий=<BR>
+ Должность=6b3c7341-d7c1-11e1-bad5-e0cb4eda5b1f<BR>
+ ДатаОкончанияРаботы=13.10.2018 00:00:00<BR>
+ ТарифнаяСеткаНаименование=<BR>
+ ПодразделениеНаименование=Сектор исследований фундаментальных свойств нейтронов<BR>
+ ГражданствоКод=398<BR>
+ ПометкаУдаления=Нет<BR>
+ ИНН=<BR>
+ УсловияТруда=6faced06-1c3e-11e2-ab6e-000e0ce597c9<BR>
+ ДолжностьДата=14.10.2017 00:00:00<BR>
+ ФИО=Несипбай Айжан<BR>
+ УсловияТрудаКод=000000277<BR>
+ ДатаОклада=08.09.2017 00:00:00<BR>
+ СтранаНаименование=КАЗАХСТАН<BR>
+ УсловияРаботыНаименование=по сроч.труд. договору, на опр срок. Ст.58 п.2 ТК<BR>
+ ШтатНаименование=Штат дирекции<BR>
+ ДатаРождения=23.08.1992 00:00:00<BR>
+ СтранаКод=398<BR>
+ УсловияРаботы=ed6502ec-437f-11e2-993a-000e0ce597c9<BR>
+ ИсточникаКомплектованияКод=000000337<BR>
+ ШтатКод=000000283<BR>
+ УсловияРаботыКод=000000354<BR>
+ ПФР=<BR>
+ ДолжностьКод=000000481<BR>
+ Штат=6faced0d-1c3e-11e2-ab6e-000e0ce597c9<BR>
+ ПричинаУвольнения=<BR>
+ Гражданство=3aec4095-0639-11e2-8352-e0cb4eda5b1f<BR>
+ ИсточникКомплектованияНаименование=по направлению ППП Республики Казахстан<BR>
+ ТарифнаяСеткаКод=<BR>
+ ТабельныйНомер=165066<BR>
+ УсловияРаботыДата=14.10.2016 00:00:00<BR>
+ Страна=3aec4095-0639-11e2-8352-e0cb4eda5b1f<BR>
+ ПодразделениеДата=14.10.2017 00:00:00<BR>
+ ДатаУвольнения=<BR>
+ ДатаГрафика=14.10.2017 00:00:00<BR>
+ ДолжностьНаименование=младший научный сотрудник<BR>
+ ТипДеятельности=Научные и научно-педагогические работники<BR>
+ ПодразделениеКод=412000<BR>
+* JSON Keys=Разряд, ФизЛицоКод, ДатаНачалаРаботы, ФизЛицо, Пол, ТарифнаяСетка, УсловияТрудаНаименование, ГражданствоНаименование, УсловияТрудаДата, КартаСОУТ, Подразделение, ГрафикРаботы, УслДатаОк, ИсточникаКомплектования, Оклад, СрокПолномочий, Должность, ДатаОкончанияРаботы, ТарифнаяСеткаНаименование, ПодразделениеНаименование, ГражданствоКод, ПометкаУдаления, ИНН, УсловияТруда, ДолжностьДата, ФИО, УсловияТрудаКод, ДатаОклада, СтранаНаименование, УсловияРаботыНаименование, ШтатНаименование, ДатаРождения, СтранаКод, УсловияРаботы, ИсточникаКомплектованияКод, ШтатКод, УсловияРаботыКод, ПФР, ДолжностьКод, Штат, ПричинаУвольнения, Гражданство, ИсточникКомплектованияНаименование, ТарифнаяСеткаКод, ТабельныйНомер, УсловияРаботыДата, Страна, ПодразделениеДата, ДатаУвольнения, ДатаГрафика, ДолжностьНаименование, ТипДеятельности, ПодразделениеКод<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+log <p style="font-family:verdana;color:red;">>#######</p> ####### sss <br>log1 ############## sss <br>log2 ############## sss <br>log3 ############## sss<br><hr>gateway/receive.cfg[process receive] ObjectType=7<br><br><span class='ss_start pt'  onClick='toggleDiv("gateway/receive_7_sotrudnik1512147793927");'> $CALL_SERVICE: <b>gateway/receive.cfg => gateway/receive_7_sotrudnik</b> (request:HR_LHEP_46)</span><div id='gateway/receive_7_sotrudnik1512147793927' class='ss'><hr><b>receive_7_sotrudnik</b><br><b>$INCLUDE </b>[set defaults]<BR>
+<br> <b>SQL: [[check non-staff] (1) ]:</b><xmp>select case when '165066' like 'д%' then 'Y' else '' end as "NON-STAFF"
+</xmp><xmp>***** 1 record(s) retrieved. Filled 0 parameters: </xmp>------ SQL done, 0ms.<br><BR>
+<b>$INCLUDE </b>[process]<BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[check existing record] (1) ]:</b><xmp>select 'Y' as REC_EXISTS, id as REC_ID from info_11
+where ID=165066
+</xmp><xmp>***** 1 record(s) retrieved. Filled 2 parameters: 
+REC_EXISTS=Y
+REC_ID=165066</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (1) ]:</b><xmp>select SUBSTRING_INDEX('Несипбай Айжан ', ' ', 1) AS F
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+F=Несипбай</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (2) ]:</b><xmp>select replace('Несипбай Айжан ', 'Несипбай ','') AS IO
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+IO=Айжан </xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (3) ]:</b><xmp>select SUBSTRING_INDEX('Айжан ', ' ', 1) AS I
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+I=Айжан</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (4) ]:</b><xmp>select replace('Айжан ', 'Айжан ','') AS O
+</xmp><xmp>***** 1 record(s) retrieved. Filled 0 parameters: </xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (5) ]:</b><xmp></xmp><b>$INCLUDE </b>[PutObject]<BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[update record] (1) ]:</b><xmp>update info_11 set person_id=0000011367, F='Несипбай', I='Айжан', O=''
+, div_code=412000, division='Сектор исследований фундаментальных свойств нейтронов', post='младший научный сотрудник', usl_rab='по сроч.труд. договору, на опр срок. Ст.58 п.2 ТК'
+, FIO='Несипбай Айжан', changed=now()
+where ID=165066
+</xmp> DONE! 1 record(s) affected------ SQL done, 0ms.<br><BR>
+<br><span class='ss_start pt'  onClick='toggleDiv("gateway/jinr_setPersonPosts1512147793937");'> $CALL_SERVICE: <b>gateway/receive_7_sotrudnik.cfg => gateway/jinr_setPersonPosts</b> (request:HR_LHEP_46)</span><div id='gateway/jinr_setPersonPosts1512147793937' class='ss'><br> <b>SQL: [[clear posts] (1) ]:</b><xmp>update info_11 set posts=''
+where person_id=0000011367
+</xmp> DONE! 1 record(s) affected------ SQL done, 10ms.<br><BR>
+ SQL: [SQL]<BR>
+<br> <b>SQL: [SQL]:</b><xmp>select p.id as "TAB_NOM", p.person_id as "KOD_FIZLICA", p.posts as "POSTS"
+, d.path as DIV_NAME, d.id as div_code
+, p.post as POST
+from info_11 p
+left join info_10 d on d.id=p.div_code
+where p.is_deleted=0
+and p.person_id=0000011367
+order by p.person_id
+</xmp> <b> Processed in 0ms. </b><br><br> <b>SQL: [[setPosts] (1) ]:</b><xmp>select distinct posts as "POSTS", id
+from info_11
+where person_id=11367
+order by id
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+id=165066</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [[setPosts] (2) ]:</b><xmp>update info_11 set
+posts='ЛНФ / Отделение ядерной физики / Сектор исследований фундаментальных свойств нейтронов, младший научный сотрудник'
+where person_id=11367
+</xmp> DONE! 1 record(s) affected------ SQL done, 0ms.<br><BR>
+ <b> NumTableRows=1; </b><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/jinr_setPersonPosts1512147793937");'> BACK: <b>gateway/jinr_setPersonPosts => gateway/receive_7_sotrudnik.cfg; (10ms.)</b></span><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/receive_7_sotrudnik1512147793927");'> BACK: <b>gateway/receive_7_sotrudnik => gateway/receive.cfg; (20ms.)</b></span><BR>
+<hr>----- gateway/receive.cfg[report]: ERR_CODE=0; ERROR=; <br>+++++<b>$INCLUDE </b>gateway/receive[OK]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_46");'>Request_HR_LHEP_46 (gateway/receive) DONE! (121ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_47");'> Request_HR_LHEP_47 [01.12 20:03:14] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_47' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=1&Command=PutObject&ObjectType=8&SrcObjectID=c5582061-bab0-494f-b680-ce65eb270272&GateObjectID=125541&ClientObjectID=155768&Time=01.12.2017 17:35:32&Object={
+"Код": "0000011367",
+"Наименование": "Несипбай Айжан",
+"ПометкаУдаления": "Нет",
+"Образование": [
+{
+"ВидОбразования": "e55e3b58-60ef-4006-b0eb-a6fd3c5ec3a0",
+"ВидОбразованияКод": "07",
+"ВидОбразованияНаименование": "Высшее образование - специалитет, магистратура",
+"УчебноеЗаведение": "e8485c86-28aa-.....; log=true; session inactive=min;<br><hr>gateway/receive.cfg<br>gateway/receive.cfg: ClientID=1; Command=PutObject; ObjectType=8; ObjectID=; GlobalID=; ClientObjectID=155768;<br> Наименование=Несипбай Айжан<BR>
+ ПометкаУдаления=Нет<BR>
+<br><b>*** UNKNOWN ARRAY:</b> Образование;<BR>
+<br><b>*** ARRAY: </b>Образование:<BR>
+ ...* Образование.1.СпециальностьНаименование=физика<BR>
+ ...* Образование.1.ВидОбразованияНаименование=Высшее образование - специалитет, магистратура<BR>
+ ...* Образование.1.ГодОкончания=2016<BR>
+ ...* Образование.1.ВидОбразованияКод=07<BR>
+ ...* Образование.1.УчебноеЗаведениеНаименование=Казахский национальный университет им.аль-Фараби<BR>
+ ...* Образование.1.ВидОбразования=e55e3b58-60ef-4006-b0eb-a6fd3c5ec3a0<BR>
+ ...* Образование.1.Квалификация=магистр<BR>
+ ...* Образование.1.СпециальностьКод=010701<BR>
+ ...* Образование.1.Диплом=ЖООК-М №0090535<BR>
+ ...* Образование.1.Специальность=d3e03aa0-16bc-11e2-ab6e-000e0ce597c9<BR>
+ ...* Образование.1.УчебноеЗаведение=e8485c86-28aa-11e2-ab6e-000e0ce597c9<BR>
+ ...* Образование.1.УчебноеЗаведениеКод=000000207<BR>
+<b> ...* ARRAY TOTAL: </b>Образование.count=1; Образование.items=1;<br><BR>
+<br><b>*** UNKNOWN ARRAY:</b> ПерсональныеДанные;<BR>
+<br><b>*** ARRAY: </b>ПерсональныеДанные:<BR>
+ ...* ПерсональныеДанные.1.ПаспортаДата=24.07.2014 00:00:00<BR>
+ ...* ПерсональныеДанные.1.ПаспортНомер=N09551573<BR>
+ ...* ПерсональныеДанные.1.ТипаПенсииКод=000000289<BR>
+ ...* ПерсональныеДанные.1.Гражданство=3aec4095-0639-11e2-8352-e0cb4eda5b1f<BR>
+ ...* ПерсональныеДанные.1.КоличествоДетей=2<BR>
+ ...* ПерсональныеДанные.1.ДатаРождения=23.08.1992 00:00:00<BR>
+ ...* ПерсональныеДанные.1.Пол=Женский<BR>
+ ...* ПерсональныеДанные.1.СемейногоПоложения=9ba95afb-12dd-11e2-ab6e-000e0ce597c9<BR>
+ ...* ПерсональныеДанные.1.СемейногоПоложенияКод=2<BR>
+ ...* ПерсональныеДанные.1.МестоРождения=0,г.Алматы,,,Республика Казахстан<BR>
+ ...* ПерсональныеДанные.1.Адрес=141985, Московская обл, Дубна г, Московская ул, дом № 2, кв.1110<BR>
+ ...* ПерсональныеДанные.1.СемейноеПоложениеНаименование=Состоит в зарегистрированном браке<BR>
+ ...* ПерсональныеДанные.1.ГражданствоНаименование=КАЗАХСТАН<BR>
+ ...* ПерсональныеДанные.1.ПаспортСерия=<BR>
+ ...* ПерсональныеДанные.1.ГражданствоКод=398<BR>
+ ...* ПерсональныеДанные.1.ТипПенсииНаименование=не пенсионер<BR>
+ ...* ПерсональныеДанные.1.ИНН=<BR>
+ ...* ПерсональныеДанные.1.ИмеетСудимость=<BR>
+ ...* ПерсональныеДанные.1.УчастникВойны=<BR>
+ ...* ПерсональныеДанные.1.СтраховойНомерПФР=<BR>
+ ...* ПерсональныеДанные.1.ПаспорКемВыдан=MINISTRY OF INTERNAL AFFAIRS Республики Казахстан<BR>
+ ...* ПерсональныеДанные.1.АдресПоПрописке=<BR>
+ ...* ПерсональныеДанные.1.ТипаПенсии=b9cec3eb-1f43-11e2-ab6e-000e0ce597c9<BR>
+<b> ...* ARRAY TOTAL: </b>ПерсональныеДанные.count=1; ПерсональныеДанные.items=1;<br><BR>
+ Код=0000011367<BR>
+<br><b>*** UNKNOWN ARRAY:</b> Стажи;<BR>
+<br><b>*** ARRAY: </b>Стажи:<BR>
+ ...* Стажи.1.РазмерДней=<BR>
+ ...* Стажи.1.ДатаОтсчета=14.10.2016 00:00:00<BR>
+ ...* Стажи.1.ВидСтажа=d39b33c0-706f-43c7-ba0a-b291a809648b<BR>
+ ...* Стажи.1.ВидСтажаКод=00005<BR>
+ ...* Стажи.1.РазмерМесяцев=<BR>
+ ...* Стажи.1.ВидСтажаНаименование=Стаж для оплаты больничных листов с учетом нестраховых периодов (с 2010 года)<BR>
+<b> ...* ARRAY TOTAL: </b>Стажи.count=1; Стажи.items=1;<br><BR>
+* JSON Keys=Наименование, ПометкаУдаления, Образование, ПерсональныеДанные, Код, Стажи<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+log <p style="font-family:verdana;color:red;">>#######</p> ####### sss <br>log1 ############## sss <br>log2 ############## sss <br>log3 ############## sss<br><hr>gateway/receive.cfg[process receive] ObjectType=8<br><br><span class='ss_start pt'  onClick='toggleDiv("gateway/receive_8_fizlitso1512147794049");'> $CALL_SERVICE: <b>gateway/receive.cfg => gateway/receive_8_fizlitso</b> (request:HR_LHEP_47)</span><div id='gateway/receive_8_fizlitso1512147794049' class='ss'><hr><b>===>>> receive_8_fizlitco</b><br><br> <b>SQL: [[check existing record] (1) ]:</b><xmp>select 'Y' as REC_EXISTS, id as REC_ID, is_manual from i_fizlitsa
+where ID=0000011367
+</xmp><xmp>***** 1 record(s) retrieved. Filled 3 parameters: 
+REC_EXISTS=Y
+REC_ID=11367
+is_manual=0</xmp>------ SQL done, 10ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (1) ]:</b><xmp>select SUBSTRING_INDEX('Несипбай Айжан ', ' ', 1) AS F
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+F=Несипбай</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (2) ]:</b><xmp>select replace('Несипбай Айжан ', 'Несипбай ','') AS IO
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+IO=Айжан </xmp>------ SQL done, 10ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (3) ]:</b><xmp>select SUBSTRING_INDEX('Айжан ', ' ', 1) AS I
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+I=Айжан</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (4) ]:</b><xmp>select replace('Айжан ', 'Айжан ','') AS O
+</xmp><xmp>***** 1 record(s) retrieved. Filled 0 parameters: </xmp>------ SQL done, 10ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (5) ]:</b><xmp></xmp><b>$INCLUDE </b>[PutObject]<BR>
+<br> <b>SQL: [[update record] (1) ]:</b><xmp>update i_fizlitsa set F='Несипбай', I='Айжан', O=''
+, dr=STR_TO_DATE('23.08.1992 00:00:00', '%d.%m.%Y %H:%i:%s')
+, strana='КАЗАХСТАН', sex=''
+, is_deleted=0, changed=now()
+where ID=0000011367
+</xmp> DONE! 1 record(s) affected------ SQL done, 20ms.<br><BR>
+<br> <b>SQL: [[update record] (2) ]:</b><xmp></xmp></div><span class='ss_back pt'  onClick='toggleDiv("gateway/receive_8_fizlitso1512147794049");'> BACK: <b>gateway/receive_8_fizlitso => gateway/receive.cfg; (50ms.)</b></span><BR>
+<hr>----- gateway/receive.cfg[report]: ERR_CODE=0; ERROR=; <br>+++++<b>$INCLUDE </b>gateway/receive[OK]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_47");'>Request_HR_LHEP_47 (gateway/receive) DONE! (130ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_48");'> Request_HR_LHEP_48 [01.12 20:03:14] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_48' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=1&Command=PutObject&ObjectType=7&SrcObjectID=5cb57ef2-a006-11e5-944c-0025907d24fa&GateObjectID=123941&ClientObjectID=155768&Time=19.10.2017 21:06:04&Object={
+"ФИО": "Легостаева Ксения Сергеевна",
+"ТабельныйНомер": "155768",
+"ИсточникаКомплектования": "958f5b1c-1c3d-11e2-ab6e-000e0ce597c9",
+"ИсточникаКомплектованияКод": "000000261",
+"ИсточникКомплектованияНаименование": "по свободному найму",
+"УсловияРаботы": "ed6502ec-437f-11e2-993a-000e0ce597c9",
+"Условия.....; log=true; session inactive=min;<br><hr>gateway/receive.cfg<br>gateway/receive.cfg: ClientID=1; Command=PutObject; ObjectType=7; ObjectID=; GlobalID=; ClientObjectID=155768;<br> Разряд=<BR>
+ ФизЛицоКод=0000010396<BR>
+ ДатаНачалаРаботы=21.12.2015 00:00:00<BR>
+ ФизЛицо=0ef3fcdd-a005-11e5-944c-0025907d24fa<BR>
+ Пол=Женский<BR>
+ ТарифнаяСетка=<BR>
+ УсловияТрудаНаименование=вредные, подкласс 3.1<BR>
+ ГражданствоНаименование=РОССИЯ<BR>
+ УсловияТрудаДата=08.09.2017 00:00:00<BR>
+ КартаСОУТ=№ 1056 от 02.12.2015<BR>
+ Подразделение=a299b37e-e2da-11e1-a86a-e0cb4eda5b7d<BR>
+ ГрафикРаботы=Пятидневка по 8 часов (8ч.)<BR>
+ УслДатаОк=<BR>
+ ИсточникаКомплектования=958f5b1c-1c3d-11e2-ab6e-000e0ce597c9<BR>
+ Оклад=31800<BR>
+ СрокПолномочий=<BR>
+ Должность=28cd7a83-560e-11e5-9444-0025907d24fa<BR>
+ ДатаОкончанияРаботы=20.12.2017 00:00:00<BR>
+ ТарифнаяСеткаНаименование=<BR>
+ ПодразделениеНаименование=Группа №1 встречных поляризованных пучков<BR>
+ ГражданствоКод=643<BR>
+ ПометкаУдаления=Нет<BR>
+ ИНН=500711534469<BR>
+ УсловияТруда=9702b131-40cb-11e5-9440-0025907d24fa<BR>
+ ДолжностьДата=08.09.2017 00:00:00<BR>
+ ФИО=Легостаева Ксения Сергеевна<BR>
+ УсловияТрудаКод=506586<BR>
+ ДатаОклада=01.04.2017 00:00:00<BR>
+ СтранаНаименование=<BR>
+ УсловияРаботыНаименование=по сроч.труд. договору, на опр срок. Ст.58 п.2 ТК<BR>
+ ШтатНаименование=Основной штат<BR>
+ ДатаРождения=24.06.1993 00:00:00<BR>
+ СтранаКод=<BR>
+ УсловияРаботы=ed6502ec-437f-11e2-993a-000e0ce597c9<BR>
+ ИсточникаКомплектованияКод=000000261<BR>
+ ШтатКод=000000282<BR>
+ УсловияРаботыКод=000000354<BR>
+ ПФР=151-497-565 84<BR>
+ ДолжностьКод=000001013<BR>
+ Штат=6faced0c-1c3e-11e2-ab6e-000e0ce597c9<BR>
+ ПричинаУвольнения=<BR>
+ Гражданство=982d33e2-bee6-453a-992e-11d13fa66fa7<BR>
+ ИсточникКомплектованияНаименование=по свободному найму<BR>
+ ТарифнаяСеткаКод=<BR>
+ ТабельныйНомер=155768<BR>
+ УсловияРаботыДата=21.12.2015 00:00:00<BR>
+ Страна=<BR>
+ ПодразделениеДата=08.09.2017 00:00:00<BR>
+ ДатаУвольнения=<BR>
+ ДатаГрафика=08.09.2017 00:00:00<BR>
+ ДолжностьНаименование=инженер<BR>
+ ТипДеятельности=Специалисты<BR>
+ ПодразделениеКод=123001<BR>
+* JSON Keys=Разряд, ФизЛицоКод, ДатаНачалаРаботы, ФизЛицо, Пол, ТарифнаяСетка, УсловияТрудаНаименование, ГражданствоНаименование, УсловияТрудаДата, КартаСОУТ, Подразделение, ГрафикРаботы, УслДатаОк, ИсточникаКомплектования, Оклад, СрокПолномочий, Должность, ДатаОкончанияРаботы, ТарифнаяСеткаНаименование, ПодразделениеНаименование, ГражданствоКод, ПометкаУдаления, ИНН, УсловияТруда, ДолжностьДата, ФИО, УсловияТрудаКод, ДатаОклада, СтранаНаименование, УсловияРаботыНаименование, ШтатНаименование, ДатаРождения, СтранаКод, УсловияРаботы, ИсточникаКомплектованияКод, ШтатКод, УсловияРаботыКод, ПФР, ДолжностьКод, Штат, ПричинаУвольнения, Гражданство, ИсточникКомплектованияНаименование, ТарифнаяСеткаКод, ТабельныйНомер, УсловияРаботыДата, Страна, ПодразделениеДата, ДатаУвольнения, ДатаГрафика, ДолжностьНаименование, ТипДеятельности, ПодразделениеКод<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+log <p style="font-family:verdana;color:red;">>#######</p> ####### sss <br>log1 ############## sss <br>log2 ############## sss <br>log3 ############## sss<br><hr>gateway/receive.cfg[process receive] ObjectType=7<br><br><span class='ss_start pt'  onClick='toggleDiv("gateway/receive_7_sotrudnik1512147794189");'> $CALL_SERVICE: <b>gateway/receive.cfg => gateway/receive_7_sotrudnik</b> (request:HR_LHEP_48)</span><div id='gateway/receive_7_sotrudnik1512147794189' class='ss'><hr><b>receive_7_sotrudnik</b><br><b>$INCLUDE </b>[set defaults]<BR>
+<br> <b>SQL: [[check non-staff] (1) ]:</b><xmp>select case when '155768' like 'д%' then 'Y' else '' end as "NON-STAFF"
+</xmp><xmp>***** 1 record(s) retrieved. Filled 0 parameters: </xmp>------ SQL done, 0ms.<br><BR>
+<b>$INCLUDE </b>[process]<BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[check existing record] (1) ]:</b><xmp>select 'Y' as REC_EXISTS, id as REC_ID from info_11
+where ID=155768
+</xmp><xmp>***** 1 record(s) retrieved. Filled 2 parameters: 
+REC_EXISTS=Y
+REC_ID=155768</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (1) ]:</b><xmp>select SUBSTRING_INDEX('Легостаева Ксения Сергеевна ', ' ', 1) AS F
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+F=Легостаева</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (2) ]:</b><xmp>select replace('Легостаева Ксения Сергеевна ', 'Легостаева ','') AS IO
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+IO=Ксения Сергеевна </xmp>------ SQL done, 11ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (3) ]:</b><xmp>select SUBSTRING_INDEX('Ксения Сергеевна ', ' ', 1) AS I
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+I=Ксения</xmp>------ SQL done, 1ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (4) ]:</b><xmp>select replace('Ксения Сергеевна ', 'Ксения ','') AS O
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+O=Сергеевна </xmp>------ SQL done, 1ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (5) ]:</b><xmp></xmp><b>$INCLUDE </b>[PutObject]<BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[update record] (1) ]:</b><xmp>update info_11 set person_id=0000010396, F='Легостаева', I='Ксения', O='Сергеевна'
+, div_code=123001, division='Группа №1 встречных поляризованных пучков', post='инженер', usl_rab='по сроч.труд. договору, на опр срок. Ст.58 п.2 ТК'
+, FIO='Легостаева Ксения Сергеевна', changed=now()
+where ID=155768
+</xmp> DONE! 1 record(s) affected------ SQL done, 0ms.<br><BR>
+<br><span class='ss_start pt'  onClick='toggleDiv("gateway/jinr_setPersonPosts1512147794203");'> $CALL_SERVICE: <b>gateway/receive_7_sotrudnik.cfg => gateway/jinr_setPersonPosts</b> (request:HR_LHEP_48)</span><div id='gateway/jinr_setPersonPosts1512147794203' class='ss'><br> <b>SQL: [[clear posts] (1) ]:</b><xmp>update info_11 set posts=''
+where person_id=0000010396
+</xmp> DONE! 1 record(s) affected------ SQL done, 0ms.<br><BR>
+ SQL: [SQL]<BR>
+<br> <b>SQL: [SQL]:</b><xmp>select p.id as "TAB_NOM", p.person_id as "KOD_FIZLICA", p.posts as "POSTS"
+, d.path as DIV_NAME, d.id as div_code
+, p.post as POST
+from info_11 p
+left join info_10 d on d.id=p.div_code
+where p.is_deleted=0
+and p.person_id=0000010396
+order by p.person_id
+</xmp> <b> Processed in 0ms. </b><br><br> <b>SQL: [[setPosts] (1) ]:</b><xmp>select distinct posts as "POSTS", id
+from info_11
+where person_id=10396
+order by id
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+id=155768</xmp>------ SQL done, 10ms.<br><BR>
+<br> <b>SQL: [[setPosts] (2) ]:</b><xmp>update info_11 set
+posts='ЛФВЭ / Отделение №2 Физики на ускорительном комплексе Нуклотрон-NICA / Научно-экспериментальный отдел спиновой физики малонуклонных систем / Группа №1 встречных поляризованных пучков, инженер'
+where person_id=10396
+</xmp> DONE! 1 record(s) affected------ SQL done, 0ms.<br><BR>
+ <b> NumTableRows=1; </b><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/jinr_setPersonPosts1512147794203");'> BACK: <b>gateway/jinr_setPersonPosts => gateway/receive_7_sotrudnik.cfg; (10ms.)</b></span><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/receive_7_sotrudnik1512147794189");'> BACK: <b>gateway/receive_7_sotrudnik => gateway/receive.cfg; (24ms.)</b></span><BR>
+<hr>----- gateway/receive.cfg[report]: ERR_CODE=0; ERROR=; <br>+++++<b>$INCLUDE </b>gateway/receive[OK]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_48");'>Request_HR_LHEP_48 (gateway/receive) DONE! (94ms)</span> <BR>

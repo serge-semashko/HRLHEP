@@ -1,0 +1,264 @@
+[colors]
+doc_new=FFFFFF
+doc_sent=FFFFE0
+doc_buh=E0FFE0
+doc_payed=E0F0FF
+doc_del=FFE0E0
+
+lightColor=efefef
+darkColor=666666
+lightGreenColor=eeffee
+lightBlueColor=D4E0ff
+darkBlueColor=444490
+inputColor=eff6ff
+filesColor=whitesmoke
+headerColor=e0f0e8
+anchorColor=darkblue
+anchorHoverColor=blue
+LabelTD=<TD bgColor=efefef align=right valign=top nowrap=true><i>
+mark_before=<font color=red><i>
+mark_after=</i></font>
+rowLink=|<a class=r href="javascript:goToRow(#srn_i#);">#srn_i#-#ern_i#</a> ??!currentPage
+rowLink=|<font color=FFFF00><b>#srn_i#-#ern_i#</b></font> ??currentPage
+prevSetLink=<a class=r href="javascript:goToRow(#srn_i#);"> <<< предыд. </a> 
+nextSetLink=| <a class=r href="javascript:goToRow(#srn_i#);"> следующие >>> </a>
+$INCLUDE menu.cfg[tables]
+[end]
+
+[rowLinks]
+rowLink=|<a class=r href="javascript:goToRow(#srn_i#);">#srn_i#-#ern_i#</a> ??!currentPage
+rowLink=|<font color=FFFF00><b>#srn_i#-#ern_i#</b></font> ??currentPage
+prevSetLink=<a class=r href="javascript:goToRow(#srn_i#);"> <<< предыд. </a> 
+nextSetLink=| <a class=r href="javascript:goToRow(#srn_i#);"> следующие >>> </a>
+[end]
+
+[head]
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> ??
+<HTML><HEAD><TITLE>#title#</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=windows-1251">
+<link rel="stylesheet" href="#cssPath#adb.css" type="text/css">
+<link rel="stylesheet" href="#cssPath#zelenuxa.css" type="text/css">
+
+<script type="text/javascript" src="/adb/js/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" language="JavaScript" src="#jsPath#calendar.js"></script>
+<SCRIPT type="text/javascript" language=JavaScript src="#jsPath#cal2.js"></SCRIPT>
+<script type="text/javascript" src="/adb/js/jquery-1.9.1.min.js"></script>
+<SCRIPT type="text/javascript" language=JavaScript src="#jsPath#lib.js"></SCRIPT> 
+<script type="text/javascript" language="JavaScript">
+function img_act(imgName){document[imgName].src="#imgPath#blues2.gif";}
+function img_inact(imgName){document[imgName].src="#imgPath#blues1.gif";}
+function setDesc()
+{
+  frm.desc.value="DESC";  ??!desc
+  frm.desc.value="";      ??desc
+  frm.submit();
+}
+
+function setSort(colNr)
+{
+  var oldsrt = #srt#; ??srt
+  var oldsrt = -1;    ??!srt
+  if (oldsrt == colNr)
+  {
+    frm.desc.value="DESC";  ??!desc
+    frm.desc.value="";      ??desc
+  }
+  else
+    frm.desc.value="DESC";
+  doIt();
+}
+function doIt()
+{ frm.submit();
+}
+</script>
+</HEAD>
+[end]
+
+[sess timer]
+[end]
+<span id=sess_timer> - </span>
+
+<script type="text/javascript" language="JavaScript">
+
+var checkSession = function(){
+    AjaxCall('sess_timer', '', '','','c=adm/checkSession_noDB');
+    window.setTimeout(checkSession, 5000); ??
+    window.setTimeout(checkSession, 50000);    
+}
+
+var setLogoutTimeout = function(){
+  if (LogoutTimeoutId) {
+        window.clearTimeout(LogoutTimeoutId);
+        LogoutTimeoutId = null;
+
+  }
+    LogoutTimeoutId = window.setTimeout(logout, 300000); //5min
+    LogoutTimeoutId = window.setTimeout(logout, 10000); //10sec ??
+    console.log("***** SET LogoutTimeoutId = " + LogoutTimeoutId); 
+}
+
+var logout = function() {
+AjaxCall('sess_timer', '', '','','c=adm/logout_noDB');
+}
+
+var LogoutTimeoutId;
+
+var clearLogoutTimeout = function(){   
+    if(LogoutTimeoutId) 
+    {
+       window.clearTimeout(LogoutTimeoutId);
+       LogoutTimeoutId = null;
+       AjaxCall('sess_timer', '', '','','c=adm/resetTimeout');
+    }
+}
+
+$(function(){ 
+window.setTimeout(checkSession, 5000); 
+})
+</script>
+[end]
+
+[top link]
+<table border=0 class="ztable" cellspacing="0" cellpadding="2">
+<tr>
+<td class="zdots" nowrap=true>&nbsp;::</td>
+<td class="ztoptitle" nowrap=true>#title#</td>
+<td class="ztop" nowrap=true><i>(#subtitle#),</i></td> ??subtitle
+<td class="ztoptitle" nowrap=true> 20#q_yr# год</td>
+<td  class="ztop" width="90%" >
+&nbsp;
+$INCLUDE common.dat [sess timer]  ??logged
+</td>
+<td class="ztop" nowrap=true>
+<a href="#ServletPath#" class="r" target=_top>
+<img src="#imgPath#or_dot.gif" width="10" height="10" border="0" class="topordot">
+На главную</a>&nbsp;&nbsp;
+</td></tr></table>
+[end]
+
+
+[report header]
+<HTML><HEAD><TITLE>#title#</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=windows-1251">
+<meta name="CACHE-CONTROL" CONTENT="NO-CACHE">
+<meta http-equiv="pragma" content="no-cache">
+<link rel="stylesheet" href="#cssPath#jinradm.css" type="text/css"> ??
+<link rel="stylesheet" href="#cssPath#adb.css" type="text/css">
+<script type="text/javascript" src="/adb/js/jquery-1.9.1.min.js"></script>
+<SCRIPT language=JavaScript src="#jsPath#main.js"></SCRIPT>
+<SCRIPT language=JavaScript>
+function setDesc()
+{
+  frm.desc.value="DESC";  ??!desc
+  frm.desc.value="";      ??desc
+  frm.submit();
+}
+
+function setSort(colNr)
+{
+  var oldsrt = #srt#; ??srt
+  var oldsrt = -1;    ??!srt
+  if (oldsrt == colNr)
+  {
+    frm.desc.value="DESC";  ??!desc
+    frm.desc.value="";      ??desc
+  }
+  else
+    frm.desc.value="DESC";
+  frm.submit();
+}
+
+</SCRIPT>
+</HEAD>
+
+<body
+BACKGROUND="#imgPath#B_N.gif"  ??!cop=p
+>
+[end]
+
+[menu item] param: text; nam; href;
+<A  class=toc HREF="#href#" onMouseover="img_act('#nam#')" onMouseout="img_inact('#nam#')"><IMG SRC="#imgPath#blues1.gif" border=0 NAME="#nam#"> #text#</A> &nbsp;
+[end]
+
+[rpp] param: noTR;
+<tr class=blue><td align=left> ??!noTR
+<font color=white><i>Выдавать по:
+<SELECT NAME="rpp" onChange="goToRow(1);">
+<OPTION>20
+<OPTION>50 <OPTION>100
+<OPTION VALUE="9999"> не огр.  
+ ??user_group=sys
+</SELECT> записей &nbsp; &nbsp; &nbsp; Записи:</i> #rowLinks# |
+<script>try {top.selectOptionByVal(frm.rpp, '#rpp#');} catch (e) {;} try {selectOptionByVal(frm.rpp, '#rpp#');} catch (e) {;} </script> ??rpp
+[end]
+
+[dat] param: fd_name; fd_val; class=xp; yr1=-1; yr2=0; onChange;
+<input size=8 name='#fd_name#' value='#fd_val#'
+class=#class# ??class
+onChange="#onChange#" ??onChange
+><a href="javascript:show_calendar(document.theForm.#fd_name#, #yr1#, #yr2#);"><img align=absmiddle src="#imgPath#show-calendar.gif" width=24 height=22 border=0 alt="Выбор даты из календаря"></a>
+<input type=hidden name='f_#fd_name#' value=''>  
+[end]
+
+
+[dat between] param: fd_name1; fd_val1; fd_name2; fd_val2; class=xp; yr1=-1; yr2=0; onChange;
+<input size=8 name='#fd_name1#' value='#fd_val1#'
+class=#class# ??class
+onChange="#onChange#" ??onChange
+><a href="javascript:show_calendar(document.theForm.#fd_name1#, #yr1#, #yr2#);">
+<img align=absbottom src="#imgPath#show-calendar.gif" width=24 height=22 border=0 alt="Выбор даты из календаря"></a>
+<input type=hidden name='f_#fd_name1#' value=''>  
+[по
+<input size=8 name='#fd_name2#' value='#fd_val2#'
+class=#class# ??class
+onChange="#onChange#" ??onChange
+><a href="javascript:show_calendar(document.theForm.#fd_name2#, #yr1#, #yr2#);">
+<img align=absbottom src="#imgPath#show-calendar.gif" width=24 height=22 border=0 alt="Выбор даты из календаря"></a> 
+]
+<input type=hidden name='f_#fd_name2#' value=''>  
+[end]
+
+[report NoAccess]
+<center><br><br><br><br><br>
+<h4>Извините, у Вас не доступа к этим данным</h4>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+[end]
+
+[years_select]
+<select name=f_year>
+<option value="0">--все--
+<option>2018
+<option>2017
+<option>2016
+<option>2015
+<option>2014
+<option>2013
+<option>2012
+<option>2011
+<option>2010
+<option>2009
+<option>2008
+<option>2007
+<option>2006
+<option>2005
+<option>2004
+</select> 
+[end]
+
+[years_options]
+<option>2018
+<option>2017
+<option>2016
+<option>2015
+<option>2014
+<option>2013
+<option>2012
+<option>2011
+<option>2010
+<option>2009
+<option>2008
+<option>2007
+<option>2006
+<option>2005
+<option>2004
+[end]

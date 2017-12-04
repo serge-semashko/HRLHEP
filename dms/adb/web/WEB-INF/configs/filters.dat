@@ -1,0 +1,174 @@
+[dat] param: fd_name; fd_val; class=xp; yr1=-1; yr2=0; onChange;
+<input size=8 name='#fd_name#' value='#fd_val#'
+class=#class# ??class
+onChange="#onChange#" ??onChange
+><a href="javascript:show_calendar(document.theForm.#fd_name#, #yr1#, #yr2#);"><img align=absmiddle src="#imgPath#show-calendar.gif" width=24 height=22 border=0 alt="Выбор даты из календаря"></a>
+<input type=hidden name='f_#fd_name#' value=''>  
+[end]
+
+
+[dat between] param: fd_name1; fd_val1; fd_name2; fd_val2; class=xp; yr1=-1; yr2=0; onChange;
+<input size=8 name='#fd_name1#' value='#fd_val1#'
+class=#class# ??class
+onChange="#onChange#" ??onChange
+><a href="javascript:show_calendar(document.theForm.#fd_name1#, #yr1#, #yr2#);"><img align=absmiddle src="#imgPath#show-calendar.gif" width=24 height=22 border=0 alt="Выбор даты из календаря"></a>
+<input type=hidden name='f_#fd_name1#' value=''>  
+[по
+<input size=8 name='#fd_name2#' value='#fd_val2#'
+class=#class# ??class
+onChange="#onChange#" ??onChange
+><a href="javascript:show_calendar(document.theForm.#fd_name2#, #yr1#, #yr2#);"><img align=absmiddle src="#imgPath#show-calendar.gif" width=24 height=22 border=0 alt="Выбор даты из календаря"></a>
+]
+<input type=hidden name='f_#fd_name2#' value=''>  
+[end]
+
+[ZZZ f_year_future] param:f_name=f_year; onChange=;
+<select name="#f_name#"
+onChange="#onChange#" ??onChange
+>
+<option value="2013">2013
+<option value="2014">2014
+<option value="2015">2015
+<option value="2016">2016
+<option value="2017">2017
+<option value="2018">2018
+<option value="">ВСЕ
+</select>
+[end]
+
+[ZZZ f_year_all] param:f_name=f_year; onChange=; not_all=;
+<select name="#f_name#"
+onChange="#onChange#" ??onChange
+>
+
+<option value="ALL">ВСЕ ??!not_all
+<option value="past" ??
+selected ??f_year=past ??
+>Прошлые года</option> ??
+
+<option value="2013"
+selected ??f_year=2013
+>2013</option><option value="2014"
+selected ??f_year=2014
+>2014</option><option value="2015"
+selected ??f_year=2015
+>2015</option><option value="2016"
+selected ??f_year=2016
+>2016</option>
+<option value="future" ??
+selected ??f_year=future ??
+>Текущий и дальше</option> ??
+</select>
+[end]
+
+[ZZZ f_year] param:f_name=f_year; onChange=;
+<select name="#f_name#"
+onChange="#onChange#" ??onChange
+>
+<option value="2014">2014
+<option value="2013"
+selected ??f_year=2013
+>2013
+<option value="2012"
+selected ??f_year=2012
+>2012
+</select>
+[end]
+
+
+[f_month] param:f_name=f_month; mand;
+<select name="#f_name#">
+<option value=""> ??!mand
+<option value="01">январь
+<option value="02">февраль
+<option value="03">март
+<option value="04">апрель
+<option value="05">май
+<option value="06">июнь
+<option value="07">июль
+<option value="08">август
+<option value="09">сентябрь
+<option value="10">октябрь
+<option value="11">ноябрь
+<option value="12">декабрь
+</select>
+[end]
+
+[f_summa] param: name=f_summa; value=#f_summa#; name_op=f_summa_op; onChange=;
+<select name=#name_op# class="fltr"
+onChange="#onChange#" ??onChange
+><option>=<option>&gt;<option>&lt;</select>
+<input class="xpc fltr" size=10 name="#name#" value='#value#'>
+<select name=f_curr_code class="fltr">
+	<option value="810">руб</option>
+	<option value="840">$</option>
+	<option value="978">EUR</option>
+  </select>
+<span id=s_dsumm style="display:inline">
+<b>+- </b><input class="xpc" size=6 name="dsumm" value='#dsumm#'></span>
+[end]
+
+[tp]
+$SET_PARAMETERS tp=4; ??!tp
+$SET_PARAMETERS tpe=1; ??tp=mm&!tpe
+$SET_PARAMETERS tp_report=#tp# квартал 20#q_yr# года;  ??tp=I|tp=II|tp=III|tp=IV
+$SET_PARAMETERS tp_report=#tp#-е полугодие 20#q_yr# года ??tp=1|tp=2
+$SET_PARAMETERS tp_report=январь-сентябрь 20#q_yr# года ??tp=3
+$SET_PARAMETERS tp_report=20#q_yr# год ??tp=4
+$SET_PARAMETERS tp_report=#tpe# месяц 20#q_yr# года. ??tpe
+
+$SET_PARAMETERS tpq=and quart=1; ??tp=I
+$SET_PARAMETERS tpq=and quart=2; ??tp=II
+$SET_PARAMETERS tpq=and quart=3; ??tp=III
+$SET_PARAMETERS tpq=and quart=4; ??tp=IV
+$SET_PARAMETERS tpq=and quart in(1,2); ??tp=1
+$SET_PARAMETERS tpq=and quart in(3,4); ??tp=2
+$SET_PARAMETERS tpq=and quart in(1,2,3); ??tp=3
+$SET_PARAMETERS tpq=and mm=#tpe#; ??tp=mm&tpe
+$SET_PARAMETERS tpq=and mm between #tpe1# and #tpe2#; ??tp=mm-mm&tpe
+
+<table>
+<TR><TD align=right>Временной период:</TD>
+<TD><SELECT NAME="tp" ONCHANGE="setTPE();">
+    <OPTION VALUE="I" > I квартал
+    <OPTION VALUE="II" > II квартал
+    <OPTION VALUE="III" > III квартал
+    <OPTION VALUE="IV" > IV квартал
+    <OPTION VALUE="ALL" > ------------
+    <OPTION VALUE="1" > 1-е полуг.
+    <OPTION VALUE="2" > 2-е полуг.
+    <OPTION VALUE="3" > 9 месяцев
+    <OPTION VALUE="4"> весь год
+    <OPTION VALUE="ALL" > ------------
+    <OPTION VALUE="mm"> мм
+    <OPTION VALUE="mm-mm"> мм-мм 
+</SELECT>
+<INPUT TYPE="text" class=xpc SIZE=6 NAME="tpe" VALUE="#tpe#"  ONCHANGE="setTP();">
+#ERR_DATE#  ??ERR_DATE
+<br>#tp_report# 
+#tpq# ??
+</TD></TR></table>
+
+<script type="text/javascript">
+var frm = document.theForm;
+selectOptionByVal(frm.tp,"#tp#"); ??tp
+
+function setTPE()
+{
+  if (frm.tp.options.selectedIndex < 10)
+    frm.tpe.value = "";
+	else if(frm.tp.options.selectedIndex == 10)
+		if (frm.tpe.value.length <1)
+			frm.tpe.value = "1";
+}
+function setTP()
+{
+  if (frm.tpe.value.length <1)
+    frm.tp.options.selectedIndex = 8;
+  else if (frm.tpe.value.length <3)
+    frm.tp.options.selectedIndex = 10;
+  else
+    frm.tp.options.selectedIndex = 11;
+}
+</script>
+[end]

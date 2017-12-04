@@ -1,0 +1,45 @@
+doc_object.dat
+
+[collection_view]
+$STORE_PARAMETERS
+<div id="collection_#doc_id#_#TYPE#" class="embedded_object">
+$CALL_SERVICE c=obj/show_collection;
+</div>
+$RESTORE_PARAMETERS
+[end]
+
+
+[collection_write]
+$SET_PARAMETERS editable=Y;
+$INCLUDE dat/doc_object.dat[collection_view]
+[end]
+
+...............................................................................
+[view object]
+doc_id=#doc_id#; obj_id=^#FIELD_DB_NAME#; ??
+$STORE_PARAMETERS
+$SET_PARAMETERS INITIATOR_COMMENT=;
+
+$CALL_SERVICE c=docs/view_doc; doc_id=^#FIELD_DB_NAME#; doc_mode=object; view=list; show_header=Y; 
+
+doc_id=#doc_id#; obj_id=^#FIELD_DB_NAME#; ??
+$RESTORE_PARAMETERS
+doc_id=#doc_id#; obj_id=^#FIELD_DB_NAME#; ??
+[end]
+
+
+[write_object]
+FIELD_DB_NAME=#FIELD_DB_NAME#;
+doc_id=#doc_id#; obj_id=^#FIELD_DB_NAME#; 
+$STORE_PARAMETERS
+
+$SET_PARAMETERS doc_id=^#FIELD_DB_NAME#; 
+<div id="edit_object_#doc_id#_form">
+$CALL_SERVICE c=docs/view_doc; doc_mode=object; view=list; show_header=Y; editable=Y;
+$CALL_SERVICE c=obj/edit_object; doc_id=^#FIELD_DB_NAME#; ??
+</div>
+
+doc_id=#doc_id#; obj_id=^#FIELD_DB_NAME#; 
+$RESTORE_PARAMETERS
+<b>doc_id=#doc_id#; obj_id=^#FIELD_DB_NAME#; </b>
+[end]

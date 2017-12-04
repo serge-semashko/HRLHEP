@@ -1,0 +1,187 @@
+dat/doc_fields.dat
+
+----------------- 1 - Статический текст ----------------------
+[static text] ===== 1 - Статический текст ===
+<div class="pre-wrap">^#FIELD_DB_NAME#</div>
+[end]
+
+[static text right]
+<div class="right nowrap">^#FIELD_DB_NAME#</div>
+[end]
+
+----------------- 2: Текстовое поле ввода ----------------------
+[input field] ===== 2: Текстовое поле ввода ===
+$INCLUDE dat/doc_fields.dat[input] ??TYPE=int|SIZE<71
+$INCLUDE dat/doc_fields.dat[textarea]  ??TYPE=varchar&SIZE>70
+$INCLUDE dat/doc_fields.dat[textarea]  ??TYPE=text&SIZE>70
+[end]
+
+[input]
+<input size=#SIZE# name=#FIELD_DB_NAME# value="^#FIELD_DB_NAME#" mand="#mand#" #RO_field#
+style="width:#LX#pt;" ??LX>0
+>  
+[end]
+
+[textarea]
+<textarea name=#FIELD_DB_NAME# 
+class="autoresize"  ??AUTORESIZE=Y
+rows=#ROWS# ??
+style="width:#LX#pt; height:#LY#pt;" mand="#mand#" #RO_field#>^#FIELD_DB_NAME#</textarea>
+[end]
+
+----------------- 17: Read Only Текстовое поле ----------------------
+[RO input field] ===== 17: Read Only Текстовое поле ===
+$SET_PARAMETERS RO_field=readonly;
+$INCLUDE dat/doc_fields.dat[input field]
+$SET_PARAMETERS RO_field=;
+[end]
+
+----------------- 20: Флажок "Да"-"Нет" (checkbox) ----------------------
+[cb_read]
+#FIELD_DB_NAME#: ^#FIELD_DB_NAME# ??
+$SET_PARAMETERS val= ^#FIELD_DB_NAME#;
+Да ??val=1
+Нет ??!val=1
+[end]
+
+[cb_write]
+$SET_PARAMETERS val= ^#FIELD_DB_NAME#;
+<input type=checkbox name="#FIELD_DB_NAME#" value=1
+checked ??val=1
+>
+[end]
+
+----------------- 5: тип поля "Календарь" ----------------------
+Диапазон отображаемых лет от текущего года берется из параметров LX (лет от текущего назад, >=0) и LY (лет от текущего вперед, >0)
+Значения по умолчанию: LX=1 (1 год назад), LY=2 (2 года вперед). Например, 2016 - 2019 для 2017г.
+
+[date field r] ===== 5: тип поля "Календарь"  =====
+$SET_PARAMETERS curr_val=^#FIELD_DB_NAME#; DATE_VALUE=^#FIELD_DB_NAME#;
+$GET_DATA dat/doc_fields.dat[convert date]  ??curr_val
+#DATE_VALUE# 
+[end]
+
+
+[date field w]  
+$SET_PARAMETERS yr_min=#LX#;  ??LX&LX<300
+$SET_PARAMETERS yr_max=#LY#;  ??LY&LY<30
+$SET_PARAMETERS yr_min=1;  ??!yr_min
+$SET_PARAMETERS yr_max=2;  ??!yr_max
+
+$SET_PARAMETERS DATE_VALUE=^#FIELD_DB_NAME#; curr_val=^#FIELD_DB_NAME#; err_param=ERROR_#FIELD_DB_NAME#; orig_val=#FIELD_DB_NAME#_orig; 
+$SET_PARAMETERS err_msg=^#err_param#; 
+$GET_DATA dat/doc_fields.dat[convert date] ??!err_msg&!INPUT_ERROR&curr_val
+$SET_PARAMETERS DATE_VALUE=^#orig_val#;  ??err_msg|!curr_val
+
+<input id=#FIELD_DB_NAME# type="text" mand="#mand#" size=10 name=#FIELD_DB_NAME# onKeyUp="fixDate(this);" onChange="checkDate(this);" value="#DATE_VALUE#"> 
+<span class="err_msg">#err_msg#</span>  ??err_msg
+
+<script type="text/javascript">
+log(3, " #FIELD_DB_NAME#: LX=#LX#; yr_min=#yr_min#;");
+ $("###FIELD_DB_NAME#").datepick({
+    yearRange: '-#yr_min#:+#yr_max#' 
+        ??yr_max>-1
+    yearRange: 'c-#yr_min#:c#yr_max#' ??yr_max<0&ZZZ
+, showSpeed: 'fast'});
+</script>
+$SET_PARAMETERS curr_val=; err_msg=; DATE_VALUE=; yr_min=; yr_max=;
+[end]
+
+
+[convert date]
+select DATE_FORMAT('#DATE_VALUE#','#dateFormat#') AS DATE_VALUE;
+[end]
+
+========================= 19 - тип поля "Диапазон дат"  =====
+Диапазон отображаемых лет от текущего года берется из параметров LX (лет от текущего назад, >=0) и LY (лет от текущего вперед, >0)
+Значения по умолчанию: LX=1 (1 год назад), LY=2 (2 года вперед). Например, 2016 - 2019 для 2017г.
+
+[date range r] ******* 19 - тип поля "Диапазон дат" 
+    $GET_DATA dat/doc_fields.dat[getDateRange]
+    с 
+    #BEGIN_DATE_VALUE#  ??#FIELD_DB_NAME# 
+    __  ??!#FIELD_DB_NAME# 
+     по 
+    #END_DATE_VALUE# ??END_DATE_IS_NOT_NULL=1
+    __ ??END_DATE_IS_NOT_NULL=0|!END_DATE_IS_NOT_NULL
+[end]
+
+[date range w]
+    $GET_DATA dat/doc_fields.dat[getDateRange]
+    с
+    <input id=#FIELD_DB_NAME# type="text" mand="#mand#" size=10 name=#FIELD_DB_NAME# onKeyUp="fixDate(this);" onChange="checkDate(this);" value="#BEGIN_DATE_VALUE#">  ??#FIELD_DB_NAME# 
+    <input id=#FIELD_DB_NAME# type="text" mand="#mand#" size=10 name=#FIELD_DB_NAME# onKeyUp="fixDate(this);" onChange="checkDate(this);" value="">  ??!#FIELD_DB_NAME#
+     по 
+    <input id=#FIELD_DB_NAME#_end type="text" mand="#mand#" size=10 name=#FIELD_DB_NAME#_end onKeyUp="fixDate(this);" onChange="checkDate(this);" value="#END_DATE_VALUE#">  ??END_DATE_IS_NOT_NULL=1
+    <input id=#FIELD_DB_NAME#_end type="text" mand="#mand#" size=10 name=#FIELD_DB_NAME#_end onKeyUp="fixDate(this);" onChange="checkDate(this);" value="">  ??END_DATE_IS_NOT_NULL=0|!END_DATE_IS_NOT_NULL
+
+    $SET_PARAMETERS yr_min=#LX#;  ??LX&LX<300
+    $SET_PARAMETERS yr_max=#LY#;  ??LY&LY<30
+    $SET_PARAMETERS yr_min=1;  ??!yr_min
+    $SET_PARAMETERS yr_max=2;  ??!yr_max
+
+    <script type="text/javascript">
+        log(3, " [date range w].#FIELD_DB_NAME#: yr_min=#yr_min#; yr_max=#yr_max#;");
+        $("###FIELD_DB_NAME#").datepick({yearRange: '-#yr_min#:+#yr_max#', showSpeed: 'fast'}); 
+        $("###FIELD_DB_NAME#_end").datepick({yearRange:'-#yr_min#:+#yr_max#', showSpeed: 'fast'}); 
+    </script>
+[end]
+
+$("###FIELD_DB_NAME#").datepick({yearRange:	'c-#yr_min#:c+#yr_max#', showSpeed: 'fast'});
+ $("###FIELD_DB_NAME#_end").datepick({yearRange:	'c-#yr_min#:c+#yr_max#', showSpeed: 'fast'});
+<
+
+
+[getDateRange]
+    select DATE_FORMAT('^#FIELD_DB_NAME#','#dateFormat#') AS "BEGIN_DATE_VALUE";
+    SELECT DATE_FORMAT(#FIELD_DB_NAME#_end,'#dateFormat#') as "END_DATE_VALUE",
+    IF(#FIELD_DB_NAME#_end IS NOT NULL, 1,0) as "END_DATE_IS_NOT_NULL" 
+    from d_data_#DOC_TYPE_ID# where doc_id = #doc_id#
+    ;
+[end]
+
+[date range s]
+    $SET_PARAMETERS temp_END_DATE = #CUSTOM_FIELD_DB_NAME#_end;
+    $GET_DATA dat/doc_fields.dat[updateDateRange]
+[end]
+
+[updateDateRange]
+    UPDATE d_data_#DOC_TYPE_ID# SET
+      #CUSTOM_FIELD_DB_NAME#_end = STR_TO_DATE("^#temp_END_DATE#",'#dateFormat#') ??#temp_END_DATE#
+      #CUSTOM_FIELD_DB_NAME#_end = null ??!#temp_END_DATE#
+     WHERE doc_id = #doc_id#
+    ;
+[end]
+
+========================= 21 - тип поля "ФИО"  =====
+
+[FIO_read]
+    $SET_PARAMETERS  tmp_F_field=#FIELD_DB_NAME#_F; tmp_I_field=#FIELD_DB_NAME#_I; tmp_O_field=#FIELD_DB_NAME#_O;
+    $GET_DATA dat/doc_fields.dat[FIO_get]
+    ^#tmp_F_field# ^#tmp_I_field# ^#tmp_O_field#
+[end]
+
+
+[FIO_write]
+    $SET_PARAMETERS  tmp_F_field=#FIELD_DB_NAME#_F; tmp_I_field=#FIELD_DB_NAME#_I; tmp_O_field=#FIELD_DB_NAME#_O;
+    $GET_DATA dat/doc_fields.dat[FIO_get]
+    <input size="20" name='#tmp_F_field#' value='^#tmp_F_field#'>
+    <input size="20" name='#tmp_I_field#' value='^#tmp_I_field#'>
+    <input size="20" name='#tmp_O_field#' value='^#tmp_O_field#'>
+[end]
+
+[FIO_save]
+    $SET_PARAMETERS  tmp_F_field=#CUSTOM_FIELD_DB_NAME#_F; tmp_I_field=#CUSTOM_FIELD_DB_NAME#_I; tmp_O_field=#CUSTOM_FIELD_DB_NAME#_O;
+    $GET_DATA dat/doc_fields.dat[FIO_set]
+[end]
+
+[FIO_get]
+    SELECT #tmp_F_field#, #tmp_I_field#, #tmp_O_field#
+    from d_data_#DOC_TYPE_ID# where doc_id = #doc_id#
+[end]
+
+[FIO_set]
+    update d_data_#DOC_TYPE_ID# 
+    set #tmp_F_field#='^#tmp_F_field#', #tmp_I_field#='^#tmp_I_field#', #tmp_O_field#='^#tmp_O_field#'
+    where doc_id = #doc_id#
+[end]

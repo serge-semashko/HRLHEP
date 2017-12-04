@@ -1,0 +1,155 @@
+[comments]
+descr=A: Просмотр документа админом
+
+input=doc_id - ID документа (из таблицы d_list)
+output=HTML форма просмотра документа, 
+parents=admin/doc_list_table.cfg
+childs=docs/doc_user_action.cfg
+test_URL=?c=docs/view_doc&doc_id=1
+author=Куняев
+[end]
+
+[parameters]
+request_name=U:Просмотр документа
+service=jinr.sed.ServiceViewDoc
+tableCfg=table_no
+LOG=ON
+SYS_FIELDS=DOC_ID, IS_ACTIVE, DATE_FORMAT(modified,'#dateTimeFormat#') as DOC_MODIFIED, VERSION
+SYS_FIELDS_TYPES=int,int,varchar,int
+divider=<tr><td colspan=2 class="divider"></td></tr> 
+[end]
+
+
+[report header]
+    $INCLUDE dat/common.dat[check login]
+    $LOG <b>============== view_doc: doc_id=#doc_id#; USER_ID=#USER_ID#; (Log is OFF)==================</b><br>
+    $CALL_SERVICE c=sys/getARUD; ??!AR_R=Y&USER_ID
+
+    ........................ DEBUG ........................... ??
+    $SET_PARAMETERS WF_ID=#WF_ID_INACT#;  CURR_STEP=0; ??!WF_ID
+    $SET_PARAMETERS AR_T=Y;   ??WF_ID_ZZZ
+
+    $INCLUDE [OK report header]  ??AR_R=Y
+    $CALL_SERVICE c=sys/log_doc_access; doc_id=#doc_id#; rejected=1;   ??!AR_R=Y
+[end]
+
+
+[OK report header]
+    $SET_PARAMETERS request=read;
+    $GET_DATA docs/view_doc.cfg[getDocInfo]
+    <center>
+
+    <input type=hidden name=doc_id value='#doc_id#'> ??!admin
+
+    ++++++++++++++++++ Шапка документа  +++++++++++++++++++++ ??
+    <table border=0 cellpadding=3 cellspacing=0>
+    <tr><th class="center bg_white big" colspan=2>
+    <b>#DOC_TYPE#
+    №#NUMBER# ??NUMBER
+    от #DOC_DATE# ??DOC_DATE
+    <br>#TITLE#</b></th></tr>
+    $INCLUDE docs/view_doc.cfg[WF cancelled] ??WF_CANCELLED=Y
+    #divider# 
+[end]
+
+
+============== Вывод одного поля  ======= ??
+[item]
+    $INCLUDE docs/view_doc_wf.cfg[item]
+[end]
+
+
+[report footer]
+    $INCLUDE [report footer_] ??AR_R=Y
+[end]
+
+[report footer_]
+    <tr><td class="label">Приложения:</td><td>
+    $CALL_SERVICE c=docs/doc_files_list
+    </td></tr>#divider#
+
+    <tr>
+    <td class="label">Файлы для печати:</td><td>
+    $CALL_SERVICE c=docs/out_files_list
+    </td></tr>#divider#
+
+    <tr><td class="label">Инициатор:</td>
+    <td class="bg_white nowrap" nowrap>
+    #CREATOR#, #CREATED#, <a href="mailTo:#CRE_MAIL#?subject=Ваша заявка на закупку">#CRE_MAIL#</a>, т.#CRE_PHONE#
+    </td></tr>
+
+    <tr><td class="label">Комментарий:</td><td class="big bg_white">#INITIATOR_COMMENT#</td></tr> ??INITIATOR_COMMENT
+    #divider# 
+
+    $CALL_SERVICE c=docs/show_users_comments 
+
+    $GET_DATA docs/view_doc.cfg[check sent FYI]
+
+    $SET_PARAMETERS AR_T=Y;  ??AR_A=Y&WF_ID
+
+    $INCLUDE [buttons row]
+    </table></center>
+
+    <div id="doc_send_div" style="float:right; display:none; margin:0 50px 0 100px; border-bottom:solid 1px gray;"></div>
+    <div id="doc_history_div" style="float:right; display:none; margin:0 50px 0 100px; border-bottom:solid 1px gray;"></div>
+    <div style="clear:both;"></div>
+
+    <div id="doc_wf" style="float:right; margin:0 50px 15px 100px;">загрузка...</div><div style="clear:both;"></div> 
+
+    <input type="button" class="butt1 pt" style="width:80; margin-right:10px;" value='Наверх' onClick="window.scrollTo(0, 0);"> 
+
+
+    <br><br><small>doc_id=#doc_id#; R=#AR_R#; S=#AR_S#; W=#AR_W#; E=#AR_E#; T=#AR_T#; A=#AR_A#; status=#DOC_STATUS#, step_type=#CURR_STEP_TYPE#, deleted=#DOC_IS_DELETED#, WF_ID=#WF_ID#; WF cancelled=#WF_CANCELLED#;<br></small>   ??!cache_cfg=true&ClientIP=159.93.40.211
+    <a href="#ServletPath#?c=wf/start_wf_step&doc_id=#doc_id#" target="_blank">старт шага</a> ??USER_ID=2309
+
+    $CALL_SERVICE c=sys/log_doc_access; version=#VERSION#;
+
+    <script type="text/javascript">
+        window.scrollTo(0, 0); 
+        $('##doc_container').show(100); 
+        $( "##doc_container" ).draggable({handle: '##doc_container_title'});
+alert("mode=#mode#");
+        AjaxCall("doc_wf", "c=wf/show_wf_for_doc&doc_id=#doc_id#"); 
+    </script>
+[end]
+
+[buttons row]
+    #divider#<tr><td class="center bg_white nowrap" colspan=2 style="padding:15px 0 0px 0; border-bottom:solid 1px gray;">
+    <input type="button" class="butt1 pt" style="width:120px; margin-right:200px;" 
+    onClick="$('##doc_overlay').hide(); $('##doc_container').hide();" value='Закрыть'>  
+
+    $INCLUDE [admin forward button]   ??WF_ID&AR_A=Y&DOC_STATUS=#~doc_status_in_progress#|DOC_STATUS=#~doc_status_signed#
+    $INCLUDE [admin cancel button]   ??WF_ID&AR_A=Y&DOC_STATUS=#~doc_status_in_progress#|DOC_STATUS=#~doc_status_signed#
+
+    <input type="button" class="butt1 pt" style="width:120;" value="Ознакомить" onClick="AjaxCall('popupCont', 'c=docs/sendFYI&doc_id=#doc_id#');"> 
+
+    <br>&nbsp; ??!NUM_SENT_FYI>0
+    <div class="pt" onClick="$('##doc_send_div').toggle(); AjaxCall('doc_send_div', 'c=docs/show_sent_history&doc_id=#doc_id#');"  style="border-bottom:solid 1px gray; float:right; margin-top:10pt; padding:2px;"> история рассылки для ознакомления >></div> ??NUM_SENT_FYI>0
+    <div class="pt" onClick="$('##doc_history_div').toggle(); AjaxCall('doc_history_div', 'c=wf/show_doc_history&doc_id=#doc_id#');"  style="border-bottom:solid 1px gray; float:right; margin-top:10pt; padding:2px;"> история документа >></div> 
+    </td></tr>
+[end]
+
+[admin forward button]
+    <input type="button" class="butt1 pt adm_button" style="width:120;" value="Переслать" 
+    onClick="AjaxCall('popupCont', 'c=docs/doc_user_action&doc_id=#doc_id#&cop=forward');"> 
+[end]
+
+[admin cancel button]
+    <input type="button" class="butt1 pt adm_button" style="width:120;" value="Отозвать" 
+    onClick="AjaxCall('popupCont', 'c=docs/doc_user_action&doc_id=#doc_id#&cop=#~doc_action_terminate#');"> 
+[end]
+
+
+[ZZZfinal decision]
+#divider#
+view_doc: CUSTOM_DECISION_R=#CUSTOM_DECISION_R#
+$INCLUDE #CUSTOM_DECISION_R#  ??CUSTOM_DECISION_R
+[end]
+
+==============================================================================
+***************************** Шаблоны SQL запросов ***************************
+==============================================================================
+
+[SQL]
+$INCLUDE docs/view_doc.cfg[SQL_] ??AR_R=Y
+[end]

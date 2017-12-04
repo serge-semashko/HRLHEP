@@ -1,0 +1,147 @@
+admin/tab_doctypes.ajm
+
+[comments]
+descr=A: Вывод списка "Типы документов" (вывод самой таблицы)
+input=none
+output=HTML таблица типов документов
+parents=admin.cfg
+author=Куняев
+[end]
+
+
+[parameters]
+request_name=A:Типы документов
+LOG=ON
+[end]
+
+background-color:white;
+
+[report]
+$INCLUDE [OK report header]    ??AR_SYS_ADMIN=1
+[end]
+
+
+[OK report header]
+    <style>
+    .title {padding:3px 0 3px 20px; margin-top:1px; font-size:11pt; font-weight:bold; background-color: ##1F697D; color:white; cursor:pointer; border-top:solid 1px ##A0A0A0;}  ??
+    div.sel {background-color:##FFFFC0;}  ??
+    .control {background-color: ##f0f0f0; color:##000080; cursor:pointer; padding:3px 7px 3px 7px; margin:3px;  display:inline-block; font-size:11pt; 
+        border-radius:8px; padding:3px 7px 3px 7px;}
+    .border {background-color: white; border:solid 1px ##808080; 
+       box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.3); ??
+}
+    .control:hover {background-color: ##ffffa0; color:##000080;
+    font-weight:bold; font-size:10pt; ??
+    } 
+    .control:hover {background-color: ##ffffa0; color:##0000A0;}
+    .control_act {background-color: ##ffffa0;  }
+    td.icon, td.icon i {color:007000;}
+    </style>
+
+    <input type=hidden name="atab" value="t_doctypes"> 
+    <br> ??
+
+    +++++++++++++++++++++++++++++++++++++++++++++ ??
+    ++++++++++ Список типов документов ++++++++++ ??
+    +++++++++++++++++++++++++++++++++++++++++++++ ??
+    <fieldset class="sp"><legend class="pt" 
+    onClick="toggleDiv('list_of_types', 200);"
+    onClick="AjaxCall('list_of_types', 'c=admin/doctypes/list_of_types.ajm', toggleDiv('list_of_types', 200));" ??
+    > 
+    Список типов: </legend>
+    +++++ Контейнер таблицы типов +++++ ??
+        <div id="list_of_types" class_="center" style="margin:0 0 20px 100px; overflow:hidden;">
+    $CALL_SERVICE c=admin/doctypes/list_of_types.ajm
+    </div>
+    </fieldset> 
+
+    +++++++++++++++++++++++++++++++++++++++++++++ ??
+    +++++ Блок информации о конкретном типе +++++ ??
+    +++++++++++++++++++++++++++++++++++++++++++++ ??
+    <div id="type_details" style="display:none;">
+    +++++ Контейнер атрибутов +++++ ??
+    <fieldset class="sp"><legend class="pt" onClick="$('##type_attr').slideToggle(500);">Атрибуты типа документов:</legend>
+        <div id="type_attr">...</div>
+    </fieldset> 
+
+
+    +++++ Контейнер формы +++++ ??
+    <fieldset class="sp"><legend class="pt" onClick="$('##type_form_container').slideToggle(300);">Форма документа:</legend>
+        <div id="type_form_container" style="border:none 1px green; margin:0 -20px 0 -20px; padding:20px; background-color_:##e0e0e0;">
+        <table border=0 style="margin:0 0 20px 10px;">
+
+    --------- Переключатели режима, кнопки "Сохранить" и "Отмена" ---------- ??
+    <tr><td></td>
+        <td colspan=1 class="big"> &nbsp; Режим: 
+        <div id="mod_RO" class="control" onClick="setMode('RO');"><input type="radio" name="view_mode" checked> Просмотр документа 
+        </div><div id="mod_RW" class="control" onClick="setMode('RW')"><input type="radio" id="mod_RW_rb" name="view_mode"> Ввод документа</div>
+
+    <div id="save_buttons" style="display:inline-block; margin-left:77px;">
+    <div class="control border" onClick="doSave();"><i class="fa fa-check clr-green" aria-hidden="true"></i> Сохранить 
+        </div><div class="control border" onClick="doCancel();"><i class="fa fa-undo clr-red" aria-hidden="true"></i> Отмена</div>
+    </div>
+    </td></tr>
+
+    <tr>
+    --------- Кнопки инструментов ---------- ??
+        <td><div id="type_form_tools" class="tool" tool="none" style="border:none 1px ##d0d0d0; padding:0px; min-width:200px; height_:500px; "></div></td>
+
+    --------- Собственно форма ---------- ??
+        <td><div id="type_form" class_="tfiltr_wrapper" 
+         style="border:solid 1px grey;  background-color:##efefef; box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.3); margin:0 20px 20px 20px; padding:5px; ">===</div></td>
+    </tr>
+    </table></div></fieldset> 
+
+    +++++ Контейнер маршрутов +++++ ??
+    <fieldset class="sp"><legend class="pt" onClick="showWfTemplates();", true);">Шаблоны маршрутов:</legend>
+            <div id="type_wf" style="display:none;">WF</div></fieldset> 
+
+    </div>
+    +++++++++++++++++++++++++++++++++++++++++++++ ??
+    +++++++++++++++++++++++++++++++++++++++++++++ ??
+
+    <script type="text/javascript">
+        var type_id;
+        var mode="RO";
+
+        var showType=function(id){
+            log(2, "admin/tab_doctypes.ajm.showType()...");
+            type_id = id;
+            $(".type_items").removeClass("bg_yellow");
+            $("##type_item_" + id).addClass("bg_yellow");
+            $("##type_details").show();
+            $("##type_attr").show();
+            $("##list_of_types").slideUp(300);
+            $("##save_buttons").hide();
+            AjaxCall('type_attr', 'c=admin/doctypes/attr&type_id=' + id);  
+            setMode(mode);
+        }
+
+        var showWfTemplates=function(){
+            if($('##type_wf').css('display') == 'none'){
+                AjaxCall('type_wf', 'c=admin/doctypes/wf_template_list.ajm&type_id='+type_id, true);
+            }
+            $('##type_wf').slideToggle(300); 
+        }
+
+        var setMode=function(m){
+            mode=m;
+            AjaxCall("type_form","c=admin/doctypes/form_" + mode + "&type_id=" + type_id);
+            $(".control").removeClass("control_act"); 
+            $("##mod_" + mode).addClass("control_act");
+            $("##mod_" + mode + " input:first").prop("checked",true); 
+        }
+
+        var doCancel=function(){
+            setMode(mode);
+            AjaxCall("type_form","c=admin/doctypes/form_" + mode + "&type_id=" + type_id); ??
+        }
+
+        $("##save_buttons").hide();
+
+    </script>
+[end]
+
+
+
+***************************** Шаблон SQL запроса ***************************

@@ -1,0 +1,177 @@
+admin/doctypes/edit_toolbar.ajm
+
+[report]
+<style>
+table.doc td.label {background-color: none;  background: none;}
+
+div.tool {white-space:nowrap; display:block; margin-bottom:5px;
+cursor:pointer; font-size:11pt; padding:3px;  border:solid 1px white; ??
+}
+div.act, tr.act  {background-color:##FFFFE0; border:solid 1px ##FF8040; }
+div.tool:hover, tr.doc_item_a:hover {background-color:##FFFFC0; border:solid 1px ##FF8040; }
+##type_form_tools:hover {background:none; border:solid 1px ##d0d0d0; }
+
+</style>
+
+    <div class="control tool border" tool="add" id="t_add"><i class="fa fa-plus clr-green" aria-hidden="true"></i> Добавить поле</div>
+    <div class="control tool border" tool="mark_deleted"><i class="fa fa-trash clr-red" aria-hidden="true"></i> Пометить поле на удаление</div>
+    <div class="control tool border" tool="edit"><i class="fa fa-hand-pointer-o blue" aria-hidden="true"></i> Изменить свойства поля</div>
+    <div class="control tool border" tool="move"><i class="fa fa-sort blue" aria-hidden="true"></i> Сортировка полей</div>
+
+<i class="fa fa-arrows" aria-hidden="true"></i> ??
+
+
+<script type="text/javascript">
+============= Выбор инструмента ================= ??
+var tool = "none";
+
+var setTool=function(ev){
+    resetTool();
+    $(this).addClass("control_act");
+    tool = $(this).attr("tool");
+log(1, "setTool()" + tool);
+    switch(tool) {
+
+      case 'add': 
+        addField();
+        break;
+
+      case 'edit': 
+        $(".doc_item").click(edit).css("cursor","pointer");
+        break;
+
+      case 'mark_deleted': 
+        $(".doc_item").click(mark_deleted).css("cursor","pointer");
+        break;
+
+      case 'move': 
+        $(".doc_item").css("cursor","move"); ??
+        $(".doc_item").addClass("doc_item_a").css("cursor","move"); 
+        setSortable();
+        break;
+
+      case 'none': 
+        resetTool();
+        break;
+      default:
+        alert("unknown tool");
+    }
+    ev.stopPropagation();
+}
+
+var resetTool=function(){
+    tool = "none";
+    $(".doc_item").off("click").removeClass("act").removeClass("doc_item_a").css("cursor","default");
+    $("##save_buttons").hide();
+    $(".tool").removeClass("act"); ??
+    $(".tool").removeClass("control_act");
+
+    $( "table.doc tr" ).not("tr.doc_item").show();
+    $("td.item_num").hide();
+    try {
+      $( "table.doc tbody" ).sortable( "cancel" ); ??
+      $( "table.doc tbody" ).sortable( "destroy" );
+
+    } catch(e) {}
+}
+
+var markItem=function(item_id){
+    $(".doc_item").removeClass("act");
+    $("##" + item_id).addClass("act");
+}
+
+------------------ Обработка операций -----------------??
+var addField=function(ev){
+    log(1, "addField()...");
+    var item_id = $(this).attr("id"); ??
+    AjaxCall('popupCont', 'c=admin/doctypes/choose_field_type&type_id=' + type_id );
+    var p = $( "##t_add" ).position();
+
+}
+
+var mark_deleted=function(ev){
+    var item_id = $(this).attr("id");
+    markItem(item_id);
+    var id = item_id.substring(5);
+    AjaxCall('popupCont', 'c=admin/doctypes/editFieldAttr&cop=inact&field_id=' + id );
+}
+
+var edit=function(ev){
+    var item_id = $(this).attr("id");
+    markItem(item_id);
+    var id = item_id.substring(5);
+    AjaxCall('popupCont', 'c=admin/doctypes/editFieldAttr&field_id=' + id );
+}
+
+var move=function(ev){
+    var item_id = $(this).attr("id");
+    markItem(item_id);
+    var id = item_id.substring(5);
+}
+
+============= СОРТИРОВКА ПОЛЕЙ ================= ??
+http://api.jqueryui.com/sortable/ ??
+
+var setSortable=function(){
+    $( "table.doc tr" ).not("tr.doc_item").hide();
+    $("td.item_num").show();
+    $( "table.doc tbody" ).sortable( 
+      {
+        axis: "Y"
+        , update: setOrder 
+      }
+    )
+    log(1, "setSortable!-OK");
+}
+
+var num;
+var setOrder=function(event, ui) {
+    num=0;
+    $(this).children().each(setItemIndex); 
+    $("##save_buttons").show();
+}
+
+var setItemIndex=function(index, el){
+    var item_id=$(el).attr("id");
+    if (typeof item_id != 'undefined') {
+        num++;
+        log(2, "id=" + id +"; num=" + num +"; index=" + index + ";"); ??
+        var id = item_id.substring(5);
+        $(el).find('td').last().html(num + " / " + id); ??
+$(el).find('td').last().html('<input name="order" value="' + id + '-' + num + '">' + num);
+    }
+}
+
+============= СОХРАНЕНИЕ ИЗМЕНЕНИЙ ================= ??
+var doSave=function(){
+    switch(tool) {
+      case 'edit': 
+        
+        break;
+
+      case 'move': 
+        AjaxCall("type_form","c=admin/doctypes/saveOrder&type_id=" + type_id, true, "type_form");
+        break;
+
+      case 'none': 
+        break;
+
+      default:
+        alert("unknown tool");
+    }
+    resetTool();
+}
+
+$('.tool').click(setTool);
+$("##save_buttons").hide();
+</script>
+[end]
+
+log(2, p.left + ":" + p.top)
+	$('.dialog').css({
+		position:'absolute', 
+		left: p.left,
+		left: ($("body").innerWidth() - $('.dialog').outerWidth())/2, ??
+		top: p.top
+	});
+    $( "p:last" ).text( "left: " + position.left + ", top: " + position.top ); ??

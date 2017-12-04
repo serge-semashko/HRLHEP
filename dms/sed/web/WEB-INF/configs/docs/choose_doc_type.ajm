@@ -1,0 +1,218 @@
+docs/choose_doc_type.ajm
+
+[comments]
+descr=U: Выбор типа документа при создании документа
+
+input=
+output=HTML страница с перечнем имеющихся типов документов 
+parents=tab_myDocs.cfg
+childs=docs/create_doc.cfg
+author=Куняев
+[end]
+
+[description]
+<ul>
+    <li>Выборка из doc_groups + d_types списка типов документов, исключая удаленные типы (is_deleted=1), объекты и тестовые типы</li>
+    <li>Отображение в таблице</li>
+    <li>Проверка, запущен ли документ и может ли он быть создан непосредственно (не на основании другого).</li>
+    <li>По клику в тип - создание нового документа (вызов docs/create_doc) или вывод сообщения.</li>
+</ul>
+[end]
+
+[parameters]
+request_name=U:Создание документа
+service=dubna.walt.service.TableServiceSpecial
+tableCfg=table_no
+KeepLog=false
+ClearLog=true
+[end]
+
+[report header]
+    $INCLUDE dat/common.dat[check login]
+
+    <input type="button" class="butt1 pt" style="width:120;" value="В список" onClick="AjaxCall('c_myDocs', 'c=tab_myDocs');">  
+    <br>
+    <div class="big" style="padding:20px 0 0 100px; font-size:13pt;">
+
+
+    <table border=0><tr><td>
+    <fieldset style="border:solid 1px ##a0a0a0; background-color:white;"><legend class="bg_white">
+    <i class="fa fa-check" aria-hidden="true"></i>
+    <b>Выберите тип нового документа:</b></legend>        
+
+    <table border=0 cellpadding=0 cellspacing=3 class="big" style="margin:10px 10px 10px 50px;">
+    <tr><td style="width:30px;"></td><td></td></tr> 
+[end]
+
+
+============== Вывод одного поля  ======= ??
+[item]
+    $SET_PARAMETERS CAN_CREATE=Y; ??!rights_to_create_doc
+    $GET_DATA [get doc roles]   ??rights_to_create_doc
+    $GET_DATA [get parent type]  ??!is_independed=1
+    $SET_PARAMETERS CAN_CREATE=; ??!is_active=1|!is_independed=1
+
+    <tr><td class=object_table colspan=2><b>#group_name#:</b></td></tr>  ??!OLD_GROUP_NAME=#group_name#
+    <tr><td></td>
+    <td class="pt 
+        bg_light_green ??CAN_CREATE
+        bg_gray ??!CAN_CREATE
+        big gray_border nowrap" 
+        onClick="AjaxCall('c_myDocs','c=docs/create_doc&type_id=#type_id#')" ??CAN_CREATE_ZZZ
+        onClick="AjaxCall('doc_content','c=docs/create_doc&type_id=#type_id#')" ??CAN_CREATE
+        onClick="noAccessMsg(#type_id#);" ??!CAN_CREATE
+    >#doc_type# 
+    <small>(v.#curr_doc_type_version#)</small> ??curr_doc_type_version>1
+    / #ROLES# / #CAN_CREATE# ??
+
+    $INCLUDE [noAccessMsg] ??!CAN_CREATE
+    </td></tr>
+    $SET_PARAMETERS OLD_GROUP_NAME=#group_name#; rights_to_create_doc=; ROLES=; CAN_CREATE=;
+[end]
+
+
+[report footer]
+    </table>
+    </fieldset>
+    </td><td>
+    $INCLUDE [docs]
+    </td></tr></table>
+    </div>
+
+    <script type="text/javascript">
+
+    var noAccessMsg = function(type_id) {
+        showMsg("##dialog_title", "<i class='fa fa-info-circle error' aria-hidden='true' style='background-color:white; font-size:13pt;'></i> Документ не может быть создан");
+        ShowDialog(true);
+        $("##popupCont").html($("##msg_" + type_id).html() );
+        centerDialog(); 
+    }
+    </script>
+
+[end]
+
+***************************** СООБЩЕНИЯ ***************************
+
+[noAccessMsg]
+    <div id="msg_#type_id#" style="display:none;">
+        <div class="big" style="padding:20px;">
+            <center>
+            Этот документ еще не запущен в СЭД.<br><br> ??!is_active=1
+            $INCLUDE [roles msg]  ??ROLES
+            $INCLUDE [not independent msg]  ??is_active=1&!is_independed=1
+            <br><br><input type="button" class="butt1 pt" style="width:120;" value="OK" onClick="HideDialog();"> 
+        </div>
+    </div>
+[end]
+
+[not independent msg]
+    Этот документ может быть создан только <b>на основании документа:</b>
+    </center><div style="margin:10px 0 10px 100px;">#parent_type#</div><center>
+    Найдите и откройте в СЭД необходимый документ-основание<br>
+    и кликните в нем кнопку "Создать на основании"<br>
+[end]
+
+[roles msg]
+    Этот документ может быть создан только <b>пользователем с ролью:</b>
+    </center><div style="margin:10px 0 10px 100px;">#ROLES#</div><center>
+[end]
+
+
+***************************** Шаблоны SQL запросов ***************************
+
+[preSQLs]
+[end]
+
+[get parent type]
+    select concat('-',dtp.name,'<br>') as "parent_type"
+    from d_types dtp
+    where id in(select dc.type_id from d_types_children dc
+        where dc.child_type_id=#type_id# and not dc.type_id=dc.child_type_id)
+[end]
+
+
+[get doc roles]
+    select concat('-',r.name,'<br>') as "ROLES"
+    from a_roles r
+    where r.id in(#rights_to_create_doc#)
+    ;
+    select 'Y' as "CAN_CREATE"
+    from a_user_role ur 
+    where ur.user_id=#USER_ID# and ur.active=1
+    and ur.role_id in(#rights_to_create_doc#)
+[end]
+
+
+[SQL]
+    select distinct grp.group_name, dtp.id as "type_id", dtp.name as "doc_type", curr_doc_type_version
+        , dtp.is_active, dtp.is_independed, dtp.rights_to_create_doc
+        , grp.sort, dtp.sort
+    from doc_groups grp 
+         join d_types dtp on dtp.group_id=grp.id
+    where 
+    (   dtp.is_active=1 
+        and dtp.is_independed=1 ??
+        and dtp.group_id<80
+    )
+    or dtp.group_id=98 ??USER_ID=2309
+
+    order by grp.sort, dtp.sort
+[end]
+
+
+left join a_user_role ur 
+ /* join с таблицей ролей пользователей */
+     on (concat(',',dtp.rights_to_create_doc,',') like concat('%,',cast(ur.role_id as char), ',%') 
+        and ur.user_id=#USER_ID# and ur.active=1)
+
+/* фильтр - или открыто всем*/
+and (dtp.rights_to_create_doc IS NULL or dtp.rights_to_create_doc='' 
+/* или только определенным ролям */
+    OR not ur.user_id is null)
+
+=========================== линки на административные документы =================================
+[docs]
+        <style>
+            a, .ui-widget-content a  {text-decoration: none; color:##000080;}
+            a:hover {text-decoration: underline; color:##0000ff; background-color:##ffff80;}
+            a:visited {color:##0000a0;}
+            ul {padding:0px 0 0px 100px;}
+            li {margin-bottom:4px; list-style-type: circle;}
+            p  {margin:4px;}
+        </style>
+    <div style="padding:0px 50px 0 150px; font-size:11pt;">
+        <fieldset style="border:solid 1px ##a0a0a0;" class="bg_white"><legend class="bg_white">
+            <i class="fa fa-info-circle" style="margin_:2px 2px 0 5px; font-size:12pt;" aria-hidden="true"></i>
+            <b>Типовые формы договоров:</b></legend>        
+                <ul>
+                    <li><a href="/sed/info/Dogovor_Postavki.doc"><img alt="скачать" src="/sed/images/doc.gif"> Договор поставки</a></li>
+                    <li><a href="/sed/info/Dogovor_Uslugi.doc"><img alt="скачать" src="/sed/images/doc.gif" > Договор возмездного оказания услуг</a></li>
+                    <li><a href="/sed/info/Dogovor_RemStroi.doc"><img alt="скачать" src="/sed/images/doc.gif" > Договор на выполнение ремонтно-строительных работ</a></li>
+                    <li><a href="/sed/info/Dogovor_NIR.doc"><img alt="скачать" src="/sed/images/doc.gif" > Договор выполнения научно-исследовательских работ</a></li>
+                    <li><a href="/sed/info/Dogovor_Podriada.docx"><img alt="скачать" src="/sed/images/doc.gif" > Договор подряда</a></li>
+                </ul>
+                <p>Утверждены приказом от 
+                <a href="/sed/info/51.pdf"> 27.01.2017, №51 <img alt="скачать" src="/sed/images/pdf32.png" ></a></p>
+                <br>
+            </fieldset>
+    </div>
+[end]
+
+            Типовые формы договоров:
+
+            <p><a href="/sed/info/Instrukcija.docx"><img alt="скачать" src="/sed/images/doc.gif" width="16" height="16"> Инструкция по согласованию договоров в СЭД "Дубна"</a></p>
+
+            <ul>
+                <li><a href="/sed/info/Dogovor_Postavki.doc"><img alt="скачать" src="/sed/images/doc.gif" width="16" height="16"> Договор поставки</a></li>
+                <li><a href="/sed/info/Dogovor_Uslugi.doc"><img alt="скачать" src="/sed/images/doc.gif" width="16" height="16"> Договор оказания услуг</a></li>
+                <li><a href="/sed/info/Dogovor_RemStroi.doc"><img alt="скачать" src="/sed/images/doc.gif" width="16" height="16"> Договор на ремстрой</a></li>
+                <li><a href="/sed/info/Dogovor_NIR.doc"><img alt="скачать" src="/sed/images/doc.gif" width="16" height="16"> Договор НИР</a></li>
+                <li><a href="/sed/info/Dogovor_Podriada.docx"><img alt="скачать" src="/sed/images/doc.gif" width="16" height="16"> Договор подряда</a></li> ??
+            </ul>
+            <p><a href="/sed/info/Rekomendacii.doc"><img alt="скачать" src="/sed/images/doc.gif" width="16" height="16"> Рекомендации к типовым формам договоров</a></p>
+            <p><a href="/sed/info/Prilozhenija.docx"><img alt="скачать" src="/sed/images/doc.gif" width="16" height="16"> Приложение к рекомендациям</a></p>
+
+            <b>Представленные здесь документы находятся на этапе подготовки и выложены только для предварительного ознакомления!</b><br><br>
+            Если у Вас появятся конкретные предложения или замечания по этим документам,
+            <br>направляйте их, пожалуйста, в юридический отдел:
+            <a href="mailto:jurbjuro@jinr.ru"><img src="/sed/images/mail_.gif" width="16" height="16"> jurbjuro@jinr.ru</a>

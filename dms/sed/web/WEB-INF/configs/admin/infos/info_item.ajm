@@ -1,0 +1,65 @@
+[comments]
+descr=А: Вывод информации о справочнике. 
+
+input=info_id - ID справочника
+output=Табы "Данные" и "Настройки". Вызывает info_data или info_edit по клику на табе
+parents=admin/admin_js_noDB.cfg
+childs=admin/infos/info_data.cfg, admin/infos/info_edit.cfg
+testURL=?c=admin/infos/info_item&info_id=1
+[end]
+
+[parameters]
+request_name=A:Список справочников
+KeepLog=false
+[end]
+
+[report]
+$SET_PARAMETERS RWACC=Y; RACC=Y; ??AR_ADMIN=1
+$INCLUDE [report_]  ??RACC
+[end]
+
+
+[report_]
+<style>
+##report_content a {color:##0000a0; text-decoration:underline;}
+##admin_tabs {display:block; background: none; border:none;  margin:5px 4px 0 0px;}
+##dt_infoItem {padding:20px; border-top:solid 1px gray;}
+</style>
+<input type=hidden name=info_id value="#info_id#"> 
+
+#c# ??debug=on
+<center>
+<div id="info_tabs">
+  <ul id="ltabs">
+    <li id="t_info_Data"><a href="##dt_infoItem"><span>Данные</span></a></li> ??!cop=new
+    <li id="t_info_Settings"><a href="##dt_infoItem"><span>Настройки</span></a></li>
+  </ul>
+<div style="float:right; margin:-30px 100px 0 0;">
+<input type="button" class="butt1 pt" style="width:120;" value='В список >>' onClick="t_infos();">
+</div>
+	<div style="clear:both;"></div>
+	
+	<div id="dt_infoItem">
+		<div id=admin_title></div>
+		<div id=admin_table><center><h3><br><br><br>Загрузка...<br><br><br><br></h3></div>
+	</div>
+</div>
+
+
+$SET_PARAMETERS ItemModule=admin/infos/info_edit; ??!ItemModule&cop=new
+$SET_PARAMETERS ItemModule=admin/infos/info_data; ??!ItemModule&!cop=new
+$LOG === ItemModule=#ItemModule#; 
+
++++++ Скрипт возврата результатов в вызывавшую страницу ++++ ??
+<script>
+setModule("admin/infos/infos_list_table"); ??
+var act=0;
+act=1; ??ItemModule=admin/infos/info_edit
+act=0; ??cop=new
+$( "##content_table" ).animate({ margin: "-40px 0 0 0;" }, 100, function() { });
+$("##content_table#").css("margin-top","-80px"); ??
+setTabsClicks("info_tabs", act); 
+doSubmit("#cop#", "#ItemModule#"); 
+</script>
+
+[end]

@@ -1,0 +1,132 @@
+viewer/show_thumbnails.ajm
+
+
+[comments]
+descr=U: Вывод блока thumbnails  
+input=file_id - ID файла из таблицы doc_files, curr_page_id - ID текущей страницы
+parents=viewer/show_file.cfg
+children=viewer/page_image.cfg
+testURL=?c=viewer/show_thumbnails&file_id=662&curr_page_id=2
+author=Куняев
+[end]
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+tableCfg=table_no
+LOG=OFF
+THMB_LIMIT=10
+[end]
+
+<style>
+.thumb img {width:120px;}
+</style>
+
+[report header]
+$GET_DATA [get limits]
+
+<div class="pg pt center"  onClick="showPage(#PREV_PAGE_ID#);"><< предыд.</div>  ??PREV_PAGE_ID
+&nbsp;<br> ??!PREV_PAGE_ID
+
+<script type="text/javascript">
+page_list=[];
+</script>
+[end]
+
+      
+
+[item]
+
+<div id="thmb_#page_id#" class="thumb_div pt" style="white-space:nowrap; " onClick="showPage(#page_id#);"> 
+
+======= Контейнер для иконок маркапов ======= ??
+<div id="page_#page_id#_mkps" class="mkp_container" style="margin-left:5px;"></div>  
+
+======= Контейнер для изображения thumbnail ======= ??
+<div id="page_#page_id#" class="thumb"><img src="#imgPath#loading.gif" style="margin:20px 10px 50px 30px; width:32px;"></div>#p_nr#</div> 
+
+<script type="text/javascript">
+
+===== Загрузка изображения страницы и вызов модуля отрисовки иконок ======= ??
+
+var img_#page_id# = new Image();
+img_#page_id#.onload = function(){
+  $("##page_#page_id#").html(img_#page_id#); 
+  showMarkupIcons("#page_id#", "Y"); 
+}
+img_#page_id#.src = "#ServletPath#?c=viewer/page_image&page_id=#page_id#";
+
+page_list.push(#page_id#);
+
+</script>
+[end]
+
+
+[report footer]
+<div class="pg pt center"  onClick="showPage(#NEXT_PAGE_ID#);">далее >></div>  ??NEXT_PAGE_ID
+
+<script type="text/javascript">
+
+var active_page_id=#active_page_id#;
+
+/**
+ * Проверка, есть ли активная страница в отображенных thumbnails
+ * Если не попадает - Ajax- вызов модуля show_thumbnails для обновления 
+ *
+ */
+var checkThmbList=function(page_nr) {
+console.log("page_nr=" + page_nr + "; LAST_VISIBLE_THMB=#LAST_VISIBLE_THMB#; START_THMB_INDEX=#START_THMB_INDEX#") ;
+    if( page_nr >= #LAST_VISIBLE_THMB# || page_nr < #START_THMB_INDEX# + 1) 
+        AjaxCall("thumbnails", "c=viewer/show_thumbnails&active_page_id=" + active_page_id); 
+}
+
+$("##thmb_#active_page_id#").addClass("active_page");
+
+</script>
+
+[end]
+
+
+================================================================================
+============================= шаблоны запросов в БД ============================
+================================================================================
+[get limits]
+SELECT file_id, page_nr
+from doc_file_pages p 
+where id = #active_page_id#
+;
+select count(*) as "NUM_PAGES"
+from doc_file_pages 
+where file_id=#file_id#
+;
+select #THMB_LIMIT#+1 as "THMB_LIMIT_1", FORMAT(#THMB_LIMIT# / 2, 0) as "THMB_CENTER", #NUM_PAGES# - #THMB_LIMIT# as "MAX_THMB_INDEX"
+;
+select  #page_nr# - #THMB_CENTER# +1 as "START_THMB_INDEX" ??!NUM_PAGES<#THMB_LIMIT_1#
+;
+select 0 as "START_THMB_INDEX" ??NUM_PAGES<#THMB_LIMIT_1#|START_THMB_INDEX<0
+select #MAX_THMB_INDEX# as "START_THMB_INDEX" ??START_THMB_INDEX>#MAX_THMB_INDEX#
+;
+select #START_THMB_INDEX# + #THMB_LIMIT# -1 as "LAST_VISIBLE_THMB"
+;
+select id as "PREV_PAGE_ID"
+from doc_file_pages p 
+where file_id=#file_id# and page_nr < #START_THMB_INDEX# + 1
+order by page_nr desc
+limit 1
+
+;
+select id as "NEXT_PAGE_ID"
+from doc_file_pages p 
+where file_id=#file_id# and page_nr > #LAST_VISIBLE_THMB# + 1
+order by page_nr
+limit 1
+[end]
+
+
+[SQL]
+SELECT id as "page_id", page_nr as "p_nr"
+ from doc_file_pages 
+where file_id = #file_id#
+order by page_nr
+limit #START_THMB_INDEX#, #THMB_LIMIT#
+[end]
+

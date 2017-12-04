@@ -1,0 +1,308 @@
+admin/users/user_edit.cfg
+
+[comments]
+descr=А: Редактирование логина пользователя и его ролей. Основан на справочнике персонала
+input=id - ID выбранного пользователя
+output=HTML форма редактирования данных пользователя, 
+parents=admin/users/users_list_table.cfg
+childs=admin/users/user_set_roles
+test_URL=?c=admin/users/user_edit&id=1
+author=Куняев
+[end]
+
+[parameters]
+request_name=A:редактир. юзера
+KeepLog=false
+[end]
+
+
+[report]
+$SET_PARAMETERS RWACC=Y; RACC=Y; ??AR_ADMIN=1
+RWACC=#RWACC#; RACC=#RACC#; AR_ADMIN=#AR_ADMIN#; ??
+
+$INCLUDE [report_]  ??RACC=Y
+[end]
+
+
+[report_]
+$SET_PARAMETERS debug_server=false;
+$INCLUDE [process] ??RWACC=Y&cop&!cop=new&user_person_id|PERSON_ID
+$INCLUDE [form] ??cop=new|!cop
+
+user_access_div=#user_access_div#;  ??
+debug_server=#debug_server#; ??
+[end]
+
+
+[form]
+$GET_DATA [get def div] ??cop=new&user_access_div
+$GET_DATA [getUserSQL] ??!cop=new
+$CALL_SERVICE c=svs/get_user_info; requested_user_id=#user_person_id#; refresh=y; ??user_person_id
+
+<div id="editUserForm">
+<small>#c#</small> ??debug=on
+<style>
+ul.p0, li.nobull {display:inline; margin-right:10px;}
+</style>
+<center>
+<form name="popupForm" id="popupForm" method="POST" enctype="multipart/form-data" target="wf">
+<input type=hidden name="c" value="#c#">
+<input type=hidden name="cop" value="">
+<input type=hidden name=PERSON_ID value="#PERSON_ID#">
+<input type=hidden name=old_id value="#OLD_ID#">
+
+<table border=0 cellpadding=3 style="background-color:whitesmoke; width_:100%;">
+<tr><td class=label>Пользователь:</td><td colspan=3>
+$INCLUDE [choose user] ??!PERSON_ID
+<b>#USER_FIO#</b> ??PERSON_ID
+</td></tr>
+
+<tr><td class=label>Должности:</td><td colspan=3 class="xp small" style="max-width:600px;">#POSTS#</td></tr>    ??!cop=new
+
+<tr><td class=label>Подразделение:</td><td colspan=3>
+$SET_PARAMETERS USER_DIV_id=#u_lab_code#; ??!USER_DIV_id&u_lab_code
+<input type=hidden name="USER_DIV_id" id="USER_DIV_id" size=5 value="#USER_DIV_id#">
+<div class="info_input pt bg_white" id="USER_DIV" info_id="10" info_view="11" info_type="3" searchFor='none' 
+style="display: inline-block; width:90px; height:20px; border:solid 1px gray; ">
+выбрать ??!USER_DIV_NAME
+#USER_DIV_NAME#
+</div>
+</td></tr>  
+
+<tr><td class=label>email:</td><td><input class="xp" size=25 name=email value="#EMAIL#">
+Телефон: <input class="xp" size=15 name=phone value="#PHONE#"></td></tr>
+
+$INCLUDE [login]
+
+<tr><td class="label nowrap" nowrap>Пароль для подписи:</td><td colspan=3><input class="xp" size=10 name=pws1 value="">
+(только для действий с документом в СЭД)</td></tr>
+	
+$INCLUDE [user roles]   ??!cop=new&AR_ADMIN=1
+
+<tr><td class="label small">Изменено:</td><td class=small colspan=5>#MODIFIED#, #MODIFIER#</td></tr>
+
+<tr><td class="center" colspan=4>
+<br><br> ??cop=new
+<input type="button" class="butt1 pt" style="width:120;" value="Добавить" onClick="document.popupForm.cop.value='create'; document.popupForm.submit();">  ??RWACC&cop=new
+<input type="button" class="butt1 pt" style="width:120;" value="#^save#" onClick="document.popupForm.c.value='admin/users/user_edit'; document.popupForm.cop.value='save'; document.popupForm.submit();">  ??RWACC&!cop=new
+<input type="button" class="butt1 pt" style="width:120;" value="Запретить вход" onClick="document.popupForm.cop.value='inactivate'; document.popupForm.submit();">  ??RWACC&!cop=new&ZZZ
+<input type="button" class="butt1 pt" value="Удалить" onClick="if(confirm('Удалить пользователя #USER_FIO#')) document.popupForm.cop.value='del'; document.popupForm.submit();">  ??USER_ID=2309|USER_ID=97
+<input type="button" class="butt1 pt" style="width:120;" value="Закрыть" onClick="HideDialog();">  ??RACC
+</td></tr>
+
+$INCLUDE [access rights] ??!cop=new
+
+</table>
+</center>
+</form>
+
+<script type="text/javascript">
+var getTargetCodes=function(dd, id, target_code) {
+alert(getSelectedVal(dd) + "/" + target_code); ??
+AjaxCall('target_code_' + id + '_container','c=admin/users/get_role_targets&target_type_id=' + getSelectedVal(dd) + '&TARGET_CODE=' + target_code + '&CURRENT_ROLE_ID=' + id);
+}
+
+var selectTargetType=function(dd, id) {
+if(getSelectedVal(dd) == 1) ??
+document.popupForm. ??
+alert(getSelectedVal(dd) + "/" + id); ??
+}
+
+document.popupForm.c.value="admin/users/user_edit";
+</script>
+</div>
+
+<script type="text/javascript">
+showMsg("##dialog_title", "Редактирование пользователя #user_person_id# (#OLD_ID#)");
+ShowDialog(true, "800"); centerDialog();  
+
+AjaxCall('rules_list', 'c=sys/ar/view_user_rules&user_person_id=#user_person_id#'); ??!cop=new
+</script>
+[end]
+
+
+[access rights]  ****** Блок отображения/задания прав доступа юзера
+<tr><td colspan=2><hr></td></tr>
+<tr><td colspan=2><b>Права доступа на просмотр документов:</b></td></tr>
+<tr><td colspan=2 id="acc_rights">загрузка...</td></tr> ??
+<tr><td colspan=2 id="rules_list">загрузка...</td></tr>
+<tr><td colspan=2><hr></td></tr>
+[end]
+
+
+
+[choose user]
+<span id="user_person_list" style=""></span>
+<span class="info_input" id="user_person" info_id="11" 
+searchFor='#USER_FIO#' ??!cop=new
+searchFor='none' ??cop=new
+info_view="2">
+#USER_FIO# ??!cop=new
+выбрать сотрудника ??cop=new
+</span> 
+<input type=hidden id="user_person_id" name="user_person_id" size=4 value="#PERSON_ID#">
+<input type=hidden id="user_person_text" name="user_person_text" size=15 value="">
+[end]
+
+
+[login]
+<tr><td class=label>Логин:</td><td><input class="xp" size=15 name=login_name value="#LOGIN#">
+<font color=red><b>ВНИМАНИЕ!</b> </font> Логин и пароль общие для ADB2, СЭД, Базы документов! 
+</td></tr>
+<tr><td class=label>Пароль:</td><td colspan=3><input class="xp" size=10 name=pw1 value="">
+если не хотите менять пароль - <b>оставьте поле пустым.</b>
+подтверждение: <input class="xp" size=10 name=pw2 value=""> ??
+</td></tr>
+[end]
+
+[user roles]
+<tr><td class=label>Роли:</td><td colspan=3>
+$CALL_SERVICE c=admin/users/user_edit_roles; ID=#user_person_id#; OLD_ID=#OLD_ID#;
+</td></tr>
+[end]
+
+================== Занесение данных в базу (cop=save | create) ====================
+[process]
+$SET_PARAMETERS user_person_id=#PERSON_ID# ??!user_person_id&PERSON_ID
+============= user_edit: PROCESS RECORD ================ ??
+$GET_DATA [start transaction] 
+$GET_DATA [check if exists]  ??cop=create
+$SET_PARAMETERS cop=; ??USER_EXISTS
+$GET_DATA [createUserSQL]   ??cop=create
+$GET_DATA [updateUserSQL]   ??cop=save|cop=create
+$GET_DATA [commit]
+
+$CALL_SERVICE c=admin/users/user_set_roles; CURR_USER_ID=#user_person_id#; OLD_USER_ID=#old_id#; ??cop=save
+
+
+$INCLUDE [del user]   ??cop=del&USER_ID=2309|USER_ID=97
+
+============= REFRESH table #table_users_full# ================ ??
+$LOG <b> c=admin/users/refresh_JINR_usr; CURR_USER_ID=#user_person_id#; ERROR=#ERROR#; user_person_id=#user_person_id#; cop=#cop#</b><br>
+
+$CALL_SERVICE c=admin/users/refresh_JINR_usr; CURR_USER_ID=#user_person_id#;  ??!ERROR&user_person_id&cop=save|cop=create
+$CALL_SERVICE c=admin/users/refresh_JINR_usrs;         ??!ERROR&cop=save&!user_person_id&ZZZ-не_надо_обновлять_всех
+
+
+$CALL_SERVICE c=admin/users/user_export ??!ERROR&debug_server=false&cop=create|cop=save
+#ERROR#
+
+============= SCRIPT ================ ??
+<script type="text/javascript">
+alert(1); ??
+alert('#ERROR#'); ??ERROR
+window.parent.doSubmit('', 'admin/users/users_list_table'); 	??!ERROR&cop=save|cop=del
+window.parent.AjaxCall('popupCont','c=admin/users/user_edit&user_person_id=#user_person_id#') ??cop=create&!ERROR
+</script>
+============= DONE ================ ??
+[end]
+
+===========================================================================
+===========================================================================
+===========================================================================
+[start transaction]
+lock tables cwl.users write, cwl.up write, #table_users_full# write;
+START TRANSACTION;
+[end]
+
+[commit]
+COMMIT;   ??!ERROR
+ROLLBACK;  ??ERROR
+unlock tables;
+[end]
+
+[check if exists]
+select 'Y' as USER_EXISTS from cwl.users where person_id=#user_person_id#;
+[end]
+
+[createUserSQL]
+delete from cwl.users where person_id=#user_person_id#; ??
+delete from #table_users_full# where id=#user_person_id#; ??
+delete from cwl.up where id=#user_person_id#;  ??
+
+select max(id)+1 as NEXT_ID from cwl.users ??user_person_id>0
+select min(id)-1 as NEXT_ID from cwl.users ??user_person_id<0
+;
+insert into cwl.users (id, person_id, div_code, ip_mask, changed, modifier_id)
+values (#NEXT_ID#, #user_person_id# 
+, #USER_DIV_id#  ??USER_DIV_id
+, null ??!USER_DIV_id
+,  '#ip_mask#', now(), #USER_ID#)
+;
+
+insert into #table_users_full# (id, old_id, login, changed, modifier_id)
+values (#user_person_id#, #NEXT_ID#, '#login_name#', now(), #USER_ID#)
+;
+insert into cwl.up (id, old_id, p, changed, modifier_id)
+values (#user_person_id#, #NEXT_ID#, md5(concat('#pw1#','~',right('#pw1#',2))), now(), #USER_ID#)
+;
+select #NEXT_ID# as old_id
+;
+select FIO from info_11 where person_id=#user_person_id#
+[end]
+
+[updateUserSQL]
+select FIO from info_11 where person_id=#user_person_id# limit 1 
+;
+update cwl.users set F='#FIO#', EMAIL='#email#'
+, div_code=#USER_DIV_id#  ??USER_DIV_id
+, div_code=null  ??!USER_DIV_id
+, PHONE='#phone#',  LOGIN='#login_name#', changed=now(),  modifier_id=#USER_ID#
+where person_id=#user_person_id#
+;
+update cwl.up set p=md5(concat('#pw1#','~',right('#pw1#',2))), changed=now(), modifier_id=#USER_ID# where id=#user_person_id# ??pw1
+;
+update #table_users_full# set changed=now(), modifier_id=#USER_ID# where id=#user_person_id# 
+;
+replace into a_user_pass (user_id, password_hash, modifier_id, changed, IP) values (#user_person_id#, md5('#pws1#'), #USER_ID#, now(), '#ClientIP#'); ??pws1
+[end]
+
+
+
+[getUserSQL]
+select  au.id as PERSON_ID, au.OLD_ID
+, au.IS_ACTIVE ??
+, au.is_deleted
+, concat( au.F, ' ', ifnull(au.I,''), ' ', ifnull(au.O,'')) as USER_FIO
+, au.POSTS, au.EMAIL, au.PHONE, au.LOGIN, au.div_code
+, DATE_FORMAT(au.changed,'#dateTimeFormat#') as MODIFIED, iof(uu.F, uu.I, uu.O) as MODIFIER
+from 
+#table_users_full#_v 
+#table_users_full# ??
+au
+left join #table_users_full# uu on uu.id=au.modifier_id 
+left join info_11 ii on i.id=au.modifier_id  ??
+where au.Id=#user_person_id# ??user_person_id
+where au.old_id=#old_id# ??!user_person_id
+[end]
+
+[get def div]
+select short_name as USER_DIV_NAME, #user_access_div# as "USER_DIV_id" from info_10 where id=#user_access_div#
+[end]
+
+
+
+[del user]
+$GET_DATA [deleteUserSQL] 
+$USE_DB WL
+$GET_DATA [deleteADBUserSQL]  
+$USE_DB
+[end]
+
+
+[deleteUserSQL]
+delete from a_user_role where user_id=#user_person_id#;
+delete from #table_users_full# where id=#user_person_id#;
+delete from cwl.users where person_id=#user_person_id#;
+delete from  cwl.up  where id=#user_person_id#;
+delete from p_permits where user_id=#user_person_id#;
+delete from p_user_rule where user_id=#user_person_id#;
+[end]
+
+
+[deleteADBUserSQL]
+select id as "old_id" from wu WHERE PERSON_ID=#user_person_id#;
+delete from wu WHERE id=#old_id# ??old_id
+;
+delete from adb.acc_rights  WHERE id=#old_id# ??old_id
+[end]

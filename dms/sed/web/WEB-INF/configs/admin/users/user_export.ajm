@@ -1,0 +1,80 @@
+[comments]
+descr=А: Экспорт в ADB и базу нового юзера
+input=NEXT_ID - "старый" ID нового пользователя, user_person_id - ID сотрудника,
+output=запись в Oracle, WL.WU юзера
+parents=admin/users/user_edit.cfg
+childs=
+test_URL=?c=admin/users/user_export
+author=Куняев
+[end]
+
+
+[parameters]
+[end]
+
+[report]
+    $LOG3 WL: #dbDriverWL# / #connStringWL# / #usrWL# / #pwWL# / old_id=#old_id#; 
+    $USE_DB WL
+    $SET_PARAMETERS old_id=;
+    $GET_DATA [get old user id]
+    $GET_DATA [add user] ??cop=create|!old_id
+    $GET_DATA [update user] ??cop=save&old_id
+    $LOG_ERROR #ERROR# #GET_DATA_ERROR#  ??ERROR|GET_DATA_ERROR
+    <script>alert("Ошибка экспорта пользователя в ADB и в Базу документов!");</script> ??ERROR|GET_DATA_ERROR
+    $SET_PARAMETERS ERROR=; GET_DATA_ERROR=; ??ERROR|GET_DATA_ERROR
+    $USE_DB
+[end]
+
+
+****************************************************************************
+****************************************************************************
+****************************************************************************
+[get old user id]
+    select id as "old_id" from wu
+    where 
+    person_id=#user_person_id# ??user_person_id&PERSON_ID
+    id=#old_id# ??old_id&!PERSON_ID
+[end]
+
+[add user]
+select max(id)+1 as NEXT_ID from wu ??user_person_id>0&!NEXT_ID
+select min(id)-1 as NEXT_ID from wu ??user_person_id<0&!NEXT_ID
+;
+    try: insert into wu (id, person_id, loginname, fio, email, phone)
+    values (#NEXT_ID#, #user_person_id#, '#login_name#', '#FIO#', '#email#', '#phone#')
+    ;
+    try: insert into adb.acc_rights (id, user_group, labs) values (#NEXT_ID#, 'lab', floor(#USER_DIV_id#/1000) ) ??USER_DIV_id
+[end]
+
+[update user]
+    try: update wu set
+     when=SYSDATE,  who=#USER_ID#
+    , person_id=#user_person_id# ??user_person_id
+    , FIO='#FIO#' ??FIO
+    , EMAIL='#email#',PHONE='#phone#',  loginname='#login_name#'
+    where id=#old_id# 
+    ;
+
+    select count(*) as NUM_RECS from adb.acc_rights where id = #old_id# 
+    ;
+    try: insert into adb.acc_rights (id, user_group, labs) values (#old_id#, 'lab', floor(#USER_DIV_id#/1000) ) ??USER_DIV_id&NUM_RECS=0
+    ;
+    try: update adb.acc_rights 
+     set 
+        labs=floor(#USER_DIV_id#/1000) ??USER_DIV_id&USER_DIV_id>31999&USER_DIV_id<700000
+        FIO='#FIO#'       ??!USER_DIV_id|USER_DIV_id<31999|USER_DIV_id>700000
+    where id = #old_id# 
+[end]
+
+
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+
+try: update wu set
+ when=SYSDATE,  who=#USER_ID#
+, person_id=#user_person_id# ??user_person_id
+, FIO='#FIO#' ??FIO
+, EMAIL='#email#',PHONE='#phone#',  loginname='#login_name#'
+where 
+person_id=#user_person_id# ??user_person_id&PERSON_ID
+id=#old_id# ??old_id&!PERSON_ID
+;

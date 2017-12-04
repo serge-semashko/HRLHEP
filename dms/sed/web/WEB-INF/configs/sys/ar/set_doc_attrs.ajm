@@ -1,0 +1,138 @@
+sys/ar/set_doc_attrs.cfg
+
+[comments]
+descr=U: Установка атрибутов документа 
+input=doc_id
+output=запись в таблицу p_doc_attr и в p_attrib, если необходимо
+parents=docs/edit_doc.cfg
+childs=sys/ar/set_doc_attr.cfg
+test_URL=?c=sys/ar/set_doc_attrs&doc_id=8
+CALL=$CALL_SERVICE c=sys/ar/set_doc_attrs;
+author=Куняев
+[end]
+
+[description]
+Для заданного документа заносит в p_doc_attr атрибуты:
+- тип документа (2)
+- подразделение (1)
+Для записи конкретного атрибута вызывает sys/ar/set_doc_attr.cfg
+[end]
+
+
+[parameters]
+DIV_INFO_ID=10
+LOG=ON
+[end]
+
+
+[report]
+    $SET_PARAMETERS decision=; DOC_TYPE_ID=; DOC_TYPE=; DIVS=; div_id=; DIV_FIELD=; value=;
+    $GET_DATA [clear doc attrs]
+    $GET_DATA [getDocInfo]
+..... Тип документа - есть всегда ..... ??
+    $CALL_SERVICE c=sys/ar/set_doc_attr; cat_id=2; val_id=#DOC_TYPE_ID#; value=#DOC_TYPE#;
+
+..... решение (ЦЗК, ЛЗК, без конк.) - есть для заявок ..... ??
+    $GET_DATA [get decision] ??DOC_TYPE_ID=1
+    $CALL_SERVICE c=sys/ar/set_doc_attr; cat_id=3; val_id=; value=#decision#;  ??decision
+
+..... Подразделение, если есть (есть почти всегда) ..... ??
+    $GET_DATA [getDocDivs]
+    $EXECUTE_LOOP div_id; #DIVS#; [set div] ??DIVS
+
+..... Статьи, если есть (есть часто) ..... ??
+    $GET_DATA [getDocStati]
+    $LOG1 statia_id; #STATIA_LIST#; [set statia]
+    $EXECUTE_LOOP statia_id; #STATIA_LIST#; [set statia] ??STATIA_LIST
+
+    $GET_DATA [set attrs from parent] ??pid&!PARENT_DOC_TYPE_ID=#DOC_TYPE_ID#
+
+..... Вывод списка атрибутов ..... ??
+    $CALL_SERVICE c=sys/ar/set_doc_conditions; show=Y; ??mode=print
+
+..... Установка разрешений на док ..... ??
+    $CALL_SERVICE c=sys/ar/set_doc_permits;  ??setPermit=Y
+    $GET_DATA [schedule set_doc_permits] ??setPermit=Y&ZZZ
+[end]
+
+[schedule set_doc_permits]
+    replace into schedule (module, param, nextCall, comment, lastCall, lastResult)
+    values ('sys/ar/set_doc_permits.cfg','doc_id=#doc_id#', DATE_ADD(now(),INTERVAL 1 MINUTE), 'Обновление разрешений док.#doc_id#', null, '-')
+[end]
+
+
+[set div]
+    $GET_DATA [get div]
+    $CALL_SERVICE c=sys/ar/set_doc_attr; cat_id=1; val_id=#div_id#; ??value
+    $SET_PARAMETERS value=;
+[end]
+
+[set statia]
+    $LOG1 <br>statia_id=#statia_id#;
+    $GET_DATA [get statia]
+    $CALL_SERVICE c=sys/ar/set_doc_attr; cat_id=4; val_id=#statia_id#; ??value
+    $SET_PARAMETERS value=;
+[end]
+
+
+***************************** Шаблоны SQL запросов ***************************
+[clear doc attrs]
+    delete from p_doc_attr where doc_id=#doc_id#
+[end]
+
+[getDocInfo]
+    select dh.type_id as "DOC_TYPE_ID"
+        , concat('d_data_', dh.type_id) as "DOC_DATA_TABLE"
+        , dt.name as "DOC_TYPE"
+        , dh.pid
+    from d_list dh
+        join d_types dt on dt.id=dh.type_id
+    where dh.id=#doc_id#
+    ;
+    select  dh.type_id as "PARENT_DOC_TYPE_ID" from d_list dh where dh.id=#pid# ??pid
+[end]
+
+[getDocDivs]
+    select /* name of the field containing division */
+        field_db_name as DIV_FIELD 
+    from d_fields 
+    where type_id=#DOC_TYPE_ID# 
+      and info_id=#DIV_INFO_ID#
+    ;
+    select #DIV_FIELD#_id as "DIVS", #DIV_FIELD#  as "DIVS_TXT" from #DOC_DATA_TABLE# where doc_id=#doc_id# ??DIV_FIELD
+    ;
+    update d_list set divs='#DIVS_TXT#' where id=#doc_id#
+[end]
+
+[get div]
+    select short_name as "value"
+    from info_10
+    where id=#div_id#
+[end]
+
+[get statia]
+    select descr_short as "value"
+    from i_jinr_sb
+    where id=#statia_id#
+[end]
+
+
+[get decision]  ***** Определение: заявка отправлена на ЦЗК или на ЛЗК 
+    select case when final_decision=3 then 'ЦЗК' when final_decision=2 then 'ЛЗК' else '' end as 'decision'
+    from d_data_1 where doc_id=#doc_id#
+[end]
+
+[getDocStati]  ***** Получение списка статей бюджета, фигурирующих в списке источников финансирования
+    select group_concat(distinct statia_id) as "STATIA_LIST" 
+    from d_data_7 dat join d_list dh on dh.id=dat.doc_id
+    where dh.pid=#doc_id# and dh.type_id=7 and dh.is_deleted=0
+[end]
+
+[set attrs from parent]  ****** Добавляем отсутствующие атрибуты родительского документа, если он другого типа (кроме типа документа)
+    insert into p_doc_attr(doc_id, attr_id)
+        (select #doc_id#, a.attr_id
+         from p_doc_attr a join p_attrib c on c.id=a.attr_id and c.cat_id<>2
+         where a.doc_id=#pid#
+         and not a.attr_id in(select attr_id from p_doc_attr where doc_id=#doc_id#)
+        )
+[end]

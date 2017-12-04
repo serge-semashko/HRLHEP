@@ -1,0 +1,53 @@
+BODY{font-size: 10pt; font-family: Arial, Helvetica; color: white; margin-top:0;  margin-right:0; margin-left:6px; background: #102070;}
+BODY.TREE{background: #405070;}
+BODY.TREE_PARENT{font-size: 10pt; background: #004000;}
+TD {font-size: 9pt; font-family: Arial, Helvetica, sans-serif}
+
+.toc {font-size: 10pt; color: white; text-decoration: none; cursor: pointer;}
+A.toc:link {font-size: 10pt; color: white; text-decoration: none; cursor: pointer;}
+A.toc:visited {font-size: 10pt; color: white; text-decoration: none;}
+A.toc:hover   {color: #FFFF77; text-decoration: underline }
+IMG.toc1 {border:0; width: 12px; height: 12px}
+IMG.toc2 {border:0; width: 10px; height: 10px}
+IMG.toc3 {border:0; width: 8px; height: 8px}
+IMG.fi {border:0; height: 1px}
+
+H3.old{font-size:18pt; font-weight:normal; font-family: Verdana ,Arial, Helvetica, sans-serif; color: #000069; display:inline}
+H3{font-size:16pt; font-weight:normal;  font-family: Times; color: #FFFFD0; display:inline}
+h4 {font-size: 11pt; font-weight: normal; color: #FFFFD0; font-family: Verdana, Arial, Helvetica;  }
+
+input.but1 {
+	font-size: 9pt;
+	color: #000080;
+	background-color: #FFF0C0;
+	width: 180px;
+	height: 25px;
+	font-style : normal;
+	font-weight : bold;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+input.but {width:80px; border-style: outset; cursor:pointer; border-width:2px; background-color:#E0E8FF; border-color:#B0C0D0;}
+input.button {width:140px; font-size: 8pt; border-style: outset; cursor:pointer; border-width:2px; background-color:#E0E8FF; border-color:#B0C0D0;}
+
+span.button {padding-left: 4px; padding-right: 4px; 
+	font-size: 12px; height: 19px;
+	background: url("arch/images/button_left.gif") no-repeat left; 
+	cursor: pointer; white-space: nowrap; 
+}
+
+span.button span {padding-right: 4px; font-size: 12px; height: 19px;
+	background: url("arch/images/button_right.gif") no-repeat right; 
+	cursor: pointer; white-space: nowrap; 
+}
+
+A.butt {padding-left: 3px; padding-right: 3px; 
+	font-size: 12px; font-family: Helvetica, Arial, Sans Serif; 
+	vertical-align: middle; text-align: center; 
+	height:14px; color: #000000; background-image:none; 
+	width:60px; text-decoration: none;
+	}
+
+A.butt:hover {color: #700000; background-color:white; text-decoration: none;}
+A.butt:visited {color: #000000; text-decoration: none;}
+

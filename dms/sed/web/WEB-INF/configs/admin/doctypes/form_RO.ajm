@@ -1,0 +1,118 @@
+admin/doctypes/form_RO.ajm
+
+
+[comments]
+descr=A: Просмотр формы документа
+
+input=type_id - ID документа 
+output=HTML форма просмотра документа, 
+parents=
+childs=
+author=Куняев
+[end]
+
+[description]
+Общая часть:
+<ul>
+<li>Получение информации о структуре документа</li>
+<li>Вывод шапки документа</li>
+<li>Вызов docs/view_doc_no_wf.cfg для документов без WF</li>
+<li>Вызов docs/view_doc_wf для документов с WF</li>
+<li>Вызов obj/view_object.cfg для отображения объекта</li>
+<li>Вывод завершения</li>
+</ul>
+
+[end]
+
+
+[parameters]
+request_name=U:Просмотр документа
+LOG=ON
+SYS_FIELDS=DOC_ID, IS_ACTIVE, DATE_FORMAT(modified,'#dateTimeFormat#') as DOC_MODIFIED, VERSION
+SYS_FIELDS_TYPES=int,int,varchar,int
+divider=<tr><td colspan=2 class="divider"></td></tr> 
+[end]
+
+
+[report]
+$INCLUDE [OK report]  ??AR_SYS_ADMIN=1
+[end]
+
+
+[OK report]
+    $SET_PARAMETERS request=read; AR_R=Y;
+<style>
+    table.tlist tr.bold td{font-weight:bold;}
+    table.tlist tr.gray td, table.tlist tr.gray td a{color:##808080;}
+    table.doc tr td {padding:5px;}
+    table.doc tr td.label {padding:7px 5px 5px 0;} ??
+</style>
+
+    $SET_PARAMETERS DOC_DATA_RECORD_ID=; ADMIN_REQUEST=Y; 
+    $GET_DATA [get sample ID]
+    $GET_DATA docs/create_doc.ajm[createDocScript]  ??doc_id=0|!doc_id
+    $GET_DATA [registerSampleDoc]  ??new_doc_id
+    $GET_DATA docs/view_doc.mod[getDocInfo]  ??doc_id>0
+
+    $INCLUDE docs/custom_settings.cfg[set custom parameters]
+    $SET_PARAMETERS AR_T=; AR_E=; AR_S=; AR_X=; ??is_deleted=1
+    $GET_DATA docs/set_doc_number.cfg[auto set doc number SQL] ??SET_NUMBER_AT_STEP=1&!NUMBER&AR_S=Y|AR_X=Y
+
+    $INCLUDE [doc title] 
+      ??!mode=popup&!doc_mode=object&!mode=print
+    $INCLUDE [doc head] 
+       ??!doc_mode=object
+
+    $LOG2 ===== HAS_WF=#HAS_WF#; doc_mode=#doc_mode#; DOC_DATA_RECORD_ID=#DOC_DATA_RECORD_ID#; =============<br>
+    $CALL_SERVICE c=docs/view_doc_no_wf.cfg;    ??!HAS_WF=1&DOC_DATA_RECORD_ID&!doc_mode=object
+    $CALL_SERVICE c=docs/view_doc_wf;    ??HAS_WF=1&!doc_mode=object
+    $CALL_SERVICE c=obj/view_object;     ??doc_mode=object
+
+    $INCLUDE [doc bottom] 
+[end]
+
+https://codepen.io/jmsbrr/pen/GJKGWY - D&D сортировка строк таблицы
+
+[doc head]
+++++++++++++++++++ Упрощенная шапка документа  (без установки номера и др.) +++++++++++++++++++++ ??
+<center>
+<table border=0 cellpadding=0 cellspacing=0 class="doc" style="min-width:900px;">
+
+<tr><th class="center bg_white big" colspan=2>
+<b>#DOC_TYPE# №... от...</b>
+
+<div class="mw1000" style="font-weight:bold; padding:10px 10px 0 10px;">#TITLE#</div>
+
+</th></tr>
+
+#divider# 
+[end]
+
+
+
+[doc bottom]
+    <br>
+ #DB_ERROR#
+<script type="text/javascript">
+    AjaxCall('type_form_tools', 'c=admin/doctypes/edit_toolbar');
+</script>
+
+[end]
+
+
+==============================================================================
+***************************** Шаблоны SQL запросов ***************************
+==============================================================================
+
+[get sample ID]
+    select dtp.sample_doc_id as "doc_id"
+    from d_types dtp join d_data_#type_id# dd on dd.doc_id=dtp.sample_doc_id
+    where dtp.id = #type_id#
+    ;
+    select 0 as doc_id, #type_id# as "DOC_TYPE" ??!doc_id
+[end]
+
+[registerSampleDoc]
+    update d_types set sample_doc_id=#new_doc_id#
+    where id = #type_id#
+[end]

@@ -1,0 +1,131 @@
+files/file_oper.cfg
+
+[comments]
+descr=U: Операции с файлами
+author=Устенко, Куняев
+input=file_id = id файла в таблице doc_files, cop - код операции: "delete"-удаление, "moveup":перемещение файла на 1 позицию вверх в списке, "movedn": на 1 позицию вниз
+output=none
+parents=docs/doc_files_list.cfg
+[end]
+
+[parameters]
+LOG=ON
+[end]
+
+[report]
+$GET_DATA [get file params] ??file_id
+$INCLUDE [report_] ??file_id&doc_id
+[end]
+
+[report_]
+$CALL_SERVICE c=sys/getARUD;
+$INCLUDE [move file]  ??cop=moveup|cop=movedn
+$INCLUDE [delete] ??cop=delete
+[end]
+
+
+[move file]
+$GET_DATA [get neighbours] 
+$GET_DATA [get norder] 
+$GET_DATA [moveup file] ??file_id&cop=moveup&upper_file_id&norder&upper_norder
+$GET_DATA [movedn file] ??file_id&cop=movedn&below_file_id&norder&below_norder
+<script>
+  refreshFilesList(""); 
+</script>
+[end]
+
+
+[delete]
+$SET_PARAMETERS can_delete=; form_hidden=Y;
+$SET_PARAMETERS can_delete=Y; ??USER_ID=#uploader_id#&downloaded=0
+$SET_PARAMETERS can_delete=Y; ??AR_W=Y
+$INCLUDE [do delete file] ??can_delete=Y
+<script>
+    alert("#field_id# / #file_list#"); ??
+    $("###field_id#-file" ).show();  $("###field_id#-comment" ).show(); ??!file_list&ZZZ
+    refreshFilesList("#field_id#");
+    alert("Файл удален");   ??can_delete=Y&!ERROR&ZZZ
+    alert("Ошибка: #ERROR#");   ??ERROR
+    alert("Ошибка: отказано в доступе.");  ??!can_delete=Y
+</script>
+[end]
+
+[do delete file]
+$GET_DATA [delete file]
+$EXECUTE_LOOP page_id; #page_ids#; [do delete page] ??page_ids
+$INCLUDE files/field_file.dat[file row]  ??!file_list
+[end]
+
+
+[do delete page]
+$GET_DATA [delete page]
+[end]
+
+============================================================================
+============================================================================
+============================================================================
+
+[get file params]
+select doc_id, norder, field_id as FIELD_ID, uploader_id, downloaded, comment as "file_comment"
+ ,'#file_storage_path#' as "DataStartPath", fs_file_name
+from doc_files where id=#file_id#
+[end]
+
+----------------------------------- MOVE ----------------------------------
+
+[get neighbours]
+SELECT id as below_file_id, norder as below_norder FROM doc_files
+WHERE doc_id = #doc_id# and norder > #norder# and field_id is null
+ORDER BY norder
+limit 1
+;
+SELECT id as upper_file_id, norder as upper_norder FROM doc_files
+WHERE doc_id = #doc_id# and norder < #norder# and field_id is null
+ORDER BY norder desc
+limit 1
+[end]
+
+[moveup file]
+update doc_files set norder = #upper_norder# where id = #file_id#;
+update doc_files set norder = #norder# where id = #upper_file_id#
+[end]
+
+
+[movedn file]
+update doc_files set norder = #below_norder# where id = #file_id#;
+update doc_files set norder = #norder# where id = #below_file_id#
+[end]
+
+
+----------------------------------- DELETE ----------------------------------
+
+[delete file]  ***** удаление регистрации файла в БД и самого файла из ФС
+-----  Удаляем регистрацию файла  ??
+delete from doc_files where id=#file_id# ??
+update doc_files set is_deleted=1 where id=#file_id#
+;
+delete from doc_file_convert where file_id=#file_id#
+;
+-----  Удаляем сам файл из ФС  ??
+delete file: #fs_file_name#
+;
+-----  Сбрасываем поле в документе  ??
+update d_data_#DOC_TYPE_ID# set #FIELD_ID#_id=null where doc_id = #doc_id# ??DOC_TYPE_ID&doc_id&FIELD_ID
+;
+select group_concat(id) as "page_ids" 
+from doc_file_pages
+where file_id=#file_id#
+[end]
+
+
+[delete page]  ***** удаление регистрации растеризованной страницы файла в БД и самой страницы из ФС
+select fs_file_name from doc_file_pages
+where id=#page_id#
+;
+-----  Удаляем регистрацию файла  ??
+delete from doc_file_pages where id=#page_id#
+;
+-----  Удаляем саму страницу из ФС  ??
+delete file: #fs_file_name#
+;
+[end]

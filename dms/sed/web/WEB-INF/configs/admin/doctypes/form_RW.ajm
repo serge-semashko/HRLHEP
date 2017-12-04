@@ -1,0 +1,90 @@
+admin/doctypes/form_RW.ajm
+
+
+[comments]
+descr=A: Просмотр формы  ввода документа
+
+input=type_id - ID типа документа 
+output=HTML форма редактирования документа, 
+parents=tab_myDocs.cfg
+childs=docs/edit_doc_form.ajm
+test_URL=?c=docs/edit_doc&doc_id=1
+author=Куняев
+[end]
+
+[description]
+Общая часть:
+<ul>
+<li>Получение информации о структуре документа</li>
+<li></li>
+</ul>
+[end]
+
+
+[parameters]
+request_name=U:Редактирование документа
+service=jinr.sed.ServiceEditDoc
+LOG=ON
+SYS_FIELDS=IS_ACTIVE
+SYS_FIELDS_TYPES=int
+SYS_FIELDS_UPDATE=is_active, modified, modifier_id
+SYS_FIELDS_UPDATE_TYPES=int,sysdate,int
+is_active=1
+modifier_id=#USER_ID#
+divider=<tr><td colspan=2 class="divider"></td></tr>
+[end]
+
+SYS_FIELDS=DOC_ID, IS_ACTIVE, DATE_FORMAT(modified,'#dateTimeFormat#') as DOC_MODIFIED, VERSION
+SYS_FIELDS_TYPES=int,int,varchar,int
+
+
+[getDocInfo]
+    $GET_DATA admin/doctypes/form_RO.ajm[get sample ID]
+    $GET_DATA docs/create_doc.ajm[createDocScript]  ??doc_id=0
+    $GET_DATA admin/doctypes/form_RO.ajm[registerSampleDoc]  ??new_doc_id
+$SET_PARAMETERS request=write; NUMBER=; DOC_DATE=; mode=ADMIN;
+$GET_DATA docs/view_doc.cfg[getDocInfo] ??!child=y&doc_id>0
+[end]
+
+
+[report header]
+    $SET_PARAMETERS AR_W=Y;   ??AR_SYS_ADMIN=1
+    $INCLUDE [report header_]   ??AR_SYS_ADMIN=1
+[end]
+
+
+[report header_]
+    $LOG ======= начало запроса ====== INPUT_ERROR = '#INPUT_ERROR#'; div=#f_data_1_17#; id=#f_data_1_17_id#; <br>
+
+    <style>
+    ==== список выбранного из справочников при редактировании документа - в строчку ====== ??
+    table.edit_object_table ul.p0, li.nobull {display:inline; margin-right:10px;}
+    </style>
+
+$SET_PARAMETERS ADMIN_REQUEST=Y; 
+    $CALL_SERVICE c=docs/edit_doc_form.cfg; 
+
+[end]
+
+[report footer]
+<script type="text/javascript">
+    AjaxCall('type_form_tools', 'c=admin/doctypes/edit_toolbar');
+</script>
+[end]
+
+$("##cancel_Button").onclick=function(event) {alert(1);
+}
+
+***************************** Шаблоны SQL запросов ***************************
+    Запрос на выборку и обновление собственно данных документа 
+    формируется в сервисе ServiceEditDocData
+==============================================================================
+
+
+[SQL]
+$INCLUDE docs/view_doc.cfg[SQL_] ??AR_SYS_ADMIN=1
+[end]
+
+
+
+

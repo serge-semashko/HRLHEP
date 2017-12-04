@@ -1,0 +1,147 @@
+sys/audit/wf_errors.cfg
+
+[comments]
+Ошибки маршрутизации: 
+
+input=
+output=HTML таблица http-запросов, 
+parents=
+childs=sys/viewRequest
+[end]
+
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+title=***ЛОГ-СЭД
+request_name=Лог запросов
+LOG=ON
+tableCfg=table_no
+[end]
+
+
+[report header]
+$SET_PARAMETERS RWACC=Y;  ??USER_ID=4918|USER_ID=2309
+$INCLUDE [OK report header]
+    ??RWACC
+[end]
+
+
+[OK report header]
+$SET_PARAMETERS srn=1; rpp=9999;
+
+<div id=cont style="margin:40px;">
+<b>Не стартованные шаги маршрутов:</b>
+<table class="tlist tred" style="border:solid 1px ##004060;" cellspacing=0>
+<tr>
+<th>doc_id</th>
+<th>wf_id</th>
+<th>шаг</th>
+<th>Последнее действие</th>
+<th>Документ</th>
+</tr>
+[end]
+
+
+[item]
+<tr>
+<td>#doc_id#</td>
+<td>#wf_id#</td>
+<td>#step#</td>
+<td>#LAST_ACTION#</td>
+
+<td class="pt" val="#doc_id#" 
+    onClick='window.open("#ServletPath#?c=docs/view_doc&doc_id=#doc_id#&mode=ext", "view_#doc_id#");' ??
+    onClick='window.open("#ServletPath#?sid=#doc_id#&et=4&key=9d77630fea570f2a2a1783af6023e559", "view_#doc_id#");'
+>
+#DOC_TYPE#
+№#DOC_NR# от #DOC_DAT# ??DOC_NR
+: #title# 
+    <small>(#doc_id#)</small>  ??
+</td>
+
+</tr>
+$SET_PARAMETERS DID=; doc_id=; file_id=; file_name=; file_comment=;
+[end]
+
+[report footer]
+<tr><td colspan=5>
+Нет не стартованных шагов   ??NumTableRows=0
+ &nbsp; <a href="#ServletPath#?c=sys/audit/start_nonstarted_steps" target="_blank">запустить проверку >></a>  ??USER_ID=2309
+</td></tr>
+</TABLE>  
+</div>
+[end]
+
+
+****************************************************************************
+****************************************************************************
+****************************************************************************
+
+
+[SQL]
+    select e.wf_id, e.step, e.doc_id, e.title
+        , e.number as "DOC_NR", DATE_FORMAT(e.finished,'#dateTimeFormat#') as LAST_ACTION
+        , t.short_name as "DOC_TYPE"
+
+    from wf_not_started_err e
+    left join d_types t on t.id=e.type_id 
+[end]
+
+NEW wf_not_started_err:
+
+    (   select w.wf_id, w.step, wl.doc_id, w.finished
+            ,dh.number, dh.title, dh.type_id
+        from wf w
+            join wf_list wl on wl.id=w.wf_id 
+            join d_list dh on dh.id=wl.doc_id
+        where not w.started is null and not w.finished is null
+            and w.step_type<3
+            and w.is_active=1
+            and dh.status in(0,1,2) 
+            and dh.is_deleted=0
+
+        and w.wf_id in(
+            select wf_id 
+            from wf
+            where 
+                started is null and finished is null
+                and wf.step_type<3
+                and wf.is_active=1
+        )
+
+        and w.wf_id not in (
+            select wf_id 
+            from wf
+            where not started is null and finished is null
+        )
+    ) e 
+
+
+
+
+[zzzSQL]
+select e.wf_id, e.step, e.doc_id
+, t.short_name as "DOC_TYPE", d.title, d.number as "DOC_NR"
+
+from wf_not_started_err e 
+left join d_list d on d.id=e.doc_id
+left join d_types t on t.id=d.type_id 
+[end]
+
+OLD wf_not_started_err:
+
+SELECT
+  `w`.`wf_id`, `w`.`step`, `wl`.`doc_id`, MIN(IFNULL(`w`.`finished`, '2000-01-01 10:04:06')) AS 'min(ifnull(w.finished, \'2000-01-01 10:04:06\'))'
+FROM
+  ((`wf` w
+    JOIN `wf` ww ON (((`ww`.`wf_id` = `w`.`wf_id`)
+      AND (`ww`.`step` = (`w`.`step` + 1))
+      AND (`ww`.`is_active` = 1)
+      AND ISNULL(`ww`.`started`))))
+    JOIN `wf_list` wl ON ((`wl`.`Id` = `w`.`wf_id`)))
+WHERE
+  ((`w`.`is_active` = 1) AND (`w`.`step_type` < 3) AND ISNULL(`ww`.`result_code`))
+GROUP BY
+  `w`.`wf_id`, `w`.`step`
+HAVING
+  (MIN(IFNULL(`w`.`finished`, '2000-01-01 10:04:06')) > '2000-01-01 10:04:06')

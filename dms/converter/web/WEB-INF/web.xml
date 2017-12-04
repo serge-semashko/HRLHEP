@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+  <display-name>Converter</display-name>
+  <description>
+     Document Converter
+  </description>
+
+  <servlet>
+  	<servlet-name>conv</servlet-name>
+  	<servlet-class>ru.jinr.document.Converter</servlet-class>
+ 	<init-param>
+	    <param-name>dllPath</param-name>
+	    <param-value>c:\\apache-tomcat-8.5.11\\webapps\\converter\\dll\\Inso\\doc2image.exe</param-value>		
+	</init-param>
+ 	<init-param>
+	    <param-name>dllPdf2RasterPath</param-name>
+	    <param-value>c:\\apache-tomcat-8.5.11\\webapps\\converter\\dll\\PDF2Raster</param-value>		
+	</init-param>
+	<init-param>
+	    <param-name>dllLogPath</param-name>
+	    <param-value>c:\\apache-tomcat-8.5.11\\webapps\\converter\\dll\\PDF2Raster\\logs</param-value>		
+	</init-param>
+
+ 	<init-param>
+	    <param-name>dllPdfPath</param-name>
+	    <param-value>c:\\apache-tomcat-8.5.11\\webapps\\converter\\dll\\Inso2\\doc2image.exe</param-value>		
+	</init-param>
+	<init-param>
+	    <param-name>logSize</param-name>
+	    <param-value>2</param-value>		
+	</init-param>
+	<init-param>
+	    <param-name>logLevel</param-name>
+	    <param-value>2</param-value>		
+	</init-param>
+	<init-param>
+	    <param-name>defaultType</param-name>
+	    <param-value>1535</param-value>		
+	</init-param>
+	<init-param>
+	    <param-name>defaultOutDir</param-name>
+	    <param-value>c:\\Temp2</param-value>		
+	</init-param>
+
+  </servlet>
+
+  <servlet>
+  	<servlet-name>getFile</servlet-name>
+  	<servlet-class>ru.jinr.document.Uploader</servlet-class>
+	<init-param>
+	    <param-name>defaultOutDir</param-name>
+	    <param-value>c:\\Temp2</param-value>		
+	</init-param>
+ </servlet>
+
+  <servlet-mapping>
+  	<servlet-name>conv</servlet-name>
+	<url-pattern>/convert</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>getFile</servlet-name>
+	<url-pattern>/get</url-pattern>
+  </servlet-mapping>
+
+ 
+</web-app>

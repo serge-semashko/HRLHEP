@@ -1,0 +1,99 @@
+wf/show_wf_template_adm.ajm
+
+[comments]
+descr=A: Показать шаблон workflow для типа документов. Для админов
+input=wf_template_id - ID шаблона wf
+output=
+parents=
+childs=
+author=Куняев
+[end]
+
+[parameters]
+request_name=A:отображение wf template#doc_id#
+service=dubna.walt.service.TableServiceSpecial
+tableCfg=table_no
+KeepLog=false
+ClearLog=true
+[end]
+
+
+[report header]
+    $GET_DATA [get wf header]
+    ID:#wf_template_id#
+    тип документа: <b>#DOC_TYPE#</b>,  ??
+    название:<b> #wf_name#</b>, ??wf_name
+    описание:<b> #wf_description#</b> ??wf_description
+    коды подразделений: <b>#div_ids#</b>  ??div_ids
+
+    <table class="tlist tgreen" style="margin:0 0 0 100px;">
+    <tr><th>шаг</th><th>роль</th><th>цель (справочник)</th><th>пользователь</th><th>Условие</th><th>№</th></tr>
+[end]
+
+[item]
+    <tr><td>#step#
+            (подготовка) ??step_type=#~wf_step_preparation#
+            (согласование) ??step_type=#~wf_step_in_progress#
+            (утверждение) ??step_type=#~wf_step_signed#
+            (завершение) ??step_type=#~wf_step_process#
+            (информирование) ??step_type=#~wf_step_information#
+        </td>
+
+        <td>
+            #ROLE_NAME# (#ROLE_ID#) ??ROLE_ID
+            (любой) ??criteria=1
+        </td>
+
+        <td>
+            #TARGET_TYPE# ??TARGET_TYPE
+            (справочник #INFO_ID#: #INFO_NAME#); ??INFO_ID
+        </td>
+
+        <td>
+            #USER_IOF# (#user_id#) ??user_id
+        </td>
+        <td>#custom_criteria#</td>
+
+        <td>
+            * ??set_number=1
+            ** ??set_number=2
+            *** ??set_number=3_
+            #set_number# ??set_number>2
+        </td>
+    </tr>
+
+    $SET_PARAMETERS INFO_ID=; TARGET_TYPE=;
+[end]
+
+[report footer]
+    </table>
+    $SET_PARAMETERS wf_name=; wf_description=; div_ids=;
+[end]
+
+==============================================================
+==============================================================
+==============================================================
+[preSQLs]
+[end]
+
+[get wf header]
+    select wt.wf_name, wt.div_ids, wt.wf_description
+         , dt.name as "DOC_TYPE"
+    from wf_templates_list wt 
+    left join d_types dt on dt.id=wt.doc_type_id
+    where wt.id=#wf_template_id#;
+[end]
+
+[SQL]
+    select wt.step, wt.step_type, wt.set_number, wt.criteria, wt.custom_criteria
+        , wt.role_id as "ROLE_ID", r.name as "ROLE_NAME", tt.type as "TARGET_TYPE"
+        , wt.user_id, iof(u.F, u.I, u.O) as "USER_IOF"
+        , i.name as "INFO_NAME", i.id as "INFO_ID"
+    from wf_templates wt
+        left join a_roles r on r.id=wt.role_id
+        left join a_target_types tt on tt.id=wt.role_target_type_id
+        left join #table_users_full# u on u.id=wt.user_id
+        left join i_infos i on i.id = tt.info_id
+    where wt.wf_template_id=#wf_template_id#
+    order by step
+[end]

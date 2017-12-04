@@ -1,0 +1,18 @@
+[parameters]
+err_img=<IMG SRC="/ids-images/alert.gif" BORDER=0 width=16 heigth=16>
+[end]
+
+[param list]
+srn
+rpp
+[end]
+
+[srn]
+type=integer
+default=1
+[end]
+
+[rpp]
+type=integer
+default=50
+[end]

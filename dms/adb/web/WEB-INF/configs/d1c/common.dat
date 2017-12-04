@@ -1,0 +1,104 @@
+[colors]
+doc_new=FFFFFF
+doc_sent=FFFFE0
+doc_payed=E0F0FF
+
+lightColor=efefef
+darkColor=666666
+lightGreenColor=eeffee
+lightBlueColor=D4E0ff
+darkBlueColor=444490
+inputColor=eff6ff
+filesColor=whitesmoke
+headerColor=e0f0e8
+anchorColor=darkblue
+anchorHoverColor=blue
+LabelTD=<TD bgColor=efefef align=right valign=top nowrap=true><i>
+mark_before=<font color=red><i>
+mark_after=</i></font>
+rowLink=|<a class=r href="javascript:goToRow(#srn_i#);">#srn_i#-#ern_i#</a> ??!currentPage
+rowLink=|<font color=FFFF00><b>#srn_i#-#ern_i#</b></font> ??currentPage
+prevSetLink=<a class=r href="javascript:goToRow(#srn_i#);"> <<< предыд. </a> 
+nextSetLink=| <a class=r href="javascript:goToRow(#srn_i#);"> следующие >>> </a>
+[end]
+
+[head]
+<HTML><HEAD><TITLE>#title#</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=windows-1251">
+<link rel="stylesheet" href="#imgPath#adb.css" type="text/css">
+<link rel="stylesheet" href="#imgPath#jinradm.css" type="text/css"> ??
+<META HTTP-EQUIV="Refresh" content="0;"> ??
+<style type="text/css">
+  select {border: 10px solid;} 
+</style>
+
+<SCRIPT language=JavaScript src="#imgPath#lib.js"></SCRIPT>
+<script language="JavaScript" src="#imgPath#calendar.js"></script>
+<SCRIPT language=JavaScript src="#imgPath#cal2.js"></SCRIPT>
+<SCRIPT language=JavaScript>
+function setDesc()
+{
+  frm.desc.value="DESC";  ??!desc
+  frm.desc.value="";      ??desc
+  frm.submit();
+}
+
+function setSort(colNr)
+{
+  var oldsrt = #srt#; ??srt
+  var oldsrt = -1;    ??!srt
+  if (oldsrt == colNr)
+  {
+    frm.desc.value="DESC";  ??!desc
+    frm.desc.value="";      ??desc
+  }
+  else
+    frm.desc.value="DESC";
+  doIt();
+}
+function doIt()
+{ frm.submit();
+}
+</SCRIPT>
+</HEAD>
+[end]
+
+[XXXreport header]
+<HTML><HEAD><TITLE>#title#</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=windows-1251">
+<meta name="CACHE-CONTROL" CONTENT="NO-CACHE">
+<meta http-equiv="pragma" content="no-cache">
+<link rel="stylesheet" href="#imgPath#jinradm.css" type="text/css">
+<SCRIPT language=JavaScript src="#imgPath#main.js"></SCRIPT>
+<script language="JavaScript" src="#imgPath#calendar.js"></script>
+<script language="JavaScript" src="#imgPath#/cal2.js"></script>
+</HEAD>
+
+<body
+BACKGROUND="#imgPath#B_N.gif"  ??!cop=p
+>
+[end]
+
+[menu item] param: text; nam; href;
+<A  class=toc HREF="#href#" onMouseover="img_act('#nam#')" onMouseout="img_inact('#nam#')"><IMG SRC="#imgPath#blues1.gif" border=0 NAME="#nam#"> #text#</A> &nbsp;
+[end]
+
+[dat] param: fd_name; fd_val; yr1; yr2;
+<input size=10 name='#fd_name#' value='#fd_val#'
+class=#class# ??class
+><a href="javascript:show_calendar(document.theForm.#fd_name#, #yr1#, #yr2#);"
+><img align=absmiddle src="#imgPath#show-calendar.gif" width=24 height=22 border=0 alt="Выбор даты из календаря"></a>
+<input type=hidden name='f_#fd_name#' value=''>  
+[end]
+
+
+[rpp]
+<tr bgcolor=#darkBlueColor#><td align=left>
+<font color=white><i>Записей на странице не более:
+<SELECT NAME="rpp" onChange="goToRow(1);">
+<OPTION>20 <OPTION>50 <OPTION>100
+<OPTION VALUE="9999"> не огр.  
+ ??user_group=sys
+</SELECT> &nbsp; &nbsp; &nbsp; Записи:</i> #rowLinks# |
+<script>selectOptionByVal(document.theForm.rpp, '#rpp#'); </script> ??rpp
+[end]

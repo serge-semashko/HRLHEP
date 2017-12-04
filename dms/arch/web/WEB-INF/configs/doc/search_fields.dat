@@ -1,0 +1,206 @@
+[hiddenSearchFields]
+<input type=hidden name="f_regnum" value="#f_regnum#">
+<input type=hidden name="f_DAT_1" value="#f_DAT_1#">
+<input type=hidden name="f_DAT_2" value="#f_DAT_2#">
+<input type=hidden name="f_num" value="#f_num#">
+<input type=hidden name="f_tom" value="#f_tom#">
+<input type=hidden name="f_control" value="#f_control#">
+<input type=hidden name="f_comments" value="#f_comments#">
+<input type=hidden name="f_resolution" value="#f_resolution#">
+<input type=hidden name="f_ispolnitel" value="#f_ispolnitel#">
+<input type=hidden name="f_result" value="#f_result#">
+<input type=hidden name="f_link" value="#f_link#">
+<input type=hidden name="f_content" value="#f_content#">
+<input type=hidden name="f_correspondent" value="#f_correspondent#">
+<input type=hidden name="f_sent"  value="#f_sent#">
+<input type=hidden name="rpp" value="#rpp#">
+<input type=hidden name="f_index" value="#f_index#">
+[end]
+
+
+
+[sort field] param: wrap;
+Сортировать по:
+<select name="srt">
+<option value="REGNUM">рег. №</option>
+<option value="DAT">дате рег-ии</option>
+<option value="NUM">№</option>
+<option value="DAT_DOC">дате</option>
+</select>
+<br>  ??wrap
+<input type="checkbox" name="desc" value="desc" onClick="setParam()"
+checked 				??desc
+>в обр.порядке
+[end]
+
+===================== SEARCH FIELDS ===========================
+
+[lab_select]
+<a href="javascript: show_named_panel('lab_select','a_lab_select','.',':')" id='a_lab_select'>.</a>
+<div id="lab_select" style="display:none;">
+<b>лабор.:</b><br>
+	<select name="LAB_CODE" size=12 multiple >#LABS#</select>
+</div>
+[end]
+
+[filter-lab-select]
+Подр: <select id="F_LAB_CODE"  name="F_LAB_CODE" style="width:100px;">
+<option value = "">Все</option>
+<option value = "0">Общие</option>
+#LABS#</select>
+[end]
+
+[tr_lab-select]
+#field_row#
+Подр:</td><td  valign=top nowrap>
+	<select id="F_LAB_CODE"  name="F_LAB_CODE" style="width:285px;">
+<option value = "">Все</option>
+<option value = "0">Только "общие"</option>
+#LABS#</select>
+</td></tr>
+<script type="text/javascript">
+$(document).ready(function(){
+    $('##F_LAB_CODE').chosen({
+      placeholder_text_multiple: "Выберите лабораторию",
+      no_results_text: "Не найдено"
+    });
+    $(".chosen").attr('disabled', true).trigger("chosen:updated") ??USR_LAB_CODE
+});
+</script>
+
+[end]
+
+
+[tr_doctype]
+#field_row#
+вид документа:</td><td  valign=top nowrap>
+	<select name="DOCTYPE" class=xp>#DOCTYPES#</select>
+</td></tr>
+[end]
+
+[tr_num-dat_doc]
+#field_row#
+внешний номер:</td><td nowrap=true class=field_label valign=top>
+	<input type="text" name="f_num" value="#f_num#" class=xp size=10 > 
+&nbsp;&nbsp;&nbsp;cсылка на №: 	<input type="text" name="f_link" value="#f_link#" class=xp size=10> 	??SHOW_LINK=1
+</td></tr>
+[end]
+
+[tr_regnum-dat]
+#field_row#
+дата регистрации  с:</td><td nowrap=true class=field_label>
+$INCLUDE common.dat[dat between] param: fd_name1=f_DAT_1; fd_val1=#f_DAT_1#; fd_name2=f_DAT_2; fd_val2=#f_DAT_2#; yr1=-1; yr2=0;
+</td></tr>
+[end]
+
+[tr_index]
+#field_row#
+индекс: </td><td nowrap align=left class=field_label>
+<input type="text" size="8" name="f_index" value="#f_index#" class="xp"> &nbsp; &nbsp; &nbsp;
+</td></tr>
+[end]
+
+
+[tr_np]
+#field_row#
+том: </td><td nowrap align=left class=field_label> ??SHOW_TOM=1
+<input type="text" size="4" name="f_tom" value="#f_tom#" class="xp"> &nbsp; &nbsp; &nbsp; ??SHOW_TOM=1
+$INCLUDE doc/search_fields.dat[control]	??SHOW_CONTROL=1
+</td></tr>
+[end]
+
+[control]
+</td><td nowrap align=left class=field_label> ??!SHOW_TOM=1
+		<input type="checkbox" value="1" name="f_control"	onClick="docChanged();"
+		checked ??f_control=1
+		> Только на контроле
+[end]
+
+
+[tr_subject]
+#field_row# краткое содержание:</td><td nowrap  valign=top >
+	<input type=text class=xp size=87 name="SUBJECT"  " value="#SUBJECT#">
+</td></tr>
+[end]
+
+[tr_content]
+#field_row# содержание:</td><td valign=top>
+<input type=text class=xp size=41 name="f_content"  value="#f_content#">
+</td></tr>
+[end]
+
+[tr_result]
+#field_row# результат:</td><td valign=top nowrap=true>
+	<input type=text class=xp size=35 name="f_result"  value="#f_result#">
+</td></tr>
+[end]
+
+[tr_sent]
+#field_row# рассылка:</td><td valign=top nowrap=true>
+	<input type=text class=xp size=35 name="f_sent"  value="#f_sent#">
+</td></tr>
+[end]
+
+[tr_contragent]
+#field_row# Контрагент:</td><td nowrap  valign=top>
+	<input type=text class=xp size=35 name="f_contragent"  value="#f_contragent#">
+</td></tr>
+[end]
+
+[tr_correspondent]
+#field_row# адресат / корреспондент:</td><td nowrap  valign=top>
+	<input type=text class=xp size=35 name="f_correspondent"  value="#f_correspondent#">
+</td></tr>
+[end]
+
+[tr_resolution]
+#field_row# резолюция </a></td><td nowrap=true valign=top>
+	<input type=text class=xp size=35 name="f_resolution"  value="#f_resolution#">
+</td></tr>
+[end]
+
+[tr_ispolnitel]
+#field_row# исполнитель </a></td><td nowrap=true valign=top>
+	<input type=text class=xp size=35 name="f_ispolnitel"  value="#f_ispolnitel#">
+</td></tr>
+[end]
+
+[tr_kto_zabral]
+#field_row# кто забрал </a></td><td nowrap=true valign=top>
+	<input type=text class=xp size=35 name="f_kto_zabral"  value="#f_kto_zabral#">
+</td></tr>
+[end]
+
+[tr_komu_napravlen]
+#field_row# кому направлен </a></td><td nowrap=true valign=top>
+	<input type=text class=xp size=35 name="f_komu_napravlen"  value="#f_komu_napravlen#">
+</td></tr>
+[end]
+
+[tr_podpis]
+#field_row# подпись </a></td><td nowrap=true valign=top>
+	<input type=text class=xp size=35 name="f_podpis"  value="#f_podpis#">
+</td></tr>
+[end]
+
+[tr_comment]
+#field_row# комментарии:</td><td nowrap  valign=top>
+	<input type=text class=xp size=35 name="f_comments"  value="#f_comments#">
+</td></tr>
+[end]
+
+
+[tr_need_check]
+<tr><td nowrap=true  valign=top>&nbsp;</td><td nowrap   valign=top> 
+ <input type="checkbox" name="NEED_CHECK" value="1"
+  		checked ??NEED_CHECK=1
+></td></tr>
+[end]
+
+[tr_this_dir_only]
+#field_row#</td><td nowrap=true class=field_label>
+<input type="checkbox" name="this_dir_only" value=1
+checked 											??this_dir_only=1
+>Искать только в текущем разделе
+</td></tr>
+[end]

@@ -1,0 +1,89 @@
+docs/delete_doc.ajm
+
+[comments]
+descr=U: Удаление документа
+input=doc_id - ID документа
+output=вызов tab_myDocs.ajm
+parents=docs/edit_doc, docs/view_doc
+childs=files/sys/deleteDocPages, svs/set_num_children, tab_myDocs
+author=Куняев
+[end]
+
+[description]
+Удаление документа
+<ul>
+    <li>Проверяем права пользователя</li>
+    <li>Помечаем документ на удаление</li>
+    <li>Пустые документы удаляем совсем.</li>
+    <li>Удаляем сконвертированные страницы файлов-приложений</li>
+    <li>обновляем закладку "Мои документы" (вызов tab_myDocs.ajm)</li>
+</ul>
+[end]
+
+[parameters]
+request_name=U:Удаление документа
+LOG=ON
+modifier_id=#USER_ID#
+[end]
+
+
+[report]  ***** проверка прав юзера
+    $INCLUDE dat/common.dat[check login] 
+    $LOG ======= delete_doc ====== queryString=#queryString#;
+    $CALL_SERVICE c=sys/getARUD;   ??USER_ID
+    $SET_PARAMETERS ERROR=Отказано в доступе; ??!AR_W=Y
+    $LOG ======= delete_doc ====== ERROR=#ERROR#; AR_W=#AR_W#&USER_ID=#USER_ID#;
+    $CALL_SERVICE c=sys/log_doc_access; access_type=#~doc_action_change#; rejected=1;   ??!AR_W=Y&USER_ID
+    $INCLUDE [process]  ??AR_W=Y&!ERROR
+[end]
+
+[process] ***** удаление
+    $LOG ======= Удаление документа #doc_id# - начало транзакции ====== <br>
+    $SET_PARAMETERS TABLE_NAME=d_data_#DOC_TYPE_ID#;
+
+    $GET_DATA [delete SQL] 
+    $GET_DATA [commit]
+
+    $CALL_SERVICE  c=svs/set_num_children; parent_doc_id=#parent_doc_id#; ??parent_doc_id
+    $CALL_SERVICE c=files/sys/deleteDocPages;   ??!ERROR
+    $CALL_SERVICE c=sys/log_doc_access; doc_id=#doc_id#; access_type=2; ??!ERROR
+    $CALL_SERVICE c=tab_myDocs;  ??
+
+    <script type="text/javascript">
+        jAlert("Документ удалён!","OK"); showDoc(false);  AjaxCall('c_myDocs', 'c=tab_myDocs'); ??!ERROR
+        alert('Ошибка 440','ОШИБКА!'); ??ERROR
+    </script>
+
+[end]
+
+
+***************************** Шаблоны SQL запросов ***************************
+
+[commit]
+    COMMIT;   ??!ERROR
+    ROLLBACK;  ??ERROR
+    unlock tables; 
+[end]
+
+
+[delete SQL]
+    lock tables d_list write, #TABLE_NAME# write
+    ;
+    START TRANSACTION
+    ;
+    select pid as "parent_doc_id" from d_list where id=#doc_id#
+    ;
+    update d_list set status=0, is_deleted=1 where id=#doc_id#
+    ;
+    delete from d_list where id=#doc_id# and modifier_id is null 
+    ;
+    delete from #TABLE_NAME# where doc_id not in (select id from d_list) 
+    ;
+    delete from d_divs where doc_id not in (select id from d_list) 
+    ;
+    delete from p_permits where doc_id not in (select id from d_list) 
+[end]
+
+==============================================================================
+
+

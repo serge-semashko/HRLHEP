@@ -1,0 +1,285 @@
+JINR/doc_1_fields.dat
+
+==========================================================================
+ЗАЯВКА: ПОЛЕ - ОДИН ПОСТАВЩИК
+==========================================================================
+
+[zajavka_postav w] ****** Поле "один поставщик" - ввод ======
+<style>
+##dd_info {padding:10px 5px 10px 0; box-shadow: 0 0 15px rgba(0,0,0,0.8);}
+table.dd_info td{font-size:8pt;}
+</style>
+
+$SET_PARAMETERS f_name=#FIELD_DB_NAME#; f_id_name=#FIELD_DB_NAME#_id;
+$SET_PARAMETERS f_id_value=^#f_id_name#; f_val=^#FIELD_DB_NAME#;
+$SET_PARAMETERS ffName=#FIELD_DB_NAME#_foundation;
+$GET_DATA JINR/doc_1_fields.dat[get reason text] ??f_id_value
+$SET_PARAMETERS ffVal=^#ffName#;
+
+<script type="text/javascript">
+// Возврат значения, выбранного из справочника "причины" ??
+var pasteReasonResult = function(requesterId, id, text) {
+  eval("document.docEditForm." + requesterId + "_id.value='" + id + "';");
+ 	$('##' + requesterId).html(text); //вставляем текст в элемент по ID
+  $('##dd_info').hide(100); //убираем drop-down окно 
+  $('##d_tooltip').hide(); //убираем tooltip окно 
+  $('##postav_name').show();
+  if(id == 3) 
+    $('##postav_foundation').show();
+  else
+    $('##postav_foundation').hide();
+}
+
+// сброс выбранной ранее "причины" ??
+var clearPostav=function(){
+  document.docEditForm.#FIELD_DB_NAME#_id.value='';
+  $('###FIELD_DB_NAME#').html("Причина размещения заказа у единственного поставщика (выбрать)");
+  $('###f_name#-reason-div').hide(200);
+}
+</script>
+
+<div>
+f_id_value=#f_id_value#; f_val=#f_val#;<br> ??
+<input type=radio name="suppl_single" onClick="clearPostav();"
+checked ??!f_id_value
+>нет (по конкурсу)
+<input type=radio name="suppl_single" onClick="$('###f_name#-reason-div').show(300); $('###FIELD_DB_NAME#').click();"
+checked ??f_id_value
+>да (без конкурса)
+<input type=hidden id="#f_id_name#" name="#f_id_name#" size=15 value="#f_id_value#">
+
+<div id = "#FIELD_DB_NAME#-reason-div" 
+style="width:500px;
+display:none; ??!f_id_value
+">
+
+$SET_PARAMETERS fn=#FIELD_DB_NAME#-reason_id; 
+
+<div id="#FIELD_DB_NAME#" class="info_input pt" style="font-size:9pt; margin:10px 0 0px 0;
+display: inline-block; width:500px;
+border:none 1px gray;" callback="pasteReasonResult" info_view="11" info_id="1001">#suppl_single_reason#
+Причина размещения заказа у единственного поставщика (выбрать) ??!suppl_single_reason
+</div><div id="postav_foundation" class="bg_white" style="border:solid 1px red; padding:5px; 
+display:none;  ??!f_id_value=3
+">
+Необходимо загрузить в приложения скан пояснительной записки с обоснованием уникальности продукции <b>за подписью инициатора закупки и его руководителя.</b>
+</div>
+
+<div id="postav_name" style="margin:10px 0 0 0;
+display:none; ??!f_val&!f_id_value
+">Наименование поставщика:<br>
+<textarea name=#FIELD_DB_NAME# style="width:400pt; height:40pt;" 
+rows="3" ??
+>
+^#FIELD_DB_NAME#</textarea>
+</div>
+
+</div>
+
+</div>
+[end]
+
+[zajavka_postav r]  ******  Поле "один поставщик" - просмотр ======
+$SET_PARAMETERS f_val=^#FIELD_DB_NAME#;
+$SET_PARAMETERS f_name=#FIELD_DB_NAME#; f_id_name=#FIELD_DB_NAME#_id;
+$SET_PARAMETERS f_id_value=^#f_id_name#; f_val=^#FIELD_DB_NAME#;
+$SET_PARAMETERS ffName=#FIELD_DB_NAME#_foundation;
+$GET_DATA JINR/doc_1_fields.dat[get reason text] ??f_id_value
+$SET_PARAMETERS ffVal=^#ffName#;
+Да (без конкурса): <small>#suppl_single_reason#</small><br><br>Обоснование уникальности продукции: #ffVal# <br><br>Поставщик: #f_val#  ??f_id_value&f_id_value=3&ZZZ
+Да (без конкурса): <small>#suppl_single_reason#</small><br><br>Поставщик: #f_val#  ??f_id_value
+Нет (по конкурсу) ??!f_id_value
+[end]
+
+
+[update_singleSupplier_foundation]
+UPDATE d_data_#DOC_TYPE_ID# SET  #CUSTOM_FIELD_DB_NAME#_foundation = '^#ffName#'  WHERE id=#DOC_DATA_RECORD_ID#;
+[end]
+
+[get reason text]
+select descr as "suppl_single_reason" from i_jinr_zajavka where id=#f_id_value#;
+select #ffName# as "#ffName#" from d_data_#DOC_TYPE_ID# where id=#DOC_DATA_RECORD_ID#;
+[end]
+
+[zajavka_plan_w]
+<input type=radio name="#FIELD_DB_NAME#" value="закупка по плану"
+checked ??!#FIELD_DB_NAME#=внеплановая закупка
+>закупка по плану
+
+<input type=radio name="#FIELD_DB_NAME#" value="внеплановая закупка"
+checked ??#FIELD_DB_NAME#=внеплановая закупка
+>внеплановая закупка
+[end]
+
+[static text]
+^#FIELD_DB_NAME#
+[end]
+
+
+==========================================================================
+========================== РЕШЕНИЕ БОСИНА ================================
+==========================================================================
+
+[final_decision]  ******* Решение при утверждении заявки 
+<tr><td class="label big 
+    error ??INPUT_ERROR&!DECISION_OK
+    ">(*) Выберите Ваше решение по этой заявке:</td><td>
+    <input type=radio name=final_decision value="1">заключить договор на закупку без конкурса<br>
+    <input type=radio name=final_decision value="2">передать в ЛЗК<br>
+    <input type=radio name=final_decision value="3">передать в ЦЗК
+</td></tr>
+[end]
+
+
+[final_decision_w]  ******* Сохранение решения при утверждении заявки
+    $SET_PARAMETERS DECISION_OK=Y; ??final_decision
+    $GET_DATA JINR/doc_1_fields.dat[save final decision]  ??final_decision
+    $CALL_SERVICE c=sys/ar/set_doc_attrs; setPermit=Y;  ??final_decision
+    $SET_PARAMETERS INPUT_ERROR=Выберите решение; ERROR=Выберите решение; DECISION_OK=; ??!final_decision
+[end]
+
+
+[final_decision_r]
+    $GET_DATA JINR/doc_1_fields.dat[get final decision]
+    <tr><td class="label big"><b>Решение СМТС:</b></td>
+    <td class="big bg_white">
+    <div id="final_decision_text">
+        $INCLUDE JINR/doc_1_fields.dat[final_decision_text]
+    </div>
+    <br>#FINAL_DECISION_COMMENT#  ??FINAL_DECISION_COMMENT
+    <hr>
+    <div id="czk_form">
+        $INCLUDE JINR/doc_1_fields.dat[final_decision_change]   ??final_decision&USER_ID=8011|USER_ID=9276
+        $INCLUDE JINR/doc_1_fields.dat[final_decision_dat_set]  ??final_decision&USER_ID=8011|USER_ID=9276|USER_ID=2309
+    </div>
+    </td></tr>
+
+    $INCLUDE JINR/doc_1_fields.dat[done comment] ??DOC_STATUS=#~doc_status_finished#
+    $INCLUDE JINR/doc_1_fields.dat[protokol]  ??final_decision>1
+[end]
+
+
+[final_decision_change]
+    <input type=radio name=final_decision value="1"
+        checked ??final_decision=1
+    >без конкурса
+    <input type=radio name=final_decision value="2"
+        checked ??final_decision=2
+    >ЛЗК
+    <input type=radio name=final_decision value="3"
+        checked ??final_decision=3
+    >ЦЗК
+[end]
+
+
+[final_decision_dat_set]
+    дата ЗК: <input id="czk_dat"  type="text" size=10 name=czk_dat value="#czk_dat#" onKeyUp="fixDate(this);" onChange="checkDate(this);"> 
+    № вопроса: <input type="text" size=3 name=czk_nr value="#czk_nr#" class="center"> 
+    <input type="button" class="butt1 pt" style="width_:120; margin-left:20px;" value="Сохранить" onClick="AjaxCall('final_decision_text', 'c=JINR/doc_1_czk&doc_id=#doc_id#', true, 'czk_form');">  
+    <script type="text/javascript">
+         $("##czk_dat").datepick({yearRange: 'c-0:c+1', showSpeed: 'fast'});
+    </script>
+    <hr>
+[end]
+
+
+
+[final_decision_text]
+    $GET_DATA JINR/doc_1_fields.dat[get final decision]  ??!final_decision
+    <b>
+        заключить договор на закупку без конкурса. ??final_decision=1
+        передать в ЛЗК, ??final_decision=2
+        передать в ЦЗК, ??final_decision=3
+    </b><small>#FINAL_DECISION_USER#</small>
+    <b>
+        <br>дата ЦЗК: #czk_dat#,  ??czk_dat&final_decision=3
+        <br>дата ЛЗК: #czk_dat#,  ??czk_dat&final_decision=2
+        вопрос №#czk_nr#,  ??czk_nr
+    </b>
+    <small>#CZK_DAT_USER#</small> ??czk_dat&final_decision>1
+[end]
+
+[done comment]
+    $SET_PARAMETERS divider=<tr><td colspan=2 class="divider"></td></tr>;
+    #divider#
+    $GET_DATA JINR/doc_1_fields.dat[get done comment]
+    <tr><td class="label big"><span class="bg_white"><b>Результат: </b><br> #DONE_BY_USER#</span></td>
+    <td rowspan=1 class="big bg_white">#DONE_COMMENT#</td></tr>
+[end]
+
+[get final decision]
+    select d.final_decision
+        , concat(iof(uf.F, uf.I, uf.O), ', '
+            , DATE_FORMAT(d.final_decision_changed,'#dateTimeFormat#')) as FINAL_DECISION_USER
+        , DATE_FORMAT(d.czk_dat,'#dateFormat#') as czk_dat 
+        , d.czk_nr
+        , concat(iof(u.F, u.I, u.O), ', '
+        , DATE_FORMAT(d.czk_dat_changed,'#dateTimeFormat#')) as CZK_DAT_USER
+    from #DOC_DATA_TABLE# d 
+        left join #table_users_full# u on u.id=d.czk_dat_creator_id
+        left join #table_users_full# uf on uf.id=d.final_decision_user_id
+    where doc_id=#doc_id# and version=#DOC_VERSION#
+    ;
+    $INCLUDE JINR/doc_1_fields.dat[get final decision user from wf]  ??!FINAL_DECISION_USER
+[end]
+
+
+[get final decision user from wf]
+    select concat(iof(u.F, u.I, u.O), ', '
+        , DATE_FORMAT(wf.finished,'#dateTimeFormat#')) as FINAL_DECISION_USER
+        , wf.comment as FINAL_DECISION_COMMENT
+    from wf left join #table_users_full# u on u.id=wf.user_id
+    where 
+        wf.wf_id=#WF_ID#  ??WF_ID
+        wf.wf_id=#WF_ID_INACT#  ??!WF_ID
+        and wf.step_type=#~wf_step_signed#
+    order by wf.finished desc limit 1
+[end]
+
+
+[get done comment]
+select concat(iof(u.F, u.I, u.O), ', <small>'
+    , DATE_FORMAT(wf.finished,'#shortDateTimeFormat#'),'</small><br>') AS "DONE_BY_USER"
+, wf.comment as DONE_COMMENT
+from wf left join #table_users_full# u on u.id=wf.user_id
+where 
+wf.wf_id=#WF_ID#  ??WF_ID
+wf.wf_id=#WF_ID_INACT#  ??!WF_ID
+and wf.step_type=#~wf_step_process#
+order by wf.finished desc limit 1
+[end]
+
+[save final decision]
+update #DOC_DATA_TABLE# set final_decision=#final_decision# 
+where doc_id=#doc_id# and version=#DOC_VERSION#
+[end]
+
+
+==========================================================================
+==========================================================================
+
+[protokol]  ============= Поле "протокол закупочной комиссии" на этапе завершения и далее
+<tr><td class="label big"><span class="bg_white">Протокол заседания закупочной комиссии:</td>
+<td class="bg_white" style="padding:3px 0 0 2px;">
+$SET_PARAMETERS FIELD_DB_NAME=protokol; NO_FILE_COMMENT=Y; 
+
+$SET_PARAMETERS CAN_LOAD_PROTOKOL=Y;    ??CURR_STEP_TYPE=#~wf_step_process#&AR_S=Y|AR_X=Y
+$SET_PARAMETERS CAN_LOAD_PROTOKOL=Y; AR_X=Y; NO_AR_X=Y; ??user_roles&!AR_X=Y
+
+$INCLUDE files/field_file.cfg[file field r] ??!CAN_LOAD_PROTOKOL=Y
+$INCLUDE files/field_file.cfg[file field w] ??CAN_LOAD_PROTOKOL=Y
+$SET_PARAMETERS AR_X=; ??NO_AR_X=Y&user_roles
+<br>  ??NO_AR_X=Y
+
+<br><b>Для завершения обработки заявки Вам <span class="error">НЕОБХОДИМО ЗАГРУЗИТЬ ПРОТОКОЛ ЗАСЕДАНИЯ З.К.!</span></b><br> ??!protokol_id&AR_X=Y&DOC_STATUS<#~doc_status_finished#
+<i>не загружен</i><br> ??!protokol_id&!AR_X=Y&DOC_STATUS<#~doc_status_finished#
+
+user_roles=#user_roles#; CAN_LOAD_PROTOKOL=#CAN_LOAD_PROTOKOL#; final_decision=#final_decision#; ??
+</td></tr> 
+$SET_PARAMETERS CAN_LOAD_PROTOKOL=; NO_FILE_COMMENT=; 
+[end]
+
+
+[protokol s]
+$INCLUDE dat/doc_fields_files.dat[file field s]
+[end]

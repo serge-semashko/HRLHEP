@@ -1,0 +1,40 @@
+viewer/registerError.ajm
+
+[comments]
+descr=U: Прием информации о плохой растеризации страницы файла
+input=active_page_id - id страницы из таблицы doc_file_pages
+parents=viewer/show_file.cfg
+author=Куняев
+[end]
+
+[parameters]
+LOG=ON
+[end]
+
+
+[report]
+$GET_DATA [register message]
+
+--- Подтверждение регистрации --- ??
+<center>
+<br>Ваше сообщение сохранено.<br>
+<b>Спасибо за информацию! </b><br>
+Разработчики будут разбираться в проблеме.<br><br>
+#ERROR#
+<br>
+<input type="button" value="Закрыть"  style="width:90px;" onClick="$('#dialog').hide();">
+</center>
+[end]
+
+
+================================================================================
+============================= шаблон SQL-запроса в БД ==========================
+================================================================================
+
+[register message]  *** Занесение сообщения в БД
+select doc_id from doc_files where id=#file_id#
+;
+insert into doc_file_errors (doc_id, file_id, page_id, comments, user_id, dat, user_agent)
+values (#doc_id#, #file_id#, #active_page_id#, '#user_comment#', #USER_ID#, now(), '#h_user-agent#')
+[end]
+

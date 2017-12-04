@@ -1,0 +1,99 @@
+JINR/doc_1_czk.cfg
+
+[comments]
+descr=назначение даты ЦЗК.
+input=doc_id
+output=
+parents=JINR/doc_1_fields.dat
+childs=
+testURL=
+author=Куняев
+[end]
+
+[description]
+- Сохранение даты ЦЗК для заявки,<br>
+- Возможность изменить финальное решение по заявке
+[end]
+
+[parameters]
+request_name=U:установка даты ЦЗК
+LOG=ON
+[end]
+
+
+[report]
+    $CALL_SERVICE c=sys/getARUD;   ??USER_ID
+    $INCLUDE [report_]  ??AR_R=Y
+[end]
+
+[report_]
+    $GET_DATA [get prev decision]
+    $SET_PARAMETERS czk_dat=; ??prev_final_decision=3&!final_decision=3&ZZZ
+    $GET_DATA [shiftNextDocs]   ??czk_dat&czk_nr
+    $GET_DATA [set CZK_DAT] 
+    $INCLUDE [renumber CZK docs]  ??czk_dat&czk_nr
+    $INCLUDE JINR/doc_1_fields.dat[final_decision_text]
+    $CALL_SERVICE c=sys/ar/set_doc_attrs; setPermit=Y;  ??
+
+    <script type="text/javascript">
+        AjaxCall("doc_attrs", "c=sys/ar/set_doc_attrs&setPermit=Y&doc_id=#doc_id#", true);    ??final_decision
+        AjaxCall("czk_docs", "c=JINR/reports/czk_docs", false);    ??final_decision
+    </script>
+[end]
+
+[renumber CZK docs]
+    $GET_DATA [get numbered docs]
+$EXECUTE_LOOP next_doc_id; #DOC_IDS#; [set next number];  ??DOC_IDS
+[end]
+
+[set next number]
+    $GET_DATA [set next doc number]
+[end]
+
+[get prev decision]
+    select  final_decision as "prev_final_decision"
+    from #DOC_DATA_TABLE#
+    where doc_id=#doc_id# and version=#DOC_VERSION#
+[end]
+
+[set CZK_DAT]
+    update #DOC_DATA_TABLE# set
+        czk_dat=STR_TO_DATE('#czk_dat#','%d.%m.%Y') ??czk_dat
+        czk_dat=null ??!czk_dat
+        , czk_nr=#czk_nr# ??czk_nr
+        , czk_nr=null ??!czk_nr
+        , czk_dat_creator_id=#USER_ID#
+        , czk_dat_changed=now()
+        , final_decision=#final_decision#, final_decision_changed=now(), final_decision_user_id=#USER_ID#  ??final_decision
+    where doc_id=#doc_id# and version=#DOC_VERSION#
+[end]
+
+[shiftNextDocs]
+    update #DOC_DATA_TABLE#
+        set czk_nr=czk_nr+1
+    where czk_dat=STR_TO_DATE('#czk_dat#','%d.%m.%Y')
+        and not czk_nr is null
+        and czk_nr>=#czk_nr#
+[end]
+
+[get numbered docs]
+    select concat(doc_id,',') as "DOC_IDS"
+    from #DOC_DATA_TABLE#
+    where czk_dat=STR_TO_DATE('#czk_dat#','%d.%m.%Y')
+        and not czk_nr is null
+        and czk_nr > 1
+    order by czk_nr
+[end]
+
+
+[set next doc number]
+    select czk_nr as "CURR_NR" from #DOC_DATA_TABLE# where doc_id=#next_doc_id#
+    ;
+    select max(czk_nr)+1 as "NEXT_NR"
+    from #DOC_DATA_TABLE#
+    where czk_dat=STR_TO_DATE('16.11.2017','%d.%m.%Y')
+        and not czk_nr is null
+        and czk_nr <#CURR_NR#
+    ;
+    update #DOC_DATA_TABLE# set czk_nr=#NEXT_NR# where doc_id=#next_doc_id# ??!NEXT_NR=#CURR_NR#&NEXT_NR
+[end]

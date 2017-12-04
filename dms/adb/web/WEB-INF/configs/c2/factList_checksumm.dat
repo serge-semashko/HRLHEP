@@ -1,0 +1,138 @@
+
+[table_title]
+<table class="tlist" border=0 cellspacing=0 cellpadding=0 style="margin:20px;">
+<tr>
+<th>Заявка</th>
+<th>Контрагент</th>
+<th class="srh" sr="">Подр.</th> ??
+<th>Подразд.</th>
+<th class="srh" sr="p.SUBJECT">Источник фин.</th>
+<th>Приказ</th> ??
+<th>НИКА</th> ??
+
+<th class="srh" sr="p.PLAT_SUMM_RUB">руб.</th>
+<th class="srh" sr="p.S_US">USD</th> <th class="srh" sr="p.S_EUR">EUR</th> ??
+
+<th class="srh" sr="d.AGGR">Сумма<br>(ADB2)</th>
+<th class="srh" sr="">Разница<br>с ADB2</th> 
+<th class="srh" sr="p.ADB2_NUM">ADB2<br>документ</th>
+<th class="srh" sr="p.ADB2_NUM">примечание</th> ??
+</tr>
+[end]
+
+
+
+REG_TYPE, ''''||REG_NR as REG_NR
+
+[item]
+<tr>
+<td class="align_left">
+<a href="#ServletPath#?c=c2/factList&f_req=#REQUEST_NR#" target="RecList#REQUEST_NR#">#REQUEST_NR#</a>,<small>#REQ_DAT#<BR>#RESP#</SMALL>
+</td> 
+
+<td class="align_left">&nbsp;#CONTRAGENT#</td>
+
+
+<td>&nbsp;#CONTCFO#</td> ??
+<td>&nbsp;#DIV_CODE#
+<br>&nbsp;<b>#D_LAB_CODE#</b> ??D_LAB_CODE
+</td>
+<td class="align_left">&nbsp;#PROJECT#
+,&nbsp;<small>пр.#PRIK_NR# от #PRIKAZ_PUNKT#</small> ??PRIK_NR
+<br>&nbsp;<b>#SBJ_CODE#</b> ??SBJ_CODE
+</td>
+
+
+<td>&nbsp;#S_RUB#</td>  ??!CURR_CODE=810
+<td>&nbsp;<b>#S_RUB#</b></td>  ??CURR_CODE=810
+<td>&nbsp;#SUMMA_RUB#</td>  ??adb2check
+<td>&nbsp;#DIFF#</td>  ??adb2check
+
+<td class="align_center">&nbsp;#D_SBJ#</td>  ??sbjcheck
+
+<td  class="align_left">
+<a href="javascript:showAdb2('#ADB_NR#')">#ADB_NR#</a>
+
+<br><img src="#imgPath#alert.gif">&nbsp; ??MARK>0
+<a class=small href="javascript:showAdb2('#C_OLD_ADB2_NUM#')">#C_OLD_ADB2_NUM#</a>=><a class=small href="javascript:showAdb2('#NEW_ADB2_NUM#')">#NEW_ADB2_NUM#</a> ??NEW_ADB2_NUM
+#C_COMMENTS# 
+ ??MARK>0|adb2check|problem
+ ??MARK>0|adb2check|problem
+</td></tr>
+[end]
+
+
+<td>&nbsp;#S_USD#</td>  ??!CURR_CODE=840
+<td>&nbsp;<b>#S_USD#</b></td>   ??CURR_CODE=840
+<td>&nbsp;#S_EUR#</td>	  ??!CURR_CODE=978
+<td>&nbsp;<b>#S_EUR#</b></td>   ??CURR_CODE=978
+
+
+================================ SQLs ================================
+
+ 
+[SQL]
+select 
+to_char(r.REQ_DATE, 'DD.MM.YYYY') as "DAT"
+
+, ''''||r.NR as REQUEST_NR 
+, r.CONTRAGENT
+, ''''||r.DIVCODE as DIV_CODE
+,''''||r.PROJECT as PROJECT
+, r.SUMM_RUB as S_RUB
+, r.SUMM_USD as S_USD, r.SUMM_EUR as S_EUR ??
+, d.SUMMA_RUB  
+, b.S_RUB-d.SUMMA_RUB as "DIFF"
+, ''''||b.DOC_ID as ADB_NR
+
+, R.RESP
+, ''''||d.LAB_CODE as D_LAB_CODE
+, ''''||bc.SBJ_CODE as SBJ_CODE 
+
+, c.MARK, ''''||c.OLD_ADB2_NUM as C_OLD_ADB2_NUM
+, ''''||c.ADB2_NUM as NEW_ADB2_NUM
+, c.COMMENTS as "C_COMMENTS"
+
+from C2_RequestPostav_14 r 
+left join doc_pay_14 b on (b.Request_Nr=r.nr and b.Request_Dat=r.REQ_DATE)
+left join docs d on d.doc_id=b.DOC_ID
+left join bc_13_14 bc on bc.code=d.bc
+left join c2_fact_corr_#q_yr# c on (c.REQ=b.REQUEST_NR )
+
+where 1=1
+and abs(b.S_RUB-d.SUMMA_RUB) > #f_diff# ??adb2check
+and d.is_total='Y' ??svodcheck
+and r.NR=#f_req# ??f_req
+
+$INCLUDE [ADB2Criteria]  ??f_Adb2Nr
+
+and r.DIVCODE IN()'#A_LABS#' ??A_LABS
+and r.DIVCODE in(#f_lab#)  ??f_lab&!f_lab=XXX&!f_lab=NULL
+and not r.DIVCODE in(000, #lab_codes#, #infr_codes#, 919, 011)  ??f_lab=XXX
+and r.DIVCODE is null  ??f_lab=NULL
+and upper(r.PROJECT)=upper('#f_subject#')  ??f_subject
+
+and b.aggr IN()'#f_aggr#'  ??f_aggr&!f_aggr=NOT4
+and (d.aggr is null or d.aggr not IN('01','02','03','04'))  ??f_aggr=NOT4
+and b.aggr IN()'#ff_aggr#'  ??ff_aggr
+
+and b.S_RUB #f_summa_op# #f_summa# ??f_summa&!f_summa_op==
+and abs(b.S_RUB-#f_summa#) <= #dsumm#+0.5 ??f_summa&f_summa_op==
+
+
+[end]
+
+
+[ADB2Criteria]
+and b.ADB2_NUM in(#f_Adb2Nr#) ??f_Adb2Nr_ZZZ
+and (b.ADB_NR in (select doc_id from docs where doc_id in(#f_Adb2Nr#) or pid in(#f_Adb2Nr#)) 
+	or b.ADB_NR in (select pid from docs where doc_id in(#f_Adb2Nr#) and pid>0)  )
+[end]
+
+
+[timeCriteria]
+	and p.PLAT_DATE >= to_date('#startdate#','DD.MM.YYYY') ??startdate&!enddate
+	and p.PLAT_DATE between to_date('#startdate#','DD.MM.YYYY') and to_date('#enddate#','DD.MM.YYYY') ??startdate&enddate
+	and p.PLAT_DATE <= to_date('#enddate#','DD.MM.YYYY') ??enddate&!startdate
+[end]
+

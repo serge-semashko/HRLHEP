@@ -1,0 +1,246 @@
+user/user/change_sign_pswd_settings
+
+[comments]
+descr=U: кнопка и форма смены пароля на подпись
+input=chspwd=1 выводить форму смены пароля (+ нужен key) chpswd= выводить кнопку для отправки письма на email, key - ключ доступа из письма
+output=Форма или кнопка
+parents=tab_settings.cfg
+childs=user/change_sign_pswd; user/mail4sign_password_change
+[end]
+
+[parameters]
+LOG=ON
+[end]
+
+[report]
+$GET_DATA [check key] ??chspwd
+$INCLUDE [common script]
+$INCLUDE [change sign pwd button] ??KEY_OK=0|!chspwd
+$INCLUDE [change sign pwd form] ??chspwd&!KEY_OK=0
+$INCLUDE [key expired] ??KEY_OK=0&chspwd
+[end]
+
+[key expired]
+<br><br><b><center>Ключ просрочен!</center></b>
+[end]
+
+[common script]
+<script type="text/javascript">
+        // jalert на базе jquery-ui dialog
+        function jjAlert(mes,btntitle,callback){
+        if (typeof(btntitle) == "undefined") btntitle='ОК';
+        var el = $('<div id="__jsAlert">'+mes+'</div>');
+        $('#theForm').append(el);
+            $(el).dialog({modal: true, buttons:{OkButton : function(){
+                $( this ).dialog( 'close' );
+                if(callback)callback();
+               $(this).remove();
+                
+            }
+            
+        }
+        ,open: function( event, ui ) {
+                $('[aria-describedby=__jsAlert] .ui-button-text:contains("OkButton")').text(btntitle);
+            }
+        ,dialogClass: 'alert-dialog'
+        });
+        
+        }
+</script>
+[end]
+
+[script4form]
+<style type = "text/css">
+##pw-strngth,##pw-eql{
+    color: white;
+}
+##pw-strngth.weak{
+    background: red;
+}
+##pw-strngth.short{
+    background: red;
+}
+
+##pw-strngth.norm{
+    background: orange;
+}
+##pw-strngth.strong{
+    background: green;
+}
+
+##pw-eql.eq{
+    background: green;
+}
+##pw-eql.neq{
+    background: red;
+}
+.passLabel{
+width:200px;
+text-align:right;
+display:inline-block;
+}
+
+</style>
+<script type="text/javascript">
+    
+        var st = 0;
+        var eq = 0;
+        // Тексты сообщений
+        var _SHORT = 'Короткий пароль.';
+        var _NORM = 'Средний пароль.';
+        var _STRONG = 'Сильный пароль.';
+        var _WEAK = 'Слабый пароль.';
+        var _EQ = 'Пароли совпадают.';
+        var _NEQ = 'Пароли не совпадают.';
+	
+        // проверка силы пароля при вводе
+        $('##new_sign_password').keyup(function()
+	{
+		$('##pw-strngth').html(checkStrength($('##new_sign_password').val()));
+                $('##pw-eql').html(checkEquality($('##new_sign_password').val(), $('##new_sign_password_repeat').val()));
+	});	
+
+	$('##new_sign_password_repeat').keyup(function()
+	{
+                $('##pw-strngth').html(checkStrength($('##new_sign_password').val()));
+		$('##pw-eql').html(checkEquality($('##new_sign_password').val(), $('##new_sign_password_repeat').val()));
+    	});
+
+        // совпадение паролей
+        function checkEquality(pass1, pass2){
+            if(pass1.length==0) return;
+            $('##pw-eql').removeClass();
+            if(pass1==pass2){
+                $('##pw-eql').addClass('eq');
+                eq = 1;
+                return _EQ;
+            }else{
+                $('##pw-eql').addClass('neq');
+                eq = 0;
+                return _NEQ;
+            }
+        }
+        
+        
+        //проверка пароля на стойкость минимум 6 симв. Буквы, цифры Разный регистр, спецсимволы.
+	function checkStrength(password)
+	{
+		var strength = 0
+		//длина < 6
+		if (password.length < 6) { 
+			$('##pw-strngth').removeClass();
+			$('##pw-strngth').addClass('short');
+                        st = strength;
+			return _SHORT ;
+		}
+		
+		if (password.length >= 6) strength += 1;// длина >= 6
+		if (password.match(/([a-zа-я].*[A-ZА-Я])|([A-ZА-Я].*[a-zа-я])/))  strength += 1;//разный регистр букв
+		if (password.match(/([a-zA-Zа-яА-Я])/) && password.match(/([0-9])/))  strength += 1 ;//буквы и цифры
+		if (password.match(/([!,%,&,@,##,$,^,*,?,_,~])/))  strength += 1;//спецсимволы
+		if (password.match(/(.*[!,%,&,@,##,$,^,*,?,_,~].*[!,%,&,@,##,$,^,*,?,_,~])/)) strength += 1;//2 спецсимвола
+		//оценка пароля
+		if (strength < 2 )
+		{
+			$('##pw-strngth').removeClass();
+			$('##pw-strngth').addClass('weak');
+                        st = strength;
+			return _WEAK;			
+		}
+		else if (strength == 2 )
+		{
+			$('##pw-strngth').removeClass();
+			$('##pw-strngth').addClass('norm');
+                        st = strength;
+			return _NORM;
+		}
+		else
+		{
+			$('##pw-strngth').removeClass();
+			$('##pw-strngth').addClass('strong');
+                        st = strength;
+			return _STRONG;
+		}
+	}
+        // нажатие на кнопку ajax send и ругаемся, если чего не так
+        $('##changeSignPasswordSubmit').click( function (){
+            $('##pw-strngth').html(checkStrength($('##new_sign_password').val()));
+            $('##pw-eql').html(checkEquality($('##new_sign_password').val(), $('##new_sign_password_repeat').val()));
+            if(st < 1){ window.jjAlert(_SHORT,'ОК'); return;}
+            if(eq != 1){ window.jjAlert(_NEQ,'ОК'); return;}
+            var pass1 = $('##new_sign_password').val();
+            var pass2 = $('##new_sign_password_repeat').val();
+            $.ajax({
+                method: 'POST',
+                url : '?c=user/change_sign_pswd',
+                data: {  mode: 'change', 'pass1' : pass1, 'pass2' : pass2 , 'key': '#key#'}
+            })
+            .done( function(resp){
+                window.jjAlert(resp,'ОК', goAway);
+            })
+        ;
+        });
+        //перегрузка таба
+        function goAway(){
+            t_settings();
+        }
+</script>
+[end]
+
+
+[script4button]
+<script type="text/javascript">
+function mail4SignPasswordChange(){
+    $.ajax({
+        method: 'POST',
+        url : '',
+        data: { c: '/user/change_sign_pswd', mode:'ask' }
+    })
+    .done( function(resp){
+        alert(resp.trim());
+        jAlert('На ваш e-mail ['+resp.trim()+'] выслано письмо с инструкцией по смене пароля.'); ??
+    })
+;
+}
+
+$('##changeSignPassword').click(mail4SignPasswordChange);
+</script>
+[end]
+
+[change sign pwd form]
+$INCLUDE [script4form]
+<style type="text/css">
+.pwmsg{
+    background-color: ##FFFAB7;
+    padding: 5px;
+    border-radius:5px;
+    display: inline-block;
+}
+##changeSignPasswordSubmit{
+ margin-left: 200px;
+ }
+</style>
+<fieldset>
+<legend>Изменение пароля на подпись:</legend>
+    <span class="pwmsg">Хороший пароль должен содержать цифры, буквы в разном регистре, спецсимволы и иметь длину не менее 6 символов.</span>
+        <p class="chpw">
+            <label for = "new_sign_password" class="passLabel">Введите новый пароль:</label><input type="password" style="display:none;"><input type="password" name = "new_sign_password" id = "new_sign_password"/><span id = "pw-strngth" class="pwmess"></span>
+        </p>
+        <p>
+        <label for = "new_sign_password_repeat" class="passLabel">и ещё раз:</label><input type="password" name = "new_sign_password_repeat" id = "new_sign_password_repeat"/><span id = "pw-eql" ></span>
+        </p>
+        <p>
+        <button type = "button" id = "changeSignPasswordSubmit" class="butt1">Сохранить пароль</button>
+        </p>
+</fieldset>
+[end]
+
+[change sign pwd button]
+$INCLUDE [script4button]
+<button type = "button" id = "changeSignPassword" class="butt1">Сменить пароль для подписи</button>
+[end]
+
+[check key]
+  SELECT count(Id) as KEY_OK from a_user_pass where access_key = '#key#' and key_expire>now() and user_id = #USER_ID#
+  ;
+[end]

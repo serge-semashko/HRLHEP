@@ -1,0 +1,100 @@
+doc_final_action_process
+
+[comments]
+descr=U: выполнение финального действия с документом - отправка на завершение.
+
+input=данные из docs/doc_final_action.cfg (параметры и данные формы)
+output=Выполнение действия, выставление ошибки при неудаче
+parents=docs/doc_user_action.cfg
+childs=wf/user_action.cfg
+test_URL=
+[end]
+
+[parameters]
+request_name=U:отправка на завершение
+KeepLog=false
+ClearLog=true
+[end]
+
+[report]
+    $CALL_SERVICE c=sys/getARUD;   ??!AR_S=Y
+    $INCLUDE [OK report]  ??AR_S=Y
+    $CALL_SERVICE c=sys/log_doc_access; access_type=4; rejected=1;   ??!AR_S=Y&USER_ID
+[end]
+
+
+[OK report]
+----- Проверка ввода данных пользователем ------??
+    $SET_PARAMETERS INPUT_ERROR=;  ??!ERROR
+    $GET_DATA [check user input]
+    $SET_PARAMETERS INPUT_ERROR=Пользователь не выбран; ??!FORWARD_USER_OK&UDEFINED_USERS
+    $SET_PARAMETERS INPUT_ERROR=Неверный пароль; ??!PW_OK
+
+    $CALL_SERVICE  c=wf/check_next_criteria.cfg  ??!ERROR&!INPUT_ERROR
+    $INCLUDE [really process] ??!ERROR&!INPUT_ERROR
+
+    $INCLUDE [confirm msg]  ??!ERROR&!INPUT_ERROR
+[end]
+
+[really process]
+----- Выполнение команды, если все ОК ------??
+    $LOG ======= начало транзакции для всего этого запроса ======
+    $SET_PARAMETERS comment_opened=1;
+    $GET_DATA [start transaction] 
+    $CALL_SERVICE c=wf/set_next_user; ??FORWARD_USER_OK
+    $CALL_SERVICE c=wf/user_action;  
+
+    $GET_DATA [commit]
+    <script type="text/javascript">window.parent.jAlert('#ERROR#','ОШИБКА!');</script> ??ERROR&!INPUT_ERROR
+
+[end]
+
+[confirm msg]
+------ Оповещение и возврат в список документов при нормальном завершении операции -------??
+    $CALL_SERVICE c=wf/process_events;  ??!ERROR
+
+    <script type="text/javascript">
+    alert("cop=#cop#; result_code=#result_code#"); ??
+    window.parent.jAlert("Документ утверждён и направлен на завершение обработки.","ОК");  ??cop=#~doc_action_signed#
+    window.parent.HideDialog(); 
+    window.parent.showDoc(false);
+    window.parent.AjaxCall("popupCont", "c=wf/start_wf_step&doc_id=#doc_id#&cop=#cop#", true); 
+    var go2docsTable = function(){
+        window.parent.AjaxCall("c_myDocs", "c=tab_myDocs"); 
+    }
+    window.setTimeout(go2docsTable, 1000);
+    </script> 
+[end]
+
+
+==============================================================================
+***************************** Шаблоны SQL запросов ***************************
+==============================================================================
+[check user input]
+$INCLUDE docs/doc_user_action_process.cfg[check user PW] ??authPW
+
+select 'Y' as FORWARD_USER_OK from #table_users_full# where id=#extra_users_id# ??extra_users_id
+;
+select id as "next_step_id" from wf where wf_id=#WF_ID# and step=#NEXT_STEP#
+;
+[end]
+
+[start transaction]
+lock tables wf_list write, wf write, wf_history write, wf_events write, wf_events_notifications write;
+START TRANSACTION;
+[end]
+
+[commit]
+COMMIT;   ??!ERROR
+$INCLUDE [do rollback] ??ERROR
+unlock tables;
+[end]
+
+[do rollback]
+ROLLBACK; 
+select max(id)+1 as NEXT_ID from wf;
+ALTER TABLE wf AUTO_INCREMENT = #NEXT_ID#;
+select max(id)+1 as NEXT_ID from wf_history;
+ALTER TABLE wf_history AUTO_INCREMENT = #NEXT_ID#;
+[end]
+

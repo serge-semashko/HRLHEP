@@ -1,0 +1,128 @@
+@charset "windows-1251";
+body {
+	background-color: #d0e4f0;
+}
+#main th {
+	background-color: #daeee0;
+	border: 1px black solid;
+	vertical-align:middle;
+	text-align: center;
+}
+#main h1{
+	margin:0px;
+	padding-right:10px;
+	padding-left:10px;
+	text-transform: uppercase;
+	color:black;
+	font-size:14pt;
+}
+#main td {
+	background-color: white;
+	background:url(../images/dots.gif) repeat-x bottom;
+	font-size:9pt;
+	font-family:Verdana,arial, Sans Serif
+}
+#main td.num  {
+	background-color:white;
+	border-left: 1px black solid;
+	text-align: right;
+	vertical-align:top;
+}
+#main td.value {
+	background-color:white;
+	vertical-align:middle;
+}
+#main td.descr  {
+	background-color:white;
+	text-align: left;
+	vertical-align:top;
+}
+#main td.graphics  {
+	background-color:white;
+	border-right: 1px black solid;
+	text-align: center;
+}
+td.col{
+background-color:#FF0000;
+}
+.d1{
+height:30px;
+display:block;
+width: 12px;
+border: 1px solid #F0F0F0;
+}
+.d3{
+position:relative;
+top:100%;
+width: 100%;
+float:left;
+display:inline;
+}
+.d2{
+
+font-size:6px;
+text-align:center;
+position:relative;
+top:-100%;
+height:100%;
+}
+#last td{
+	background-image:none;
+}
+#last td.num  {
+	background-color:transparent;
+	border-left:none;
+	background-image: url(../images/white-c.png);
+	background-position: left bottom;
+	background-repeat: no-repeat;
+}
+#last td.descr,#last td.value,#last td.graphics {
+	border-bottom:solid 1px black;
+}
+#aver td.num{
+border: none;
+background-image:none;
+background-color:transparent;
+vertical-align:top;
+}
+
+#aver td.descr{
+border: none;
+background-color:transparent;
+background-image:url(../images/yellow-c.gif);
+background-position: left bottom;
+background-repeat: no-repeat;
+text-align:right;
+}
+
+#aver td.value,#aver td.graphics {
+	background-color:#ffffc4;
+	background-image:none;
+	border-bottom:solid 1px black;
+}
+
+table.legend{
+background:transparent;
+border-right: solid black 1px; 
+border-top: solid black 1px;
+background-image:url(../images/white-c.png);
+background-position:left bottom;
+}
+
+.bullet{
+ margin-top:4px; 
+ width:10px; 
+ height:10px; 
+ border:black solid 1px; 
+ overflow:hidden;
+ display:block;
+ margin-left:5pt; 
+ margin-right:5pt;
+}
+
+a {color:000090; font-size : 12pt; FONT-FAMILY: Verdana, Arial, Helvetica, sans-serif; }
+a:link {color:000090; font-size : 12pt; FONT-FAMILY: Verdana, Arial, Helvetica, sans-serif; }
+A:unknown {COLOR: 000090; font-size : 12pt; FONT-FAMILY: Verdana, Arial, Helvetica, sans-serif; }
+A:visited {color: 000090; font-size : 12pt; FONT-FAMILY: Verdana, Arial, Helvetica, sans-serif; }
+A:active {COLOR: 000090;}
+A:hover {color: C00000; background-color:FFFFC0;}

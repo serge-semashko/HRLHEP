@@ -1,0 +1,36 @@
+docs/add_comment_for_doc.ajm
+
+[report]
+<div class="bg_white">#user_comment#</div> 
+$GET_DATA [addComment] ??user_comment&USER_ID&doc_id
+$GET_DATA [get doc initiator]
+$GET_DATA [add event]  ??!ERROR&creator_id
+$CALL_SERVICE c=wf/send_notif_mail ??!ERROR&creator_id
+[end]
+
+[addComment]
+    select 3 as comment_type from d_list where id=#doc_id# and  creator_id=#USER_ID# ??!comment_type
+    ;
+    insert into d_comments(doc_id, user_id
+        , receiver_ids  ??!comment_opened
+        ,dat, comment_type, comment)
+    values (#doc_id#, #USER_ID#
+        , ',#extra_users_id#,'  ??!comment_opened
+        , now()
+        , #comment_type# ??comment_type
+        , 2 ??!comment_type
+        , '#user_comment#') 
+    ;
+    select LAST_INSERT_ID() as "COMMENT_ID"
+[end]
+
+[get doc initiator]
+    select creator_id, type_id from d_list where id=#doc_id#;
+[end]
+
+[add event]
+    insert into wf_events(doc_id, event_type, event_date, notify_user_id, event_text)
+    values(#doc_id#, #~doc_comment_added#, now(), #creator_id#, '#COMMENT_ID#')
+    ;
+    select LAST_INSERT_ID() as "event_id"
+[end]

@@ -1,0 +1,75 @@
+[comments]
+descr=A: Таб "Мониторинг" - вывод списка документов (вывод фильтров и вызов вывода самой таблицы)
+
+input=none
+output=HTML документов
+parents=admin.cfg
+childs=admin/monitor/docs_list_table.cfg
+testURL=?c=admin/monitor/docs_list
+author=Куняев, Яковлев
+[end]
+
+[parameters]
+request_name=A:Монитор
+LOG=OFF
+[end]
+
+
+[report]
+$INCLUDE dat/common.dat[check login] 
+$INCLUDE [report_]  ??AR_ADMIN=1|AR_LAB_SECR=1
+[end]
+
+
+f_doc_type_id=1; 
+
+[report_]
+$SET_PARAMETERS f_mon_status=1;
+$GET_DATA [getInitiators]
+
+<div id="all_docs"></div>
+
+<script type="text/javascript">
+var submitForm=function(reset) {
+    if(reset) {
+        document.theForm.srn.value=1; 
+        resetSort(); ??
+    }
+    AjaxCall("all_docs", "c=admin/monitor/all_docs", true, "filters_div", true);
+}
+
+var resetSort=function(){
+    document.theForm.srt.value="dh.STATUS"; 
+    document.theForm.desc.value="";
+    document.theForm.srn.value=1; 
+}
+
+
+
+AjaxCall("all_docs","c=admin/monitor/all_docs&f_doc_type_id=#f_doc_type_id#&f_mon_status=#f_mon_status#", false, '', true);
+
+setModule("admin/monitor/all_docs");
+showPageTop(true);
+
+</script>
+[end]
+
+
+[getDocTypes]
+select concat('<option value=', cast(id as char), '>', name, '</option>') as DOC_TYPES
+from d_types 
+where is_active = 1 
+order by name
+;
+[end]
+
+[getInitiators]
+select distinct concat('<option value=', cast(h.creator_id as char), '>', u.fio, '</option>') as INITIATORS
+, u.fio
+from d_list h
+left join #table_users_full# u on u.id=h.creator_id
+where 
+h.status in(1,2)  ??!f_stat
+h.status in(#f_stat#) ??f_stat
+order by u.fio
+[end]

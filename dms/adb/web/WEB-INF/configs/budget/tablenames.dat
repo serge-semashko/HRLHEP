@@ -1,0 +1,10 @@
+8<------------имена-таблиц-определяются-здесь---------------------??
+[tables]
+budgetcodes_table=BUDGETCODES_#q_yr#
+budget_table=BUDGET_#q_yr#
+nsb_table=NSB_#q_yr#
+tree_table=TREE_#q_yr#
+tree_all_table=TREE_ALL_#q_yr#
+checksums_table=CHECKSUMS_#q_yr#
+[end]
+

@@ -1,0 +1,162 @@
+
+[searchBox]
+
+$SET_PARAMETERS f_doc_type=5;
+<input type=hidden name="f_doc_type" value="5">
+<input type=hidden name="f_sbj" value="1065">
+<input type=hidden name="f_doc_statuss" value="#f_doc_statuss#">
+
+<table border=0 cellpadding=0 cellspacing=0>
+<tr><td align=right>
+$INCLUDE nica/search.dat[tabs] param: atype=mnts;
+</td></tr>
+
+<tr><td class=lrb nowrap=true valign=top bgcolor=white>
+<b><i>&nbsp;&nbsp;Отобрать документы:</i></b>
+
+<table border=0 bgcolor=whitesmoke width=100%>
+<tr><td width=300 align=center>
+<b><i>Год регистрации:</i> #f_year#</b> 
+</td><td width=200 align=center>
+</td><td width=200 nowrap=true class=l>
+
+<input type=submit class=but value="Выполнить" style="margin-left:100px;"> ??
+<a href="javascript:getXL();"><img 
+src="#imgPath#XL.png" border=0 width=29 height=31 alt="Загрузить в Excel" 
+style="margin:0 0 0 30px; border:solid 1px ##40aa60;"></a>
+</td></tr>
+
+<tr><td colspan=4>
+$INCLUDE nica/search.dat[block project]
+</td></tr>
+</table>
+
+$SET_PARAMETERS bank_check=; ??!show1C
+$SET_PARAMETERS payed=y ??bank_check=payed
+$SET_PARAMETERS b_diff=1000  ??!b_diff
+$SET_PARAMETERS_SESSION b_diff=#b_diff#
+
+<table border=0 bgcolor=whitesmoke width=100%>
+<tr><td valign=top>
+
+<table border=0>
+<tr><td colspan=2 valign=top>
+$INCLUDE doc/search.dat[payment]
+</td></tr>
+<tr><td class=l valign=top>
+Рег. № документа:</td><td width=280><input size=5 class=xp name="f_regnr" value='#f_regnr#'>
+</td></tr>
+
+<tr><td class=l>
+Дата регистрации: </td><td nowrap=true>
+$INCLUDE common.dat[dat] param: fd_name=f_regdat1; fd_val=#f_regdat1#;
+ [по:
+$INCLUDE common.dat[dat] param: fd_name=f_regdat2; fd_val=#f_regdat2#;
+  ]
+</td></tr>
+
+$INCLUDE nica/search.dat[storeSrcOptions]
+$INCLUDE nica/search.dat[srcCheck]  
+
+
+</table>
+
+</td><td valign=top>
+<table border=0>
+
+<tr><td class=0>Сумма:</td><td>
+$INCLUDE filters.dat[f_summa]
+</td></tr>
+
+<tr><td class=l>
+Кому:</td><td><input class=xp size=30 name="f_receiver" value='#f_receiver#'>&nbsp;&nbsp;
+</td></tr>
+
+
+<tr><td class=l>
+Искать текст:</td><td><input class=xp size=30 name="f_search" value='#f_search#'>&nbsp;&nbsp;
+</td></tr>
+
+<tr><td colspan=2 class=l>
+<br>
+<input class=button type=button value="Сбросить фильтры" onClick="resetForm();">
+&nbsp; &nbsp; &nbsp; 
+<input type=submit class=button value="Выполнить">&nbsp;&nbsp;
+</td></tr></table>
+</td></tr>
+$INCLUDE nica/search_1.dat[adv filters]
+</table>
+</td></tr></table>
+
+$INCLUDE nica/search_1.dat[script]
+<script>
+function showCheck1C(show)
+{
+	if (show) document.getElementById("d_check1C").style.display="block";
+	else document.getElementById("d_check1C").style.display="none";
+}
+</script>
+[end]
+
+Выбор валюты (не исп.)
+<tr><td class=l valign=top>
+Показать:</td><td width=280>
+<input type=radio name=showCurr value=''
+checked ??!showCurr
+>рубли 
+<input type=radio name=showCurr value='USD'
+checked ??showCurr=USD
+>USD 
+<input type=radio name=showCurr value='ALL'
+checked ??showCurr=ALL
+>все</td></tr>
+
+
+$INCLUDE doc/search_mnts.dat[adv filters] ??
+
+[ZZZadv filters]
+<tr><td colspan=2><FIELDSET><LEGEND>
+<a id="a_adv_fil" href="javascript:showAdvFilters();">
+Доп. фильтры >>> ??!advfiltered
+Скрыть доп. фильтры &lt;&lt;&lt; ??advfiltered
+</a></LEGEND>
+
+<div id="adv_filters" 
+style="display:none" ??!advfiltered
+style="display:block" ??advfiltered
+>
+<table border=0><tr><td class=l>
+Бюджетный код:</td><td><input class=xp size=5 name="f_bc" value='#f_bc#'>
+</td></tr>
+
+<tr><td class=l>  
+Консолидир. статья:</td><td><select name=cons><option value=""></option><option value="null">пусто</option>#CONSS#</select>
+</td></tr><tr><td class=l>  
+Статья бюджета:</td><td><select name=aggr><option value=""> </option>
+<option value="null">пусто</option>
+<option value="05,06,10">5,6,10 - материалы и оборуд.</option>
+#AGGRS#</select>
+<input type=checkbox name=aggr_excl
+checked  ??aggr_excl=on
+>искл.
+</td></tr>
+
+<tr><td class=l>  
+Статус:</td><td><select name=f_doc_status><option></option>#DOC_STATUSES#
+<option value='2,3'>неотлож.+подписанные</option>
+</select>
+
+</td></tr>
+
+<tr><td class=l>  
+Оператор:</td><td nowrap=true><select name=f_modif><option></option>#MODIFIERS#
+</select>
+
+</td></tr>
+
+</table>
+</div>
+</FIELDSET>
+</td></tr>
+
+[end]

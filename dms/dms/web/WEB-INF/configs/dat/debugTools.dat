@@ -1,0 +1,49 @@
+debugTools.dat
+
+[info test]
+<div style="font-size:7pt;">
+--------------- ОТЛАДКА - моделирование вызова справочников ------------- ??
+Тесты справочников: юзеры: 
+<input id="VUSER_ID" name="VUSER_id" size=5 value="">
+<span class="info_input" id="VUSER" info_id="5" searchFor='none' info_view="1">VU</span> 
+<span class="pt" onClick="loadFrame('c=sys/setVU&vu_id=' + document.getElementById('VUSER_ID').value);">set</span>
+
+
+<input name="test_person_info2_id" size=5 value="">
+<input class="info_input" id="test_person_info2" name="test_person_info2" size=35 
+	info_id="11" searchFor='николаев' info_view="2" value="сотрудники"> 
+<br>
+Тест справочников подразделений: <input name="test_div_id" size=5 value="" id="test_div_id">
+<input class="info_input" size=25 id="test_div" name="test_div" info_id="10" info_view="2" value="">
+
+лаборатория: <input name="test_lab_id" size=5 value="">
+<div class="info_input pt big bg_white" id="test_lab" info_id="10" info_view="3" info_type="3" searchFor='none' 
+style="display: inline-block; width:100px; border:solid 1px gray; ">выбрать</div>
+<input id="doc_date" class="fe hasDatepick" type="text" size=10 name=doc_date value=""> ??
+</div>
+[end]
+
+
+[debug links]
+<hr> ??debug=on
+<div id="debug"  style="font-size:7pt;">Debug tools:
+
+<form name="debugForm" 
+method="POST" enctype="multipart/form-data" ??
+target="wf2">
+<input type=hidden name=c value="sys/setDebugMode">
+----------------- Вспомогательное - отладка --------------- ??
+USER_ID: #USER_ID#; FIO: #FIO# 
+<br>
+<input type=checkbox name=setLog value="true" onClick="document.debugForm.submit();"
+checked ??log=true
+> <a href="#ContextPath#/#logFileName#" target=_blank>LOG</a> 
+| <input type=checkbox name=setDebug onClick="document.debugForm.submit();"
+checked ??debug=on
+>Debug mode
+ | <a href="#ServletPath#?c=sys/request_log" target=_blank>LOG запросов</a>
+ | <a href="#ServletPath#?c=sys/cfgdoc_noDB" target=_blank>CFG DOC</a>
+ | <a href="#ServletPath#?c=sys/cleadDB" target=_blank>ClearDB</a>
+</form>
+</div>
+[end]

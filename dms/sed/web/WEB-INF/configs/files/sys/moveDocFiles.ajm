@@ -1,0 +1,75 @@
+files/sys/moveDocFiles.cfg
+
+
+[comments]
+descr=S: Перемещение файлов документа
+input=doc_id - id документа
+parents=
+author=Куняев
+[end]
+
+[parameters]
+service=jinr.sed.tools.ServiceMoveFile
+[end]
+
+
+[report header]   ***** выполняется сервисом вначале обработки запроса
+$LOG3 <hr>========================= files/sys/moveDocFiles.cfg: service=#service#; =================<br> 
+$SET_PARAMETERS OLD_DOC_PATH=; NEW_DOC_PATH=; ERROR=;
+$GET_DATA [getDocPaths]
+$LOG3 #OLD_DOC_PATH# ==> #NEW_DOC_PATH#;<br> 
+#OLD_DOC_PATH# ==> #NEW_DOC_PATH#<br>
+$SET_PARAMETERS doIt=Y; 
+$SET_PARAMETERS AR_R=;
+$SET_PARAMETERS AR_R=Y; ??doIt=Y
+$CALL_SERVICE c=sys/getARUD; doc_id=#doc_id#; ??!AR_R=Y
+$LOG3 ................ AR_R=#AR_R#; .................<br> 
+
+$SET_PARAMETERS ERROR=Папка не найдена! ??!OLD_DOC_PATH
+
+[end]
+
+[report footer]  ***** выполняется сервисом, если !ERROR
+$GET_DATA [fix files paths] 
+OK  ??!ERROR
+[end]
+
+
+[ERR_MSG]   ***** выводится сервисом, если ERROR
+$LOG_ERROR #ERROR#
+$LOG <b>ERROR: #ERROR#;</b><br> 
+ERROR: #ERROR#<br>
+[end]
+
+<script>
+alert("#ERROR#");
+</script>
+
+
+[getDocPaths]
+select count(id), '#file_storage_path##doc_id#/' as "OLD_DOC_PATH"
+from doc_files
+where fs_file_name like '#doc_id#/%'
+;
+select date_format(d.created,'%Y/%m') as "DOC_PATH" 
+from  d_list d where d.id = #doc_id#
+;
+select '#file_storage_path##DOC_PATH#/#doc_id#/' as "NEW_DOC_PATH"
+[end]
+
+
+
+[fix files paths]
+update doc_files 
+set fs_file_name=replace(fs_file_name,'#doc_id#/','#DOC_PATH#/#doc_id#/')
+where doc_id = #doc_id#
+and not fs_file_name like '%#DOC_PATH#/%'
+[end]
+
+;
+update doc_file_pages 
+set fs_file_name=replace(fs_file_name,'#doc_id#/','#DOC_PATH#/#doc_id#/')
+where file_id in( select id from doc_files where doc_id = #doc_id#)
+and fs_file_name not like '%#DOC_PATH#/%'
+
+

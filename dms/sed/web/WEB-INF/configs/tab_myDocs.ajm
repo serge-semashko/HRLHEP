@@ -1,0 +1,201 @@
+tab_myDocs.cfg
+
+[comments]
+descr=U: Вывод таба "Мои документы"
+
+input=none
+output=HTML форма списка документов
+parents=main.cfg
+childs=docs/docs_to_sign_table.cfg, docs/my_drafts_table.cfg docs/docs_in_progress_table.cfg, docs/ready_docs.cfg, 
+testURL=?c=tab_myDocs
+author=Куняев
+[end]
+
+[description]
+Вывод таба "Мои документы" - подсчет кол-ва доков по разделам и вызов модулей вывода таблиц
+[end]
+
+[parameters]
+request_name=U:Список документов
+LOG=OFF
+debug=off
+[end]
+
+[report]
+    $INCLUDE dat/common.dat[check login]
+    $INCLUDE [report_] ??USER_ID
+    $SET_PARAMETERS doc_id=;  
+[end]
+
+[report_]
+    $SET_PARAMETERS_SESSION debug=off;
+    <input type=hidden name="atab" value="t_myDocs"> 
+    <input type=hidden name="module" value="tab_myDocs">
+    </form>
+    $GET_DATA [getDH]   ??
+    $INCLUDE [extr msg]   ??DH<308&ZZZ - Объявление
+
+    $GET_DATA docs/docs_to_sign_table.cfg[count docs]
+    <fieldset class="sp">
+        <legend class="pt" onClick="if(toggleDiv('docs_to_sign', 200)) AjaxCall('docs_to_sign', 'c=docs/docs_to_sign_table', true);"> 
+            Ожидают (#NUM_DOCS_TO_SIGN#): 
+        </legend>
+        <div id="docs_to_sign" style="padding:0 0 0 20px;">
+            <form name="DogFilterForm" id="DogFilterForm" method="POST" enctype="multipart/form-data" onSubmit="return getDogData();"> 
+                <input type="submit" class="butt1 pt" style="width:100; display:none;" value="ОК"> 
+                $CALL_SERVICE c=docs/docs_to_sign_table ??NUM_DOCS_TO_SIGN>0
+            </form>
+        </div>
+    </fieldset> 
+
+    $GET_DATA JINR/doc_1_settings.cfg[checkRole]
+    $INCLUDE [requests4dogovor]  ??ROLE_SMTS_DOG|USER_ID=5782
+
+    $GET_DATA docs/my_drafts_table.cfg[count docs]
+    <fieldset class="sp">
+        <legend style="padding:2px 7px 2px 3px;">
+            <span class="pt" style="padding:2px;" onClick="if(toggleDiv('my_drafts', 200)) AjaxCall('my_drafts', 'c=docs/my_drafts_table', true);"> 
+                Черновики (#NUM_MY_DRAFTS#): 
+            </span>
+            <input type="button" class="butt1 pt" style="margin-left:30px; width:200px;" value="Создать новый документ" 
+                onClick="AjaxCall('c_myDocs', 'c=docs/choose_doc_type');">
+        </legend> 
+        <div id="my_drafts" style="padding:0 0 0 20px; display:none;"></div>
+    </fieldset>
+
+
+    $GET_DATA docs/docs_in_progress_table.cfg[count docs]
+    <form name="ProgDocsFilterForm" id="ProgDocsFilterForm" method="POST" enctype="multipart/form-data" onSubmit="return getProgData();">
+    <input type="submit" class="butt1 pt" style="width:100; display:none;" value="ОК">
+    <fieldset class="sp">
+        <legend class="pt" onClick="if(toggleDiv('docs_in_progress', 0)) AjaxCall('docs_in_progress', 'c=docs/docs_in_progress_table', true);"> 
+            В процессе согласования (<span id="num_docs_in_progress">#NUM_DOCS_IN_PROGRESS#</span>): 
+        </legend>
+        <div id="docs_in_progress" style="padding:0 0 0 20px; display:none;">Загрузка...</div>
+    </fieldset>
+    </form>
+
+
+    <script type="text/javascript">
+        var getDogData=function(){
+            AjaxCall('dog_2_sign', 'c=JINR/reports/dog_post_2_sign', true, 'DogFilterForm', true);
+            $('##dog_2_sign').html(' Загрузка...'); ??
+            return false;
+        }
+        var filterDogByDiv=function(requesterId, id, text){
+            pasteInfoResult(requesterId, id, text);
+            getDogData(); 
+        }
+
+        var getReq4DogData=function(){
+            AjaxCall('docs_4dogovor', 'c=JINR/reports/zajavka4dogovor', true, 'Req4DogFilterForm');
+            return false;
+        }
+        var filterReqByDiv=function(requesterId, id, text){
+            pasteInfoResult(requesterId, id, text);
+            getReq4DogData(); 
+        }
+
+        var getProgData=function(){
+            AjaxCall('docs_in_progress', 'c=docs/docs_in_progress_table', true, 'ProgDocsFilterForm');
+            return false;
+        }
+        var filterByDiv=function(requesterId, id, text){
+            pasteInfoResult(requesterId, id, text);
+            getProgData(); 
+        }
+
+        setModule("tab_myDocs");
+        showPageTop(true);
+        AjaxCall('my_drafts', 'c=docs/my_drafts_table', toggleDiv('my_drafts', 200),'',true);  ??ZZZNUM_MY_DRAFTS>0
+        AjaxCall('docs_in_progress', 'c=docs/docs_in_progress_table', toggleDiv('docs_in_progress', 0)); ??NUM_DOCS_IN_PROGRESS>0&NUM_DOCS_IN_PROGRESS<15&NUM_DOCS_TO_SIGN<10&ZZZ
+        AjaxCall('docs_in_process', 'c=docs/docs_in_process_table', toggleDiv('docs_in_process', 0));  ??NUM_DOCS_IN_PROСESS>0&NUM_DOCS_IN_PROСESS<15&NUM_DOCS_TO_SIGN<10&ZZZ
+
+        AjaxCall('docs_4dogovor', 'c=JINR/reports/zajavka4dogovor', true);  ??ROLE_SMTS_DOG|USER_ID=5782
+    </script>
+[end]
+
+    $GET_DATA docs/docs_in_process_table.cfg[count docs]
+    <form name="ProcDocsFilterForm" id="ProcDocsFilterForm" method="POST" enctype="multipart/form-data" onSubmit="return getProcData();">
+    <input type="submit" class="butt1 pt" style="width:100; display:none;" value="ОК">
+    <fieldset>
+        <legend class="pt" onClick="if(toggleDiv('docs_in_process', 200)) AjaxCall('docs_in_process', 'c=docs/docs_in_process_table', true);"> 
+            На этапе завершения (<span id="num_docs_in_process">#NUM_DOCS_IN_PROСESS#</span>): 
+        </legend>
+        <div id="docs_in_process" style="padding:0 0 0 20px; display:none;">Загрузка...</div>
+    </fieldset>
+
+        var getProcData=function(){
+            AjaxCall('docs_in_process', 'c=docs/docs_in_process_table', true, 'ProcDocsFilterForm');
+            return false;
+        }
+        var filterProcByDiv=function(requesterId, id, text){
+            pasteInfoResult(requesterId, id, text);
+            getProcData(); 
+        }
+
+[requests4dogovor]
+</form>
+<form name="Req4DogFilterForm" id="Req4DogFilterForm" method="POST" enctype="multipart/form-data" onSubmit="return getReq4DogData();">
+    <input type="submit" class="butt1 pt" style="width:100; display:none;" value="ОК">
+
+    <fieldset class="sp"><legend class="pt" 
+        onClick="if(toggleDiv('docs_4dogovor', 0)) AjaxCall('docs_4dogovor', 'c=JINR/reports/zajavka4dogovor', false);"> 
+        Ожидают подготовки договора (<span id="NUM_DOCS_4_DOG">#NUM_DOCS_4_DOG#</span>): </legend>
+        <div id="docs_4dogovor" style="padding:0 0 0 20px;">
+        $CALL_SERVICE c=JINR/reports/zajavka4dogovor; ??
+        </div>
+    </fieldset> 
+</form>
+[end]
+
+
+[linkedMark]
+    $SET_PARAMETERS odd=; img=none;
+    $SET_PARAMETERS odd=oddRow; ??oddRow=1
+    <tr class="pt #odd#" onClick="AjaxCall('doc_content', 'c=docs/view_doc&doc_id=#ID#&mode=popup', true, '',true);">
+        +++++ картинки для показа связанных документов +++++++ ??
+        $SET_PARAMETERS img=up-down; ??pid>0&num_children>0
+        $SET_PARAMETERS img=up; ??pid>0&num_children=0
+        $SET_PARAMETERS img=down; ??num_children>0&!pid>0
+
+        <td style="white-space:nowrap;" 
+         onClick="showLinked(event, #ID#, '#img#', '#report#')"  ??!img=none
+        >
+            #ID# ??USER_ID=2309
+            pid=#pid#; num_ch=#num_children#; ??
+            $SET_PARAMETERS color=green; 
+            $SET_PARAMETERS color=gray; ??VIEWED
+            <i class="fa fa-info" style="color:#color#; font-size:10pt;" aria-hidden="true"></i>   ??cnt>0&!hist_cnt>0
+            <img src="#imgPath#none.png" width=5 height=1> ??!cnt>0|hist_cnt>0 
+            <img src="#imgPath##img#.png" > ??img
+        </td> 
+[end]
+
+
+[linkedData]
+<tr class="#odd#">
+    <td style="padding:0;"></td>
+    <td id="linked_#report##ID#" colspan=8 style="display:none; padding:0; border-left:dotted 1px gray; border-bottom:none 1px gray;"></td>
+</tr> 
+[end]
+
+[extr msg] ***** Текст общего объявления
+    <center><div style="border:solid 1px red; font-size:13pt; padding:10px; background-color:white; width:700px;">
+    <b>Уважаемые пользователи!</b><br>
+    Из-за поломки центрального мэйл-сервера рассылка уведомлений невозможна.<br>
+    Восстановление работы сервера ожидается до 8:00 3 июня.<br>
+    Приносим извинения за доставленные неудобства.
+    </div></center>#DH#
+[end]
+
+[getDH] ***** Проверка даты-времени для показа объявления
+    select date_format(now(),'%d%h') as DH
+[end]
+
+
+[access_filter]
+    and (dh.creator_id=#USER_ID# or 
+        dh.id in(select doc_id from p_permits where user_id=#USER_ID#)  
+    )
+[end]

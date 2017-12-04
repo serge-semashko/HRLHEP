@@ -1,0 +1,430 @@
+wf/graph_show_wf_for_doc
+
+[comments]
+descr=S: Показать в графическом виде рабочее workflow для документа. 
+
+input=doc_id - ID документа (из таблицы d_list)
+output=HTML форма представляющая рабочее workflow для документа в графическом виде.
+
+parents=docs/view_doc_wf.cfg
+childs=wf/graph_show_wf_step_detail.cfg
+testURL=?c=wf/graph_show_wf_for_doc&doc_id=1
+author=Яковлев, Куняев
+[end]
+
+[description]
+Графическое представление рабочего  workflow для документа.<br>
+<br>
+Рисует <'div'> для каждого актуального шага WorkFlow.<br>
+Далее для каждого шага вызывается запрос, который определяет тип шага 
+и состав информации, которая будет выдана пользователю.<br>
+Возможные варианты:<br>
+<ul><li>Простой шаг - для шага с таким номером в таблице всего одна запись (строка), 
+соответствующая как правило одному пользователю - выдаются данные из этой записи, 
+число отображаемых пиктограмм пользователей - 1.</li>
+<li>Параллельный шаг - для шага с таким номером в таблице несколько запись, каждая 
+из которых, как правило соответствует одному пользователю, при этом всем строкам 
+сопоставлена одинаковая роль и согласовывать документ на данном шаге должен только 
+один из пользователей - выдаются данные из любой одной записи, число отображаемых 
+пиктограмм пользователей - 1. (Изменено - сейчас число отображаемых пиктограмм 
+пользователей - соответствует числу записей.)</li>
+<li>Параллельный шаг - аналогичный предыдущему случаю, (несколько записей и одинаковая 
+роль), но согласовывать документ на данном шаге должны все пользователи - выдаются 
+данные для записи, которая была обработана последней по времени или же не обработана 
+до сих пор (если таких записей несколько, то одна любая из них), число отображаемых 
+пиктограмм пользователей - соответствует числу записей.</li>
+<li>Параллельный шаг - несколько записей, при этом разным записям сопоставлены разные роли,
+согласовывать документ на данном шаге также должны все пользователи - выдается 
+информация о том, что  данный шаг смешанный, результат и время обработки берутся
+для записи, которая была обработана последней по времени или же не обработана 
+до сих пор (если таких записей несколько, то одна любая из них), число отображаемых 
+пиктограмм пользователей - соответствует числу записей.</li>
+</ul>
+<br>
+По клику на изображение шага вызывается модуль wf/graph_show_wf_step_detail.cfg, который 
+отображает подробную информацию о данном шаге.
+
+[end]
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=U:графическое отображение wf док. #doc_id#
+tableCfg=table_no
+LOG=OFF
+[end]
+
+
+[report header]
+$CALL_SERVICE c=svs/get_user_info; requested_user_id=#USER_ID#  ??
+
+$CALL_SERVICE c=sys/getARUD.cfg
+$INCLUDE [report header_] ??AR_R=Y
+[end]
+
+[report header_]
+$SET_PARAMETERS WF_ID=#WF_ID_INACT#  ??!WF_ID
+$INCLUDE docs/custom_settings.cfg[set custom parameters]
+
+$INCLUDE [table headers] ??WF_ID
+[end]
+
+[table headers]
+<fieldset style="border:dotted 1px gray; text-align:left;"><legend style="box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.4);"><b>Маршрут документа:</b></legend>
+
+$SET_PARAMETERS Max_WF_step=0;
+$GET_DATA [getMaxWFStep]
+
+<input type=hidden id="wf_single_user_icon" name="wf_single_user_icon" value='<i class="fa fa-user-o blue_font" style="font-size: 10pt;"></i>'>
+
+<script type="text/javascript">
+function makeUserIconImage(wf_step_num, wf_usr_ico_cnt) {
+    var ico_str = "";
+    var curr_div_id = "wf_usr_image_ico_"+wf_step_num;
+    var wf_usr_sngl_ico = ($('#wf_single_user_icon').val());
+    for (var i = 0; i < wf_usr_ico_cnt; i++) {
+        ico_str = ico_str + wf_usr_sngl_ico;
+    }
+    ico_str = ico_str + '\u00A0';
+    document.getElementById(curr_div_id).innerHTML = ico_str;
+}
+</script>
+
+[end]
+
+
+[item]  ****** шаг маршрута
+
+    $SET_PARAMETERS WF_user_icon_count=0;
+    $SET_PARAMETERS WF_step_count=0;
+    +++++++ WF_step_category=0 - шаг одиночный; одна строка в wf ++++++++ ??
+    +++++++ WF_step_category=1 - шаг параллельный; для всех строк одинаковые роль и цель: wf.criteria = 1 - отображается как один шаг с ролью и один пользователь ++++++++ ??
+    +++++++ WF_step_category=2 - шаг параллельный; для всех строк одинаковые роль и цель; wf.criteria = 100 - отображается как один шаг с ролью и несколько пользователей ++++++++ ??
+    +++++++ WF_step_category=3 - шаг "смешанный"; разные роли и цели - отображается как параллельный шаг и несколько пользователей ++++++++ ??
+    $SET_PARAMETERS WF_step_category=0;
+
+    $GET_DATA [getWFStepCount]
+
+    $INCLUDE [single_WF_step_records]  ??WF_step_count=1
+    $INCLUDE [multiple_WF_step_records]  ??WF_step_count>1
+
+    $SET_PARAMETERS st=style="border-top:solid 1px gray&##59"; ??!PREV_STEP=#step#
+    $SET_PARAMETERS st=; ??PREV_STEP=#step#&prev_role_id=#role_id#
+
+    $SET_PARAMETERS cl=;
+    $SET_PARAMETERS cl=step_waiting; ??STARTED&!result_code&is_active=1
+    $SET_PARAMETERS cl=inactive; ??!is_active=1
+
+    <div style="float:left">
+        <div id="gph_doc_wf_#wf_step#" 
+            class="rounded_box pt
+                bg_light_blue ??result_code=#~doc_action_forward#
+                bg_light_red ??result_code=#~doc_action_reject#|result_code=#~doc_action_reject_2SMTS#
+                bg_light_green ??result_code=#~doc_action_sign#|result_code=#~doc_action_delegate#|result_code=#~doc_action_signed#|result_code=#~doc_action_processed#
+                step_waiting ??STARTED&!result_code&is_active=1
+                bg_white ??!STARTED&!result_code&is_active=1
+            " onClick="AjaxCall('popupCont', 'c=wf/show_wf_for_doc&WF_ID=#WF_ID#&WF_STEP=#wf_step#');"
+        >
+            <b>#wf_step#.</b>  ??wf_step>0
+            <span id="wf_usr_image_ico_#wf_step#"></span>  ??WF_user_icon_count>1
+            <script type="text/javascript">  makeUserIconImage(#wf_step#, #WF_user_icon_count#); </script>  ??WF_user_icon_count>1
+
+            <small>#STARTED#,</small>  ??STARTED&wf_step>0
+            <small>#FINISHED#</small>  ??FINISHED&wf_step=0
+            $INCLUDE [duratuon time] ??FINISHED&wf_step>0
+            $INCLUDE [waiting time] ??STARTED&!result_code&is_active=1
+
+            <br>
+            $INCLUDE [item_beginning] 
+
+            <br>(утверждение) ??step_type=#~wf_step_signed#&st&!result_code
+            <br>(завершение) ??step_type=#~wf_step_process#&st&!result_code
+
+            <br><b> #result# </b>  ??result_code=#~doc_action_processed#
+
+            $INCLUDE [final decision info]  ??CUSTOM_DECISION_TEXT&step_type=1&result_code=#~doc_action_signed#
+            step_type=#step_type#; #CUSTOM_DECISION_TEXT#; ??
+
+            $SET_PARAMETERS NEXT_STEP_ID=#step_id#;  ??!NEXT_STEP_ID&STARTED&!result_code
+            $SET_PARAMETERS prev_role_id=#role_id#; prev_role_target_id=#role_target_id#; PREV_TARGET_NAME=#TARGET_NAME#; PREV_STEP=#step#;
+            $SET_PARAMETERS role_id=; ROLE_NAME=; INFO_ID=; role_target_id=; user_id=; u_FIO=; result_code=; result=; STARTED=; TARGET_NAME=; PREV_STEP=#step#; criteria=;
+            $SET_PARAMETERS u_roles=; u_posts=; RECEIVERS=; USER_IOF=; STARTED=; FINISHED=; role_comment=;
+            $SET_PARAMETERS WF_step_category=; WF_step_count=; WF_user_icon_count=; WF_user_icon_image=; step_type=;
+        </div>
+        <i class="fa fa-long-arrow-right" style="font-size: 20pt; margin: 17pt 0; height:30pt;"></i> ??!wf_step=#Max_WF_step#
+    </div>
+[end]
+
+
+[item_beginning]
+    WF_step_category=#WF_step_category#; ??
+    #USER_IOF# ??WF_step_category=0|WF_step_category=3
+     ? ??!USER_IOF&WF_step_category=0|WF_step_category=3
+    <br> ??WF_step_category={{0|1|3}}&!step_type=#~wf_step_process#
+    #ROLE_NAME#
+[end]
+
+
+[single_WF_step_records]
+    $SET_PARAMETERS WF_user_icon_count=1;
+    $GET_DATA [getWFStepInfo]
+[end]
+
+
+[multiple_WF_step_records]
+    $SET_PARAMETERS Cri_1_WFStepCount = 0;
+    $SET_PARAMETERS Cri_100_WFStepCount = 0;
+
+    $GET_DATA [getDifferentWFStepCountInfo]
+
+    $SET_PARAMETERS WF_step_category = 1; ??Cri_1_WFStepCount=#WF_step_count#
+    $SET_PARAMETERS WF_step_category = 2; ??Cri_100_WFStepCount=#WF_step_count#
+    $SET_PARAMETERS WF_step_category = 3; ??!Cri_1_WFStepCount=#WF_step_count#&!Cri_100_WFStepCount=#WF_step_count#
+
+    <br> WF_step_category = #WF_step_category# ??!WF_step_category=1&!WF_step_category=2&!WF_step_category=3
+
+    $SET_PARAMETERS WF_user_icon_count = #Cri_1_WFStepCount#; ??WF_step_category=1
+    $GET_DATA [getWFStepInfo] ??WF_step_category=1
+
+    $SET_PARAMETERS WF_user_icon_count = #Cri_100_WFStepCount#; ??WF_step_category=2
+    $INCLUDE [get wf step id]  ??WF_step_category=2|WF_step_category=3
+[end]
+
+
+[duratuon time]
+    <b>
+        #DURATION_DAY#д  ??!DURATION_DAY=0
+        #DURATION_HOUR#ч
+    </b>
+[end]
+
+[waiting time]
+    <b>
+        #WAITING_DAY#д  ??!WAITING_DAY=0
+        #WAITING_HOUR#ч
+    </b>
+[end]
+
+[final decision info]
+    CUSTOM_DECISION_TEXT=#CUSTOM_DECISION_TEXT#; ??
+    <br><b> 
+        $INCLUDE #CUSTOM_DECISION_TEXT# 
+    </b>
+[end]
+
+
+<span class="pt" 
+    onClick="$('##doc_show_wf_div').toggle();
+    AjaxCall('doc_show_wf_div', 'c=wf/show_wf_for_doc&doc_id=#doc_id#');"  
+  style="border-bottom:solid 1px gray; float:left; margin-top:0pt; padding:2px;"> подробнее >> 
+>
+</span><br> 
+
+[report footer]
+    <div style="clear:both;"></div> ??
+
+    <div style="clear:both; margin:20px;"></div> 
+    <div id="doc_wf" style="display:block;"></div>
+
+    <script>
+        AjaxCall('doc_wf', 'c=wf/show_wf_for_doc&doc_id=#doc_id#&mode=#mode#');
+    </script>
+
+    #WF_ID# ??AR_SYS_ADMIN=1
+    </fieldset>
+[end]
+
+
+
+[get wf step id]
+    $SET_PARAMETERS WF_step_id =; 
+
+    $GET_DATA [getWFStepNotFinishedId]
+    $GET_DATA [getWFStepRejectedId]  ??!WF_step_id
+    $GET_DATA [getWFStepFinishedId]  ??!WF_step_id
+
+    $GET_DATA [getWFStepInfo] ??WF_step_category=2|WF_step_category=3
+
+    $GET_DATA [getWFUserIconCountInfo] ??WF_step_category=3
+[end]
+
+
+<script type="text/javascript"> centerDialog(); window.setTimeout(centerDialog, 20); </script>  ??mode=popup
+
+==============================================================
+==============================================================
+==============================================================
+
+[SQL]
+$INCLUDE [SQL_] ??WF_ID&AR_R=Y
+[end]
+
+[SQL_]
+    select wf.wf_id, wf.step as wf_step
+    from wf
+    where wf.wf_id=#WF_ID#
+        and (wf.result is null or wf.result<>'не требуется')
+        and (wf.is_active=1 or wf.result<>'не требуется')
+        and wf.step_type <> 3 
+        group by wf.step
+    order by wf.step
+[end]
+
+[getMaxWFStep]
+    select Max(wf.step) AS Max_WF_step
+    from wf
+    where wf.wf_id=#WF_ID#
+        and (wf.result is null or wf.result<>'не требуется')
+        and (wf.is_active=1 or wf.result<>'не требуется')
+        and wf.step_type <> 3 
+[end]
+
+
+[getWFStepCount]
+    select Count(*) AS WF_step_count
+    from wf
+    where wf.wf_id=#WF_ID#
+        and wf.step=#wf_step#
+        and (wf.result is null or wf.result<>'не требуется')
+        and (wf.is_active=1 or wf.result<>'не требуется')
+        and wf.step_type <> 3 
+[end]
+
+
+[getDifferentWFStepCountInfo]
+    SET @rownum := 0;
+
+    select wf.step, wf.role_id, wf.role_target_type_id, step_type, wf.criteria, (@rownum :=count(wf.step)) as Cri_1_WFStepCount
+    from wf
+    where wf.wf_id=#WF_ID#
+        and wf.step = #wf_step#
+        and wf.criteria = 1
+        and wf.step_type <> 3
+        and (wf.result is null or wf.result<>'не требуется')
+        and (wf.is_active=1 or wf.result<>'не требуется')
+    group by
+        wf.role_id, wf.role_target_type_id, step_type, wf.criteria
+    order by Cri_1_WFStepCount desc
+    limit 1
+    ;
+
+    SET @rownum := 0;
+    select wf.step, wf.role_id, wf.role_target_type_id, step_type, wf.criteria, (@rownum :=count(wf.step)) as Cri_100_WFStepCount
+    from wf
+    where wf.wf_id=#WF_ID#
+        and wf.step = #wf_step#
+        and wf.criteria = 100
+        and wf.step_type <> 3
+        and (wf.result is null or wf.result<>'не требуется')
+        and (wf.is_active=1 or wf.result<>'не требуется')
+    group by
+        wf.role_id, wf.role_target_type_id, step_type, wf.criteria
+    order by Cri_100_WFStepCount desc
+    limit 1
+    ;
+[end]
+
+
+[getWFStepRejectedId]
+    select wf.id as WF_step_id
+    from wf
+    where wf.wf_id=#WF_ID#
+        and wf.step=#wf_step#
+        and (wf.result is null or wf.result<>'не требуется')
+        and (wf.is_active=1 or wf.result<>'не требуется')
+        and (wf.result_code=12 or wf.result_code=13)
+        and wf.step_type <> 3
+    order by wf.id
+    limit 1
+    ;
+[end]
+
+[getWFStepNotFinishedId]
+    select wf.id as WF_step_id
+    from wf
+    where wf.wf_id=#WF_ID#
+        and wf.step=#wf_step#
+        and (wf.result is null or wf.result<>'не требуется')
+        and (wf.is_active=1 or wf.result<>'не требуется')
+        and wf.result_code is NULL
+        and wf.step_type <> 3
+    order by wf.id
+    limit 1
+    ;
+[end]
+
+[getWFStepFinishedId]
+    select wf.id as WF_step_id, wf.finished
+    from wf
+    where wf.wf_id=#WF_ID#
+        and wf.step=#wf_step#
+        and (wf.result is null or wf.result<>'не требуется')
+        and (wf.is_active=1 or wf.result<>'не требуется')
+        and wf.result_code is NOT NULL
+        and wf.step_type <> 3
+    order by wf.finished desc
+    limit 1
+    ;
+[end]
+
+
+[getWFUserIconCountInfo]
+    select 0 as "AllCri_100_WFStepCount"
+    ;
+    select count(wf.step) as "AllCri_100_WFStepCount"
+    from wf
+    where wf.wf_id=#WF_ID#
+        and wf.step = #wf_step#
+        and wf.criteria = 100
+        and wf.step_type <> 3
+        and (wf.result is null or wf.result<>'не требуется')
+        and (wf.is_active=1 or wf.result<>'не требуется')
+    order by AllCri_100_WFStepCount desc
+    limit 1
+    ;
+
+    select (if(#Cri_1_WFStepCount#<>0,1,0) + #AllCri_100_WFStepCount#) as "WF_user_icon_count"  ??
+    select (#Cri_1_WFStepCount# + #AllCri_100_WFStepCount#) as "WF_user_icon_count"
+    ;
+[end]
+
+
+[getWFStepInfo]
+    select wf.id as step_id, wf.step, wf.role_id, wf.role_target_type_id, wf.role_target_id, wf.role_comment
+        , wf.step_type, wf.criteria
+        , wf.is_active
+        , r.name_short as "ROLE_NAME", tt.type as "TARGET_TYPE"
+         ,i.name as "INFO_NAME", i.id as "INFO_ID", i.table_name as "INFO_TABLE"
+        , wf.user_id, iof(u.F, u.I, u.O) as "USER_IOF", u.email as "USER_EMAIL"
+        , wf.modifier_comment
+        , wf.modifier_id, iof(um.F, um.I, um.O) as "MODIFIER_IOF"   
+        , result_code, result
+        , if(wf.started is null, '', DATE_FORMAT(wf.started,'#shortDateTimeFormat#')) as "STARTED"
+        , if(wf.finished is null, '', DATE_FORMAT(wf.finished,'#shortDateTimeFormat#')) as "FINISHED"
+
+        , TIMESTAMPDIFF(day, wf.started, wf.finished) AS "DURATION_DAY"
+        , (TIMESTAMPDIFF(hour, wf.started, wf.finished) - TIMESTAMPDIFF(day, wf.started, wf.finished)*24) AS "DURATION_HOUR"
+        , (TIMESTAMPDIFF(minute, wf.started, wf.finished) - TIMESTAMPDIFF(hour, wf.started, wf.finished)*60) AS "DURATION_MINUTE" ??
+        , (TIMESTAMPDIFF(second, wf.started, wf.finished) - TIMESTAMPDIFF(minute, wf.started, wf.finished)*60) AS "DURATION_SECOND" ??
+
+        , TIMESTAMPDIFF(day, wf.started, now()) AS "WAITING_DAY"
+        , (TIMESTAMPDIFF(hour, wf.started, now()) - TIMESTAMPDIFF(day, wf.started, now())*24) AS "WAITING_HOUR"
+        , (TIMESTAMPDIFF(minute, wf.started, now()) - TIMESTAMPDIFF(hour, wf.started, now())*60) AS "WAITING_MINUTE" ??
+        , (TIMESTAMPDIFF(second, wf.started, now()) - TIMESTAMPDIFF(minute, wf.started, now())*60) AS "WAITING_SECOND" ??
+
+        , wf.comment, wf.comment_opened
+    from wf
+        left join a_roles r on r.id=wf.role_id
+        left join a_target_types tt on tt.id=wf.role_target_type_id
+        left join i_infos i on i.id = tt.info_id
+        left join #table_users_full# u on u.id=wf.user_id
+        left join #table_users_full# um on um.id=wf.modifier_id
+    where wf.wf_id=#WF_ID#
+        and wf.step=#wf_step#
+        and wf.step_type<>3
+        and wf.id=#WF_step_id#  ??WF_step_category=2|WF_step_category=3
+        and (wf.result is null or wf.result<>'не требуется')
+        and (wf.is_active=1 or wf.result<>'не требуется')
+    order by wf.step, wf.is_active desc, wf.id
+    limit 1 ??WF_step_category=1|WF_step_category=2|WF_step_category=3
+    ;
+[end]

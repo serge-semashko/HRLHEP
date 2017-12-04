@@ -1,0 +1,66 @@
+[comments]
+descr=A: Панель инструментов для редактора форм документов из списка типов документа
+
+input=type_id - ID типа документа (из таблицы d_types), 
+output=HTML форма с инструментами (кнопками) для создания полей в форме документа
+parents=admin/doctypes/doctype_form_editor.cfg
+childs=
+test_URL=?c=admin/doctypes/doctype_toolbar.cfg
+author=Яковлев, Куняев
+[end]
+
+
+[parameters]
+request_name=A: Панель инструментов для редактора форм документов (Тип документа)
+tableCfg=table_no
+KeepLog=false
+ClearLog=true
+[end]
+
+[report]
+++++ временно - открыто всем. Потом - проверить R и RW права пользователя +++ ??
+$SET_PARAMETERS RWACC=Y; RACC=Y;
+$INCLUDE [report_]  ??RACC
+[end]
+
+=========================
+
+[report_]
+$INCLUDE [result]
+
+[end]
+
+
+[result]
+<small>#c#</small> ??debug=on
+<center>
+
+<input type=hidden name=type_id value='#type_id#'>
+
+<table>
+
+<tr><td>
+<input type="button" class="butt1 pt" style="width:195; margin-right:20px;" value="Добавить новое поле" 
+onClick="AjaxCall('toolbar_panel','c=admin/doctypes/doctype_create_field_menu&type_id=#type_id#');">
+</td></tr>
+
+
+</table>
+
+
+
+
+[end]
+
+
+
+
+
+
+[__]
+<tr><td>
+<input type="button" class="butt1 pt" style="width:95; margin-right:20px;" value="Новое поле" 
+onClick="ShowDialog(true); AjaxCall('popupCont', 'c=admin/doctypes/doctype_create_field_tool&type_id=#type_id#');">
+</td></tr>
+
+[end]

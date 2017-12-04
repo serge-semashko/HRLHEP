@@ -1,0 +1,86 @@
+admin/doctypes/wf_template_list.ajm
+
+[comments]
+descr=A: Редактор шаблонов workflow для типа документов. 
+
+input=type_id - ID типа документа (из таблицы d_types)
+output=HTML форма редактирования шаблонов workflow, 
+parents=admin/doctypes/doctype_panel.cfg
+childs=admin/wf/show_wf_template.cfg, admin/wf/edit_wf_template.cfg
+test_URL=?c=admin/wf/wf_template_editor&type_id=1
+author=Яковлев, Куняев
+[end]
+
+
+[description]
+Редактор шаблонов workflow для типа документов.<br>
+<ul><li>Предоставляет возможность создать новый шаблон WorkFlow для данного типа документа<br>
+(вызывает модуль admin/wf/edit_wf_template.cfg)</li>
+<li>Вызывает модуль admin/wf/show_wf_template.cfg для каждого шаблона WorkFlow <br>
+соответствующего данному типу документа.</li>
+</ul>
+[end]
+
+
+[parameters]
+request_name=A: Редактирование шаблонов workflow для типа документа
+service=dubna.walt.service.TableServiceSpecial
+tableCfg=table_no
+KeepLog=false
+ClearLog=true
+divider=<tr><td colspan=2 class="bg_white" style="height:10px; border-top:solid 1px gray;"></td></tr>
+[end]
+
+
+[report header]
+  <input type=hidden name=type_id value='#type_id#'>
+  IS_ACTIVE=1  ??!IS_ACTIVE
+
+  <table border=1 width="100%" style="background-color:whitesmoke; ">
+    <tr><td><h4> &nbsp; Тип Документа : </h4><h3>#DOC_TYPES_NAME# </h3></td>
+        <td><input type="button" class="butt1 pt" style="width:220;" value="Создать новый шаблон маршрута" 
+            onClick="ShowDialog(true); AjaxCall('popupCont', 'c=admin/doctypes/wf_edit_template_prop&mode=create&type_id=#type_id#');"> 
+    </td></tr></table><hr>
+[end]
+
+
+[item]
+    <div id="wf_template_#wf_template_id#" >
+        $CALL_SERVICE c=admin/doctypes/wf_template
+    </div>
+<hr>
+[end]
+
+[report footer]
+* - автонумерация при старте шага, ** - регистрация на шаге по кнопке, *** - свободный ввод номера (не реализовано)
+[end]
+
+==============================================================
+==============================================================
+==============================================================
+
+***************************** Шаблоны SQL запросов ***************************
+[preSQLs]
+select dtp.ID
+, dtp.name as DOC_TYPES_NAME 
+, dtp.IS_ACTIVE
+, dgr.GROUP_NAME
+, ifnull(DATE_FORMAT(dtp.start_date,'#dateFormat#'),'') as START_DATE
+, u.FIO as CREATOR
+, uu.FIO as MODIFIER 
+, ifnull(DATE_FORMAT(dtp.created,'#dateTimeFormat#'),'') as CREATED
+, ifnull(DATE_FORMAT(dtp.changed,'#dateTimeFormat#'),'') as MODIFIED
+from d_types dtp
+left join doc_groups dgr on dtp.group_id = dgr.Id
+left join #table_users_full# u on u.Id = dtp.creator_id
+left join #table_users_full# uu on uu.Id = dtp.modifier_id
+where dtp.Id = #type_id#
+;
+[end]
+
+
+[SQL]
+select id as wf_template_id from wf_templates_list 
+where doc_type_id=#type_id#  
+order by id
+[end]

@@ -1,0 +1,161 @@
+JINR/reports/dog_podr_table.cfg
+
+[comments]
+descr=U: Модуль вывода списка договоров подряда.
+
+input=
+output=HTML таблица документов
+parents=all_docs
+childs=docs/view_doc
+testURL=?c=JINR/reports/dog_podr_table
+author=Куняев, Яковлев
+[end]
+
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=U:Таблица всех документов
+LOG=ON 
+tableCfg=table_no
+$INCLUDE dat/common.dat[rowLinks]
+[end]
+
+
+[report header]
+$INCLUDE dat/common.dat[check login]
+$INCLUDE [OK report header]  ??USER_ID>0|USER_ID<0
+[end]
+
+
+[OK report header]
+
+$INCLUDE reports/all_docs.cfg[filters table start] ??!of=xl
+$INCLUDE [custom filters]  ??!of=xl
+$INCLUDE reports/all_docs.cfg[filters table end]  ??!of=xl
+
+++++++++++++++++++ Шапка таблицы документов +++++++++++++++++++++ ??
+<table 
+class="tlist tblue" cellspacing=0  ??!of=xl
+border=1  ??of=xl
+>
+<tr>
+<th class="srh" sr="dh.ID"></th>  ??!of=xl
+<th class="srh" sr="dh.NUMBER">Договор</th>
+<th class="srh" sr="dh.status">Статус</th> ??!f_stat|f_stat=-2
+<th class="srh" sr="dh.DIVS">Подразд.</th>
+<th class="srh" sr="dh.TITLE">Содержание</th> ??
+<th class="srh" sr="dat.CONTRACTOR">Подрядчик</th>
+<th class="srh" sr="dat.contractor_dr">Дата рождения</th>
+<th class="srh" sr="dat.payment">Вознаграждение</th> 
+<th class="srh" sr="dat.source_funding">Источник финансирования</th> 
+<th class="srh" sr="dat.contract_begin_date">Срок договора</th> 
+</tr>
+[end]
+
+[custom filters]
+++++++++++++++++++ Дополнительные фильтры для договора подряда ++++++++++++ ??
+<tr><td class= "right nowrap" >Подрядчик: </td>
+<td><input size="30" name="f_contractor" value="#f_contractor#"></td></tr>
+[end]
+
+
+[item]
+++++++++++++++++++ Строка таблицы - 1 документ +++++++++++++++++++++ ??
+<tr class="pt
+oddRow ??oddRow=1
+" onClick="AjaxCall('doc_content', 'c=docs/view_doc&doc_id=#ID#&mode=popup', true, '', true);">
+
+$INCLUDE reports/all_docs_table.cfg[info mark] ??!of=xl
+<td>
+№#DIV_CODE#-#NUMBER#  ??NUMBER
+от #DOC_DATE#  ??DOC_DATE
+</td> 
+$INCLUDE [status] ??!f_stat|f_stat=-2
+
+<td>#DIVS#</td>
+<td>#TITLE#</td> ??
+<td>#CONTRACTOR#</td>
+<td>#CONTRACTOR_DR#</td>
+<td class= "right nowrap" >
+#PAYMENT# ??PAYMENT
+0.00 ??!PAYMENT
+ руб.</td> 
+<td>#SOURCE#</td>
+<td>#FROM_DATE# - #TO_DATE#</td>
+</tr>
+
+$SET_PARAMETERS MARKED=;
+[end]
+
+
+[status]
+<td>
+В процессе согласования ??STATUS=1
+На завершении ??STATUS=2
+завершен ??STATUS=3
+</td>
+[end] 
+
+[report footer]
+$SET_PARAMETERS NumTableCols=8;
+[end]
+
+***************************** Шаблон SQL запроса ***************************
+
+[SQL]
+select
+dh.ID, dh.TYPE_ID, dh.status, dtp.NAME AS DOC_TYPE, dh.pid, dh.num_children
+, dh.NUMBER, dh.TITLE, dh.STATUS, dh.DIVS, LPAD(format(dat.division_id / 1000,0), 3, '0') as DIV_CODE
+, DATE_FORMAT(dh.doc_date,'#dateFormat#') as DOC_DATE 
+, DATE_FORMAT(dh.created,'#dateFormat#') as CREATED 
+, dh.creator_id
+, concat(ucr.F, ' ', left(IFNULL(ucr.I,''),1), '.', left(IFNULL(ucr.O,''),1),'.') as CREATOR
+, DATE_FORMAT(dh.modified,'#dateFormat#') as MODIFIED
+, dh.modifier_id 
+, concat(umr.F, ' ', left(IFNULL(umr.I,''),1), '.', left(IFNULL(umr.O,''),1),'.') as MODIFIER
+, fyi.cnt, wfh.cnt as hist_cnt
+
+, DATE_FORMAT(dat.contract_begin_date,'#dateFormat#') AS "FROM_DATE"
+, DATE_FORMAT(dat.contract_end_date,'#dateFormat#') AS "TO_DATE"
+, dat.contract_begin_date as "FROM_DATE"  ??
+, dat.contract_end_date as "TO_DATE"  ??
+, dat.contractor as "CONTRACTOR"
+
+, DATE_FORMAT(dat.contractor_dr,'#dateFormat#') as "CONTRACTOR_DR"
+, dat.source_funding as SOURCE
+
+, replace(format(dat.payment,2),',',' ') as "PAYMENT"
+, dh.status AS "STATUS"
+, a.user_id as "VIEWED" 
+
+from d_list dh
+left join d_data_6 dat on dat.doc_id=dh.id
+$INCLUDE [criteria]
+
+and dat.contractor like '#f_contractor#%' ??f_contractor
+
+order by #srt# #desc#, dh.modified desc
+[end]
+
+[criteria]
+left join d_types dtp on dtp.Id = dh.type_id
+left join #table_users_full# ucr on ucr.id=dh.creator_id 
+left join #table_users_full# umr on umr.id=dh.modifier_id 
+join d_divs dd on (dd.doc_id=dh.id and dd.div_id=#f_div_id#) ??f_div_id
+left join d_sent_FYI_count fyi on fyi.doc_id=dh.id and fyi.user_id=#USER_ID#
+left join wf_history_count wfh on wfh.doc_id=dh.id and wfh.user_id=#USER_ID#
+left join d_access a on(a.doc_id=dh.id and a.doc_version=dh.version and a.user_id=#USER_ID#) 
+
+where dh.is_deleted=0 
+    and dtp.group_id<98
+and dh.status in(#f_stat#) ??f_stat&!f_stat=-2
+and dh.status in(1,2,3) ??!f_stat|f_stat=-2
+and (dh.NUMBER like '#f_doc_number#%' or concat(LPAD(format(dat.division_id / 1000,0), 3, '0'),'-', dh.NUMBER)='#f_doc_number#')??f_doc_number
+and dh.TYPE_ID = #f_doc_type_id# ??f_doc_type_id
+and dh.creator_id=#f_initiator_id# ??f_initiator_id
+and dh.id in(select doc_id from d_index where context like '%#f_search#%') ??f_search
+
+$INCLUDE reports/all_docs.cfg[access_filter] ??!FULL_READ_ACCESS=Y
+  ??&!AR_SYS_ADMIN=1
+[end]
+

@@ -1,0 +1,240 @@
+wf/show_wf_for_doc.ajm
+
+[comments]
+descr=S: Показать рабочее workflow для документа. 
+input=doc_id - ID документа
+output=
+parents=
+childs=
+call=$CALL_SERVICE c=wf/show_wf_for_doc; doc_id=1
+author=Куняев
+[end]
+
+[description]
+
+[end]
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=U:отображение wf док. #doc_id#
+tableCfg=table_no
+LOG=ON
+[end]
+
+
+[report header]
+    $CALL_SERVICE c=svs/get_user_info; requested_user_id=#USER_ID#  ??
+
+    $CALL_SERVICE c=sys/getARUD.cfg  ??!WF_STEP
+    $INCLUDE [report header_] ??AR_R=Y|WF_STEP
+[end]
+
+[report header_]
+    $SET_PARAMETERS WF_ID=#WF_ID_INACT#  ??!WF_ID
+    $INCLUDE docs/custom_settings.cfg[set custom parameters]
+
+    <fieldset style_="border:dotted 1px gray;"><legend class="bg_white"><b>Шаг #WF_STEP# маршрута документа:</b></legend>   ??WF_STEP
+    $INCLUDE [table headers] ??WF_ID
+[end]
+
+
+[table headers]
+    <center>
+    <table class="tlist tgreen gray_border"  cellpadding=0 cellspacing=0>
+    <tr><th>Шаг</th>
+    <th width=120>Роль</th> 
+    <th>Пользователь</th>
+    <th>Старт&nbsp;шага</th> 
+    <th>Результат</th>
+    <th>&nbsp;Завершено&nbsp;</th>
+    <th>Комментарий</th>
+    <th>.</th>  ??USER_ID=2309
+    </tr>
+[end]
+
+prev_role_id=#role_id#; prev_role_target_id=#role_target_id#; PREV_TARGET_NAME=TARGET_NAME; PREV_STEP=#step#;
+
+[item]
+    $SET_PARAMETERS st=style="border-top:solid 1px gray&##59"; ??!PREV_STEP=#step#|!prev_role_id=#role_id#
+    $SET_PARAMETERS st=; ??PREV_STEP=#step#&prev_role_id=#role_id#
+
+    $SET_PARAMETERS cl=;
+    $SET_PARAMETERS cl=#cl# step_waiting; ??STARTED&!result_code&is_active=1
+    $SET_PARAMETERS cl=#cl# inactive; ??!is_active=1
+
+    $INCLUDE [item_beginning]
+    <td #st#>#STARTED#</td>
+
+    <td
+    class="bg_light_blue" ??result_code=#~doc_action_forward#
+    class="bg_light_red" ??result_code=#~doc_action_reject#|result_code=#~doc_action_reject_2SMTS#
+    class="bg_light_green" ??result_code=#~doc_action_sign#|result_code=#~doc_action_delegate#|result_code=#~doc_action_signed#|result_code=#~doc_action_processed#
+     #st#>
+    <b>     ??result_code=#~doc_action_processed#
+    #result_code#: ??
+    #result# 
+    <br>(возвращено инициатору) ??result_code=#~doc_action_reject#
+    <br>(возвращено в СМТС) ??result_code=#~doc_action_reject_2SMTS#
+    </b>     ??result_code=#~doc_action_processed#
+    Ожидание ??STARTED&!result_code
+    * ??set_number=1
+    <br><span class="bg_yellow" style="color:##000080;">(выполнил #MODIFIER_IOF#)</span>  ??result_code&modifier_id>0&!modifier_id=#user_id#
+    $INCLUDE [final decision info]  ??CUSTOM_DECISION_TEXT&step_type=1&result_code=#~doc_action_signed#
+    is_active=#is_active#; ??
+    </td>
+
+    <td #st#>#FINISHED#</td>
+    $GET_DATA [check user comment AR] ??comment_opened=0
+    <td #st#>
+    #step_id#: ??
+    #comment#  ??user_id=#USER_ID#|comment_opened>0
+    <br>(<small><i>=> #RECEIVERS#)</i></small> ??RECEIVERS&user_id=#USER_ID#|comment_opened>0
+    </td>
+    $INCLUDE [step details]  ??USER_ID=2309
+
+    $SET_PARAMETERS NEXT_STEP_ID=#step_id#;  ??!NEXT_STEP_ID&STARTED&!result_code
+    $SET_PARAMETERS prev_role_id=#role_id#; prev_role_target_id=#role_target_id#; PREV_TARGET_NAME=#TARGET_NAME#; PREV_STEP=#step#; 
+    $SET_PARAMETERS role_id=; ROLE_NAME=; INFO_ID=; role_target_id=; user_id=; u_FIO=; result_code=; result=; STARTED=; TARGET_NAME=; criteria=;
+    $SET_PARAMETERS u_roles=; u_posts=; RECEIVERS=;
+    </tr>
+[end]
+
+[step details]
+    <td>
+    №  ??set_number>0
+    => ??post_doc>0
+    </td>
+    [end]
+
+    [final decision info]
+    CUSTOM_DECISION_TEXT=#CUSTOM_DECISION_TEXT#; ??
+    : <br><b> 
+    $INCLUDE #CUSTOM_DECISION_TEXT# 
+    </b>
+[end]
+
+[check user comment AR]
+    select extra_users_id as "UUU" from wf where id=#step_id#
+    ;
+    select 1 as comment_opened from wf where id=#step_id# and ',#UUU#,' like '%,#USER_ID#,%' ??UUU
+    ;
+    select group_concat(iof(F,I,O)) as "RECEIVERS" from a_users_jinr where id in(#UUU#) ??UUU
+[end]
+
+[item_beginning]
+    <tr class="#cl#"><td class="center" #st#>
+    #step#  ??!criteria=1|st
+    </td>
+
+    $CALL_SERVICE c=svs/get_user_info; requested_user_id=#user_id#  ??!ROLE_NAME&user_id>0&ZZZ
+    $SET_PARAMETERS ROLE_NAME=#u_roles#; ??!ROLE_NAME&ZZZ
+    $SET_PARAMETERS ROLE_NAME=#u_posts#; ??!ROLE_NAME&ZZZ
+
+    <td class=small #st#>
+    $INCLUDE [step role] ??st|!prev_role_target_id=#role_target_id#
+    </td>
+
+    <td class="
+    bottom ??
+    center error" ??!user_id|user_id=0
+    " #st#>
+     - ? - ??!user_id
+     &nbsp; ? ??user_id=0
+    #USER_IOF# 
+    <small>(#USER_EMAIL#)</small> ??USER_EMAIL&AR_ADMIN=1
+    <br><span class="bg_yellow" style="color:##000080;">#modifier_comment#</span> ??modifier_comment
+</td>
+[end]
+
+[step role]
+    #ROLE_NAME#  ??ROLE_NAME
+    $GET_DATA [get target name] ??role_target_id&INFO_ID
+    #TARGET_NAME#
+       ??!PREV_TARGET_NAME=#TARGET_NAME#
+    <br>(подготовка) ??step_type=#~wf_step_preparation#&st
+    <br>(информирование) ??step_type=#~wf_step_information#
+    <br>(утверждение) ??step_type=#~wf_step_signed#&st
+    <br>(завершение) ??step_type=#~wf_step_process#&st
+    <br>(#role_comment#) ??role_comment
+    #role_id# ??USER_ID=2309_ZZZ
+[end]
+
+
+[report footer]
+    </table></center>
+    $INCLUDE [wf buttons]  ??!mode=ext&!WF_STEP
+    $INCLUDE [single step bottom]  ??WF_STEP
+    #ERROR#
+[end]
+
+
+[single step bottom]
+    </fieldset>
+    <br><center><input type="button" class="butt1" style="width:100;" value="Закрыть" onClick="HideDialog();"></center>
+
+    <script>
+        ShowDialog(true); 
+        showMsg("##dialog_title", " "); 
+        centerDialog(); 
+    </script> 
+[end]
+
+
+[wf buttons]
+    <br>
+    <input type="button" class="butt1 pt" style="width:100;" value="Старт шага" onClick="AjaxCall('doc_wf', 'c=wf/start_wf_step&doc_id=#doc_id#');"> ??AR_SYS_ADMIN=1&!mode=print
+    <input type="button" class="butt1 pt" style="width:140;" value="Изменить маршрут" onClick="AjaxCall('doc_wf', 'c=wf/edit_wf_for_doc&doc_id=#doc_id#');"> ??AR_SYS_ADMIN=1&NEXT_STEP_ID&!mode=print
+    <a href="#ServletPath#?c=wf/start_wf_step&doc_id=#doc_id#" target="_blank">старт шага</a> ??USER_ID=2309_ZZZ
+[end]
+
+
+$INCLUDE [bottom]  ??WF_ID&!mode=popup&!mode=print&!WF_STEP
+<script type="text/javascript"> centerDialog(); window.setTimeout(centerDialog, 20); </script>  ??mode=popup
+
+[bottom]
+    <tr><td colspan=7 class="center" style="border-top:solid 1px gray&##59">
+    <a href="#ServletPath#?c=docs/view_doc&doc_id=#doc_id#&mode=print" target="_blank"> <img src="#imgPath#printer.gif">Распечатать документ</a> &nbsp;
+    <a href="#ServletPath#?c=wf/print_wf&doc_id=#doc_id#" target="_blank"><img src="#imgPath#printer.gif">Распечатать лист согласования</a>
+    <input type="button" class="butt1 pt" style="width:160;" value="Изменить маршрут" onClick="AjaxCall('doc_wf', 'c=wf/edit_wf_for_doc&doc_id=#doc_id#');"> ??AR_SYS_ADMIN=1
+    </td></tr>
+[end]
+
+==============================================================
+==============================================================
+==============================================================
+
+[SQL]
+$INCLUDE [SQL_] ??WF_ID&AR_R=Y|WF_STEP
+[end]
+
+[SQL_]
+    select wf.id as step_id, wf.step, wf.role_id, wf.role_target_type_id, wf.role_target_id, wf.role_comment
+        , wf.step_type, wf.criteria, wf.set_number, wf.post_doc, wf.is_active
+        , r.name as "ROLE_NAME", tt.type as "TARGET_TYPE"
+         ,i.name as "INFO_NAME", i.id as "INFO_ID", i.table_name as "INFO_TABLE"
+        , wf.user_id, iof(u.F, u.I, u.O) as "USER_IOF", u.email as "USER_EMAIL"
+        , wf.modifier_comment
+        , wf.modifier_id, iof(um.F, um.I, um.O) as "MODIFIER_IOF"   
+        , result_code, result
+        , if(wf.started is null, '', DATE_FORMAT(wf.started,'#shortDateTimeFormat#')) as "STARTED"
+        , if(wf.finished is null, '', DATE_FORMAT(wf.finished,'#shortDateTimeFormat#')) as "FINISHED"
+        , wf.comment, wf.comment_opened
+    from wf
+        left join a_roles r on r.id=wf.role_id
+        left join a_target_types tt on tt.id=wf.role_target_type_id
+        left join i_infos i on i.id = tt.info_id
+        left join #table_users_full# u on u.id=wf.user_id
+        left join #table_users_full# um on um.id=wf.modifier_id
+    where wf.wf_id=#WF_ID#
+        and wf.step=#WF_STEP#  ??WF_STEP
+        and (wf.result is null or wf.result<>'не требуется') ??
+        and (wf.is_active=1 or wf.result<>'не требуется') ??
+    order by wf.step, wf.step_type, wf.is_active desc, wf.id
+     , started desc ??
+[end]
+
+[get target name]
+    select field_db_name as "INFO_FIELD_NAME" from i_fields where info_id=#INFO_ID# and view1=1
+    ;
+    select #INFO_FIELD_NAME# as "TARGET_NAME" from #INFO_TABLE# where id=#role_target_id#
+[end]

@@ -1,0 +1,180 @@
+[comments]
+descr=A: Редактор шагов шаблона workflow для типа документов (вывод самой таблицы с кнопками).
+
+input=wf_template_id - ID шаблона workflow (из таблицы wf_templates_list)
+
+output=HTML форма редактирования списка шагов шаблона workflow 
+parents=admin/wf/show_wf_template.cfg
+childs=admin/wf/edit_wf_template_step.cfg
+test_URL=?c=admin/wf/wf_template_step_editor&wf_template_id=1
+author=Яковлев, Куняев
+[end]
+
+
+[description]
+Редактор шагов одного шаблона workflow для типа документов.<br>
+<ul><li>Выводит подробную информацию о каждом шаге.</li>
+<li>Предоставляет возможность добавить новый шаг в шаблон,<br>
+редактировать свойства шага и удалить шаг шаблона<br>
+(во всех трех случаях вызывается модуль admin/wf/edit_wf_template_step.cfg)</li>
+</ul>
+[end]
+
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=A:Редактирование списка шагов шаблона workflow.
+tableCfg=table_no
+KeepLog=false
+ClearLog=true
+[end]
+
+[report header]
+<div id="result_table"> 
+
+++++++++++++++++++ Шапка таблицы +++++++++++++++++++++ ??
+<table class="tlist tgreen">??
+<table class="tlist noborder"  cellpadding=0 cellspacing=0 style="border-top:solid 1px gray;">
+<tr style="border-top:solid 1px gray;">
+<th>Шаг</th>
+<th>Роль</th>
+<th>Цель (справочник)</th>
+<th>Пользователь</th>
+<th>Условие</th>
+<th>№</th>
+<th>Изменить шаг</th> 
+<th>Удалить шаг</th> 
+<th>Добавить шаг</th> 
+</tr>
+
+<tr class="bg_gray" style="border-top:solid 1px gray;">
+<td style="border-top:solid 1px gray;">0</td>
+<td style="border-top:solid 1px gray;">инициатор</td>
+<td style="border-top:solid 1px gray;" colspan=6></td>
+
+<td style="border-top:solid 1px gray;">
+<div class="pt bg_white" style="position:relative; top:12px; border:dotted 1px grey; border-radius:11px;" 
+onClick="ShowDialog(true); AjaxCall('popupCont', 'c=admin/wf/edit_wf_template_step&mode=add&wf_template_id=#wf_template_id#&prev_step=0');">
+<i class="fa fa-arrow-circle-left clr-green" aria-hidden="true"></i> вставить</div>
+
+<input type="button" class="butt1 pt" style="width:90; margin:2px; position:relative; top:15;" value="< Вставить"   ??
+onClick="ShowDialog(true); AjaxCall('popupCont', 'c=admin/wf/edit_wf_template_step&mode=add&wf_template_id=#wf_template_id#&prev_step=0');"> ??
+</td>
+</tr>
+
+[end]
+
+
+[item]
+++++++++++++++++++ Строка таблицы - 1 элемент +++++++++++++++++++++ ??
+
+<tr style="border-top:solid 1px gray;">
+<td style="border-top:solid 1px gray;">
+#step#
+(согласование) ??step_type=#~wf_step_in_progress#
+(утверждение) ??step_type=#~wf_step_signed#
+(завершение) ??step_type=#~wf_step_process#
+(информирование) ??step_type=#~wf_step_information#
+(подготовка) ??step_type=#~wf_step_preparation#
+</td>
+
+<td style="border-top:solid 1px gray;">
+#ROLE_NAME# (#ROLE_ID#) ??ROLE_ID
+(любой) ??criteria=1
+</td>
+
+<td style="border-top:solid 1px gray;">
+#TARGET_TYPE# ??TARGET_TYPE
+<br>(справочник #INFO_ID#: #INFO_NAME#) ??INFO_ID
+</td>
+
+<td style="border-top:solid 1px gray;">
+#USER_IOF# (#user_id#) ??user_id
+</td>
+
+<td style="border-top:solid 1px gray;">
+#custom_criteria#
+</td>
+
+<td style="border-top:solid 1px gray;">
+* ??set_number=1
+** ??set_number=2
+*** ??set_number=3_
+#set_number# ??set_number>2
+</td>
+
+<td class="middle" style="border-top:solid 1px gray;">
+<span class="pt bg_white" 
+onClick="ShowDialog(true); AjaxCall('popupCont', 'c=admin/wf/edit_wf_template_step&mode=edit&step_id=#step_id#');">
+<i class="fa fa-pencil-square-o" aria-hidden="true"></i> изменить</span>
+
+
+<input type="button" class="butt1 pt" style="width:90; margin:2px;" value="Изменить" ??
+onClick="ShowDialog(true); AjaxCall('popupCont', 'c=admin/wf/edit_wf_template_step&mode=edit&step_id=#step_id#');">  ??
+</td>
+
+<td class="middle" style="border-top:solid 1px gray;">
+<span class="pt" 
+onClick="ShowDialog(true); AjaxCall('popupCont', 'c=admin/wf/edit_wf_template_step&mode=del&step_id=#step_id#');"> 
+<i class="fa fa-times clr-red" aria-hidden="true"></i> удалить</span>
+
+<input type="button" class="butt1 pt" style="width:90; margin:2px;" value="Удалить" ??
+onClick="ShowDialog(true); AjaxCall('popupCont', 'c=admin/wf/edit_wf_template_step&mode=del&step_id=#step_id#');"> ??
+</td>
+
+<td class="bottom" style="border-top:solid 1px gray;">
+<div class="pt bg_white" style="position:relative; top:12px; border:dotted 1px grey; border-radius:11px;" 
+onClick="ShowDialog(true); AjaxCall('popupCont', 'c=admin/wf/edit_wf_template_step&mode=add&wf_template_id=#wf_template_id#&prev_step=#step#');"> 
+<i class="fa fa-arrow-circle-left clr-green" aria-hidden="true"></i> вставить</div>
+
+<input type="button" class="butt1 pt" style="width:90; margin:2px; position:relative; top:15;" value="< Вставить" ??
+onClick="ShowDialog(true); AjaxCall('popupCont', 'c=admin/wf/edit_wf_template_step&mode=add&wf_template_id=#wf_template_id#&prev_step=#step#');">  ??
+</td>
+
+
+</tr>
+
+$SET_PARAMETERS INFO_ID=; TARGET_TYPE=;
+
+[end]
+
+
+[report footer]
+</table>
+<br>
+$SET_PARAMETERS wf_name=; wf_description=; div_ids=;
+</div>
+
+
++++++++++ Скрипт возврата результатов в вызывавшую страницу ++++ ??
+<script>
+window.parent.getResult("wf_template_step_table_#wf_template_id#", document.getElementById("result_table"));
+window.parent.setModule("admin/wf/wf_template_step_editor&wf_template_id=#wf_template_id#");
+</script>
+[end]
+
+
+***************************** Шаблон SQL запроса ***************************
+
+[SQL]
+select wt.ID AS step_id
+, wt.step
+, wt.step_type
+, wt.set_number
+, wt.criteria
+, wt.custom_criteria
+, wt.role_id as "ROLE_ID"
+, r.name as "ROLE_NAME"
+, tt.type as "TARGET_TYPE"
+, wt.user_id, iof(u.F, u.I, u.O) as "USER_IOF"
+, i.name as "INFO_NAME"
+, i.id as "INFO_ID"
+from wf_templates wt
+left join a_roles r on r.id=wt.role_id
+left join a_target_types tt on tt.id=wt.role_target_type_id
+left join #table_users_full# u on u.id=wt.user_id
+left join i_infos i on i.id = tt.info_id
+where wt.wf_template_id=#wf_template_id#
+order by step
+;
+[end]

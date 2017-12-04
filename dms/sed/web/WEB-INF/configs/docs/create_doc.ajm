@@ -1,0 +1,59 @@
+docs/create_doc.ajm
+
+[comments]
+descr=U: Создание документа
+input=type_id - ID типа документа
+output=Создание пустого документа и вызов edit_doc.cfg
+parents=tab_myDocs
+childs=docs/edit_doc.cfg
+author=Куняев
+[end]
+
+
+[description]
+Создание нового документа
+<ul>
+<li> занесение начальных записей в реестр d_list и в таблицу данных d_data_xx</li> 
+<li> вызов docs/edit_doc </li> 
+</ul>
+[end]
+
+
+[parameters]
+request_name=U:Создание документа
+KeepLog=false
+debug=off
+[end]
+
+
+[report]
+    $GET_DATA [createDocScript]
+    $CALL_SERVICE c=docs/edit_doc ??!ERROR&ZZZ
+    $CALL_SERVICE c=tab_myDocs  ??
+    <script>
+        $("##c_myDocs").html("ZZZ"); ??
+        AjaxCall('c_myDocs', 'c=tab_myDocs'); ??
+        AjaxCall('doc_content', 'c=docs/view_doc&doc_id=#doc_id#&doEdit=Y'); 
+        AjaxCall('doc_content', 'c=docs/edit_doc&doc_id=#doc_id#'); ??
+        AjaxCall('doc_content', 'c=docs/edit_doc&doc_id=#new_doc_id#', true, '', true); ??
+
+      &new_doc_id=#new_doc_id#' ??
+    </script>
+[end]
+
+
+[createDocScript]
+    select curr_doc_type_version from d_types where id=#type_id#
+    ;
+    insert into d_list (type_id, type_version, title, created, creator_id)
+    values (#type_id#, #curr_doc_type_version#, '', now(), #USER_ID#)
+    ;
+    select LAST_INSERT_ID() as "doc_id";
+    ;
+    select #doc_id# as "new_doc_id";
+    ;
+    insert into d_data_#type_id# (doc_id, version)
+    values (#doc_id#, 1)
+    ;
+    commit
+[end]

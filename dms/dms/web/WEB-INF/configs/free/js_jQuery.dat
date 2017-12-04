@@ -1,0 +1,136 @@
+
+[comments]
+descr=JavaScript - jQuery - установка обработчиков и стандартные обработчики
+testURL=free/js_jQuery.dat
+[end]
+
+[report]
+/*========================= Общее JQuery ============================*/ ??
+/*===================================================================*/ ??
+
+/*------------------ Установка обработчиков -------------------- */ ??
+var setStandardEvents = function()
+{	$('.srh, .filter, .spr_item, .pt, .pcmd, .kcmd, .over_cmd, .info_input, tr.docrow, .info_input, .fe').unbind();
+	$('.srh, td.filter, td.spr_item, .pt, .pcmd, .info_input, tr.docrow').mouseout(sel);
+	$('.srh, td.filter, td.spr_item, .pt, .pcmd, .info_input, tr.docrow').mouseover(sel); 
+	$('tr.docrow, .over_cmd').mouseover(doCmd); 
+	$('.over_cmd').mouseout(doCmd); 
+
+	$('.pcmd').click(doCmd);
+	$('.kcmd').keyup(doCmd);
+	$('tr.docrow').click(doCmd);
+	
+	$('.srh').click(setSrt);
+	$('.filter').click(setFilter);
+
+	$('.fe').change(setChanged); ??будем использовать на формах, чтобы отмечать, что данные изменены
+
+	$(".resize").resizable();
+	$('.info_input').click(showSprav);  // события на тестовых полях для справочников	
+
+$(".hasDatepick").datepick({yearRange:	'c-2:c+7', showSpeed: 'fast'});
+	$("##doc_date").datepick(); ??
+	$("##doc_date").datepick({yearRange:	'c-2:c+7', showSpeed: 'fast'}); ??
+}
+
+
+/*------------------ клики-эффекты -------------------- */ ??
+
+var sel = function(ev) {
+$("##firstRow").removeClass("sel");
+	if(ev.type == "mouseover") $(this).addClass("sel");
+	else if(ev.type == "mouseout")	$(this).removeClass("sel");
+	else if(ev.type == "click")
+	{
+		console.log($('##' + $(ev.target).attr("nid")).attr("id")); ??
+			if($(this).attr("js")) 
+			{	js = $(this).attr("js");	
+				console.log(js); ??
+				eval(js);
+			}
+		if ($('##' + $(this).attr("nid")).attr("id"))
+			$('##' + $(this).attr("nid")).click();
+		else if($(this).attr("nid"))
+		{	getId($(this).attr("nid"));
+			eval(atab+"();");
+		}
+	}
+	return true;
+}
+
+var oldCmd=".";
+
+/*
+ * Диспетчер отработки события - общая процедура.
+ * Обработчик (cmd) берется из атрибута cmd_over для mouseover
+ * или из атрибута cmd для всех остальных событий
+ * если cmd начинается с "javascript:", то выполняется это JS,
+ * иначе - загружается указанный в cmd модуль, если он изменился с прошлого вызова.
+ * Передача параметров - забота вызывающего эл-та и обработчика.
+ */
+var doCmd = function(ev) {
+var cmd;
+console.log("doCmd: " + ev.type + " cmd=" + $(this).attr("cmd")) ; ??
+	if(ev.type == "mouseover")
+		cmd = $(this).attr("cmd_over");	
+	else if(ev.type == "mouseout")
+		cmd = $(this).attr("cmd_out");	
+	else  // if(ev.type == "click")
+		cmd = $(this).attr("cmd");	
+//		alert($(this).attr("info_id"));
+console.log("doCmd: " + ev.type + "; cmd=" + cmd) ;
+	if(cmd) {
+		if(cmd.indexOf("javascript:") == 0) {
+//		console.log(cmd.substring(("javascript:").length));
+			eval(cmd.substring(("javascript:").length));
+		}
+		else if (cmd!=oldCmd) 
+		{	
+			console.log(cmd + " / " + oldCmd);  ??
+			loadFrame(cmd, "wf2");
+			oldCmd = cmd;
+		}
+	}
+}
+
+//----- для кнопок -----??
+var sel_b = function(ev) {
+	if(ev.type == "mouseover") $(ev.target).addClass("ba");
+	else if(ev.type == "mouseout") $(ev.target).removeClass("ba");
+	return false;
+}
+
+============== Сортировка таблиц ================== ??
+
+var makeTableCfg="";
+
+var setSrt = function(ev) {
+	var s_new = $(this).attr("sr");
+	var s_old = frm.srt.value;
+	if (s_new == s_old)
+	{ if(frm.desc.value == 'desc') frm.desc.value = '';
+		else frm.desc.value = 'desc';
+	}
+	else
+		frm.srt.value = s_new;
+	doSubmit("", makeTableCfg);
+	return false;
+}
+
+var showSrt = function(srt, cl) {$("th[sr='" + srt + "']").addClass(cl); }
+
+
+function goToRow(nr)
+{ 
+  document.theForm.srn.value=nr;  
+//  console.log (frm.srn.value);
+  document.theForm.submit();
+}
+
+[end]
+
+
+var toggleIt = function(sel){$(sel).toggle();} 
+var hideIt = function(sel){if(document.all) $(sel).hide(); else $(sel).hide("blind", {}, 300);}
+var showIt = function(sel){if(document.all) $(sel).show(); else $(sel).show("blind", {}, 300);}
+

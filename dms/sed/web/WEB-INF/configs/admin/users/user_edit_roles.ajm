@@ -1,0 +1,64 @@
+[comments]
+АДМИН: Редактирование пользователя.
+Вывод в форму редактирования пользователя списка активных ролей пользователя для редактирования.
+Для вывода каждой роли вызывает admin/users/user_edit_role.cfg
+Вызывается из admin/users/edit_user.cfg
+
+input=ID - ID выбранного пользователя
+output=HTML форма редактирования ролей и добавления новой роли
+parents=admin/users/edit_user.cfg
+childs=admin/users/user_edit_role.cfg
+testURL=?c=admin/users/user_edit_roles&ID=1
+[end]
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=Admin:Редактирование ролей пользователя
+tableCfg=table_no
+thsnDelimiter=none
+LOG=ON
+[end]
+
+[report header]
+------- вывод шапки таблицы ??
+<small>#c#</small> ??debug=on
+
+<table border=0 clas_s=table_small cellpadding=3 cellspacing=0>
+<tr>
+<td>Роль</td><td>Цель</td><td>Код&nbsp;цели&nbsp;</td><td>Приоритет&nbsp;</td>  ??AR_SYS_ADMIN=Y
+<td>Удалить</td> ??
+</tr>
+[end]
+
+
+[item]
+------- вывод очередной роли ??
+$CALL_SERVICE c=admin/users/user_edit_role
+[end]
+
+[report footer]
+------- вывод пустой роли для добавления роли ??
+$SET_PARAMETERS CURRENT_ROLE_ID=0; ROLE_ID=;
+$CALL_SERVICE c=admin/users/user_edit_role
+</table>
+AR_SYS_ADMIN=#AR_SYS_ADMIN# ??
+$SET_PARAMETERS ROLE_NAME=; TARGET=;
+[end]
+
+
+****************************************************************************
+****************************************************************************
+****************************************************************************
+
+[SQL]
+------- выбираем ID активных ролей пользователя ??
+select ur.ID as CURRENT_ROLE_ID
+from a_user_role ur 
+left join a_roles r on r.id=ur.role_id
+where 
+ur.old_user_id=#OLD_ID# ??!ID
+ur.user_id=#ID#  ??ID
+and ur.active=1
+and r.target_Type_Id=1 ??!AR_SYS_ADMIN=1
+order by r.sort
+[end]

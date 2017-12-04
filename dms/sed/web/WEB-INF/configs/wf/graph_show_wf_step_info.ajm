@@ -1,0 +1,257 @@
+[comments]
+descr=S: Подробная информация для шага рабочего workflow для документа (вывод самой таблицы). 
+
+input=WF_ID - ID workflow (из таблицы wf)
+wf_step - номер шага;
+
+output=HTML форма представляющая данные для шага рабочего workflow для документа. 
+
+parents= wf/graph_show_wf_step.cfg
+childs=
+testURL=?c=wf/graph_show_wf_step_info&WF_ID=1&wf_step=1
+author=Яковлев, Куняев
+[end]
+
+[description]
+Подробная информация для шага рабочего workflow для документа.<br>
+Выводит данные в виде таблице о всех актуальных записях для конкретного шага wf.<br>
+(В данный момент является усеченным клоном модуля wf/show_wf_for_doc.cfg)
+[end]
+
+[parameters]
+request_name=U:Подробная информация для шага рабочего workflow для документа.
+service=dubna.walt.service.TableServiceSpecial
+tableCfg=table_no
+LOG=OFF
+
+divider=<tr><td colspan=2 class="bg_white" style="height:10px; border-top:solid 1px gray;"></td></tr>
+[end]
+
+
+
+[report header]
+$SET_PARAMETERS WF_ID=#WF_ID_INACT#  ??!WF_ID
+[end]
+
+
+prev_role_id=#role_id#; prev_role_target_id=#role_target_id#; PREV_TARGET_NAME=TARGET_NAME; PREV_STEP=#step#;
+
+[item]
+$SET_PARAMETERS st=style="border-top:solid 1px gray&##59"; ??!PREV_STEP=#step#
+$SET_PARAMETERS st=; ??PREV_STEP=#step#&prev_role_id=#role_id#
+
+$SET_PARAMETERS cl=;
+$SET_PARAMETERS cl=bg_gray; ??!STARTED&ZZZ
+$SET_PARAMETERS cl=pt; ??STARTED&is_active=1&ZZZ
+$SET_PARAMETERS cl=#cl# step_waiting; ??STARTED&!result_code&is_active=1
+$SET_PARAMETERS cl=#cl# inactive; ??!is_active=1
+
+
+<div id="wf_item_#step_id#" style="padding: 5px; border: 1px solid black; border-radius: 10px; margin: 5; height: 65px; box-shadow: 4px 4px 3px;"  ??
+<div id="wf_item_#step_id#" style="padding: 5px; border: 1px solid black; border-radius: 10px; margin: 5; height: 90px; box-shadow: 4px 4px 7px;"
+
+class="
+bg_light_blue ??result_code=#~doc_action_forward#
+bg_red ??result_code=#~doc_action_reject#|result_code=#~doc_action_reject_2SMTS#
+bg_green ??result_code=#~doc_action_sign#|result_code=#~doc_action_delegate#|result_code=#~doc_action_signed#|result_code=#~doc_action_processed#
+step_waiting ??STARTED&!result_code&is_active=1
+
+" >
+
+
+
+$INCLUDE [item_beginning]
+
+<div style="float:left; width: 210px; 
+border: 1px solid black;??
+">
+
+<div>
+<b><small>Результат :</small></b>
+<br>
+<b>     ??result_code=#~doc_action_processed#
+#result_code#: ??
+#result# 
+<br>(возвращено инициатору) ??result_code=#~doc_action_reject#
+<br>(возвращено в СМТС) ??result_code=#~doc_action_reject_2SMTS#
+</b>     ??result_code=#~doc_action_processed#
+Ожидание ??STARTED&!result_code
+* ??set_number=1
+
+<br><span class="bg_yellow" style="color:##000080;">(выполнил #MODIFIER_IOF#)</span>  ??result_code&modifier_id>0&!modifier_id=#user_id#
+$INCLUDE [final decision info]  ??CUSTOM_DECISION_TEXT&step_type=1&result_code=#~doc_action_signed#
+</div>
+
+<div>
+$GET_DATA [check user comment AR] ??comment_opened=0
+<b><small>Комментарий :</small></b>
+<br>
+#comment#  ??user_id=#USER_ID#|comment_opened>0
+<br>(<small><i>=> #RECEIVERS#)</i></small> ??RECEIVERS&user_id=#USER_ID#|comment_opened>0
+
+</div>
+</div>
+
+
+$SET_PARAMETERS NEXT_STEP_ID=#step_id#;  ??!NEXT_STEP_ID&STARTED&!result_code
+$SET_PARAMETERS prev_role_id=#role_id#; prev_role_target_id=#role_target_id#; PREV_TARGET_NAME=#TARGET_NAME#; PREV_STEP=#step#;
+$SET_PARAMETERS role_id=; ROLE_NAME=; INFO_ID=; role_target_id=; user_id=; u_FIO=; result_code=; result=; STARTED=; TARGET_NAME=; PREV_STEP=#step#; criteria=;
+$SET_PARAMETERS u_roles=; u_posts=; RECEIVERS=;
+
+</div>
+
+
+[end]
+
+
+[final decision info]
+CUSTOM_DECISION_TEXT=#CUSTOM_DECISION_TEXT#; ??
+: <br><b> 
+$INCLUDE #CUSTOM_DECISION_TEXT# 
+</b>
+[end]
+
+[check user comment AR]
+select extra_users_id as "UUU" from wf where id=#step_id#
+;
+select 1 as comment_opened from wf where id=#step_id# and ',#UUU#,' like '%,#USER_ID#,%' ??UUU
+;
+select group_concat(iof(F,I,O)) as "RECEIVERS" from a_users_jinr where id in(#UUU#) ??UUU
+[end]
+
+[item_beginning]
+
+
+
+
+
+
+$CALL_SERVICE c=svs/get_user_info; requested_user_id=#user_id#  ??!ROLE_NAME&user_id>0&ZZZ
+$SET_PARAMETERS ROLE_NAME=#u_roles#; ??!ROLE_NAME&ZZZ
+$SET_PARAMETERS ROLE_NAME=#u_posts#; ??!ROLE_NAME&ZZZ
+
+<div style="float:left; width: 210px; 
+border: 1px solid black;??
+">
+
+<div>
+#ROLE_NAME#
+$GET_DATA [get target name] ??role_target_id&INFO_ID
+#TARGET_NAME#
+<br>(подготовка) ??step_type=#~wf_step_preparation#
+<br>(информирование) ??step_type=#~wf_step_information#
+<br>(утверждение) ??step_type=#~wf_step_signed#
+<br>(завершение) ??step_type=#~wf_step_process#
+<br>(#role_comment#) ??role_comment
+
+</div>
+
+<div>
+<br>
+#STARTED#
+<br> #FINISHED#  ??FINISHED
+
+</div>
+</div>
+
+<div style="float:left; width: 160px; 
+border: 1px solid black;  ??
+">
+#USER_IOF# 
+<small>(#USER_EMAIL#)</small> ??USER_EMAIL&AR_ADMIN=1
+<br><span class="bg_yellow" style="color:##000080;">#modifier_comment#</span> ??modifier_comment
+
+
+</div>
+[end]
+
+
+[report footer]
+
+
+<div class="pt" onClick="centerDialog(); ShowDialog(true); AjaxCall('popupCont', 'c=wf/graph_show_wf_step_detail&WF_ID=#WF_ID#&wf_step=#wf_step#');"  style="border-bottom:solid 1px gray; float:left; padding:2px;"> Подробнее >> </div> 
+
+
+<input type="button" class="butt1" style="width:100;" value="Закрыть" onClick="HideDialog();">
+[end]
+
+
+
+
+
+
+
+==============================================================================
+***************************** Шаблоны SQL запросов ***************************
+==============================================================================
+
+[SQL]
+(
+select wf.id as step_id, wf.step, wf.role_id, wf.role_target_type_id, wf.role_target_id, wf.role_comment
+, wf.step_type, wf.criteria, wf.set_number, wf.post_doc, wf.is_active
+, r.name as "ROLE_NAME", tt.type as "TARGET_TYPE"
+ ,i.name as "INFO_NAME", i.id as "INFO_ID", i.table_name as "INFO_TABLE"
+, wf.user_id, iof(u.F, u.I, u.O) as "USER_IOF", u.email as "USER_EMAIL"
+, wf.modifier_comment
+, wf.modifier_id, iof(um.F, um.I, um.O) as "MODIFIER_IOF"   
+, result_code, result
+, if(wf.started is null, '', DATE_FORMAT(wf.started,'#shortDateTimeFormat#')) as "STARTED"
+, if(wf.finished is null, '', DATE_FORMAT(wf.finished,'#shortDateTimeFormat#')) as "FINISHED"
+, wf.comment, wf.comment_opened
+from wf
+left join a_roles r on r.id=wf.role_id
+left join a_target_types tt on tt.id=wf.role_target_type_id
+left join i_infos i on i.id = tt.info_id
+left join #table_users_full# u on u.id=wf.user_id
+left join #table_users_full# um on um.id=wf.modifier_id
+where wf.wf_id=#WF_ID#
+and wf.step=#wf_step#
+and wf.criteria = 1
+and (wf.result is null or wf.result<>'не требуется')
+and (wf.is_active=1 or wf.result<>'не требуется')
+group by
+wf.role_id, wf.role_target_type_id, step_type, wf.criteria
+order by wf.step, wf.is_active desc, wf.id
+)
+
+ , started desc ??
+
+UNION
+
+(
+select wf.id as step_id, wf.step, wf.role_id, wf.role_target_type_id, wf.role_target_id, wf.role_comment
+, wf.step_type, wf.criteria, wf.set_number, wf.post_doc, wf.is_active
+, r.name as "ROLE_NAME", tt.type as "TARGET_TYPE"
+ ,i.name as "INFO_NAME", i.id as "INFO_ID", i.table_name as "INFO_TABLE"
+, wf.user_id, iof(u.F, u.I, u.O) as "USER_IOF", u.email as "USER_EMAIL"
+, wf.modifier_comment
+, wf.modifier_id, iof(um.F, um.I, um.O) as "MODIFIER_IOF"   
+, result_code, result
+, if(wf.started is null, '', DATE_FORMAT(wf.started,'#shortDateTimeFormat#')) as "STARTED"
+, if(wf.finished is null, '', DATE_FORMAT(wf.finished,'#shortDateTimeFormat#')) as "FINISHED"
+, wf.comment, wf.comment_opened
+from wf
+left join a_roles r on r.id=wf.role_id
+left join a_target_types tt on tt.id=wf.role_target_type_id
+left join i_infos i on i.id = tt.info_id
+left join #table_users_full# u on u.id=wf.user_id
+left join #table_users_full# um on um.id=wf.modifier_id
+where wf.wf_id=#WF_ID#
+and wf.step=#wf_step#
+and wf.criteria = 100
+and (wf.result is null or wf.result<>'не требуется')
+and (wf.is_active=1 or wf.result<>'не требуется')
+
+order by wf.step, wf.is_active desc, wf.id
+)
+
+order by wf.step, wf.is_active desc, wf.id ??
+
+
+[end]
+
+[get target name]
+select field_db_name as "INFO_FIELD_NAME" from i_fields where info_id=#INFO_ID# and view1=1
+;
+select #INFO_FIELD_NAME# as "TARGET_NAME" from #INFO_TABLE# where id=#role_target_id#
+[end]

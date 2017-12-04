@@ -1,0 +1,149 @@
+body { 
+    font-family: Verdana,Arial,Helvetica,sans-serif;
+    font-size: 9pt;
+    background-color:#e0e0e0;
+}
+
+
+/* ===== активная страница ====== */
+#page_content {padding:0; width:910px;}
+
+.page {
+    border:solid 1px gray;
+    box-shadow: 2px 5px 4px 0 rgba(0, 0, 0, 0.6);
+    background-color:#efefef;
+}
+
+#main_page {padding:0; width:900px;}
+
+/* ===== thumbnails блок ====== */
+.thumb {
+    border:solid 1px gray;
+    box-shadow: 2px 3px 3px 0 rgba(0, 0, 0, 0.6);
+    display:inline-block;
+    min-width: 80px;
+    background-color:#f8f8f8;
+}
+
+.thumb_div {
+    cursor:pointer;
+    display:inline-block;
+}
+
+.active_page {
+    background-color:#FFFF80; 
+    font-weight: bold;
+}
+
+.pg {
+    margin-left:1pt; 
+    padding: 0 3pt 0 3pt; 
+    color:#002090;
+}
+
+
+/* ====== список маркапов ====== */
+#markupTextBlock{ white-space: pre-wrap; }
+
+/* ====== иконки маркапов ====== */
+.mkp_container {
+  position:relative;
+  top:0; left:0; height:0;
+  text-align: left; 
+  display: block; 
+  overflow: visible;
+}
+
+.icon_span {display:inline; position:relative;}
+
+i.small_icon {font-size:7px; display:block; position:relative; width:0; height:0; overflow: visible;}
+
+.big_icon {font-size:11pt; display:inline; position:relative;}
+
+
+/* ===== элементы форм ====== */
+
+.control { 
+  color:black;
+  border:solid 1px grey; 
+  background-color: white;
+  font-size:11pt;
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+.button {width:140pt; padding:8px; border-radius: 16px;}
+
+.butt1 {width:90px;}
+
+/* ======== список маркапов - фильтр по автору и сортировка ======== */
+.menu {
+    padding: 0px;
+    margin: 5px 0 10px 0;
+}
+
+.menu ul {
+    display: inline-block;
+    margin: 0; 
+    padding: 0; 
+    list-style: none;
+    position: relative;
+}
+
+.menu ul li { 
+  margin: 0; 
+  padding: 7px 5px 4px 5px; 
+  border-radius: 3px; 
+  display: inline-block;
+  text-align: center; 
+}
+
+.menu ul li.dd { padding: 7px;
+  border-top:none;
+  border-radius: 0px;
+  text-align:left; 
+}
+
+.menu li:hover ul, .menu li:hover li{  
+  display: block;
+}
+
+.menu ul ul{
+  display: none;
+  position: absolute; 
+  margin-top: 9px;
+  margin-left: -6px;
+  z-index: 100;
+
+}
+
+/* ===== общее ====== */
+#popupCont {text-align:left;}
+
+#file_description { 
+  padding:3px 5px 0 0; 
+  border:solid 1px grey;
+}
+
+td {vertical-align:top;}
+
+.hidden {display:none;}
+
+.block{display:block}
+
+.prelative{position: relative;}
+
+.pabsolute{position: absolute;}
+
+.fright{float:right;}
+
+.shadow { box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.4); }
+
+
+.enter_mode { cursor: url(http://ak0211.jinr.ru:8084/sed/images/mark.cur), auto; }
+
+.fa{ color: red; }
+.fa-stack {cursor:pointer;}
+.fa-download, .fa-eye, .blue {color:#002090;}
+
+.sel, td.sel, input.butt1.sel {background-color:#FFF8B0; }

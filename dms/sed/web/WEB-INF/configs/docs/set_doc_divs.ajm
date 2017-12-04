@@ -1,0 +1,60 @@
+docs/set_doc_divs.cfg
+
+[comments]
+descr=U: Установка в базе принадлежности документа подразделениям
+
+input=doc_id, [DOC_TYPE_ID], [DOC_DATA_TABLE], [AR_W] 
+output=запись в таблицу d_divs
+parents=docs/edit_doc.cfg
+childs=
+test_URL=?c=docs/set_doc_divs&doc_id=8
+CALL=$CALL_SERVICE c=docs/set_doc_divs;
+author=Куняев
+[end]
+
+
+
+[parameters]
+DIV_INFO_ID=10
+LOG=ON
+[end]
+
+[report]
+$CALL_SERVICE c=sys/getARUD; ??!AR_W=Y
+$INCLUDE [OK report]  ??AR_W=Y
+$CALL_SERVICE c=sys/log_doc_access; doc_id=#doc_id#; rejected=1;   ??!AR_W=Y
+[end]
+
+
+[OK report]
+$LOG2 <hr>docs/set_doc_divs.cfg: DIVS=#DIVS#; DOC_DIVS=#DOC_DIVS#<br>
+$GET_DATA [getDocDivInfo]
+$EXECUTE_LOOP div_id; #DIVS#; [set div] ??DIVS
+[end]
+
+[set div]
+$GET_DATA [add div] ??div_id
+$SET_PARAMETERS DIV_#div_id#=Y;  ??div_id
+$LOG3 DIV_#div_id#=Y;<br>  ??div_id
+[end]
+
+***************************** Шаблоны SQL запросов ***************************
+
+[getDocDivInfo]
+select /* name of the field containing division */
+field_db_name as DIV_FIELD from d_fields 
+where type_id=#DOC_TYPE_ID# and info_id=#DIV_INFO_ID#
+;
+select #DIV_FIELD#_id as "DIVS", #DIV_FIELD#  as "DIVS_TXT" from #DOC_DATA_TABLE# where doc_id=#doc_id# ??DIV_FIELD
+;
+delete from d_divs where doc_id=#doc_id#
+;
+update d_list set divs='#DIVS_TXT#' where id=#doc_id#
+;
+[end]
+
+
+[add div]
+insert into d_divs(doc_id, div_id)
+values (#doc_id#, #div_id#);
+[end]

@@ -1,0 +1,438 @@
+doc/docView.cfd - НЕПОНЯТНО, что это было?
+Вероятно, брошенный задел.
+
+[parameters]
+title=Док.#DOC_ID#
+
+W_ACC=Y  ??g_reg=USER_GROUP|g_mnts=USER_GROUP|g_adm=USER_GROUP|g_sys=USER_GROUP
+BUH_ENABLED=Y ??g_buh=USER_GROUP&g_reg=USER_GROUP
+BUH_ENABLED=Y ??g_sys=USER_GROUP
+READ_ONLY=true 
+UNLOCK_ENEBLED=
+SENT_DATE|
+
+showPrix=y ??uname=usova|uname=serg|uname=ruzaeva
+debug=on ??
+
+table_persons=i_persons
+$INCLUDE common.dat[colors]
+[end]
+
+[report]
+$INCLUDE [logged report]  ??logged
+<script>window.location.href="#loginURL#?r=#ServerPath##ServletPath#?c=doc/list";</script> ??!logged
+[end]
+
+[logged report]
+$SET_PARAMETERS type=mnts; AGGR=04; aggr=04; CONS=2;   ??USER_GROUP=mnts
+$SET_PARAMETERS DOC_TYPE=5; doc_type=5;  ??type=mnts&!doc_type
+$SET_PARAMETERS DOC_TYPE=7; doc_type=7;  ??type=nal&!doc_type
+$SET_PARAMETERS DOC_TYPE=3; doc_type=3;  ??type=ext&!doc_type
+$SET_PARAMETERS DOC_TYPE=3; doc_type=3;  ??cop=child&doc_type=8
+$SET_PARAMETERS noPayment=Y ??type=mnts|type=nal|type=xp
+$SET_PARAMETERS DOC_DATE=01.#f_mm#.20#q_yr#  ??!DOC_DATE&type=xp&f_mm
+$SET_PARAMETERS REG_MM=#f_mm#; REG_YYYY=20#q_yr#  ??type=xp&f_mm&!REG_MM&!REG_YYYY
+$SET_PARAMETERS summa_rub=#summa_curr#; ??curr_code=810
+$SET_PARAMETERS IS_TOTAL=; summa_rub=; summa_curr=; curr_code= ??cop=child
+
+$INCLUDE common.dat[head]
+
+<style media=print>
+input.but {display: none;}
+input.button {display: none;} 
+a.info:link {text-decoration: none;}
+a.info:visited {text-decoration: none;}
+a.info:hover {text-decoration: none;}
+</style>
+
+<STYLE type=text/css>
+  body {margin: 0px;}
+	td {vertical-align:top;font-family: Verdana; font-size: 14px;}
+</STYLE>
+<SCRIPT language=JavaScript src="#jsPath#docEdit.js"></SCRIPT> 
+<body bgcolor=f0f8ff>
+
+$GET_DATA doc/docEditSQL.dat[get doc script] ??DOC_ID&!cop=clone
+
+$SET_PARAMETERS type=mnts	??DOC_TYPE=5
+DOC_TYPE:#DOC_TYPE#; type=#type#; ??
+
+<br><center>
+<form name="theForm" method="POST" enctype="multipart/form-data">
+<input type=hidden name="DOC_ID" value="#DOC_ID#">
+<input type=hidden name="type" value="#type#">
+
+<table bgcolor=gray cellSpacing=1 cellPadding=1><tr><td>
+<TABLE border=0 bgcolor=whitesmoke cellSpacing=1 cellPadding=5>
+
+$INCLUDE [block top]
+$INCLUDE [block summa]
+
+$INCLUDE [plat info]  ??!type=xp&!noPayment&PLAT_1|PAYED
+$INCLUDE [set plat info] ??!type=xp&!noPayment&!READ_ONLY&!IS_LOCKED
+
+$INCLUDE [block body]     ??!type=xp&!type=nal&!type=mnts
+$INCLUDE [block body xp]  ??type=xp
+$INCLUDE [block body NAL] ??type=nal
+$INCLUDE [block body MNTS] ??type=mnts
+
+$INCLUDE [block bottom]
+$INCLUDE [prixod] ??!noPayment
+$INCLUDE [registr]    ??type=xp&BUH_ENABLED=Y|PLAT_1
+
+$INCLUDE [block buttons]
+
+</TABLE></td></tr></TABLE>
+<span class=small style='background-color:white; padding:4px; border:solid 1px black;'>
+Документ зарегистрирован: #CREATOR#, #REG_DATE# 
+, изменен: #MODIFIER#, #MODIF_DATE#     ??MODIFIER
+<font color=red>Отослан: #SENT_DATE#</font>  ??SENT_DATE
+</span>
+</form>
+$INCLUDE [script]
+[end]
+
+
+======= Блок от начала до "Бюдж.код" и "Сводный док" ====
+[block top]
+<tr><td bgcolor=white align=center><font color=red><small>
+<div id="docStat">
+<b><i>ОПЛАЧЕН!</i></b>  ??PLAT_1&DAT_PLAT_1
+<b><i>Выписано п/п</i></b>  ??PLAT_1&!DAT_PLAT_1
+сохранен: #SAVED_AT#  	 ??SAVED_AT
+клон документа #SRC_ID#  ??SRC_ID&cop=clone
+дочерний<br> от документа #SRC_ID#  ??SRC_ID&cop=child
+</div></font></td>
+<td colspan=4 bgcolor=white align=left nowrap=true>&nbsp; &nbsp;<b>
+Документ № #DOC_ID# от #REG_DATE#
+ &nbsp; 
+
+$SET_PARAMETERS showParent=y  ??PID&!PID=0|USER_GROUP={{.*sys.*|.*adm.*|.*buh.*|.*reg.*}}
+<input type=hidden name="PID" value="0">  ??!showParent=y
+(Родительский документ: № #PID#)   ??PID>0
+$INCLUDE [setParentReestr]??REESTR_ID
+</td></tr>
+<tr bgcolor=gray><td width=15%></td><td width=10%></td><td width=20%></td><td width=10%></td><td width=35%></td></tr> ??MSIE=YES
+
+<tr><td class=l nowrap=true>Внешний №<br>Дата:</td><td style="white-space:nowrap;">#EXT_DOC_NR#<br>#DOC_DATE#</td>
+
+<td nowrap=true align=center>
+$INCLUDE [selectType]  
+
+Рег.№ межд.отд.:#INN_RECEIVER#   ??type=mnts
+
+</td><td colspan=2>
+Бюджетный код: #BC#<br>
+#DIR#, ??DIR
+#DIV# (#LAB_CODE#),  ??LAB_CODE
+Тема: #SBJ_CODE# ??SBJ_CODE
+<br>
+Сводный документ ??IS_TOTAL
+</td></tr>
+$INCLUDE [vidOper] ??type=xp
+<tr bgcolor=gray><td colspan=5></td></tr>
+[end]
+
+[setParentReestr]
+</b>
+#REESTR_ID#
+<script>
+function setParent(id)
+{ frm.PID.value=id;
+}
+</script>
+[end]
+
+[vidOper]
+<tr>
+<td nowrap=true class=l> ??
+</td> ??
+<td colspan=5 nowrap=true>
+<fieldset style="background-color:white; padding:3; border: solid 1px black;">
+<b>&nbsp; Вид операции:</b>
+<input readonly type="radio" name="VIDOPER" value="r" onClick=setNazn("r")
+checked ??VIDOPER=r
+>Заявка &nbsp;
+| &nbsp;
+<input readonly type="radio" name="VIDOPER" value="m" onClick=setNazn("m")
+checked ??VIDOPER=m|!VIDOPER
+>Материалы 
+<input readonly type="radio" name="VIDOPER" value="u" onClick=setNazn("u") 
+checked ??VIDOPER=u
+>Услуги 
+<input readonly type="radio" name="VIDOPER" value="e" onClick=setNazn("e")
+checked ??VIDOPER=e
+>Взаимозачет &nbsp;
+
+<input readonly type=checkbox name="IS_KREDIT" value='y'
+checked ??IS_KREDIT=y
+> кредит
+</fieldset>
+</td>
+
+<td></td> ??
+
+</tr>
+
+[end]
+
+[selectType]
+Тип: &nbsp;&nbsp;&nbsp;
+ <select name=doc_type onChange="docTypeChanged();"disabled>#DOC_TYPES#</select>
+ <a href="javascript:openWindow('c=doc/docEdit&DOC_ID=#PID#','parent', 600,600);">Родительский документ: № #PID#</a> ??xxxPID&!PID=0
+  <br>
+
+Статус: <select name=doc_status onChange="docChanged();"> ??
+  <option value="0" ??
+	SELECTED ??xxxdoc_status=0
+	></option>#DOC_STATUSES#</select> ??
+[end]
+
+<option value="0" ??!type=xp
+	SELECTED ??doc_type=0&!type=xp
+	></option> ??!type=xp
+
+======= Блок от "Сумма (руб)" до "Консолидир. статья" ====
+[block summa]
+<tr><td nowrap=true class=l>
+Сумма: 
+</td><td colspan=3 nowrap=true> 
+#SUMMA_CURR#
+<select name=curr_code disabled>
+	<option value="810">руб</option>
+	<option value="840">$</option>
+	<option value="978">€</option>
+	<option value="756">CHF</option>
+  	<option value="826">GBP</option>  ??
+  </select>
+
+<span id=sum_curr>(
+#SUMMA_RUB# руб. &nbsp;   ??!CURR_CODE=810&SUMMA_RUB
+#SUMMA_USD# USD  &nbsp;   ??!CURR_CODE=840&SUMMA_USD
+#SUMMA_EUR# EUR          ??!CURR_CODE=978&SUMMA_EUR
+)</span>
+</td><td nowrap=true> 
+Статья бюджета: <select name=aggr onChange="setCons();"
+disabled><option value=""></option>#AGGRS#</select>
+
+</td>
+
+</tr><tr><td class=l>
+расписано:  ??IS_TOTAL
+</td><td nowrap=true colspan=3>
+ #SUM_CHILDREN# руб. (<a class=info href="javascript:getChildrenList()">документов: #NUM_CHILDREN#</a>) ??IS_TOTAL
+</td>
+
+</tr>
+<tr bgcolor=gray><td colspan=5></td></tr>
+[end]
+
+======= Блок от "Плательщик" до "Комментарий" - общий ====
+[block body]
+<tr><td class=l nowrap=true>Контрагент:</td><td colspan=3>#RECEIVER#</td>
+<td rowspan=3 nowrap=true>Комментарий:<br>#COMMENTS#</tr>
+$INCLUDE [inn]
+<tr><td class=l nowrap=true>Назначение<br>платежа:</td><td colspan=3>#INFO#</td></tr>
+<tr bgcolor=gray><td colspan=5></td></tr>
+[end]
+
+[inn]
+<tr><td class=l nowrap=true>
+ИНН контрагента:</td><td colspan=3>#INN_RECEIVER# 
+<small>#RECEIVER_C#</small>
+</td></tr>
+[end]
+
+======= Блок от "Плательщик" до "Комментарий" - Хозрасчет ====
+[block body xp]
+<tr><td class=l nowrap=true>
+Контрагент:</td><td colspan=2>
+<select name=dd_receiver onChange="receiverChanged();"><option>#XP_LIST#</select>
+&nbsp;&nbsp; код: <input name=receiver_c size=6 class=ro value="#RECEIVER_C#" readonly>
+</td>
+
+<td rowspan=4 colspan=2 nowrap=true>
+Комментарий:<br>#COMMENTS#</tr>
+
+<tr><td class=l nowrap=true>
+ИНН контрагента:</td><td colspan=2>#INN_RECEIVER#</td></tr>
+
+
+<tr><td class=l nowrap=true>
+Назначение<br>платежа:
+</td><td colspan=2>#INFO#</td></tr>
+<tr bgcolor=gray><td colspan=5></td></tr>
+[end]
+
+======= Блок от "Плательщик" до "Комментарий" - Наличный платеж ====
+[block body NAL]
+<tr><td colspan=4></td><td rowspan=4 nowrap=true>Комментарий:<br>#COMMENTS#</tr>
+<tr><td class=l nowrap=true>Кому: </td><td colspan=3>#RECEIVER#</td></tr>
+<tr><td class=l nowrap=true>Назначение<br>платежа: </td><td colspan=3>#INFO#</td></tr>
+<tr bgcolor=gray><td colspan=5></td></tr>
+[end]
+
+======= Блок от "Плательщик" до "Комментарий" - МНТС ====
+[block body MNTS]
+<tr><td colspan=4></td><td rowspan=4 nowrap=true>Комментарий:<br>#COMMENTS#</tr>
+<tr><td class=l nowrap=true>Командируется: </td><td colspan=3>#RECEIVER#</td></tr>
+<tr><td class=l nowrap=true>Место и сроки<br> командировки:</td><td colspan=3>#INFO#</td></tr>
+<tr bgcolor=gray><td colspan=5></td></tr>
+[end]
+
+================= Блок от "Подпись" до "история" ===============
+[block bottom]
+<tr><td class=l nowrap=true>Подпись:<br><br>
+Инициатор:</td><td colspan=4>
+<table border=0 cellpadding=0 cellspacing=0 width=100%>
+<tr><td>#CHIEF_SGN#, #CHIEF_DATE# <span class=small>(Ответств. за бюдж.код)</span></td></tr>
+
+<tr><td><br>#SIGNED# #APPROVAL#</td>
+<td align=right nowrap=true><br>
+ <a class=sm href="javascript:showPlat()">Оплата...</a>  ??ZZZ&!noPayment&!READ_ONLY&!type=xp&!IS_LOCKED
+ <a class=sm href="javascript:showPrixod()">Приход...</a>  ??ZZZ&!noPayment
+
+в бухгалтерии ??DAT_BUH
+<br>
+<img src="#imgPath#question.gif" width=12 height=16> требует уточнения  ??IS_PROBLEM
+
+<img src="#imgPath#checked_small.gif" width=12 height=1> ??!IS_LOCKED
+<img src="#imgPath#checked_small.gif" width=12 height=15>заблокирован ??IS_LOCKED
+</td>
+<td align=right>
+<br> 
+
+<a href="javascript:showActions();">история:</a>
+</td></tr><tr><td></td><td colspan=2>
+<div id=actions style="text-align:left; display:none; margin-left:150;"><small>#ACTION_HISTORY#</small></div>
+</td></tr></table>
+</td></tr>
+[end]
+
+
+================= Блок кнопок ===============
+[block buttons]
+<tr><td bgcolor=black colspan=5></td></tr>  ??MSIE=YES
+<tr><td class=d colspan=5 nowrap=true align=center>
+<input type=button class=but name=cls value="Закрыть" onClick="window.close();"> &nbsp;
+</td></tr>
+[end]
+
+===============================================================
+
+[registr]
+</td></tr><tr><td bgcolor=gray colspan=5></td></tr>
+<tr><td bgcolor=white> </td>
+<td bgcolor=white nowrap=true colspan=4>
+<b><i> ??PLAT_1
+Проведен:</i></b> <input type=checkbox name=prov
+checked ??PLAT_1
+disabled ??!BUH_ENABLED=Y
+>&nbsp;
+месяц: <input size=2 class=xpc name="reg_mm" value="#REG_MM#" onChange="setDatPaltXP()">&nbsp;
+год: <input size=4 class=xpc name="reg_yyyy" value="#REG_YYYY#" onChange="setDatPaltXP()">&nbsp;
+
+#PLAT_1#
+
+<input type=hidden name="DAT_PLAT_1" value="#DAT_PLAT_1#">
+<input type=hidden name="PLAT_1" value="#PLAT_1#"> &nbsp; 
+<input type=hidden name="DAT_PLAT_2" value="">
+
+[end]
+
+[set plat info]
+<tr><td nowrap=true colspan=5>
+<div id=setPlat style="display:none; FONT-SIZE: 10pt; background-color: white;">
+Платежное поручение &nbsp; &nbsp;&nbsp; 
+№ <input size=12 class=xp name="PLAT_1" value="#PLAT_1#">
+от <input size=12 class=xp name="DAT_PLAT_1" value="#DAT_PLAT_1#">
+дата оплаты: <input size=12 class=xp name="DAT_OPL1" value="#DAT_OPL1#"> ??
+&nbsp; &nbsp; &nbsp; <input type="button" class=but value="Занести" onClick="save_p();">
+
+<br>2-е платежное поручение 
+№ <input size=12 class=xp name="PLAT_2" value="#PLAT_2#">
+от <input size=12 class=xp name="DAT_PLAT_2" value="#DAT_PLAT_2#">
+дата оплаты: <input size=12 class=xp name="DAT_OPL2" value="#DAT_OPL2#"> ??
+
+<br>оплата по курсу: <input size=12 class=xp name="RATE" value="#RATE#"> ??!CURR_CODE=810
+</div>
+
+</td></tr>
+<tr><td bgcolor=gray colspan=5></td></tr>
+[end]
+
+
+[plat info]
+<tr><td bgcolor=white></td><td nowrap=true style="FONT-SIZE: 10pt; background-color: white; vertical-align: top;" colspan=4>
+<b><i>платежное поручение</i></b> 
+<a href="javascript:getPlat();"> ??PLAT_1
+№ #PLAT_1# 
+</a> ??PLAT_1
+от #DAT_PLAT_1# 
+дата оплаты:  #PAYED# 	??!DAT_OPL1&!DAT_PLAT_1
+&nbsp; &nbsp; <a class=sm href="javascript:showPlat()">Изменить...</a> ??!READ_ONLY&!IS_LOCKED
+
+<br>второе платежное поручение № #PLAT_2# от #DAT_PLAT_2#, дата оплаты: ??PLAT_2
+ #DAT_OPL2# 	??DAT_OPL2
+ #DAT_PLAT_2#	??!DAT_OPL2&DAT_PLAT_2
+
+<br>оплата по курсу: #RATE# ??RATE
+</td></tr>
+[end]
+
+
+[prixod]
+<tr><td nowrap=true colspan=5>
+<div id=setPrix style="display:none; FONT-SIZE: 10pt; margin:0; padding:0; background-color: white;">
+<b><i>Приход:</i></b> &nbsp;
+<a href="https://adb.jinr.ru/bht3?c=info/mol&srt=1&lab=200" target=_blank>№ склада:</a>
+<input size=2 class=xp name="PRIX_STORE" value="#PRIX_STORE#">
+МОЛ: <input size=20 class=xp name="PRIX_MOL" value="#PRIX_MOL#">
+Накладная: <input size=12 class=xp name="PRIX_NAKL" value="#PRIX_NAKL#">
+дата:
+$INCLUDE common.dat[dat] param: fd_name=PRIX_DAT; fd_val=#PRIX_DAT#;
+<input type="button" class=but value="Занести" onClick="save_prix();"> ??W_ACC
+</div></td></tr>
+[end]
+
+
+[preSQLs]
+select to_char(sysdate,'dd.mm.yy hh24:mi') as NOW from dual;
+
+update docs set doc_status=1 where doc_id=#DOC_ID#  ??cop=ud
+;
+SELECT inn as "inn_receiver", name_short as "receiver" FROM i_kontragent WHERE code='#receiver_c#' ??receiver_c&!inn_receiver
+;
+[end]
+
+[script]
+<script>
+
+window.focus();
+window.moveTo(0,0);  ??!h_user-agent=Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; MyIE2)
+
+frm=document.theForm;
+aggr_to_cons="#AGGR_TO_CONS#";
+
+frm.doc_changed.value="y";	??cop=u|cop=clone|cop=child|cop=c
+
+selectOptionByVal(frm.doc_status,'#DOC_STATUS#')  ??DOC_STATUS
+selectOptionByVal(frm.doc_type,'#DOC_TYPE#')   ??DOC_TYPE
+
+selectOptionByVal(frm.cons,'#CONS#')  ??CONS
+selectOptionByVal(frm.aggr,'#AGGR#')  ??AGGR
+selectOptionByVal(frm.curr_code,'#CURR_CODE#') ??CURR_CODE
+selectOptionByVal(frm.dd_receiver,'#RECEIVER_C#')  ??RECEIVER_C&type=xp
+selectOptionByVal(frm.dd_receiver,'#f_contr#'); receiverChanged();  ??!RECEIVER_C&type=xp
+
+showPrixod(); ??PRIX_STORE|PRIX_MOL|PRIX_NAKL#|PRIX_DAT
+
+try { frm.cld.disabled=true; } catch (e) {} ??!IS_TOTAL
+
+function getPlat()
+{ openWindow("c=plat/plat&docno=#PLAT_1#", "plat", 800,650);
+}
+
+</script>
+</center></body></HTML>
+[end]

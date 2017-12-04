@@ -1,0 +1,255 @@
+[SQLdiv]
+<script language=JavaScript>
+function showhideSQLdiv(){
+z=document.getElementById('sql');
+if(z.style.display=='none'){
+	z.style.display='block';
+}else{
+	z.style.display='none';
+}
+}
+
+</script>
+
+<small><a href="javascript:showhideSQLdiv();">*</a></small> 
+<div id='sql' style="display:none; width=450px; background-color:yellow;">
+<h1>DEBUG:</h1><br>
+$INCLUDE [update SQL]
+<br> TYPE_SQL:#TYPE_SQL# <br> 
+SUBTYPE_SQL:#SUBTYPE_SQL# <br> 
+SCORE:#SCORE# <br> <br>
+FN: #FN#<br><br>
+upd_hist:#upd_hist#
+<br>
+upd_hist:           ??upd_hist
+$INCLUDE [upd hist] ??upd_hist
+add_hist: 					??!upd_hist
+$INCLUDE [add hist] ??!upd_hist
+</div>
+[end]
+
+
+[int]
+<input type="text" id="#FIELD_NAME#"  name="#FIELD_NAME#" value="#VAL#" 
+size=10 ??!VCFS
+size=#VCFS# ??VCFS
+onChange="mustBeIntOnChange(this);"
+>
+
+[end]
+
+[float]
+<input type="text" id="#FIELD_NAME#"  name="#FIELD_NAME#" value="#VAL#" size=15
+onKeyPress="return mustBeNumeric(this);"
+>
+<img src="#imgPath#small/calc.gif" border=0 onclick="openWindow('c=calc&nm=#FIELD_NAME#&iValue=' + frm.#FIELD_NAME#.value, 'calc_win', 300, 180);" style='cursor: pointer;' alt='Калькулятор'>  ?? 
+[end]
+
+[varchar-short]
+<input type="text" id="#FIELD_NAME#" name="#FIELD_NAME#" value="#VAL#" 
+size=55 ??!VCFS
+size=#VCFS# ??VCFS
+MAXLENGTH="#CML#">
+[end]
+
+[varchar-long]
+<textarea id="#FIELD_NAME#" name="#FIELD_NAME#" 
+cols=64  ??!VCFS
+cols=#VCFS# ??VCFS
+rows=3 
+onchange="cropTo(this,'#CML#','#VAR_NAME#');" ??
+onchange="cropTo(this,'#CML#','#VAR_NAME#');" ??!isTeX
+onchange="cropTo(this,'#CML#','#VAR_NAME#'); convertTeX('#FIELD_NAME#', '#VIEW_FIELD_NAME#');" ??isTeX
+>#VAL#</textarea>
+[end]
+
+[text]
+<textarea id="#FIELD_NAME#" name="#FIELD_NAME#" 
+cols=64 ??!VCFS
+cols=#VCFS# ??VCFS
+rows=8 
+onchange="cropTo(this,'#CML#','#VAR_NAME#');" ??!isTeX
+onchange="cropTo(this,'#CML#','#VAR_NAME#'); convertTeX('#FIELD_NAME#', '#VIEW_FIELD_NAME#');" ??isTeX
+>#VAL#</textarea>
+[end]
+
+[date]
+$INCLUDE common.dat[dat] param: fd_name=#FIELD_NAME#; fd_val=#VAL#; yr1=-60; yr2=10; class=xpg; onChange=protectDateValue(this,'#VAR_NAME#');
+[end]
+
+[date-y]
+<style>
+.good{padding:0px; border: 2px solid green;}
+.bad{padding:0px;border: 2px solid red;}
+.spn{padding:0px;border: 2px none;}
+</style>
+
+<span id="DIV_#FIELD_NAME#" class="spn">
+<nobr>
+<input name="#FIELD_NAME#_Y" value="#D_YR#" type="text" align=center size="4" MAXLENGTH="4" onchange="#FIELD_NAME#_setDateHidden();">&nbsp;(гггг)</nobr></span>
+<input name="#FIELD_NAME#" type="hidden" value="1.#D_MNTH#.#D_YR#">  ??D_MNTH&D_YR
+<input name="#FIELD_NAME#" type="hidden" value="">				??!D_MNTH&!D_YR
+
+<script>
+
+#FIELD_NAME#_setDateHidden();
+
+function #FIELD_NAME#_setDateHidden(){
+
+if ( document.theForm.#FIELD_NAME#_Y.value.length==4) {
+	if ((parseInt(document.theForm.#FIELD_NAME#_Y.value)>1950)
+	 && (parseInt(document.theForm.#FIELD_NAME#_Y.value)<2030)
+	){
+		document.theForm.#FIELD_NAME#.value='01.01.'
+	 +document.theForm.#FIELD_NAME#_Y.value;
+	 z=document.getElementById('DIV_#FIELD_NAME#');
+	 z.className='good';
+ 	 document.theForm.FORM_HAS_ERROR.value='';
+	 }
+	 else
+	 { alert("Неверный год"); 
+		 z.className='bad';
+		 document.theForm.FORM_HAS_ERROR.value='yes';
+	 }
+}else{
+ 	 document.theForm.FORM_HAS_ERROR.value='yes';
+	}
+   if(document.theForm.#FIELD_NAME#_Y.value.length==0){
+		alert("Задайте год в четырехзначном формате.");   ??!new_event=y
+		document.theForm.#FIELD_NAME#.value='';
+	 z=document.getElementById('DIV_#FIELD_NAME#');
+	 z.className='bad';
+	 document.theForm.FORM_HAS_ERROR.value='yes';
+	}
+	if((document.theForm.#FIELD_NAME#_Y.value.length!=4)
+	 &&(document.theForm.#FIELD_NAME#_Y.value.length>0)){
+		alert("Год должен быть задан в четырехзначном виде.\n НАПРИМЕР: 2005"); ??MUST_BE_SET
+		document.theForm.#FIELD_NAME#.value='';
+	    z=document.getElementById('DIV_#FIELD_NAME#');
+		z.className='bad';
+	 document.theForm.FORM_HAS_ERROR.value='yes'; ??MUST_BE_SET
+		
+	}
+}
+</script>	
+$SET_PARAMETERS D_MNTH=;D_YR=;
+[end]
+
+[date-m-y]
+<style>
+.good{padding:0px; border: 2px solid green;}
+.bad{padding:0px;border: 2px solid red;}
+.spn{padding:0px;border: 2px none;}
+</style>
+
+<span id="DIV_#FIELD_NAME#" class="spn">
+<nobr>
+<select name="#FIELD_NAME#_M" onchange="#FIELD_NAME#_setDateHidden();">
+<option value=''></option>
+<option value='1'>январь</option>
+<option value='2'>февраль</option>
+<option value='3'>март</option>
+<option value='4'>апрель</option>
+<option value='5'>май</option>
+<option value='6'>июнь</option>
+<option value='7'>июль</option>
+<option value='8'>август</option>
+<option value='9'>сентябрь</option>
+<option value='10'>октябрь</option>
+<option value='11'>ноябрь</option>
+<option value='12'>декабрь</option>
+</select>&nbsp;<input name="#FIELD_NAME#_Y" value="#D_YR#" type="text" size="4" MAXLENGTH="4" onchange="#FIELD_NAME#_setDateHidden();">&nbsp;г.</nobr></span>
+<input name="#FIELD_NAME#" type="hidden" value="1.#D_MNTH#.#D_YR#">  ??D_MNTH&D_YR
+<input name="#FIELD_NAME#" type="hidden" value="">				??!D_MNTH&!D_YR
+
+<script>
+
+selectOptionByVal(document.theForm.#FIELD_NAME#_M,'#D_MNTH#');
+#FIELD_NAME#_setDateHidden();
+function #FIELD_NAME#_setDateHidden(){
+
+if ((document.theForm.#FIELD_NAME#_M.value!='') 
+	&& (document.theForm.#FIELD_NAME#_Y.value.length==4) 
+	&& (parseInt(document.theForm.#FIELD_NAME#_Y.value)>1950)
+	&& (parseInt(document.theForm.#FIELD_NAME#_Y.value)<2030)
+	){
+		document.theForm.#FIELD_NAME#.value='01.'
+		+document.theForm.#FIELD_NAME#_M.value
+		+'.'+document.theForm.#FIELD_NAME#_Y.value;
+	 z=document.getElementById('DIV_#FIELD_NAME#');
+	 z.className='good';
+ 	 document.theForm.FORM_HAS_ERROR.value='';
+}else{
+ 	 document.theForm.FORM_HAS_ERROR.value='yes';
+	}
+   if((document.theForm.#FIELD_NAME#_M.value=='')&&(document.theForm.#FIELD_NAME#_Y.value.length>0)){
+//	 alert("Задайте месяц.");
+	 document.theForm.#FIELD_NAME#.value='';
+	 z=document.getElementById('DIV_#FIELD_NAME#');
+	 z.className='bad';
+	}
+   if((document.theForm.#FIELD_NAME#_M.value!='')&&(document.theForm.#FIELD_NAME#_Y.value.length==0)){
+//		alert("Задайте год в четырехзначном формате."); 
+		document.theForm.#FIELD_NAME#.value='';
+	 z=document.getElementById('DIV_#FIELD_NAME#');
+	 z.className='bad';
+	 document.theForm.FORM_HAS_ERROR.value='yes';
+	}
+	if((document.theForm.#FIELD_NAME#_Y.value.length!=4)&&(document.theForm.#FIELD_NAME#_Y.value.length>0)){
+		alert("Год должен быть задан в четырехзначном виде.\n НАПРИМЕР: 2005"); ??MUST_BE_SET
+		document.theForm.#FIELD_NAME#.value='';
+	    z=document.getElementById('DIV_#FIELD_NAME#');
+		z.className='bad';
+	 document.theForm.FORM_HAS_ERROR.value='yes'; ??MUST_BE_SET
+		
+	}
+	if((document.theForm.#FIELD_NAME#_M.value=='')&&(document.theForm.#FIELD_NAME#_Y.value=='')){
+		document.theForm.#FIELD_NAME#.value='';
+	    z=document.getElementById('DIV_#FIELD_NAME#')
+		z.className='spn'; ??!MUST_BE_SET
+		
+		z.className='bad'; ??MUST_BE_SET
+    	document.theForm.FORM_HAS_ERROR.value='yes'; ??MUST_BE_SET
+
+	}
+}
+</script>	
+$SET_PARAMETERS D_MNTH=;D_YR=;
+[end]
+
+[comment]
+<div style="font-size: 8pt; background-color: ##FFFAD9; border: solid 1px ##DDDDDD;  display:inline; padding:4px;  width:200px;">
+#COMMENT#
+</div>
+[end]
+
+
+[value comment]
+<tr><td colspan=2 class="headrow">Комментарий:</td></tr>
+<tr><td colspan=2><textarea name="VALUE_COMMENT" cols=104 rows=5>#VALUE_COMMENT#</textarea></td></tr>
+[end]
+
+
+[balls]
+<tr><td colspan=2 class="headrow">Баллы:</td></tr>
+<tr><td colspan=2 style="font-size: 8pt; width: 500px; background-color: ##FFFAD9; border: solid 1px ##DDDDDD;">
+	<b>Начислено баллов:</b> #SCORE#<br><b>Правило:</b> #SCORE_RULE#
+</td></tr>
+[end]
+
+
+[sc warning]
+<tr><td colspan=2 class="row" >
+<div style="font-size: 14px; background-color: ##FFFAD9; border: solid 1px ##DDDDDD; padding:4px; ">
+Для правильного ввода рекомендуем использовать <a href="http://lib.jinr.ru/opac/elcat.php" target="_blank" >электронный каталог</a> НТБ ОИЯИ OPAC
+</div>
+</td></tr>
+[end]
+
+[mandatory warning]
+<tr><td colspan=2 class="row" >
+<div style="font-size: 14px; background-color: ##FFFAD9; border: solid 1px ##DDDDDD; padding:4px; ">
+Для экспорта записи в <a href="http://jds.jinr.ru/" target="_blank">систему JDS</a>, необходимо правильно заполнить поля, помеченные звёздочкой&nbsp;<sup style="color:red;">*</sup>.
+</div>
+</td></tr>
+[end]

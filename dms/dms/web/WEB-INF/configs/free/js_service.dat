@@ -1,0 +1,45 @@
+[comments]
+descr=JavaScript - сервисные функции общего применения
+testURL=free/js_service.dat
+[end]
+
+[report]
+/*============================ Сервис =====================================*/ ??
+/*=========================================================================*/ ??
+
+var getObjectById=function(elementId) { return document.getElementById(elementId);}
+
+IsNumeric = function(input)
+{ return (input - 0) == input && input.length > 0;
+}
+
+var mouseX, mouseY;
+$(document).mousemove(function(e) {
+    mouseX = e.pageX;
+    mouseY = e.pageY;
+		console.log("x=" + mouseX + "; y=" + mouseY); ??
+});
+.mouseover(); // call the handler immediately ??
+
+
+var setElement = function(div_id, txt)
+{ 
+	document.getElementById(div_id).innerHTML=txt; ??
+  if(div_id && txt)
+    $("##"+div_id).html(txt); 
+}
+
+var replaceAll = function(src, what, replacement) {
+ return src.replace(new RegExp(what,'g'),replacement); 
+}
+
+var fixSQL_TEXT = function(toDB){
+if(toDB)
+	document.theForm.SQL_TEXT.value=replaceAll(document.theForm.SQL_TEXT.value, "'", "''");
+else
+	document.theForm.SQL_TEXT.value=replaceAll(document.theForm.SQL_TEXT.value, "''", "'");
+}
+
+[end]
+
+

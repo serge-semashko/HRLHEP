@@ -1,0 +1,113 @@
+[comments]
+descr=A: Вывод списка шагов шаблона workflow для типа документов (вывод самой таблицы).
+
+input=wf_template_id - ID шаблона workflow (из таблицы wf_templates_list)
+
+output=HTML форма списка шагов шаблона workflow 
+parents=admin/wf/show_wf_template.cfg
+childs=
+test_URL=?c=admin/wf/wf_template_step_table&wf_template_id=1
+author=Яковлев, Куняев
+[end]
+
+
+[description]
+Предоставляет подробную информацию о каждом шаге для конкретного шаблона workflow.<br>
+[end]
+
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=A:Вывод списка шагов шаблона workflow.
+tableCfg=table_no
+KeepLog=false
+ClearLog=true
+[end]
+
+[report header]
+<div id="result_table"> 
+
+++++++++++++++++++ Шапка таблицы +++++++++++++++++++++ ??
+<table class="tlist tgreen" style="margin:0 0 0 100px;">
+<tr>
+<th>шаг</th>
+<th>роль</th>
+<th>цель (справочник)</th>
+<th>пользователь</th>
+<th>Условие</th><th>№</th>
+</tr>
+[end]
+
+
+[item]
+++++++++++++++++++ Строка таблицы - 1 элемент +++++++++++++++++++++ ??
+
+<tr><td>#step#
+(согласование) ??step_type=#~wf_step_in_progress#
+(утверждение) ??step_type=#~wf_step_signed#
+(завершение) ??step_type=#~wf_step_process#
+(информирование) ??step_type=#~wf_step_information#
+(подготовка) ??step_type=#~wf_step_preparation#
+</td>
+
+<td>
+#ROLE_NAME# (#ROLE_ID#) ??ROLE_ID
+(любой) ??criteria=1
+</td>
+
+<td>
+#TARGET_TYPE# ??TARGET_TYPE
+(справочник #INFO_ID#: #INFO_NAME#); ??INFO_ID
+</td>
+
+<td>
+#USER_IOF# (#user_id#) ??user_id
+</td>
+<td>
+#custom_criteria#
+</td>
+
+<td>
+* ??set_number=1
+** ??set_number=2
+*** ??set_number=3_
+#set_number# ??set_number>2
+=>??post_doc=1
+</td>
+</tr>
+
+$SET_PARAMETERS INFO_ID=; TARGET_TYPE=;
+
+[end]
+
+
+[report footer]
+</table>
+$SET_PARAMETERS wf_name=; wf_description=; div_ids=;
+</div>
+
+
++++++++++ Скрипт возврата результатов в вызывавшую страницу ++++ ??
+<script>
+window.parent.getResult("wf_template_step_table_#wf_template_id#", document.getElementById("result_table"));
+window.parent.setModule("admin/wf/wf_template_step_table&wf_template_id=#wf_template_id#");
+</script>
+[end]
+
+
+***************************** Шаблон SQL запроса ***************************
+
+[SQL]
+select wt.step, wt.step_type, wt.set_number, wt.criteria, wt.custom_criteria, wt.post_doc
+ , wt.role_id as "ROLE_ID", r.name as "ROLE_NAME", tt.type as "TARGET_TYPE"
+ , wt.user_id, iof(u.F, u.I, u.O) as "USER_IOF"
+ ,i.name as "INFO_NAME", i.id as "INFO_ID"
+from wf_templates wt
+left join a_roles r on r.id=wt.role_id
+left join a_target_types tt on tt.id=wt.role_target_type_id
+left join #table_users_full# u on u.id=wt.user_id
+left join i_infos i on i.id = tt.info_id
+where wt.wf_template_id=#wf_template_id#
+order by step
+;
+[end]

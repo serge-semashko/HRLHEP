@@ -1,0 +1,58 @@
+[comments]
+descr=А: Список пользователей 
+Выводит в ячейку таблицы пользователей таблицу с перечнем ролей пользователя.
+
+input=ID - ID выбранного пользователя
+output=HTML вывод таблицы
+parents=admin/users/users_list_table.cfg
+childs=
+testURL=?c=admin/users/user_roles&ID=1
+author=Куняев
+[end]
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=A:Вывод ролей пользователя
+tableCfg=table_no
+thsnDelimiter=none
+[end]
+
+
+[report header]
+<table class=table_small cellpadding=0 cellspacing=0> ??
+<div class="small">
+<small>c=admin/users/user_roles</small> ??debug=on
+[end]
+
+
+[item]
+<tr><td> ??
+#ROLE_NAME#
+</td><td> ??
+(#TARGET#) ??TARGET
+</td></tr> ??
+[end]
+
+
+[report footer]
+</table> ??
+$SET_PARAMETERS ROLE_NAME=; TARGET=;
+[end]
+
+
+****************************************************************************
+****************************************************************************
+****************************************************************************
+
+[SQL]
+select r.NAME as ROLE_NAME
+, concat(t.type, ': ', cast(ur.target_code as char), ' / ', cast(ur.priority as char)) as TARGET
+from a_user_role ur 
+left join a_roles r on r.id=ur.role_id
+left join a_target_types t on t.id=ur.target_type_id
+where
+ur.old_user_id=#OLD_ID# ??OLD_ID&!ID
+ur.user_id=#ID#  ??ID
+and ur.active=1
+[end]
+

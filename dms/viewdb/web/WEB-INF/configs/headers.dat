@@ -1,0 +1,408 @@
+
+[Header_HTML]
+$INCLUDE headers.dat[Title]
+
+<BODY onload="scrollIt();">
+<table border=0 bgcolor=F0F8FF width=100% cellpadding=0 cellspacing=0>
+
+<FORM NAME="theForm" method="POST" enctype="multipart/form-data">
+<tr><td nowrap=true valign=top width=20%>&nbsp;<img src="#imgPath#viewdb.gif" height="30" width="112" border=0 >
+</td><td nowrap=true>
+<b>Instance: <SELECT NAME="db" onChange="dbChanged();">#dbList#</SELECT>  ??logged&!DirectOraUser&!c=login&!c=about&!c=admin
+<input type=hidden name="db" value="#db#">    ??c=about|c=admin|DirectOraUser
+Connected as user <b>"#DirectOraUser#"</b> on <b>"#SERVICE#"</b> ??logged&DirectOraUser
+</b></td><td nowrap=true width=30% align=right>
+
+$INCLUDE headers.dat[ViewHRLink] ??DBA
+<input class=ro_small name=clock size=10>
+</td><td width=100>   ??logged&ViewDBUser&!c=login&!DirectOraUser
+$INCLUDE headers.dat[cbutton] param: id=b_logout; func=logout(); label=Logout; ??logged&ViewDBUser&!c=login&!DirectOraUser
+</td></tr></table>
+
+<input type=hidden name="c" value="#c#">
+<input type=hidden name="ss" value="#ss#">
+<input type=hidden name="debug" value="on">  ??debug=on
+<input type=hidden name="desc" value="#desc#">
+<input type=hidden name="nosrt" value="">
+<input type=hidden name="doIt" value="#doIt#">
+<input type=hidden name="srn" value="#srn#">
+<input type=hidden name=atab value="#atab#">
+<input type=hidden name=f_orauser value="#f_orauser#">  ??f_orauser&!atab=2&!atab=3&!atab=5
+<input type=hidden name=f_sql_c value="#f_sql_c#">  ??!ss=sqls_all
+<input type=hidden name=h_AUTHORIZATION value="Basic a291bmlhZXY6cXdlcnR5">  ??local&!UseCommonLogin=true
+
+$INCLUDE headers.dat[menu]  ??!AUTH_ERROR|c=login|c=about
+
+<SCRIPT>
+$INCLUDE js.dat[cookies]
+$INCLUDE js.dat[dropdowns]
+var frm=document.theForm;
+setLongCookie("ViewDB_db","#db#", 24*60); ??db&c&!c=about
+$SET_PARAMETERS db=#q_ViewDB_db#  ??!db&q_ViewDB_db&c&!c=about
+selectOptionByVal(frm.db, '#db#');  ??db
+
+function dbChanged() { frm.submit();} 
+
+function scrollIt()
+{ try{
+    document.getElementById("fin").scrollIntoView (true); 
+  } catch (e) {}
+}
+function logout()
+{ frm.c.value="login";
+  frm.atab.value=8;
+  frm.submit();
+}
+
+clock();
+
+</SCRIPT>
+$INCLUDE headers.dat[not authorized]  ??AUTH_ERROR&!c=login&!c=about
+$INCLUDE headers.dat[not connected]  ??!repos_connected
+
+<table bgcolor=whitesmoke border=0 cellpadding=10 cellspacing=0 width=100%><TR><TD>
+[end]
+
+
+[ViewHRLink]
+<a href="http://viewhr.cern.ch/viewhr/viewhr?c=over&db=hr11i_tcp" target="ViewHR"><font size=+1><b><i>ViewHR</font></a>&nbsp;  ??db=missl:1562:HR11i|db=misse:1563:HR11i|db=missu:1561:HR11i
+&nbsp;
+[end]
+
+[menu]
+$SET_PARAMETERS atab=1; ??!atab
+<br>
+<table border=0 cellpadding=0 cellspacing=0 width=100%> <TR>
+<td>&nbsp;&nbsp;</td> ??
+$INCLUDE headers.dat[tab] param: cfg=over; label=Overview; tabNr=1;
+$INCLUDE headers.dat[tab] param: cfg=sess_top; label=Sessions;  tabNr=2;
+$INCLUDE headers.dat[tab] param: cfg=sqls; label=SQLs;   tabNr=3;
+$INCLUDE headers.dat[tab] param: cfg=activity; label=Activity;  tabNr=4;
+$INCLUDE headers.dat[tab] param: cfg=schema; label=Schema; tabNr=5;
+$INCLUDE headers.dat[tab] param: cfg=memory; label=Memory; tabNr=6;
+$INCLUDE headers.dat[tab] param: cfg=storage; label=Storage; tabNr=7;
+$INCLUDE headers.dat[tab] param: cfg=admin; label=Admin; tabNr=8; ??logged&!DirectOraUser
+$INCLUDE headers.dat[tab] param: cfg=login; label=Login; tabNr=8; ??!logged&!DirectOraUser
+$INCLUDE headers.dat[tab] param: cfg=login; label=Logout; tabNr=8; ??logged&DirectOraUser
+$INCLUDE headers.dat[tab] param: cfg=about; label=About; tabNr=9;
+
+<td width=50% align=right></TD></TR><tr>
+<td></td> ??
+<td bgcolor=555555 colspan=  ??!atab=1
+3 ??atab=2
+6 ??atab=3
+9 ??atab=4
+12 ??atab=5
+15 ??atab=6
+18 ??atab=7
+21 ??atab=8
+24 ??atab=9
+></td>  ??!atab=1
+<td bgcolor=whitesmoke colspan=3 align=right><IMG border=0 src="#imgPath#dot_black.gif" height=1 width=1 ></td>
+<td bgcolor=555555 colspan=
+25  ??atab=1
+22  ??atab=2
+19  ??atab=3
+16  ??atab=4
+13  ??atab=5
+10  ??atab=6
+7   ??atab=7
+4   ??atab=8
+></td></tr></TABLE>
+[end]
+
+
+[tab] param: label; cfg; tabNr;
+<TD class=tab nowrap=true><IMG border=0 src="#imgPath#tab1.gif" width=4 height=22></TD> ??!c=#cfg#
+<TD class=atab nowrap=true vAlign=top><IMG border=0 src="#imgPath#atab1.gif" width=5 height=22></TD>   ??c=#cfg#
+
+<TD align=center
+class=tab  nowrap=true><A class=tab href="javascript:sel('#cfg#', #tabNr#);">  ??!c=#cfg#
+class=atab nowrap=true><A class=atab href="javascript:document.theForm.submit();">  ??c=#cfg#
+#label#</A></TD>
+
+<TD nowrap=true 
+class=tab ><IMG src="#imgPath#tab2.gif" width=4   ??!c=#cfg#
+class=atab><IMG src="#imgPath#atab2.gif" width=6  ??c=#cfg#
+ height=22 border=0></TD>
+[end]
+
+[barl] param: space;
+<table border=0 cellpadding=0 cellspacing=0 width=100%>
+<tr><td><img src="#imgPath#binactl0.gif" width=3 height=20></td><td class=tab background="#imgPath#bbackgr.gif"><img src="#imgPath#spacer.gif" border=0 height=1 width=#space# ><img src="#imgPath#binactr.gif" width=3 height=20></td>  ??space&!space=0
+[end]
+
+[btn] param: cfg; label;
+<td><img src="#imgPath#bactl.gif" width=4 height=20></td> ??ss=#cfg#
+<td id='#cfg#' nowrap=true class=bara bgcolor="303060" background="#imgPath#bact.gif"> ??ss=#cfg#
+<a class=tab2 href="##" onClick="sel_ss('#cfg#');">#label#</a></td> ??ss=#cfg#
+<td><img src="#imgPath#bactr.gif" width=4 height=20></td> ??ss=#cfg#
+
+<td><img src="#imgPath#binactl.gif" width=3 height=20></td> ??!ss|!ss=#cfg#
+<td id='#cfg#' class=bar nowrap=true background="#imgPath#binact.gif"> ??!ss|!ss=#cfg#
+<a class=tab1 href="##" onClick="sel_ss('#cfg#');" onMouseOut="setOut('#cfg#');" onMouseOver="setOver('#cfg#');">#label#</a></td> ??!ss|!ss=#cfg#
+<td><img src="#imgPath#binactr.gif" width=3 height=20></td> ??!ss|!ss=#cfg#
+[end]
+
+[barr]
+<td class=tab width=90% background="#imgPath#bbackgr.gif">&nbsp;</td>
+<td class=tab> <img src="#imgPath#binactr.gif" width=3 height=20></td></tr></table>
+[end]
+
+[cbutton] param: id; func; label; disabled; class=abut;
+<table border=0 cellpadding=0 cellspacing=0>
+<tr><td><img src="#imgPath#binactl.gif" width=3 height=20></td>
+<td id='#id#' align=center nowrap=true background="#imgPath#binact.gif"><a 
+class=abutdis   ??disabled
+class=#class# href="javascript:#func#;" onMouseOut="setOut('#id#');" onMouseOver="setOver('#id#');" ??!disabled
+>#label#</a></td><td><img src="#imgPath#binactr.gif" width=3 height=20></td></tr></table>
+[end]
+
+[dd header]
+$INCLUDE headers.dat[Head]
+<BODY 
+class=prn onLoad="onPopupLoad();" ??prn=y
+>
+<table border=0 cellpadding=0 cellspacing=0 bgcolor=F0F8FF width=100%>
+<form name="theForm" method="POST" enctype="multipart/form-data">
+<input type=hidden name="db" value="#db#">
+<input type=hidden name="c" value="#c#">
+<input type=hidden name="pinned" value="#pinned#">
+<input type=hidden name="prn" value="">
+
+<tr><td width=10% valign=middle nowrap=true>
+&nbsp;<img src="#imgPath#viewdb.gif" border=0 valign=top width=112 height=30></td>
+<td class=title>&nbsp;&nbsp;#ReportName#
+</td><td>&nbsp;&nbsp;</td><td class=title_small nowrap=true>#MORE_HEADER#
+</td><td width=25% align=center nowrap=true>
+<a href="javascript:forPrint();"><img src="#imgPath#printer.gif" border=0 valign=top width=25 height=17 alt="Print this page"></a>
+<input type=button class=but name=pin value="   Pin   " onClick="keepIt();"
+disabled=true ??pinned
+>
+<input type=button id="ddCloseButton" class=but value=" Close " onClick="closeIt();"></td>
+</tr></table>
+<script>
+function closeIt() {window.close();}
+
+function keepIt()
+{ window.name="pinnedWindow";
+  document.theForm.pinned.value="y";
+  document.theForm.pin.disabled=true;
+}
+function forPrint()
+{ document.theForm.prn.value="y";
+  document.theForm.submit();
+}
+function onPopupLoad()
+{
+  window.print(); ??prn=y
+}
+</script>
+[end]
+
+
+[Footer_HTML]
+</td></tr></table>
+<small><a id="theUrl" href="##" style="background-color: ##cccccc;" >Direct URL for this page</a> ??logged&!DirectOraUser
+</small>
+
+</center></center><HR WIDTH="100%">
+<FONT FACE="Arial" SIZE=-2>Copyright (c) CERN (AS-SAS), 2001-2003.<br>
+#loginName#, #ACC_RIGHTS#;
+<p><a href="javascript:window.location.href = window.location.href + '&reset=yes';">RESET servlet</a><br>Config.file: #c#.cfg; Sub.config.file: #ss#.cfg ??admin=userGroup|dba=userGroup
+
+<br><a href="/logs/ViewDBLog.html">l</a>
+</FONT>
+<script>
+try {
+var u = ("#queryString#");
+while (u.indexOf("¦") > 0) u = u.replace('¦', '&');
+document.getElementById("theUrl").href="#ServerPath##ServletRoot##ServletPath#?" + u;
+document.getElementById("thisURL").innerHTML="#ServerPath##ServletPath#?" + u;  ??
+document.all.theUrl.href="#ServerPath##ServletPath#?" + u; ??
+window.external.AddFavorite(u,"ViewDB1"); ??
+}
+catch (e) {}
+//alert (u);
+</script></BODY></HTML>
+[end]
+
+[not connected]
+<SCRIPT>
+
+reposLogin(); ??!c=repos_setup&!c=repos_login&!c=repos_login_sys
+
+function reposLogin()
+{ 
+  window.location.href="#ServletRoot##ServletPath#?c=repos_login";
+}
+</SCRIPT>
+[end]
+
+[buttons script]
+<script>
+function setOver(id)
+{ 
+  document.getElementById(id).background = "#imgPath#bsel.gif";
+//  document.getElementById(id).style.cursor='hand';
+//  document.body.style.cursor = "hand";
+//  alert ("here");
+}
+function setOut(id)
+{ document.getElementById(id).background = "#imgPath#binact.gif"
+  document.body.style.cursor = "default";
+}
+</script>
+[end]
+
+[Title]
+$INCLUDE headers.dat[Head]
+$INCLUDE headers.dat[buttons script]
+
+<SCRIPT>
+
+function sel(cfg, tabNr)
+{
+  if (document.theForm.c.value=="top_sess" && cfg=="top_sess") get_top_sess(); ??sid
+  document.theForm.c.value=cfg;
+  document.theForm.atab.value=tabNr;
+
+  document.theForm.ss.value="";
+  document.theForm.sid.value=""; ??sid
+  frm.nosrt.value="yes";
+  frm.doIt.value="";
+  if (typeof frm.oldOrderBy == "object")
+    frm.oldOrderBy.value="";
+  document.theForm.submit();
+}
+
+function sel_ss(ss)
+{
+  document.theForm.sid.value=""; ??sid
+  document.theForm.ss.value=ss;
+  frm.nosrt.value="yes";
+  frm.doIt.value="";
+  if (typeof frm.oldOrderBy == "object")
+    frm.oldOrderBy.value="";
+  document.theForm.submit();
+}
+
+function goToRow(nr)
+{ frm.srn.value=nr;
+  frm.submit();
+}
+
+$INCLUDE headers.dat[sortScript]
+
+</SCRIPT>
+[end]
+
+[sortScript]
+function setDesc()
+{
+  frm.desc.value="DESC";  ??!desc
+  frm.desc.value="";      ??desc
+  frm.submit();
+}
+
+function setSort(colNr)
+{
+  var oldsrt = #srt#; ??srt
+  var oldsrt = -1;    ??!srt
+  if (oldsrt == colNr)
+  {
+    frm.desc.value="DESC";  ??!desc
+    frm.desc.value="";      ??desc
+  }
+  else
+    frm.desc.value="DESC";
+  frm.submit();
+}
+[end]
+
+[Head]
+<HTML><HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1"> ??
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1251">
+  <LINK href="#imgPath#main.css" rel=stylesheet type=text/css>
+  <meta http-equiv="pragma" content="no-cache"> 
+  <meta http-equiv="cache-control" content="no-cache"> 
+  <meta http-equiv="cache-control" content="no-store"> 
+  <meta http-equiv="expires" content="0">
+<TITLE>ViewDB - #db# - #ReportName#</TITLE>
+
+<script>
+
+$INCLUDE js.dat[window]
+
+function sqldetails(hash, addr, orauser, spid)
+{ openWindow("c=sql_main&db=#db#&hash="+hash+"&addr=" + addr + "&orauser=" + orauser + "&spid=" + spid
+    , 750, 550, "SqlDetails");
+}
+function sess_details(sid, sn)
+{ openWindow("c=sess_det&db=#db#&sid=" + sid + "&sn=" + sn
+    , 750, 550, "SessDetails");
+}
+
+window.focus();
+
+function clock()
+{ var now = new Date()
+  var hours = now.getHours()
+  var minutes = now.getMinutes()
+  var seconds = now.getSeconds()
+  var timeValue =  hours
+  timeValue += ((minutes < 10) ? ":0" : ":") + minutes
+  timeValue += ((seconds < 10) ? ":0" : ":") + seconds
+  document.theForm.clock.value = timeValue
+  timerID = setTimeout("clock()",1000)
+  timerRunning = true
+}
+
+</script>
+</HEAD>
+$SET_PARAMETERS debug=;   ??xxx!loginName=KOUNIAEV
+[end]
+
+[not authorized]
+$INCLUDE headers.dat[go to direct login] ??AllowDirectOraUserAccess
+<table border=0 cellspacing=0 cellpadding=10 bgcolor=FFF0A0 width=100%><tr><td>
+<center>
+<h2>
+Authorization error!    ??!NotConnected
+Could not get users from the repository database! ??NotConnected
+<br>You are not logged to ViewDB<br> ??!loginName
+</h2><h3>
+You are logged as user #loginName#.    ??loginName
+$INCLUDE headers.dat[Auth Error Msg]  ??AUTH_ERROR
+<br>
+If you need access to ViewDB, please contact
+<a href="mailto:Andre.Regelbrugge@cern.ch"><img src="#imgPath#mail.gif" border=0>Andre Regelbrugge</a>
+or <a href="mailto:Chris.Lambert@cern.ch"><img src="#imgPath#mail.gif" border=0>Chris Lambert</a>
+</h3>
+<a href="#ServletRoot##ServletPath#?c=login">Direct Login</a>
+</center>
+<small>AUTH_ERROR: #AUTH_ERROR#</small>
+</td></tr></table>
+</td></tr></table>
+[end]
+
+[go to direct login]
+<input type=hidden name=c value="login">
+<input type=hidden name=atab value="8"> ??!atab
+<input type=hidden name=Login_Error value="#AUTH_ERROR#"> ??
+</form>
+<script>
+setCookie("ViewDB_Sess", "");
+//window.location.href="#ServletRoot##ServletPath#?c=login&atab=8"; 
+try{ document.theForm.atab.value="8";
+} catch (e) {}
+document.theForm.submit();
+</script>
+[end]
+
+[Auth Error Msg]
+You have no access to instance "#db#" ??AUTH_ERROR=NO ACCESS TO INSTANCE
+You have no access to ViewDB ??AUTH_ERROR=NO ACCESS
+
+[end]

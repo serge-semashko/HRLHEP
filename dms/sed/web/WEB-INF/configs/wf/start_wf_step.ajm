@@ -1,0 +1,199 @@
+wf/start_wf_step.ajm
+
+[comments]
+descr=S: Стартовать очередной шаг рабочего workflow документа.
+
+input=doc_id - ID документа
+output=Активируется очередной шаг workflow, создаётся 1 или несколько events, рассылаются уведомления
+parents=docs/doc_user_action_process.cfg
+childs=wf/create_event, wf/process_events;
+author=Куняев
+[end]
+
+[description]
+Старт очередного шага WF документа.<br>
+Вызов из docs/doc_user_action_process.cfg асинхронно (AJAX) - после подготовки WF
+<ul>
+    <li>Select WF_ID и очередной номер нестартованного шага документа</li>
+    <li>Проверяется, завершен ли последний стартованный шаг WF </li>
+    <li>Пытаемся обработать другие не обработанные ранее события</li>
+</ul>
+[end]
+
+
+[parameters]
+request_name=S:старт шага wf для док.#doc_id#
+service=dubna.walt.service.TableServiceSpecial
+tableCfg=table_no
+LOG=ON
+[end]
+
+
+[report header]
+    <center><br>Старт шага 
+    $SET_PARAMETERS role_id=; role_target_type_id=; info_id=; field_db_name=; TARGET_ID=; FIRST_USER=;
+    $GET_DATA [get wf data]
+    $LOG1 wf/start_wf_step: doc_id=#doc_id#, DOC_TYPE_ID=#DOC_TYPE_ID#; стартуем шаг #NEXT_STEP#; 
+    #NEXT_STEP#; doc_id=#doc_id#, <br>
+
+    $GET_DATA [check prev steps]  ??WF_ID&NEXT_STEP>1&!ERROR
+    $LOG <b>Шаг не может быть стартован, т.к. #NUM_NOTFINISHED_STEPS# шаг(ов) не завершено!</b> ??NUM_NOTFINISHED_STEPS>0
+    <b>Шаг не может быть стартован, т.к. #NUM_NOTFINISHED_STEPS# шаг(ов) не завершено!</b><br> ??NUM_NOTFINISHED_STEPS>0
+
+    $INCLUDE docs/custom_settings.cfg[check custom step criteria]
+
+    $SET_PARAMETERS WF_LOCKED=Y;    ??NUM_NOTFINISHED_STEPS>0
+    $GET_DATA [start transaction] ??WF_ID
+[end]
+
+[item]
+    $LOG STEP_ID=#STEP_ID#;<br>
+    $INCLUDE [start normal step] ??!next_step_type=#~wf_step_information#
+    $INCLUDE [process notification step] ??next_step_type=#~wf_step_information#
+[end]
+
+[process notification step]
+    $SET_PARAMETERS EVENT_TYPE=#~doc_action_inform#; next_user_id=#user_id#;
+    $CALL_SERVICE c=wf/create_event; NOTIFY_USER_ID=#user_id#; EVENT_TYPE=#~doc_action_inform#; ??!user_id=0
+
+    $GET_DATA [update info step status] ??!ERROR
+[end]
+
+$GET_DATA wf/sendFYI.cfg[register sent_FYI] ??!ERROR&!user_id=0 - вроде, рудимент!
+
+
+
+[start normal step]
+    $GET_DATA [set history] ??!ERROR
+    ---------- Проверка, не согласован ли документ на пред.шагах. Не проверяем, если роль СМТС и СМТС-договоры ----- ??
+    $CALL_SERVICE c=wf/check_already_signed; ??WF_ID&DOC_STATUS=#~doc_status_in_progress#&!NEXT_STEP_ROLE=29&!NEXT_STEP_ROLE=20
+
+    $SET_PARAMETERS EVENT_TYPE=#~doc_action_process#; ??next_step_type=#~wf_step_process#
+    $CALL_SERVICE c=wf/create_event; NOTIFY_USER_ID=#user_id#;  ??!SIGNED_AT_STEP&!cop=#~doc_action_reject#
+    $GET_DATA [update wf status] ??!ERROR
+    $SET_PARAMETERS STEP_FOUND=Y
+[end]
+
+
+
+
+[report footer]
+    $LOG <b>ERROR:</b> #ERROR# ??ERROR
+    $GET_DATA [update doc status]  ??next_step_type=#~wf_step_process#
+
+    $GET_DATA [commit]
+
+    $CALL_SERVICE c=wf/process_events;  
+
+    <br>OK  ??!ERROR
+    <br>Произошла ошибка обработки документа:<br>#ERROR#<br><br> ??ERROR
+    <script type="text/javascript">ShowDialog(); centerDialog(); </script> ??ERROR
+    ====== Стартуем следующий шаг, если предыдущий был завершен автоматически ??SIGNED_AT_STEP&!ERROR
+    <script type="text/javascript">AjaxCall("popupCont", "c=wf/start_wf_step&doc_id=#doc_id#&cop=#cop#", true);  </script>     ??SIGNED_AT_STEP&!ERROR
+    <script type="text/javascript">window.setTimeout(HideDialog, 1000);  </script>     ??!SIGNED_AT_STEP&!ERROR
+[end]
+
+==============================================================
+==============================================================
+==============================================================
+
+[get wf data]
+    try: select /* ID workflow */  id as "WF_ID" from wf_list where doc_id=#doc_id#
+    ;
+    try: select /* Номер след.шага */ min(step) as "NEXT_STEP" from wf where wf_id=#WF_ID# and result_code is null and is_active=1 ??WF_ID
+    ;
+    try: select /* Роль на след.шаге */ min(role_id) as "NEXT_STEP_ROLE" from wf where wf_id=#WF_ID# and step=#NEXT_STEP# ??WF_ID&NEXT_STEP
+    ;
+    select type_id as DOC_TYPE_ID, status as DOC_STATUS from d_list where id=#doc_id#
+[end]
+
+[check prev steps]
+    select /* проверка "есть ли не завершенные подшаги на текущем шаге?" */ 
+        count(*) as "NUM_NOTFINISHED_STEPS"
+    from wf
+    where wf_id=#WF_ID# and result_code is null and step<#NEXT_STEP# and is_active=1 and step_type<>#~wf_step_information#
+[end]
+
+[SQL]
+    $INCLUDE [SQL_] ??WF_ID&NEXT_STEP&!WF_LOCKED&!ERROR
+[end]
+
+[SQL_]
+    select /* ID следующих под-шагов WF и данные выбранных юзеров */
+        wf.id as "STEP_ID"
+        , wf.role_id, wf.role_target_type_id, wf.role_target_id, wf.step_type as "next_step_type"
+        , wf.user_id, wf.set_number, wf.creator_id as "STEP_CREATOR"
+        , tt.info_id as "INFO_ID"
+    from wf wf 
+        left join a_target_types tt on tt.id=wf.role_target_type_id
+    where wf.wf_id=#WF_ID# and step=#NEXT_STEP# and wf.is_active=1
+[end]
+
+
+[update wf status]
+    update wf set started=now() where id=#STEP_ID#;
+    update wf_list set modified=now(), modifier_id=#USER_ID# where id=#WF_ID#;
+[end]
+
+
+[update info step status]
+    update wf set started=now() 
+    , finished=now(), result_code=#~doc_action_inform#
+    , result='послано уведомление по email'   ??!user_id=0
+    , result='пользователь не определён'   ??user_id=0
+    where id=#STEP_ID#
+    ;
+[end]
+
+
+[update doc status]
+    update d_list /* doc status changed to "signed" */
+    set status=#~doc_status_signed# where id=#doc_id#
+    ;
+[end]
+
+[set history]
+    insert into wf_history /* пишем в историю запись "старт шага" */
+        (dat, wf_id, doc_id, step_id, step
+        , role_id, role_target_type_id, role_target_id, step_type
+        , user_id, user_fio, user_posts, user_role, user_email
+        , result)
+
+    values (now(), #WF_ID#, #doc_id#, #STEP_ID#, #NEXT_STEP#
+        , #role_id#  ??role_id
+        , null  ??!role_id
+        , #role_target_type_id#  ??role_target_type_id
+        , null  ??!role_target_type_id
+        , #role_target_id# ??role_target_id
+        , null ??!role_target_id
+        , #next_step_type#
+        /* Заносим данные ЗАЛОГИНЕНОГО юзера - не из workflow! - того юзера, кто стартовал шаг */
+        , #USER_ID#, '#user_FIO#', '#user_posts#', '#user_roles#', '#email#'
+        , 'Старт шага')
+    ;
+    select LAST_INSERT_ID() as "WF_HISTORY_ID"
+    ;
+    update d_list set modified=now(), modifier_id=#USER_ID#
+    where id=#doc_id#
+    ;
+[end]
+
+
+
+[start transaction]
+    lock tables wf_list write, wf write, wf_history write, wf_events write, wf_events_notifications write; ??
+    lock tables wf_list write, wf_history write, wf_events write, wf_events_notifications write; 
+    START TRANSACTION;
+[end]
+
+[commit]
+    $INCLUDE [do rollback] ??ERROR
+    COMMIT;   ??!ERROR
+    unlock tables; 
+[end]
+
+[do rollback]
+    ROLLBACK; 
+    select max(id)+1 as NEXT_ID from wf_history;
+    ALTER TABLE wf_history AUTO_INCREMENT = #NEXT_ID#;
+[end]

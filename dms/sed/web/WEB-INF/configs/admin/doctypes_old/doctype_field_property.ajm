@@ -1,0 +1,462 @@
+[comments]
+descr=A: Редактирование свойств поля формы документа из списка типов документа
+
+input=type_field_id - ID поля типа документа (из таблицы d_fields) (для режима "edit");
+
+type_id - ID поля типа документа (из таблицы d_types) (для режима "add");
+form_field_type - ID типа поля (из таблицы d_form_fields_types) (для режима "add");
+
+mode - режим работы: "add" - создание нового поля,
+"edit" - редактирование свойств поля с ID = type_field_id;
+
+cop - код операции: "create" - создание нового нового поля, 
+"update" - обновление свойств поля с ID = type_field_id;
+
+
+output=HTML форма редактирования свойств поля формы документа, 
+parents=admin/doctypes/doctype_form_editor.cfg
+childs=
+test_URL=?c=admin/doctypes/doctype_field_property&mode=edit&type_field_id=1
+author=Яковлев, Куняев
+[end]
+
+
+[parameters]
+request_name=A: Редактирование свойств поля формы документа (Тип документа)
+tableCfg=table_no
+KeepLog=false
+ClearLog=true
+divider=<tr><td colspan=2 class="bg_white" style="height:10px; border-top:solid 1px gray;"></td></tr>
+[end]
+
+
+[report]
+++++ временно - открыто всем. Потом - проверить R и RW права пользователя +++ ??
+$SET_PARAMETERS RWACC=Y; RACC=Y;
+$INCLUDE [report_]  ??RACC
+[end]
+
+=========================
+
+[report_]
+$INCLUDE [do save]  ??cop=save
+$INCLUDE [form]  ??!cop=save
+
+[end]
+
+[form]
+$GET_DATA [getFieldInfoSQL] ??mode=edit
+
+
+
+#c# ??debug=on
+<input type=hidden name="type_field_id" value="#type_field_id#">
+<input type=hidden name="type_id" value="#type_id#">
+<input type=hidden name="UPDATED_TYPE_ID" value="#UPDATED_TYPE_ID#">
+<input type=hidden name="form_field_type" value="#form_field_type#">
+<input type=hidden name="DOC_TYPE_IS_ACTIVE" value="#DOC_TYPE_IS_ACTIVE#">
+<input type=hidden name="FIELD_IS_ACTIVE" value="#FIELD_IS_ACTIVE#">
+
+<table width="100%" style="background-color:whitesmoke; ">
+<tr><th class="bg_red big" colspan=2>
+<b>Редактор полей</b>
+&nbsp; (Создание поля)  ??mode=add
+&nbsp; (Правка поля)  ??mode=edit
+</th></tr>
+
+<tr><td class="label bottom_dotted" width="40%" nowrap><b>Поле в БД:</b></td> 
+<td class="big bg_white bottom_dotted">
+<b>#FIELD_DB_NAME#</b> ??mode=edit
+</td></tr>
+
+$INCLUDE [form field type]
+
+$INCLUDE [form field name]
+
+$INCLUDE [static field]  ??form_field_type=1
+$INCLUDE [input field]  ??form_field_type=2
+$INCLUDE [info field]  ??form_field_type=3|form_field_type=4
+$INCLUDE [date field]  ??form_field_type=5|form_field_type=19
+$INCLUDE [file field]  ??form_field_type=666
+$INCLUDE [currency field]  ??form_field_type=7|form_field_type=8|form_field_type=10|form_field_type=11|form_field_type=12|form_field_type=15
+
+$INCLUDE [coordinate fields]  ?? Координаты не применяются
+
+$INCLUDE [visible field]  ??
+
+$INCLUDE [button mode add]  ??mode=add
+$INCLUDE [button mode edit]  ??mode=edit
+
+
+</table>
+
+[end]
+
+[form field type]
+<tr><td class="label bottom_dotted" width="40%" nowrap><b>Тип поля:</b></td> 
+<td class="big bg_white bottom_dotted">
+<b>Статический текст</b>  ??form_field_type=1
+<b>Текстовое поле ввода</b>  ??form_field_type=2
+<b>Выпадающий список</b>  ??form_field_type=3
+<b>Всплывающий справочник</b>  ??form_field_type=4
+<b>Календарь</b>  ??form_field_type=5
+<b>Файл-приложение</b>  ??form_field_type=666
+<b>Сумма + валюта + др.валюты</b>  ??form_field_type=7
+<b>Сумма в т.ч.НДС</b>  ??form_field_type=8
+<b>Cумма в рублях</b>  ??form_field_type=10
+<b>Сумма + процент + валюта</b>  ??form_field_type=11
+<b>Сумма + процент в рублях</b>  ??form_field_type=12
+<b>Вложенный объект</b>  ??form_field_type=13
+<b>Коллекция вложенных объектов</b>  ??form_field_type=14
+<b>Сумма + валюта</b>  ??form_field_type=15
+<b>Число align-right</b>  ??form_field_type=16
+<b>Read Only текстовое поле</b>  ??form_field_type=17
+<b>Текстовое поле, редактируемое в режиме просмотра</b>  ??form_field_type=18
+<b>Диапазон дат</b>  ??form_field_type=19
+<b>Заявка-1 поставщик</b>  ??form_field_type=1001
+<b>Закупка по плану / нет</b>  ??form_field_type=1002
+<b>Физическое лицо</b>  ??form_field_type=1003
+<b>Список источников финансирования (ОИЯИ)</b>  ??form_field_type=1004
+<b>Доп.соглашение - изменения</b>  ??form_field_type=1005
+<b>Список источников финансирования (ОИЯИ-доп.согл.)</b>  ??form_field_type=1006
+<b>Внешний №, №1С, №ADB</b>  ??form_field_type=1007
+<b>Аванс для ДП</b>  ??form_field_type=1008
+</td></tr>
+[end]
+
+[form field name]
+<tr><td class="label bottom_dotted" width="40%" nowrap>Название поля:</td> 
+<td class="big bg_white bottom_dotted">
+<textarea cols=60 name=f_name rows=2 style="width:150pt; height:30pt;">
+#NAME#  ??mode=edit
+</textarea>
+</td></tr>
+[end]
+
+?? =====  form_field_type=1
+[static field]
+$INCLUDE [static datatype mode add] ??mode=add
+$INCLUDE [static datatype mode edit] ??mode=edit
+$INCLUDE [field size] 
+[end]
+
+[static datatype mode add]
+$INCLUDE [static datatype write]
+[end]
+
+[static datatype mode edit]
+$INCLUDE [static datatype write] ??DOC_TYPE_IS_ACTIVE=0&FIELD_IS_ACTIVE=2
+$INCLUDE [static datatype readonly] ??DOC_TYPE_IS_ACTIVE=1|!FIELD_IS_ACTIVE=2
+[end]
+ 
+[static datatype write]
+<tr><td class="label bottom_dotted" width="40%" nowrap>Тип данных:</td> 
+<td class="big bg_white bottom_dotted">
+<select name=f_type>
+<option value=varchar
+selected ??TYPE=varchar
+>Строка</option>
+<option value=int
+selected ??TYPE=int
+>Целое число</option>
+<option value=float
+selected ??TYPE=float
+>Число</option>
+<option value=date
+selected ??TYPE=date
+>Дата</option>
+</select>
+</td></tr>
+[end]
+
+[static datatype readonly]
+<tr><td class="label bottom_dotted" width="40%" nowrap>Тип данных:</td> 
+<td class="big bg_white bottom_dotted">
+<input type=hidden name="f_type" value="#TYPE#">
+Строка  ??TYPE=varchar
+Целое число  ??TYPE=int
+Число  ??TYPE=float
+Дата  ??TYPE=date
+</td></tr>
+[end]
+
+
+?? =====  form_field_type=2
+[input field]
+$INCLUDE [input datatype mode add] ??mode=add
+$INCLUDE [input datatype mode edit] ??mode=edit
+$INCLUDE [field size] 
+[end]
+
+[input datatype mode add]
+$INCLUDE [input datatype write]
+[end]
+
+[input datatype mode edit]
+$INCLUDE [input datatype write] ??DOC_TYPE_IS_ACTIVE=0&FIELD_IS_ACTIVE=2
+$INCLUDE [input datatype readonly] ??DOC_TYPE_IS_ACTIVE=1|!FIELD_IS_ACTIVE=2
+[end]
+
+[input datatype write]
+<tr><td class="label bottom_dotted" width="40%" nowrap>Тип данных:</td> 
+<td class="big bg_white bottom_dotted">
+<select name=f_type>
+<option value=varchar
+selected ??TYPE=varchar
+>Строка</option>
+<option value=int
+selected ??TYPE=int
+>Целое число</option>
+<option value=float
+selected ??TYPE=float
+>Число</option>
+<option value=text
+selected ??TYPE=text
+>Большой текст</option>
+</td></tr>
+[end]
+
+[input datatype readonly]
+<tr><td class="label bottom_dotted" width="40%" nowrap>Тип данных:</td> 
+<td class="big bg_white bottom_dotted">
+<input type=hidden name="f_type" value="#TYPE#">
+Строка  ??TYPE=varchar
+Целое число  ??TYPE=int
+Число  ??TYPE=float
+Большой текст  ??TYPE=text
+</td></tr>
+[end]
+
+?? =====  form_field_type=3,4
+[info field]
+$INCLUDE [info datatype mode add] ??mode=add
+$INCLUDE [info datatype mode edit] ??mode=edit
+
+$INCLUDE [info view mode add]  ??mode=add
+$INCLUDE [info view mode edit]  ??mode=edit
+
+$INCLUDE [field size] 
+[end]
+
+[info datatype mode add]
+$INCLUDE [info datatype write]
+[end]
+
+[info datatype mode edit]
+$INCLUDE [info datatype write] ??DOC_TYPE_IS_ACTIVE=0&FIELD_IS_ACTIVE=2
+$INCLUDE [info datatype readonly] ??DOC_TYPE_IS_ACTIVE=1|!FIELD_IS_ACTIVE=2
+[end]
+
+[info datatype write]
+$GET_DATA [getInfoNameSQL mode add]  ??mode=add
+$GET_DATA [getInfoNameSQL mode edit]  ??mode=edit
+<tr><td class="label bottom_dotted" width="40%" nowrap>Справочник:</td> 
+<td class="big bg_white bottom_dotted">
+<select name=f_info>
+#SELECTED_INFO_NAME#
+#UNSELECTED_INFO_NAME#
+</select>
+</td></tr>
+[end]
+
+[info datatype readonly]
+$GET_DATA [getInfoNameSQL readonly]
+
+<tr><td class="label bottom_dotted" width="40%" nowrap>Справочник:</td> 
+<td class="big bg_white bottom_dotted">
+<input type=hidden name="f_info" value="#INFO_ID#">#SEL_INFO_NAME_ACTIVE_DOCTYPE#
+</td></tr>
+[end]
+
+[info view mode add]
+<tr><td class="label bottom_dotted" width="40%" nowrap>Представление:</td> 
+<td class="big bg_white bottom_dotted">
+<input size=8 name=f_info_view value="">
+</td></tr>
+[end]
+
+[info view mode edit]
+<tr><td class="label bottom_dotted" width="40%" nowrap>Представление:</td> 
+<td class="big bg_white bottom_dotted">
+<input size=8 name=f_info_view value="#INFO_VIEW#"> ??DOC_TYPE_IS_ACTIVE=0&FIELD_IS_ACTIVE=2
+<input type=hidden name="f_info_view" value="#INFO_VIEW#"> #INFO_VIEW#  ??DOC_TYPE_IS_ACTIVE=1|!FIELD_IS_ACTIVE=2
+</td></tr>
+[end]
+
+
+?? =====  form_field_type=5
+[date field]
+[end]
+
+?? =====  form_field_type=666
+[file field]
+[end]
+
+[currency field]
+$INCLUDE [field size] 
+[end]
+
+
+
+
+[field size]
+$INCLUDE [field size mode add] ??mode=add
+$INCLUDE [field size mode edit] ??mode=edit
+[end]
+
+[field size mode add]
+<tr><td class="label bottom_dotted" width="40%" nowrap>Размерность:</td> 
+<td class="big bg_white bottom_dotted">
+<input size=8 name=f_size value="">
+</td></tr>
+[end]
+
+[field size mode edit]
+<tr><td class="label bottom_dotted" width="40%" nowrap>Размерность:</td> 
+<td class="big bg_white bottom_dotted">
+<input size=8 name=f_size value="#SIZE#"> ??DOC_TYPE_IS_ACTIVE=0&FIELD_IS_ACTIVE=2
+<input type=hidden name="f_size" value="#SIZE#"> #SIZE#  ??DOC_TYPE_IS_ACTIVE=1|!FIELD_IS_ACTIVE=2
+</td></tr>
+[end]
+
+
+
+[coordinate fields]
+<tr><td class="label bottom_dotted" width="40%" nowrap>Координата X:</td> 
+<td class="big bg_white bottom_dotted">
+<input size=8 name=F_LX value="#LX#"> ??DOC_TYPE_IS_ACTIVE=0&FIELD_IS_ACTIVE=2
+<input type=hidden name="F_LX" value="#LX#"> #LX#  ??DOC_TYPE_IS_ACTIVE=1|!FIELD_IS_ACTIVE=2
+</td></tr>
+
+<tr><td class="label bottom_dotted" width="40%" nowrap>Координата Y:</td> 
+<td class="big bg_white bottom_dotted">
+<input size=8 name=F_LY value="#LY#"> ??DOC_TYPE_IS_ACTIVE=0&FIELD_IS_ACTIVE=2
+<input type=hidden name="F_LY" value="#LY#"> #LY#  ??DOC_TYPE_IS_ACTIVE=1|!FIELD_IS_ACTIVE=2
+[end]
+
+
+[visible field]
+<tr><td class="label bottom_dotted" width="40%" nowrap>Отображение:</td> 
+<td class="big bg_white bottom_dotted">
+<input type=radio name=f_is_visible="1" 
+checked ??PRP_IS_VISIBLE=1|!PRP_IS_VISIBLE
+>Видимое поле
+<br>
+<input type=radio name=f_is_visible="0" 
+checked ??PRP_IS_VISIBLE=0
+>Невидимое поле
+</td></tr>
+[end]
+
+
+
+[button mode add]
+<tr><td class="center  bg_white" colspan=2 style="padding:15px 0 15px 0;">
+<input type="button" class="butt1 pt" style="width:120;" value="Создать" 
+onClick="document.popupForm.cop.value='save'; document.popupForm.submit(); HideDialog();"> ??
+onClick="document.popupForm.cop.value='save'; document.popupForm.submit(); HideDialog();"> ??
+</td></tr>
+
+
+[end]
+
+
+
+[button mode edit]
+<tr><td class="center  bg_white" colspan=2 style="padding:15px 0 15px 0;">
+<input type="button" class="butt1 pt" style="width:120;" value="Сбросить" onClick="AjaxCall('field_property_panel','c=admin/doctypes/doctype_field_property&mode=edit&type_field_id=#type_field_id#');">
+<input type="button" class="butt1 pt" style="width:120;" value="Сохранить" onClick="doSubmit('save', 'admin/doctypes/doctype_field_property.cfg'); "> 
+</td></tr>
+
+$INCLUDE [delete restore button]  ??DOC_TYPE_IS_ACTIVE=0
+[end]
+
+
+
+
+
+[delete restore button]
+<tr><td class="center  bg_white" colspan=2 style="padding:15px 0 15px 0;">
+<input type="button" class="butt1 pt" style="width:120;" value="Удалить поле" onClick="AjaxCall('doctype_form_panel', 'c=admin/doctypes/doctype_field_operations&cop=delete&type_field_id=#ID#');">  ??!FIELD_IS_ACTIVE=0
+<input type="button" class="butt1 pt" style="width:180;" value="Восстановить поле" onClick="AjaxCall('doctype_form_panel', 'c=admin/doctypes/doctype_field_operations&cop=restore&type_field_id=#ID#');">  ??FIELD_IS_ACTIVE=0
+</td></tr>
+[end]
+
+
+[do save]
+$GET_DATA [save field property]
+<script>
+window.parent.AjaxCall('doctype_form_panel','c=admin/doctypes/doctype_form&type_id=#UPDATED_TYPE_ID#&init_type_field_id=#type_field_id#&form_mode=doc_field_mode');
+</script>
+[end]
+
+
+***************************** Шаблоны SQL запросов ***************************
+[getFieldInfoSQL]
+select /* doc data fields description */
+ dtf.ID
+, dtf.type_id AS "UPDATED_TYPE_ID"
+, dtf.FIELD_CATEGORY
+, dtf.NR
+, dtf.NAME
+, dtf.TYPE
+, dtf.form_field_type
+, dtf.SIZE
+, dtf.NULLS
+, dtf.INFO_ID
+, dtf.info_view_nr as INFO_VIEW
+, dtf.FIELD_DB_NAME
+, dtf.is_visible as PRP_IS_VISIBLE
+, dtf.LX
+, dtf.LY
+, dtf.is_active as FIELD_IS_ACTIVE
+, ifnull(DATE_FORMAT(dtf.created,'#dateTimeFormat#'),'') as CREATED
+, ifnull(DATE_FORMAT(dtf.modified,'#dateTimeFormat#'),'') as MODIFIED
+, dtf.creator_id
+, dtf.modifier_id
+, u.FIO as CREATOR
+, uu.FIO as MODIFIER
+, dtp.is_active as DOC_TYPE_IS_ACTIVE
+from d_fields dtf
+left join d_types dtp on dtp.ID=dtf.type_id
+left join #table_users_full# u on u.Id = dtf.creator_id
+left join #table_users_full# uu on uu.Id = dtf.modifier_id
+where dtf.Id = #type_field_id#
+;
+[end]
+
+[getInfoNameSQL mode add]
+select concat('<option value=', cast(id as char), '>', name, '</option>') as UNSELECTED_INFO_NAME
+from i_infos where is_active = 1 order by name
+;
+[end]
+
+[getInfoNameSQL mode edit]
+select concat('<option value=', cast(id as char), ' selected>', name, '</option>') as SELECTED_INFO_NAME
+from i_infos where is_active = 1 and id = #INFO_ID# order by name
+;
+select concat('<option value=', cast(id as char), '>', name, '</option>') as UNSELECTED_INFO_NAME
+from i_infos where is_active = 1 and id != #INFO_ID# order by name
+;
+[end]
+
+[getInfoNameSQL readonly]
+select name as SEL_INFO_NAME_ACTIVE_DOCTYPE
+from i_infos where is_active = 1 and id = #INFO_ID# order by name
+;
+[end]
+
+[save field property]
+update d_fields dtf
+set name = '#f_name#'
+, type = '#f_type#' ??form_field_type=1|form_field_type=2
+, size = '#f_size#' ??form_field_type=1|form_field_type=2|form_field_type=3|form_field_type=4|form_field_type=7|field_type=8|field_type=10|field_type=11|field_type=12|field_type=15|field_type=1008|field_type=17|field_type=18
+, info_id = '#f_info#' ??form_field_type=3|form_field_type=4
+, info_view_nr = '#f_info_view#' ??form_field_type=3|form_field_type=4
+, lx = '#F_LX#' ?? Координаты не применяются
+, ly = '#F_LY#' ?? Координаты не применяются
+, modified = now()
+, modifier_id = #USER_ID#
+where dtf.Id = #type_field_id#
+;
+[end]

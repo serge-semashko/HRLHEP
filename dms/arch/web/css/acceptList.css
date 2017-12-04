@@ -1,0 +1,27 @@
+.status{
+color:black;
+}
+.status1{
+color:green;
+}
+.status0{
+color:red;
+}
+
+.initiator{
+font-weight:bold;
+}
+#acceptlisttable{
+border-spacing:0px;
+border-collapse: collapse;
+}
+#acceptlisttable td, th{
+border:1px solid black;
+padding:6px;
+}
+#acceptlisttable th{
+background:#EEE;
+}
+.log{
+color:gray;
+}

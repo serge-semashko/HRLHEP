@@ -1,0 +1,132 @@
+gateway/receive_61_visitor.cfg
+
+
+[parameters]
+request_name=S:Прием данных визитера (для распоряжения о приеме)
+LOG=ON
+[end]
+
+
+[report]
+$LOG <hr><b>receive_61_visitor.cfg</b><br>
+
+$SET_PARAMETERS ERR_CODE=0; ERROR=; 
+$SET_PARAMETERS ERROR=Отсутствует SrcObjectID; ??!SrcObjectID
+
+$GET_DATA [check existing record] ??!ERROR
+$SET_PARAMETERS REC_ID=#ID#; ??!REC_EXISTS
+
+$GET_DATA [update record] ??!ERROR&REC_EXISTS
+
+$SET_PARAMETERS ResultCode=3; Result=#ERROR#; ??ERROR
+$SET_PARAMETERS ResultCode=0; Result=Запись обновлена; REC_ID=#doc_id#; ??!ERROR
+$CALL_SERVICE c=JINR/doc_15_get_passport_scan; ??!ERROR&REC_EXISTS
+
+$SET_PARAMETERS ERROR=Не найден объект #SrcObjectID#;  ??!REC_EXISTS
+
+$LOG <hr><b>receive_61_visitor.cfg FINISHED!</b> ResultCode=#ResultCode#; Result=#Result#; REC_ID=#REC_ID#; <br>
+
+[end]
+
+$GET_DATA [create record] ??!REC_EXISTS
+
+
+
+============================================================================
+============================================================================
+============================================================================
+
+[check existing record]
+select 'Y' as REC_EXISTS, id as REC_ID, doc_id 
+from d_data_15
+where DOC_ID=#SrcObjectID#
+where OMS_ID=#SrcObjectID# ??
+[end]
+
+
+[create record]
+[end]
+ 
+
+[update record]
+update d_data_15 set 
+  version=version+1
+ ,visitor_name = '#visitor_name#'   ??visitor_name
+ ,visitor_surname = '#visitor_surname#'   ??visitor_surname
+ ,visitor_patronymic = '#visitor_patronymic#'   ??visitor_patronymic
+ ,visitor_I = '#visitor_I#'   ??visitor_I
+ ,visitor_F = '#visitor_F#'   ??visitor_F
+ ,visitor_O = '#visitor_O#'   ??visitor_O
+ ,passport_nomer = '#passport_nomer#'   ??passport_nomer
+ ,passport_vidan = '#passport_vidan#'   ??passport_vidan
+ ,passport_kod_podrazd = '#passport_kod_podrazd#'   ??passport_kod_podrazd
+ ,visitor_strana = '#visitor_strana#'   ??visitor_strana
+ ,visitor_strana_id = '#visitor_strana_id#'   ??visitor_strana_id
+ ,pasport_skan = '#pasport_skan#'   ??pasport_skan
+ ,visit_aim = '#visit_aim#'   ??visit_aim
+ ,visit_aim_comment = '#visit_aim_comment#'   ??visit_aim_comment
+ ,visitor_employment = '#visitor_employment#'   ??visitor_employment
+ ,visitor_post = '#visitor_post#'   ??visitor_post
+where 
+id=#REC_ID#
+;
+
+update d_data_15 set version=version
+ ,visitor_dr = STR_TO_DATE('#visitor_dr#', '%Y-%m-%d')   ??visitor_dr
+ ,passport_date = STR_TO_DATE('#passport_date#', '%Y-%m-%d')   ??passport_date
+ ,visit_dates = STR_TO_DATE('#visit_dates#', '%Y-%m-%d')   ??visit_dates
+ ,visit_dates_end_date = STR_TO_DATE('#visit_dates_end_date#', '%Y-%m-%d')   ??visit_dates_end_date
+where 
+id=#REC_ID#
+;
+
+update d_list
+set modified=now()
+where id=#doc_id#
+[end]
+
+
+ ,visitor_dr = STR_TO_DATE('#visitor_dr#', '%d.%m.%Y')   ??visitor_dr
+ ,passport_date = STR_TO_DATE('#passport_date#', '%d.%m.%Y')   ??passport_date
+ ,visit_dates = STR_TO_DATE('#visit_dates#', '%d.%m.%Y')   ??visit_dates
+ ,visit_dates_end_date = STR_TO_DATE('#visit_dates_end_date#', '%d.%m.%Y')   ??visit_dates_end_date
+
+
+
+,pasport_skan_id = '#pasport_skan_id#'   ??pasport_skan_id
+ 
+	
+"visit_aim_id":0,
+"visitor_post_id":0
+
+
+	
+==>
+
+{"visitor_name":"IVAN",
+"visitor_surname":"IVANOVICH",
+"visitor_patronymic":"IVANOV",
+"visitor_I":"ИВАН",
+"visitor_F":"ИВАНОВИCХ",
+"visitor_O":"ИВАНОВ",
+"passport_nomer":"1234567890",
+"passport_vidan":"TAM TAM",
+"visitor_dr":"01.03.1999",
+"passport_date":"20.10.2003",
+"passport_kod_podrazd":"345-777",
+"visitor_strana":"АРГЕНТИНА",
+"visitor_strana_id":"285",
+"pasport_skan_id":"741",
+"pasport_skan":"preved_medved.gif",
+"visit_dates":"01.03.2017",
+"visit_dates_end_date":"31.03.2017",
+"visit_aim":"сотрудничество",
+"visit_aim_id":0,
+"visit_aim_comment":"hdlfhdlfhsadfhl",
+"visitor_employment":"CERN",
+"visitor_post":"ПРОГРАММИСТ",
+"visitor_post_id":0
+}
+
+
+

@@ -1,0 +1,151 @@
+obj/edit_object.ajm
+
+[comments]
+descr=U: Редактирование объекта
+input=doc_id - ID объекта
+output=HTML форма редактирования объекта, 
+parents=dat/doc_object.dat
+childs=
+test_URL=
+author=Куняев
+[end]
+
+[description]
+[end]
+
+[parameters]
+request_name=U:Редактирование объекта
+service=jinr.sed.ServiceEditDocData
+tableCfg=table_no
+LOG=ON
+SYS_FIELDS=IS_ACTIVE
+SYS_FIELDS_TYPES=int
+SYS_FIELDS_UPDATE=is_active, modified, modifier_id
+SYS_FIELDS_UPDATE_TYPES=int,sysdate,int
+is_active=1
+numDigits=2
+modifier_id=#USER_ID#
+[end]
+
+
+[report header]
+    $LOG ======= edit_object ====== queryString=#queryString#;<br>
+    $SET_PARAMETERS AR_W=Y;  ??USER_ID
+    $SET_PARAMETERS ERROR=Отказано в доступе; ??!AR_W=Y
+    $LOG ======= edit_object ====== ERROR=#ERROR#; AR_W=#AR_W#&USER_ID=#USER_ID#; <br> ??ERROR
+    $CALL_SERVICE c=sys/log_doc_access; access_type=#~doc_action_change#; rejected=1;   ??!AR_W=Y&USER_ID
+$INCLUDE [report header_]  ??AR_W=Y
+[end]
+
+[report header_]
+    $SET_PARAMETERS request=write;
+    $SET_PARAMETERS  doc_id=#edit_object_id#; ??edit_object_id
+    $SET_PARAMETERS  container=edit_object_#doc_id#_form; ??!container
+    $SET_PARAMETERS  container=edit_object_#DOC_TYPE_ID#_form; ??!container&ZZZ
+    $SET_PARAMETERS TITLE=; NUMBER=; INITIATOR_COMMENT=;
+    $GET_DATA docs/view_doc.cfg[getDocInfo]
+    $CALL_SERVICE c=docs/custom_settings.cfg; ??!cop
+    $INCLUDE [process]  ??cop&!ERROR
+    $SET_PARAMETERS cop=; ??ERROR
+[end]
+
+
+[start form]
+    ----- Выводится сервисом ----- ??
+    <input type=hidden name=edit_object_id value='#doc_id#'>
+    <input type=hidden name="total_row_section" value='#total_row_section#'>
+    <center>
+    <table class="edit_object_table" border=0 cellpadding=3 cellspacing=0 style="border:solid 1px gray; border-top:none;">
+[end]
+
+
+============== Вывод одного поля для редактирования ======= ??
+[item]
+    $INCLUDE docs/edit_doc_form.cfg[item]
+[end]
+
+[report footer]
+    $INCLUDE [process footer]  ??cop
+    $INCLUDE [form footer]    ??AR_W=Y&!cop|ERROR
+[end]
+
+
+[form footer]
+    <tr><td class=label>
+     Комментарий:  ??!DOC_TYPE_ID=14
+     Дополнительно:  ??DOC_TYPE_ID=14
+    </td><td><textarea name=comment rows=2 style="width:300pt; height:40pt;">#INITIATOR_COMMENT#</textarea>
+
+    <input type="button" class="butt1 pt" style="width:100; margin:0 20px 0 20px;" value="Сохранить" 
+
+    onClick="saveObject('#container#');"
+    onClick="saveObject('edit_object_#doc_id#_form');" ??
+    onClick="saveAllObjects();"  ??
+    onClick="AjaxCall('#container#', 'c=obj/edit_object&cop=save', true, '#container#'); $('###container#').hide(200); " ??
+    >  
+    container=#container#; ??
+    <input type="button" class="butt1 pt" style="width:100;" value="Отмена"  onClick=
+    "$('###container#').hide(200); $('###container#').html(''); $('##view_object_#doc_id#_row').removeClass('UPDATED');"  ??MODIFIER
+    "AjaxCall('edit_new_object_form', 'c=obj/edit_object&cop=delete&doc_id=#doc_id#&total_row_section=#total_row_section#');"   ??!MODIFIER
+    > 
+    </td></tr> 
+
+    ++++++++++++ Конец формы редактирования объекта ++++++++++ ??
+    </table>
+    #ERROR#
+    </center>
+    <script type="text/javascript">
+    $("###container#").show(); $("##view_object_#doc_id#_row").addClass("UPDATED");
+    </script> 
+[end]
+
+
+[process]
+    $LOG ======= Сохранение Объекта #doc_id# ======================<br>  ??cop=save
+    $LOG ======= Удаление объекта #doc_id# ======================<br>  ??cop=delete
+    $LOG ======= начало транзакции для всего этого запроса ====== <br>
+    $GET_DATA docs/edit_doc.cfg[start transaction]
+    $INCLUDE docs/custom_settings.cfg[before save] ??cop=save
+    $GET_DATA docs/edit_doc.cfg[update header SQL]      ??cop=save
+    $INCLUDE docs/edit_doc.cfg[process custom fields]   ??cop=save
+
+    $GET_DATA [delete SQL] ??cop=delete
+[end]
+
+
+[process footer]
+    $GET_DATA docs/edit_doc.cfg[commit]
+    $LOG ======= конец транзакции ======<br>
+    $INCLUDE dat/doc_fields_sums.dat[update parent doc]  ??cop=delete
+
+    $CALL_SERVICE c=sys/log_doc_access; doc_id=#doc_id#; access_type=2; ??!ERROR
+    $SET_PARAMETERS cop=; ??ERROR
+
+    $CALL_SERVICE c=docs/custom_settings.cfg; defaults=clear; ??!ERROR&!cop=delete
+    $INCLUDE obj/edit_object.cfg[processed js]    ??!ERROR
+[end]
+
+
+[processed js]
+    <script type="text/javascript">
+    alert("collection_#PARENT_DOC_ID#_#DOC_TYPE_ID# / c=obj/show_collection&doc_id=#PARENT_DOC_ID#&TYPE=#DOC_TYPE_ID#&editable=Y&total_row_section=#total_row_section#"); ??
+    AjaxCall("collection_#PARENT_DOC_ID#_#DOC_TYPE_ID#"
+        , "c=obj/show_collection&doc_id=#PARENT_DOC_ID#&TYPE=#DOC_TYPE_ID#&editable=Y&total_row_section=#total_row_section#"); 
+    </script>
+[end]
+
+
+==============================================================================
+
+[SQL]
+    $INCLUDE docs/view_doc[SQL_] ??AR_W=Y
+[end]
+
+[delete SQL]
+    update d_list set status=0, is_deleted=1 where id=#doc_id# ??
+    +++++ Объект удаляется полностью, чтобы не хранить мусор ++++++ ??
+    +++++ При необходимости можно не удалять, а только пометить. Возможно, придется это делать ++++++ ??
+
+    delete from d_list where id=#doc_id#;
+    delete from #TABLE_NAME# where doc_id=#doc_id#;
+[end]

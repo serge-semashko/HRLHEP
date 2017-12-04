@@ -1,0 +1,129 @@
+
+[preSQLs]
+========= CALLED FROM list.cfg ========= ??
+select getSubfolders(#folder_id#) as "listOfChildren"; ??folder_id
+select '' as "listOfChildren"; ??
+[end]
+
+set character set utf8; 
+set names utf8;
+
+[tip_dejat]
+select concat('<option value=',cast(code as char),'>',lcase(name)) as TIP_DEJAT_LIST from rb_38 order by code;
+
+$SET_PARAMETERS_GLOBAL TIP_DEJAT_LIST=#TIP_DEJAT_LIST#; 
+[end]
+
+========= Called from makeListTable.cfg as preSQLs =========??
+[countRecordsSQL]
+select replace(replace('#f_phone#','-',''),' ','') as "ff_phone"
+;
+select count(*) as "TotNumRecords"
+$INCLUDE persons/list_#DB#.dat[criteria]
+;
+[end]
+
+
+[edit icon]
+, concat('<a href="javascript:doEditFile(''',d.id
+  ,''')"><img border=0 src="#imgPath#edit_.gif" alt="Edit Document Attributes"  width=16 height=14>'
+  , '</a>') as "Edit"
+[end]
+
+
+[folderField]
+concat('<img src="#imgPath#tree/folder.gif" width=16 height=12 border=0><fb>'
+  , ' #CURR_FOLDER_NAME# /'
+  , replace(getParentsChain(d.folderId , #folder_id#),'|','/') ??XXX
+  , '| <a href="javascript:openFolder(''',d.folderId ,''')"> ',o.name ,'</a>' ??
+  ) as Folder, 
+[end]
+
+
+[SQL]
+select 
+	getParentsChain(t.otdel, 1) as "PARENT", ??f_searchArea
+	concat(	
+		case when u.id is null 
+			then '<img src="#imgPath#filler.gif" width=8 height=8>'  
+			else '<img src="#imgPath#checked_8.gif" width=8 height=10>' end,  
+				case when p.numEvents=0 then '&nbsp;&nbsp;' else '+' end ??
+		'<a href="javascript:doEditRec(',cast(p.id as char),')">',p.name,'</a>') as "name"
+	, p.name1, p.name2 
+	, concat('<small>',rb_08.berthcode,'/',ifnull(r.range,999)) as "order" ??USER_PERSON_ID=22845
+	, concat(rb_08.berth, if (t.usl_rab in(356,357),' <i><small>(совм.)</small></i>','')) as "berth"
+	, DATE_FORMAT(t.konec,'#dateFormat#') as "WRK_END"  ??showEnd
+	, rb_08.berthshort ??
+	, case when p.email='' then '-' else concat('<a href="mailto:',p.email,'">',p.email,'</a>') end as "email" ??USER_ID&!USER_ID=1&!USER_ID=0&!showEnd
+	, concat('<small>',ph.Phone_Work,'</small>') as "phone_wrk"
+	, case when p.id=tr.boss_id then 0 else ifnull(r.range,999) end ??
+$INCLUDE persons/list_#DB#.dat[criteria]	
+order by 
+	PARENT, ??f_searchArea
+	case when t.usl_rab in(356,357) then 1 else 0 end  #desc#, ??srt=berth
+	case when p.id=tr.boss_id then 0 else ifnull(r.range,999) end #desc#, ??srt=berth
+	#srt# #desc#,  ??srt&!srt=berth
+	p.name  
+	 ??!srt
+[end]
+
+
+[criteria]
+from p_persons_post t 
+	left join t_tree tr on tr.id=t.otdel 
+	 ??!USER_ID|USER_ID=1
+	left join p_persons p on p.id=t.id
+	left join p_phone ph on ph.TabNo=t.tabnom
+	left join rb_08 on rb_08.id=t.dolzhnost_1C
+	left join rb_08 on rb_08.berthcode=t.dolzhnost  ??
+	left join i_postrange r on r.post_id=t.dolzhnost
+	left join a_users u on u.person_id=p.id 
+where 
+	1=1
+	and tr.extAccess=1 ??!USER_ID|USER_ID=1
+
+  and t.otdel=#folder_id# ??!modeSearch=Y
+  and t.otdel=#folder_id# ??f_searchArea=1&!listOfChildren
+	and t.otdel in(#listOfChildren#) ??f_searchArea=1&listOfChildren
+	and p.name like '#f_name#%' ??f_name
+	and p.name1 like '#f_name1#%' ??f_name1
+	and p.name2 like '#f_name2#%' ??f_name2
+	and t.tip_dejat in (#f_tip_dejat#) ??f_tip_dejat
+	and t.usl_rab in (#f_usl_rab#) ??f_usl_rab
+	and ph.phone_work is not null and ph.phone_work like '%#ff_phone#%'	??f_phone
+	and p.email is not null and length(p.email)>0 and p.email like '%#f_mail#%'	??f_mail
+[end]
+
+
+, concat('<small>', DATE_FORMAT(d.created,'#dateFormat#'), '</small>') as "Uploaded"
+$INCLUDE persons/list_#DB#.dat[edit icon]  ??!public&!q_attachMode=Y
+
+
+
+[colNames]
+cb_sel=<center><img border=0 src="#imgPath#checkbox.gif" alt="Select Document(s)" width=13 height=14 onClick="selectAll()" style="cursor:pointer;">
+name=Фамилия
+name1=Имя
+name2=Отчество
+berthshort=Должность
+WRK_END=Оконч.раб.
+berth=Должность $ATTR:width=300
+email=<img src="#imgPath#mail12.gif" width=12 height=12> E-mail $ATTR:
+phone_wrk=Тел.(р)
+phone=Телефон
+building=Корп.
+room=Комн.
+comments=Комментарий
+[end]
+
+[SortBy]
+name=p.name
+name1=p.name1
+name2=p.name2
+phone=phone
+email=email
+building=building
+room=room
+berth=berth
+WRK_END=t.konec
+[end]

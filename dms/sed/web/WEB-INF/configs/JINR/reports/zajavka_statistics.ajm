@@ -1,0 +1,192 @@
+JINR/reports/zajavka_statistics.ajm
+
+
+
+[comments]
+descr=U: Вывод статистики времени прохождения заявок.
+
+input=
+output=HTML таблица документов
+parents=all_docs
+childs=docs/view_doc
+testURL=?c=JINR/reports/zajavka_table
+author=Куняев
+[end]
+
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=U:Статистика
+LOG=ON 
+tableCfg=table_no
+$INCLUDE dat/common.dat[rowLinks]
+[end]
+
+
+[report header]
+    $INCLUDE dat/common.dat[check login]
+    $INCLUDE [OK report header]  ??USER_ID>0|USER_ID<0
+[end]
+
+
+[OK report header]
+    $SET_PARAMETERS srn=1; rpp=9999;
+    $SET_PARAMETERS br=<br>;  ??!of=xl
+    <center><i class="fa fa-info" 
+        style="color:#ff8000;  ??!stat_dates=work_days
+        style="color:green;  ??stat_dates=work_days
+        font-size:10pt;" aria-hidden="true"></i>
+    <i>Сроки в 
+        календанных днях (включая выходные и праздники)??!stat_dates=work_days
+        рабочих днях (исключая выходные и праздники) ??stat_dates=work_days
+    </i></center>
+    ++++++++++++++++++ Шапка таблицы документов +++++++++++++++++++++ ??
+    <table id="stat_table"
+    class="tlist tblue" cellspacing=0 ??!of=xl
+        border=1  ??of=xl
+    ><tr>
+    $INCLUDE [html headers]
+       ??!of=xl
+    </tr>
+[end]
+
+    <tr><td colspan=20 style="text-align:right;"> 
+<i>Сроки в 
+        календанных днях ??!stat_dates=work_days
+        рабочих днях (исключая выходные и праздники) ??stat_dates=work_days
+        </i>
+    </td></tr>
+
+$INCLUDE [XL headers] ??of=xl
+
+[html headers] ******
+    <th style="width:1%;"></th>  
+    <th class="srt">№ #br#СЭД</th>
+    <th>Дата</th>
+    <th>Содержание</th>
+
+    <th>Дата попадания #br#к Босину</th>
+    <th class="srt">Кол-во #br#дней</th> 
+    <th class="srt">Решение</th>
+
+    <th>Дата #br#ЦЗК / ЛЗК</th>
+    <th class="srt">Кол-во #br#дней</th> 
+
+    <th>Дата #br#завершения</th>
+    <th class="srt">Кол-во #br#дней</th> 
+
+    <th>Дата появления #br#в СЭД договора</th> 
+    <th class="srt">Кол-во #br#дней</th> 
+
+    <th>Дата передачи #br#в бухгалтерию</th>
+    <th class="srt">Кол-во #br#дней</th> 
+
+    <th>Дата передачи #br#директору</th>
+    <th class="srt">Кол-во #br#дней</th> 
+
+    <th>Дата #br#подписания</th>
+    <th class="srt" id="sort1">Общее #br#кол-во дней</th> 
+    <th class="srt">Сумма #br#(тыс.$)</th> 
+
+[end]
+
+[XL headers] ******
+[end]
+
+
+[item]  *******
+    $CALL_SERVICE c=JINR/reports/zajavka_statistics_item.cfg
+[end]
+
+
+[report footer]
+    </table>
+    $INCLUDE [html footer]   ??!of=xl
+[end]
+
+
+[html footer]
+<script type="text/javascript">
+var table;
+
+var setTableSortable=function(tableId){
+    table = $("##" + tableId);
+    $("##" + tableId + " th.srt").click(sortColumn).css({"cursor":"pointer"}).mouseover(sel).mouseout(sel); ; 
+}
+
+var sortColumn=function(){
+        var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()))
+        table.find(" th").removeClass("sup").removeClass("sdown"); 
+        if (this.asc) {
+            $(this).addClass("sup");
+        }
+        else {
+            $(this).addClass("sdown");
+            rows = rows.reverse()
+        }
+        this.asc = !this.asc;
+        for (var i = 0; i < rows.length; i++){table.append(rows[i])}
+    table.find("tr").removeClass("oddRow");
+    table.find( "tr:odd" ).addClass("oddRow");
+}
+
+var comparer=function(index) {
+    return function(a, b) {
+        var valA = getCellValue(a, index), valB = getCellValue(b, index);
+        return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.localeCompare(valB); ??
+        return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : comareStrings(valA, valB);
+    }
+}
+var comareStrings=function(a,b) {
+    try {
+        return a.localeCompare(b);
+    }
+    catch(e) {
+        return a>b;
+    }
+}
+
+var getCellValue=function(row, index){ return $(row).children('td').eq(index).html(); }
+
+var showDocDetails=function(event, docId){
+    event.preventDefault(); ??
+    AjaxCall('doc_content', 'c=docs/view_doc&doc_id=' + docId + '&mode=popup', true, '',true); 
+    return false; ??
+    event.preventDefault();
+    event.stopPropagation();
+}
+
+setTableSortable("stat_table");
+$("##sort1").click();
+
+</script>
+
+</div>
+[end]
+
+
+
+***************************** Шаблон SQL запроса ***************************
+
+
+[SQL]
+select distinct dh.ID, dh.status, dat.final_decision
+
+from d_list dh
+    left join d_data_1 dat on dat.doc_id=dh.id 
+    left join d_list dph on dph.pid=dh.id and dph.is_deleted=0 and dph.type_id=7 left join d_data_7 src on src.doc_id=dph.id ??f_BC_id|f_aggr
+
+$INCLUDE reports/all_docs.cfg[criteria]  
+$INCLUDE JINR/reports/zajavka_table.cfg[custom criteria] 
+
+    and dh.is_deleted=0
+    and dh.status >0 and not dh.number is null
+    and dh.TYPE_ID = 1
+    and dh.divs='ЛФВЭ' ??
+    and dh.id=5599  ??
+    and dat.final_decision>1 ??
+
+order by dat.final_decision desc, dh.status desc ??
+limit 50 ??
+[end]
+

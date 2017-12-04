@@ -1,0 +1,281 @@
+viewer/common_blocks.dat
+
+[comments]
+descr=U: Отдельные блоки кода для viwer-а
+author=Куняев
+[end]
+
+https://habrahabr.ru/company/badoo/blog/322988/
+
+[head]  ****** Начальная часть страницы - <head>...</head>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>#file_name#</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="#jsPath#jquery-ui-1.10.1.css" />
+    <link rel="stylesheet" href="#jsPath#default/style.min.css" />
+    <link rel="stylesheet" href="#cssPath#font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/sed.css"> ??
+    $INCLUDE free/main_css_noDB.cfg[css] 
+    <link rel="stylesheet" href="css/markups.css">
+
+    <script type="text/javascript" src="#jsPath#jquery-1.11.0.min.js"></script>
+    <script src="#jsPath#jquery-ui-1.10.1.min.js" type="text/javascript"></script>  
+    <script src="#jsPath#lib.js" type="text/javascript"></script>  
+    $INCLUDE free/main_js_noDB.cfg[js]
+
+    <script src="js/markups.js"></script>
+
+</head>
+[end]     
+       
+
+[toolbar]   ****** Тулбар с кнопками добавления замечаний
+<div class="control button shadow pt" 
+  style="position: fixed; top: 56px; right:0px; z-index: 1000;
+    padding: 3px 8px 7px 8px;
+    border-radius: 16px 0 0 16px; border-right:none;"
+  onClick="commentButtonClick();">
+<i class='fa fa-comment-o' style="font-size: 1.5em;"></i> 
+Добавить замечание
+</div>
+[end]
+
+
+[feedback]
+<div class="control button shadow pt " 
+style="position: absolute; top: 10px; right:0px; 
+border-radius: 16px 0 0 16px; 
+border-right:none;
+" 
+ onClick="showErrorReportForm();">
+<i class="fa fa-envelope blue" aria-hidden="true"></i>
+Обратная связь
+</div>
+[end]
+
+    
+
+[helper blocks]   ****** Скрытые вспомогательные <div> (диалоговое окно, справка)
+<span id="mkp_icon_new" class="fa fa-comment-o pabsolute" style="display:none; font-size: 2em; z-index:1000; left: 10px; top: 10px;"></span> 
+
+<div id="dialog" class="dialog shadow" style="z-index:1001;">
+
+<div id="dialog_handler" class="dialog_title right">
+<div id="dialog_title" style="float:left;">Добавление замечания</div>
+<div class="btn" onClick="$('##dialog_overlay, ##dialog').hide();" style="width:20px; height:15px; float:right;">
+<img src="#imgPath#close.png" width="16" height="14" border="0" >
+</div>
+<div style="clear:both;"></div>
+</div>
+
+    <div id="popupCont">popupCont</div>
+</div>
+
+<div id="comment_help" class="hidden">
+    <table class="bg_white">
+            <tr><td class="big">
+                Кликните в место на странице,<br>в которое Вы хотите добавить замечание.
+            </td><td style="text-align:bottom;">
+                <input class="butt1" type="button" value="Отмена"  style="width:90px;" onClick="cancelButtonClick();">
+            </td></tr>
+            <tr><td colspan=2>
+                <input type="checkbox" id="doNotShow" onClick="setLongCookie('helperWindow', this.checked, 24*365*10); $('##dialog').hide(200);">больше не показывать эту подсказку
+            </td></tr>
+    </table>
+</div>
+
+<div id="delete_help" class="hidden">
+    <table class="bg_white">
+        <tr><td>
+            Зачеркните мышкой строки, которые Вы хотите удалить
+            </td><td style="text-align:bottom;">
+                <input type="button" value="Отмена"  style="width:90px;" onClick="cancelButtonClick();">
+        </td></tr>
+    </table>
+</div>
+
+[end]
+
+
+[file description]  ***** Описание файла и информация для юзера
+<table id="file_description" border=0 class="shadow bg_white" style="
+width:1045px; ??NUM_PAGES<8&!q_smallScreen=true
+width:1010px; ??!NUM_PAGES<8&!q_smallScreen=true
+width:845px; ??NUM_PAGES<8&q_smallScreen=true
+width:815px; ??!NUM_PAGES<8&q_smallScreen=true
+" cellspacing="0" cellpadding=0>
+
+<tr><td class="label big bg_white bottom_dotted nowrap">#DOC_TYPE#</td><td class="big  bottom_dotted">
+<div style="float:right; margin:3px 0 0 10px;" class="pt" style="font-size:9pt;"
+    onClick='AjaxCall("popupCont", "c=viewer/show_all_files&doc_id=#doc_id#")'>
+<i class="fa fa-list-ul blue" aria-hidden="true" style="font-size:11pt;"></i>
+Все файлы документа
+</div> 
+№#number#  ??number
+от #doc_date#: ??doc_date
+<div style="white-space: nowrap; 
+overflow: hidden; text-overflow: ellipsis;"> 
+<b>#title#</b>
+</div>
+<div class="clr"></div>
+</td></tr>
+
+<tr><td class="label big">Файл:</td>
+<td class="big">
+
+
+<b>#file_name#</b>
+<div class="clr"></div>
+</td></tr>
+
+<tr><td class="label big">
+Комментарий к файлу: ??comment
+</td><td class="big">#comment#&nbsp;</td>
+</tr>  
+
+<tr><td class="label big">Загружен:</td>
+<td class="big">
+  <div style="float:right;  margin-left:10px;" class="pt" style="font-size:9pt;"
+    onClick="frames['wf'].window.location.href='#ServletPath#?c=files/download_file&id=#file_id#';"  ??!is_deleted=1
+    >  
+    <i class="fa fa-download blue" aria-hidden="true" style="font-size:11pt;"></i> Скачать (#file_size#)   ??!is_deleted=1
+  </div>
+#upload_date#, #FIO#
+
+</td></tr>
+</table>
+
+--- служебный iframe для скачивания файла --- ??
+<iframe id="wf" name="wf" width="0" height="0" frameborder="0"></iframe>
+[end]
+
+
+
+[feedback form]  --- Форма обратной связи от юзера о проблеме ---
+
+<div id="error_report_form" class="hidden">
+    <table border=0 cellpadding=5>
+      <tr><td colspan=2>
+<b>Уважаемый #user_I# #user_O#,</b><br> 
+если Вы:<br> 
+ - не видите содержимое файла #file_name#<br>
+ - файл отображается некорректно<br>
+ - столкнулись с другими проблемами при работе с файлом<br>
+    пожалуйста, сообщите нам об этом!<br>
+
+        </td></tr>
+        <tr><td> Введите Ваше сообщение:<br>
+            <textarea class="autoresize" rows=4 cols=50 name="user_comment" style="margin-left:0px;"></textarea>
+        </td></tr>
+        <tr>
+        <td class="center">
+          <input type="button" class="butt1 pt" value="Отправить" style="width:90px;" 
+            onClick='AjaxCall("popupCont", "c=viewer/registerError", true, "commonForm"); '> &nbsp;
+          <input type="button" class="butt1 pt" value="Отмена"  style="width:90px;" onClick="$('##dialog').hide();">
+
+         &nbsp; <span class="pt" onClick="setLongCookie('helperWindow', '', 24*365*10);">x</span>
+         &nbsp; <a href="#ServletPath#?c=files/sys/sendConvertRequest&file_id=#file_id#&verbose=3" target="_blank">-></a> ??USER_ID=2309
+         &nbsp; <a href="#ServletPath#?c=files/sys/convertDocFiles&file_id=#file_id#&verbose=3" target="_blank">=></a> ??USER_ID=2309
+        <a href="http://159.93.153.102:8083/converter/convert?id=#file_id#&width=900&type=1574&url=https%3A%2F%2Fsed.jinr.ru%2Fsed%2Fdubna%3Fc%3Dfiles%2Fdownload_file%26id%3D4142&urlOut=https%3A%2F%2Fsed.jinr.ru%2Fsed%2Fdubna%3Fc%3Dfiles%2Fsys%2FgetPage" target="_blank">p=></a> ??USER_ID=2309&ZZZ
+        </td>
+      </tr>
+    </table>
+</div>
+
+[end]
+
+#thumbnails { width:120px; padding:0 7px 0 0; text-align:right;}
+
+ 
+[css small screen]  ***** Размеры страницы и thumbnails для разрешения < 1300
+<style type="text/css"> 
+body, td {font-size:8pt;}
+.big, td.big {font-size:9pt;}
+
+##main_page {padding:0; width:720px;}
+##main_page img {width:720px;}
+##page_content {padding:0; width:740px;}
+
+##thumbnails{
+  width: 125px;  ??NUM_PAGES<8
+ width: 90px; ??!NUM_PAGES<8
+}
+
+.thumb {
+ padding:0;margin:5px;
+ width: 100px; ??NUM_PAGES<8
+ width: 66px; min-width: 66px; ??!NUM_PAGES<8
+
+}
+
+.thmb, .thumb img { 
+ width: 100px; ??NUM_PAGES<8
+ width: 60px; ??!NUM_PAGES<8
+
+}
+
+.thumb_div {
+ width: 114px; ??NUM_PAGES<8
+ width: 75px; ??!NUM_PAGES<8    
+padding:0;
+    margin:1px;
+overflow:show;
+}
+
+#page_comments { margin-left: 5px; min-width:250px; max-width:390px;}
+
+.big_icon {font-size:9pt; display:inline; position:relative;}
+
+</style> 
+[end]
+
+##file_description { 
+width:850px;  ??NUM_PAGES<8
+width:815px; ??!NUM_PAGES<8  
+}
+
+
+[css big screen] ***** Размеры страницы и thumbnails для разрешения > 1300
+<style type="text/css"> 
+body, td {font-size:9pt;} ??
+
+##main_page {padding:0; width:900px;}
+##main_page img {width:900px;}
+##page_content {padding:0; width:930px;}
+
+##thumbnails{
+  width: 140px;  ??NUM_PAGES<8
+ width: 110px; ??!NUM_PAGES<8
+}
+
+.thumb {
+  width: 120px;  ??NUM_PAGES<8
+ width: 80px; ??!NUM_PAGES<8
+padding:0;
+margin:3px;
+}
+
+.thmb, .thumb img { 
+ width: 120px; ??NUM_PAGES<8
+ width: 80px; ??!NUM_PAGES<8
+margin:0;
+}
+
+.thumb_div {
+ width: 140px; ??NUM_PAGES<8
+ width: 95px; ??!NUM_PAGES<8    
+    padding:2px;
+    margin:1px;
+overflow:show;
+}
+
+#page_comments { margin-left: 5px; min-width:330px; max-width:420px;}
+
+</style> 
+[end]
+
+##file_description { 
+width:900px;
+}

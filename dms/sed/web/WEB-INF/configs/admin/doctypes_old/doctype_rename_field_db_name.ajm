@@ -1,0 +1,154 @@
+[comments]
+descr=A: Переименование поля в таблице БД на сервере.
+doctype_rename_field_db_name.cfg
+
+input=type_field_id - ID поля типа документа (из таблицы d_fields)
+output=HTML форма переименования поля в таблице БД 
+parents=admin/doctypes/doctype_field_db_name.cfg
+childs=
+test_URL=?c=admin/doctypes/doctype_rename_field_db_name.cfg&type_field_id=1
+author=Яковлев, Куняев
+[end]
+
+
+[parameters]
+request_name=A: Переименование поля в таблице БД на сервере
+tableCfg=table_no
+KeepLog=false
+ClearLog=true
+divider=<tr><td colspan=2 class="bg_white" style="height:10px; border-top:solid 1px gray;"></td></tr>
+[end]
+
+
+[report]
+++++ временно - открыто всем. Потом - проверить R и RW права пользователя +++ ??
+$SET_PARAMETERS RWACC=Y; RACC=Y;
+$INCLUDE [report_]  ??RACC
+[end]
+
+=========================
+
+[report_]
+$GET_DATA [getDbFieldInfoSQL] ??
+$INCLUDE [do save] ??cop=save
+$INCLUDE [form] ??!cop=save
+[end]
+
+[form]
+$GET_DATA [getDbFieldInfoSQL]
+$GET_DATA [getCheckFieldNameSQL] ??new_field_db_name
+$INCLUDE [result]
+
+<script>
+alert(document.getElementById("result").innerHTML); ??
+window.parent.getResult("field_property_panel", document.getElementById("result")); ??
+</script>
+
+[end]
+
+
+[result]
+#c# ??debug=on
+
+<input type=hidden name="type_field_id" value="#type_field_id#">
+<input type=hidden name="new_field_db_name" value="#new_field_db_name#">
+<input type=hidden name="TYPE_ID" value="#TYPE_ID#">
+<input type=hidden name="FORM_FIELD_TYPE" value="#FORM_FIELD_TYPE#">
+<input type=hidden name="DOC_TYPE_IS_ACTIVE" value="#DOC_TYPE_IS_ACTIVE#">
+<input type=hidden name="FIELD_IS_ACTIVE" value="#FIELD_IS_ACTIVE#">
+
+<table width="100%" style="background-color:whitesmoke; ">
+
+$INCLUDE [db name exist] ??new_field_db_name&COUNT_FIELD>0
+$INCLUDE [db name available] ??new_field_db_name&COUNT_FIELD=0
+
+</table>
+
+[end]
+
+[db name exist]
+<tr><td class="big bg_red bottom_dotted">
+имя <b>#new_field_db_name#</b> занято
+</td></tr>
+[end]
+
+
+[db name available]
+<tr><td class="big bg_green bottom_dotted">
+имя <b>#new_field_db_name#</b> свободно
+</td></tr>
+
+<tr><td class="big bg_white bottom_dotted">
+<input type="button" class="butt1 pt" style="width:120;" value="Переименовать" 
+onClick="AjaxCall('rename_field_db_name_panel', 'c=admin/doctypes/doctype_rename_field_db_name&cop=save&type_field_id=#type_field_id#&new_field_db_name=#new_field_db_name#');">
+</td></tr>
+[end]
+
+
+[do save]
+$GET_DATA [getDbFieldInfoSQL] 
+$GET_DATA [rename field db name]
+<script>
+window.parent.AjaxCall('doctype_form_panel','c=admin/doctypes/doctype_form&type_id=#TYPE_ID#&init_type_field_id=#type_field_id#&form_mode=db_field_mode'); ??
+
+AjaxCall('doctype_form_panel', 'c=admin/doctypes/doctype_form&type_id=#TYPE_ID#&init_type_field_id=#type_field_id#&form_mode=db_field_mode');
+
+</script>
+[end]
+
+
+
+***************************** Шаблоны SQL запросов ***************************
+[getDbFieldInfoSQL]
+select /* doc data fields description */
+ dtf.ID
+, dtf.TYPE_ID
+, dtf.FIELD_CATEGORY
+, dtf.NR
+, dtf.NAME
+, dtf.TYPE
+, dtf.FORM_FIELD_TYPE
+, dtf.SIZE
+, dtf.NULLS
+, dtf.INFO_ID
+, dtf.info_view_nr as INFO_VIEW
+, dtf.FIELD_DB_NAME
+, dtf.IS_VISIBLE
+, dtf.LX
+, dtf.LY
+, dtf.is_active as FIELD_IS_ACTIVE
+, ifnull(DATE_FORMAT(dtf.created,'#dateTimeFormat#'),'') as CREATED
+, ifnull(DATE_FORMAT(dtf.modified,'#dateTimeFormat#'),'') as MODIFIED
+, dtf.creator_id
+, dtf.modifier_id
+, u.FIO as CREATOR
+, uu.FIO as MODIFIER
+, dtp.is_active as DOC_TYPE_IS_ACTIVE
+from d_fields dtf
+left join d_types dtp on dtp.ID=dtf.TYPE_ID
+left join #table_users_full# u on u.Id = dtf.creator_id
+left join #table_users_full# uu on uu.Id = dtf.modifier_id
+where dtf.Id = #type_field_id#
+;
+[end]
+
+
+[rename field db name]
+call modify_doc_field_db_name(#type_field_id#, '#new_field_db_name#')
+;
+[end]
+
+
+[getCheckFieldNameSQL]
+select 
+COUNT(column_name) AS COUNT_FIELD
+from information_schema.columns
+where table_schema='dms'
+and table_name='d_data_#TYPE_ID#'
+and 
+(column_name='#new_field_db_name#'
+OR
+column_name LIKE '#new_field_db_name#_%')
+;
+[end]
+

@@ -1,0 +1,9 @@
+
+A:link {color: 000080; text-decoration: none }
+A:visited {color: 000080; text-decoration: none }
+A:hover   { color: red; text-decoration: underline }
+body {margin: 0px; background-color: gray}
+td.cal_we {background-color: ffe0b0; FONT-SIZE: 11pt; text-align: center; FONT-FAMILY: Verdana, Arial, Helvetica, sans-serif}
+td.cal_wd {background-color: F0F4F4; FONT-SIZE: 11pt; text-align: center; FONT-FAMILY: Verdana, Arial, Helvetica, sans-serif}
+td.cal_h {background-color: FFF4F4; FONT-SIZE: 8pt; font-weight: bold; text-align: center;}
+td.cal_t {background-color: F0F4F4; FONT-SIZE: 12pt; font-weight: bold; text-align: center;}

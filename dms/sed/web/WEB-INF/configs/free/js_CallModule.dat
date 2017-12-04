@@ -1,0 +1,298 @@
+[comments]
+descr=JavaScript для вызова модулей и динамической подгрузки 
+testURL=free/js_CallModule.dat
+[end]
+
+[report]
+
+/*=========================================================================*/ ??
+/*====================== Вызов модулей и возврат результатов ==============*/ ??
+
+/**
+ * AJAX-загрузка контента в target_div.
+ * query - запрос в URL-формате (param1=val1&param2=val2)
+ * Если force=TRUE, то запрос выполняется не зависимо от видимости target_div . 
+ * Если force не задано или false, то запрос выполняется только если элемент target_div не скрыт.
+ *
+ * containerId - контейнер, откуда взять еще параметры запроса.
+ * Берутся все непустые значения из input, textarea и select, находящихся в контейнере.
+ * параметры, полученные в query имеют приоритет над параметрами из контейнера.
+ *
+ * Если showProgress=true, то выводится муляж прогресс бара.
+ */
+
+var AjaxCall=function(target_div, query, force, containerId, showProgress) {
+
+    var data = [];
+    var vis = false;
+    if(typeof (force) == "boolean") vis = force;
+    if(!vis) vis = $('##' + target_div).css('display') != 'none';
+    if ( vis ) {
+
+    if(showProgress)
+        showLoading(true);
+
+----- забираем параметры из контейнера ---- ??
+    if(containerId) data = $("##"+containerId+" input, ##" +containerId+" textarea, ##"+containerId + " select" ).serializeArray();
+----- выбрасываем параметры без значений ---- ??
+    for(i=data.length-1; i>=0; i--) {
+        if(!data[i].value) {
+            data.splice(i, 1);
+        }
+    }
+----- добавлям параметры из query ---- ??
+    var params = query.split("&");
+    for(i=0; i<params.length; i++){
+        var p = params[i].split("=");
+        var nam = p[0]; 
+        var n = indexOfName(data, nam);     
+        if(n >= 0) {  // если такой параметр уже есть - заменяем его значение
+            log(2, "replace " + nam + ":" + data[n].value  + " => " + params[i] + "; ");  ??
+            data[n] = {name:p[0], value:p[1]}; 
+        }
+        else
+            data.push({name:p[0], value:p[1]});
+    }
+
+    data.push({name:"ajax", value:"Y"});
+
+
+    log(2,"AjaxCall=>'" + target_div + "'"); 
+
+    data2log(data);
+
+    var request = $.ajax({ url: "#ServletPath#", type: "POST", data:data, dataType: "html" });
+        request.done(function( msg ) { if(target_div) $( "##" + target_div ).html( msg ); setStandardEvents(); 
+        if(showProgress) showLoading(false);
+    });
+        request.fail(function( jqXHR, textStatus ) { if(showProgress) showLoading(false); alert( "Ошибка: " + textStatus ); });
+  }
+
+  return vis;
+}
+
+var data2log = function(d) {
+    for (var i in d) { 
+      if(d[i].name == 'c') {
+        log(2, " . c=" + d[i].value + ";");
+        console.groupCollapsed();  ??
+    }
+      else
+        log(3, i + ": " + d[i].name + "=" + d[i].value);
+    }
+    console.groupEnd(); ??
+}
+
+var indexOfName=function(d, name) {
+    for (var i in d) {
+        if(d[i].name == name) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+
+
+/*
+ * Аналог AjaxCall для загрузки в Excel, но через GET в wf
+ *
+ * query - запрос в URL-формате (param1=val1&param2=val2)
+ * containerId - если задан, то запрос дополняется значениями input в этом контейнере.
+ * значения параметров из query имеют приоритет - перекрывают значения из containerId, 
+ * если там присутствуют такие же параметры.
+ */
+var getXL=function(query, containerId) {
+
+  var data = [];
+  var q = "of=xl";
+  if(query && query.length > 0)
+    q = q + "&" + query;
+  log(3,"getXL: query='" + q + "'");
+  if(containerId) {
+    log(3,"getXL: containerId='" + containerId + "'");
+    data = $("##"+containerId+" input, ##" +containerId+" textarea, ##"+containerId + " select" ).serializeArray();
+
+    for(i=0; i<data.length; i++) {
+      if(q.indexOf("&" + data[i].name + "=") === -1) {
+        if(data[i].value){
+          log(3,i + ": " + data[i].name + "=" + data[i].value);
+          q = q + "&" + data[i].name + "=" + data[i].value;
+        }
+      }
+    }
+    log(3,"getXL: res. query='" + q + "'");
+    frames["wf2"].window.location.href="#ServletPath#?" + q;
+  }    
+}
+
+
+/*
+ * БЕЗ КРАЙНЕЙ НЕОБХОДИМОСТИ НЕ ИСПОЛЬЗОВАТЬ!
+ * В большинстве случаев ЗАМЕНЕНО на AjaxCall!
+ *
+ * Submit document.theForm в заданный фрейм (если он указан)
+ * Ставит в форме значения "cop", "c" (если они указаны)
+ * Убирает диалоговое окно (если !keepDialog == true)
+ * если cop="u" | "save", то перед сабмитом вызывается checkInput() для проверки корректности данных формы
+ */
+var doSubmit=function(cop, c, keepDialog, frame)
+{
+log(3,"doSubmit: c=" + c + "; frame=" + frame + ";");
+	formChanged=false;
+	frm=document.theForm;
+  if(frame) frm.target=frame;
+	if(c) module=c; ??Надо ли здесь? Похоже, что не надо!
+
+	if(cop && (cop=='u' || cop=='save') && !checkInput($("[mand]"))) return; //проверка ввода
+	if(c) {
+		var c_Old = frm.c.value; //сохраняем старый "c"
+		frm.c.value=c;
+	}
+	if(cop)	??
+	 frm.cop.value=cop;
+	log(3,c + " / " + cop); ??
+	frm.submit();
+	if (!keepDialog) HideDialog();
+	if(c)	frm.c.value = c_Old;  //возвращаем c
+	log(3,frm.c.value); ??
+  frm.target="wf";
+}
+
+
+/* запоминаем текущий модуль для последующего вызова по SUBMIT формы */ ??
+var setModule=function(m)
+{
+	if(m) { 
+		module=m;
+		document.theForm.c.value=module;
+	}
+}
+
+/**
+ *
+ */
+var showLinked=function(event, id, img, report) {
+  event.preventDefault();
+  event.stopPropagation();
+  if(img === "none") return false;
+  var cont = $('#linked_' + report + id);
+log(3,"showLinked:" + img + "; " + 'linked_' + report + id + "; display=" + cont.css('display'));
+  if(cont.css('display') != 'none') cont.hide(100);
+  else {
+    AjaxCall('linked_' + report + id, 'c=docs/show_linked_docs&mode=list&doc_id=' + id, true);
+    cont.show(300);
+  }
+  return false;
+}
+
+
+/*  УСТАРЕЛО!!! НЕ ИСПОЛЬЗОВАТЬ!!!
+ * Непосредственная загрузка URL в iframe
+ */
+function loadFrame(param, frame, host)
+{ 
+	alert(" loadFrame !!!!!");
+}
+
+/*
+ * Возврат результатов из iframe (из модуля) в основной документ браузера
+ *
+ */
+var getResult = function(div_ids, res, visibleOnly)
+{
+  if(div_ids && res) {
+    var divs = div_ids.split(",");
+    var i;
+    for (i=0; i<divs.length; i++) {
+      if(visibleOnly) {
+        if( $("##"+divs[i]).is(':visible') ) {
+          $("##"+divs[i]).html(res.innerHTML); 
+        } 
+        else
+          $("##"+divs[i]).html(""); 
+      }
+      else {
+        console.log (divs[i] + ": " + res.innerHTML); ??
+        $("##"+divs[i]).html(res.innerHTML); 
+      }
+    }
+    if(res.innerHTML) 
+    { setStandardEvents(); 
+      res.innerHTML = ""; ??
+    }
+    if (div_ids==="popupCont") centerDialog();
+  } 
+}
+
+[end]
+
+ВЕРСИЯ С РЕАЛЬНЫМ ПРОГРЕССБАРОМ ЗАГРУЗКИ РЕЗУЛЬТАТА
+Не используется, т.к. сервер должен ставить реальный header content_length
+
+/*
+ * AJAX-загрузка контента в target_div.
+ * query - запрос в URL-формате (param1=val1&param2=val2)
+ * Запрос выполняется если force=TRUE. 
+ * Если force не задано или не boolean, то запрос выполняется, если элемент target_div не скрыт.
+ */
+var AjaxCall=function(target_div, query, force, containerId, showProgress) {
+
+  var data = [];
+  var vis = false;
+  if(typeof (force) == "boolean") vis = force;
+  if(!vis) vis = $('##' + target_div).css('display') != 'none';
+  if ( vis ) {
+    log(3,"AjaxCall: " + $('##' + target_div).css('display')); ??
+    log(3,"AjaxCall: " + target_div + " / " + query); ??
+
+    if(target_div !== "d_tooltip" ??
+      && target_div !== "field_property_panel" ??
+      && target_div !== "doctype_form_panel" ??
+      && target_div !== "toolbar_panel" ??
+    ) ??
+    if(showProgress)
+        showLoading(true);
+
+    if(containerId) data = $("##"+containerId+" input, ##" +containerId+" textarea, ##"+containerId + " select" ).serializeArray();
+    var params = query.split("&");
+    for(i=0; i<params.length; i++){
+        var p = params[i].split("=");
+        data.push({name:p[0], value:p[1]});
+    }
+    data.push({name:"ajax", value:"Y"});
+    log(3,"AjaxCall showProgress=" + showProgress); data2log(data);
+
+    var request = $.ajax({ url: "#ServletPath#", type: "POST", data:data, dataType: "html"
+, 	xhr: function()
+	{
+		var xhr = new window.XMLHttpRequest();
+		// прогресс загрузки на сервер
+		xhr.upload.addEventListener("progress", function(evt){
+			if (evt.lengthComputable) {
+				var percentComplete = 100 * evt.loaded / evt.total;
+		// делать что-то...
+				log(3,"ajax: =>" + percentComplete + "%;");
+                    if(showProgress) {increaseProgress(10);}
+			}
+		}, false);
+
+		// прогресс скачивания с сервера
+ xhr.addEventListener("progress", function(evt) {
+log(3,"ajax: evt.lengthComputable=" + evt.lengthComputable);
+           if (evt.lengthComputable) {
+               var percentComplete = evt.loaded / evt.total;
+               log(3,"ajax: <=" + percentComplete + "%;");
+           }
+       }, false);
+		return xhr;
+	}
+    });
+    request.done(function( msg ) { if(target_div) $( "##" + target_div ).html( msg ); setStandardEvents(); 
+        if(showProgress) showLoading(false);
+    });
+    request.fail(function( jqXHR, textStatus ) { if(showProgress) showLoading(false); alert( "Ошибка: " + textStatus ); });
+  }
+
+  return vis;
+}

@@ -1,0 +1,92 @@
+[comments]
+descr=А: Обновление таблицы пользователей ОИЯИ 
+input=
+output=обновление таблицы #table_users_full# на основе a_roles и справочника персонала ОИЯИ (info_11)
+parents=
+childs=svs/get_user_info
+test_URL=?c=admin/users/refresh_JINR_usrs&recreate=Y
+call=$CALL_SERVICE c=admin/users/refresh_JINR_usrs; user_id=2309;
+author=Куняев
+[end]
+
+[parameters]
+request_name=A:обновление юзеров ОИЯИ
+service=dubna.walt.service.TableServiceSpecial
+tableCfg=table_no
+LOG=ON
+[end]
+
+
+[report header]
+$GET_DATA [invalidate cwl users]
+$GET_DATA [refresh Users JINR Table]  ??!recreate
+$LOG_ERROR #ERROR#  ??ERROR
+$SET_PARAMETERS recreate=Y; ERROR=; ??ERROR
+$GET_DATA [recreate Users JINR Table]  ??recreate
+[end]
+
+[item]
+$PRINT curr_user_id=#curr_user_id#; old_id=#old_id# ??debug=on
+$CALL_SERVICE c=svs/get_user_info;  requested_user_id=#curr_user_id#;  refresh=y;
+$PRINT roles=#u_roles#;  ??debug=on
+$GET_DATA [update user roles] 
+$SET_PARAMETERS u_roles=; u_lab_code=;
+[end]
+
+[report footer]
+<script type="text/javascript">
+alert("Таблица пользователей обновлена.");
+</script>
+[end]
+
+======================================
+[refresh Users JINR Table]
+try: truncate table #table_users_full#; 
+insert into #table_users_full# (select * from #table_users_full#_v);
+
+update #table_users_full# set roles='', div_code=null;
+CREATE INDEX ix_id ON #table_users_full# (id); ??
+commit; ??
+[end]
+
+[recreate Users JINR Table]
+try: drop table #table_users_full#; 
+create table #table_users_full# as select * from #table_users_full#_v;
+ALTER TABLE #table_users_full# MODIFY COLUMN roles varchar(4095);
+update #table_users_full# set div_code=null;
+CREATE INDEX ix_id ON #table_users_full# (id); 
+commit; ??
+[end]
+
+[SQL]
+select #user_id# as "curr_user_id"  ??user_id
+select person_id as "curr_user_id", id as "old_id" from cwl.users where not person_id is null order by id ??!user_id
+[end]
+
+
+[update user roles]
+update #table_users_full# set roles='#u_roles#'
+, div_code=#u_lab_code#  ??u_lab_code
+, div_code=null  ??!u_lab_code
+where id=#curr_user_id#
+[end]
+
+;
+update cwl.users set F='#u_FIO#'
+, div_code=floor(#u_lab_code#/1000) ??
+, EMAIL='#email#',PHONE='#phone#',  LOGIN='#login_name#' ??
+, changed=now(),  modifier_id=#USER_ID#  ??
+where person_id=#curr_user_id# 
+[end]
+
+
+[invalidate cwl users]
+update cwl.users set is_active=1
+;
+update cwl.users set is_active=0
+where person_id not in(select person_id from info_11 where is_deleted=0)
+[end]
+
+[invalidate sed users]
+update 
+[end]

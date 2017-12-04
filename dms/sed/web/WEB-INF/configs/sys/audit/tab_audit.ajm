@@ -1,0 +1,109 @@
+sys/audit/tab_audit.ajm
+
+
+[comments]
+descr=А: Аудит - ошибки, лог
+input=none
+parents=
+childs=
+author=Куняев
+[end]
+
+[parameters]
+request_name=A:Мониторинг
+LOG=ON
+[end]
+
+
+[report]
+$INCLUDE dat/common.dat[check login] 
+$INCLUDE [report_]   ??AR_SYS_ADMIN=1
+ ??USER_ID=4918|USER_ID=2309|USER_ID=3663
+[end]
+
+
+[report_]
+$SET_PARAMETERS a_modul=sys/audit/wf_errors;  ??!a_modul
+<style>
+.control {display:inline; padding:5px; border-radius: 0 0 7px 7px; margin:0px; border:solid 1px gray; border-top:none; font-size:11pt;}
+.active {border:solid 1px ##006070; background-color:##F0F8FF; padding:8px; font-weight:bold;}
+</style>
+
+<div style="padding:0px 0 10px 100px; margin:-2px 0 0 0;">
+
+<div class="control pt
+active ??a_modul=sys/audit/wf_errors
+" onClick='AjaxCall("c_audit", "c=sys/audit/tab_audit&a_modul=sys/audit/wf_errors&f_err=NF", true, "", true);' 
+>Ошибки маршрутов
+
+</div><div class="control pt
+active ??a_modul=sys/audit/errors
+" onClick='AjaxCall("c_audit", "c=sys/audit/tab_audit&a_modul=sys/audit/errors&f_err=NF", true, "", true);' 
+>Ошибки запросов
+
+</div><div class="control pt
+active ??a_modul=sys/audit/convert_err
+" onClick='AjaxCall("c_audit", "c=sys/audit/tab_audit&a_modul=sys/audit/convert_err&f_err=on&srt=c.sent&desc=desc", true, "", true);' 
+>Конвертирование файлов
+
+$INCLUDE [audit] ??USER_ID=4918|USER_ID=2309
+
+</div><div class="control pt
+active ??a_modul=sys/audit/cron
+" onClick='AjaxCall("c_audit", "c=sys/audit/tab_audit&a_modul=sys/audit/cron&f_err=off&srt=nextCall&desc=desc", true, "", true);' 
+>Задания
+
+</div><div class="control" style="border:none;"><a href="#ServletPath#?c=sys/showLog_noDB" target="_blank">LOG</a></div>
+</div>
+
+<div id="filters_div">
+<input type="hidden" name="srn" value="#srn#">
+<input type="hidden" name="srt" value="#srt#">
+<input type="hidden" name="desc" value="#desc#">
+
+<div id="audit_content_table" style="width:100%;">
+$CALL_SERVICE c=#a_modul#; 
+$CALL_SERVICE c=sys/audit/mail_send_errors;  ??a_modul=sys/audit/wf_errors
+</div>
+
+
+<input type="hidden" name="a_modul" value="#a_modul#">
+</div>
+
+$SET_PARAMETERS doc_id=;
++++++ SCRIPT +++++ ??
+<script type="text/javascript">
+try{
+ $(".f_date").datepick({yearRange: 'c-3:c+0', showSpeed: 'fast'});
+}
+catch (e) { console.log(" (.f_date).datepick: " + e);}
+
+showSrt("#srt#","sup"); ??!desc
+showSrt("#srt#","sdown"); ??desc
+
+
+var submitForm=function(reset) {
+    log (3, "#c#.submitForm( reset=" + reset + " );");
+    if(reset) document.theForm.srn.value=1;  
+    AjaxCall("c_audit", "c=sys/audit/tab_audit", true, "filters_div", true);
+}
+
+var goToRow=function(nr)
+{ 
+  log (3, "#c#.goToRow(): nr=" + nr);
+  document.theForm.srn.value=nr;  
+  console.log ("#c#.goToRow(): srn=" + document.theForm.srn.value ??
+   + "; rpp=" + getSelectedVal(document.theForm.rpp)  ??
+); ??
+  submitForm(false);
+}
+
+</script>
+[end]
+
+[audit]
+</div><div class="control pt
+active ??a_modul=sys/audit/doc_acc
+" onClick='AjaxCall("c_audit", "c=sys/audit/tab_audit&a_modul=sys/audit/doc_acc&srt=a.DAT&desc=desc", true, "", true);' 
+>Просмотр документов
+[end]

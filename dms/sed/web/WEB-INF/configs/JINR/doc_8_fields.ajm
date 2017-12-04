@@ -1,0 +1,178 @@
+JINR/doc_8_fields.cfg
+
+
+[report]
+$INCLUDE JINR/doc_8_fields.cfg[report_ext] ??!1С
+$INCLUDE JINR/doc_8_fields.cfg[report_1C]  ??1С
+[end]
+
+
+=================== 1007 - Редактируемое при просмотре поле Внешний № =======================
+поле редактируемо при просмотре для участников маршрута для не завершенных документов
+
+[external_nr_W]
+$INCLUDE dat/doc_fields.dat[input field]
+<span class="small"><i>заносится, когда будет известен</i></span>
+[end]
+
+
+[external_nr_R]
+$SET_PARAMETERS val=^#FIELD_DB_NAME#;
+$SET_PARAMETERS field_RW=Y;  ??DOC_STATUS<3&CREATOR_ID=#USER_ID#
+
+$GET_DATA JINR/doc_8_fields.cfg[checkWFmember] ??WF_ID&!field_RW=Y
+$GET_DATA JINR/doc_8_fields.cfg[get doc numbers] ??
+
+$SET_PARAMETERS field_RW=;  ??mode=print|mode=ext
+$INCLUDE dat/doc_fields.dat[static text] ??!field_RW
+
+$INCLUDE JINR/doc_8_fields.cfg[report_ext]  ??field_RW
+[end]
+
+
+[report_ext]
+$SET_PARAMETERS val=^#FIELD_DB_NAME#; 
+$GET_DATA [update doc data] ??cop=saveField
+
+<div id="#FIELD_DB_NAME#_cont">
+$INCLUDE JINR/doc_8_fields.cfg[common form fields]
+
+$INCLUDE dat/doc_fields.dat[input field] ??cop=editField|ERROR
+
+<input type="button" class="butt1 pt" 
+    value='Ввести' style="margin-left:20px;"   ??!cop=editField&!val
+    value='Изменить' style="margin-left:20px;"   ??!cop=editField&val
+    value='Сохранить'                             ??cop=editField
+    onClick="AjaxCall('#FIELD_DB_NAME#_cont'
+    , 'c=JINR/doc_8_fields&cop=editField' ??!cop=editField
+    , 'c=JINR/doc_8_fields&cop=saveField' ??cop=editField
+    , true, '#FIELD_DB_NAME#_cont');" >  
+</div>
+
+#ERROR# ??ERROR
+[end]
+
+[common form fields]
+<input type=hidden name=#FIELD_DB_NAME# value="#val#"> #val# ??!cop=editField&!ERROR
+<input type=hidden name=TYPE value="#TYPE#">
+<input type=hidden name=SIZE value="#SIZE#">
+<input type=hidden name=DOC_TYPE_ID value="#DOC_TYPE_ID#">
+<input type=hidden name=DOC_DATA_RECORD_ID value="#DOC_DATA_RECORD_ID#">
+<input type=hidden name=FIELD_DB_NAME value="#FIELD_DB_NAME#">
+<input type=hidden name=LX value="#LX#">
+[end]
+
+==========================================================================
+==========================================================================
+==========================================================================
+
+[checkWFmember]
+select 'Y' as field_RW from wf where wf_id=#WF_ID# and user_id=#USER_ID#
+[end]
+
+
+[update doc data]
+update d_data_#DOC_TYPE_ID# set #FIELD_DB_NAME#='#val#' where id=#DOC_DATA_RECORD_ID#
+[end]
+
+
+[get doc numbers]
+try: select nr_1c, nr_adb from d_data_#DOC_TYPE_ID# where id=#DOC_DATA_RECORD_ID#
+[end]
+
+
+[save_ext]
+$SET_PARAMETERS val=^#FIELD_DB_NAME#; ??
+$GET_DATA JINR/doc_8_fields.cfg[doSave_ext]
+[end]
+
+[doSave_ext]
+update #TABLE_NAME# 
+set #CUSTOM_FIELD_DB_NAME#='^#CUSTOM_FIELD_DB_NAME#'
+where id=#DOC_DATA_RECORD_ID#
+[end]
+
+
+==========================================================================
+==========================================================================
+==========================================================================
+
+=================== 1010 - Редактируемое при просмотре №1С, автоматическое поле №ADB =======================
+поле редактируемо в просмотре для участников маршрута для не завершенных документов, 
+№ADB поступает из шлюза после отсылки документа в ADB
+
+[1C_W]
+$INCLUDE dat/doc_fields.dat[input field]
+<span class="small"><i>заносится, когда будет известен</i></span>
+[end]
+
+
+$GET_DATA JINR/doc_8_fields.cfg[get doc numbers]  ??DOC_DATA_RECORD_ID
+№1С: <input size=20 name=nr_1c value="#nr_1c#" style="width:100pt;"> 
+№ADB: #nr_adb#nr_adb ??
+
+
+[1C_R]
+$SET_PARAMETERS val=^#FIELD_DB_NAME#;
+$SET_PARAMETERS field_RW=Y;  ??DOC_STATUS<3&CREATOR_ID=#USER_ID#
+
+$GET_DATA JINR/doc_8_fields.cfg[checkWFmember] ??WF_ID&!field_RW=Y
+$GET_DATA JINR/doc_8_fields.cfg[get doc numbers] ??DOC_DATA_RECORD_ID
+
+$SET_PARAMETERS field_RW=;  ??mode=print|mode=ext
+val=#val#; field_RW=#field_RW#; ??
+$INCLUDE dat/doc_fields.dat[static text] ??!field_RW&val
+не введен  ??!field_RW&!val
+<span style="margin-left:200px;"><a href="https://adb2.jinr.ru/adb/adb?c=doc/docView&type=ext&DOC_ID=#nr_adb#&key=#tm#" target=_blank>№ADB: #nr_adb#</a></span>  ??!field_RW&nr_adb
+
+$INCLUDE JINR/doc_8_fields.cfg[report_1C]  ??field_RW
+[end]
+
+
+[report_1C]
+$SET_PARAMETERS val=^#FIELD_DB_NAME#; 
+$GET_DATA [update doc data] ??cop=saveField
+$GET_DATA [get nr_adb]
+
+<div id="#FIELD_DB_NAME#_cont">
+$INCLUDE JINR/doc_8_fields.cfg[common form fields]
+<input type=hidden name=1С value="Y">
+
+$INCLUDE dat/doc_fields.dat[input field] ??cop=editField|ERROR
+
+не введен  ??!val&!cop=editField
+
+<input type="button" class="butt1 pt" 
+    value='Ввести' style="margin-left:20px;"   ??!cop=editField&!val
+    value='Изменить' style="margin-left:20px;"   ??!cop=editField&val
+    value='Сохранить'                             ??cop=editField
+    onClick="AjaxCall('#FIELD_DB_NAME#_cont'
+    , 'c=JINR/doc_8_fields&cop=editField' ??!cop=editField
+    , 'c=JINR/doc_8_fields&cop=saveField' ??cop=editField
+    , true, '#FIELD_DB_NAME#_cont');" >  
+
+<span style="margin-left:200px;"><a href="https://adb2.jinr.ru/adb/adb?c=doc/docEdit&type=ext&DOC_ID=#nr_adb#&key=#tm#" target=_blank>№ADB: #nr_adb#</a></span>  ??!cop=editField&nr_adb
+
+</div>
+
+#ERROR# ??ERROR
+[end]
+
+==========================================================================
+==========================================================================
+==========================================================================
+
+[get nr_adb]
+select nr_adb from d_data_#DOC_TYPE_ID# where id=#DOC_DATA_RECORD_ID#
+[end]
+
+
+[save_1C]
+$GET_DATA JINR/doc_8_fields.cfg[doSave_1C]
+[end]
+
+[doSave_1C]
+update #TABLE_NAME# 
+set #CUSTOM_FIELD_DB_NAME#='^#CUSTOM_FIELD_DB_NAME#'
+where id=#DOC_DATA_RECORD_ID#
+[end]

@@ -1,0 +1,29 @@
+checkSession_noDB.cfg
+
+[parameters]
+request_name=S:Check session
+LOG=OFF 
+[end]
+
+[report]
+$PRINT ===== checkSession_noDB.cfg: VU=#VU#; =====    ??VU_ZZZ
+
+$INCLUDE svs/get_user_info.cfg[user_info]
+
+<script type="text/javascript">
+var setAutosaveTimeout = function(){
+  if (!AutosaveTimeoutId) {
+    if(LogoutTimeoutId) 
+        window.clearTimeout(LogoutTimeoutId);
+    LogoutTimeoutId = null;
+
+    AutosaveTimeoutId = window.setTimeout(autosave, 240000);
+    log(4, "***** SET AutosaveTimeoutId = " + AutosaveTimeoutId); ??
+    jAlert("Превышен таймаут! Ваша сессия будет закрыта через 5 минут.<br>Кликните ОК для продления сессии.", "OK");  ??USER_ID
+  }
+}
+
+  log(4, " AutosaveTimeoutId = " + AutosaveTimeoutId + "; LogoutTimeoutId=" + LogoutTimeoutId); ??
+  setAutosaveTimeout();  ??pause_time>700|!USER_ID
+</script>
+[end]

@@ -1,0 +1,91 @@
+
+================= SQLs  для IV-го раздела ================================
+
+
+[Cross_4]
+select 
+'.', 'Инфр.'  as DIV
+ from dual
+[end]
+
+
+
+[SQL_4]
+SELECT
+ a.aggr||': '||ag.DES_SHORT as "AGGR"  ??!f_aggr&!ssttype=not
+a.DES as SSTD ??f_aggr|ssttype=not
+, '.'   as "INFRA_4" 
+, sum(p.summa) ??
+
+,'<a href="javascript:getDetails('
+||nvl(a.aggr,0)	??!f_aggr&!ssttype=not
+||nvl(p.sst,0) 	??f_aggr|ssttype=not
+||')">--'||sum(summa) 
+/1000 ??scale=trub
+/(1000*#USD_RUB#)	??scale=tusd
+||'--</a>' as "S" 
+
+, 'Инфр.' 
+FROM reg#q_yr#_V  p
+LEFT JOIN i_acc1_#q_yr# b on b.code=p.sst
+left join C2_STATI a on (a.code=p.sst and a.mark is null) 
+left join i_aggr ag on ag.code=a.aggr
+WHERE p.acc='26.01'
+#tpq#
+and p.lab not in('032','090','100','200','300','400','500','600','700')
+
+and not a.aggr is null ??ssttype=bud
+and a.aggr is null ??ssttype=not
+and a.aggr=#f_aggr# ??f_aggr
+and not b.aggr1 is null ??
+
+group by 
+a.aggr, ag.DES_SHORT  ??!f_aggr&!ssttype=not
+a.DES, p.sst ??f_aggr|ssttype=not
+ , DIV, INFRA_4 ??
+
+order by 
+a.aggr  ??!f_aggr&!ssttype=not
+a.DES ??f_aggr|ssttype=not
+
+[end]
+
+
+SELECT 
+a.aggr||': '||ag.DES_SHORT as "AGGR" ??!f_aggr&!ssttype=not
+a.DES as SSTD ??f_aggr|ssttype=not
+,  ib.DIV_NAME as "INFRA" ??!f_lab
+,  ib.NAME as "INFRA_DIV" ??f_lab
+,sum(summa) 
+/1000 ??scale=trub
+/(1000*#USD_RUB#)	??scale=tusd
+as "S" 
+, ib.DIV ??!f_lab
+, ib.code ??f_lab
+FROM reg#q_yr#_v p 
+left join C2_STATI a on (a.code=p.sst and a.mark is null) 
+left join i_aggr ag on ag.code=a.aggr
+left join i_budget ib on (ib.code=p.lab and ib.YR=20#q_yr#
+and ib.div=#f_lab# ??f_lab
+)
+
+WHERE summa<>0
+#tpq#
+and ib.razdel=3 and p.ACC in('25.03','26.01')
+and not a.aggr is null ??ssttype=bud
+and a.aggr is null ??ssttype=not
+and a.aggr=#f_aggr# ??f_aggr
+
+group by  
+a.aggr  ??!f_aggr&!ssttype=not
+, ag.DES_SHORT ??!f_aggr&!ssttype=not
+, a.DES ??f_aggr|ssttype=not
+, ib.DIV_NAME, ib.DIV  ??!f_lab
+, ib.NAME  ??f_lab
+, ib.code ??f_lab
+order by 
+a.aggr  ??!f_aggr&!ssttype=not
+a.DES ??f_aggr|ssttype=not
+, ib.DIV ??!f_lab
+, ib.code ??f_lab
+[end]

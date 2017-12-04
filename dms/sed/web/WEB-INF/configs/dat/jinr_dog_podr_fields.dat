@@ -1,0 +1,71 @@
+
+============== Финальное решение =================
+[final_decision]
+<tr><td class="label big 
+"> Дирекция ОИЯИ:</td>
+<td>
+
+$INCLUDE dat/jinr_dog_podr_fields.dat[info i_jinr_authorized_persons]
+
+</td></tr>
+[end]
+
+
+[info i_jinr_authorized_persons]
+$SET_PARAMETERS item_id_param=jinr_authorized_id
+$SET_PARAMETERS text_val=#JINR_AUTH_PERS#; val_id=^#item_id_param#
+
+<span id="jinr_authorized_list">
+$INCLUDE dat/jinr_dog_podr_fields.dat[info_single_selected_value]   ??text_val
+</span>
+
+<div class="info_input" id="jinr_authorized" style="width:100px;"
+info_id="1006" info_view="1" info_type="#INFO_TYPE#" 
+searchFor='none'
+>выбрать</div> 
+
+<input type=hidden id="jinr_authorized_id" name="jinr_authorized_id" size=4 value="#val_id#">
+<input type=hidden id="jinr_authorized_text" name="jinr_authorized" size=45 value="#text_val#">
+[end]
+
+[info_single_selected_value]
+<ul class="p0"><li class="nobull">#text_val#
+<a class="delcross" title="Удалить" onclick="delSelectedInfoItemFromChoice(this)" delfromtext="jinr_authorized_text" delval="#val_id#" delfrom="jinr_authorized_id">X</a>
+</li></ul>
+[end]
+
+
+[final_decision_w]
+$GET_DATA dat/jinr_dog_podr_fields.dat[save final decision]
+[end]
+
+[final_decision_r]
+$GET_DATA dat/jinr_dog_podr_fields.dat[get final decision]
+<tr><td class="label big">Дирекция ОИЯИ :</td>
+<td class="big bg_white"> 
+$INCLUDE dat/jinr_dog_podr_fields.dat[info i_jinr_authorized_persons]
+$GET_DATA dat/jinr_dog_podr_fields.dat[save final decision]
+
+</td></tr>
+[end]
+
+
+[get final decision]
+select 
+  jinr_authorized as "JINR_AUTH_PERS"
+,  jinr_authorized_id
+from #DOC_DATA_TABLE# 
+where doc_id=#doc_id# and version=#DOC_VERSION#
+;
+[end]
+
+
+
+[save final decision]
+update #DOC_DATA_TABLE# SET
+  jinr_authorized = "#jinr_authorized#"  
+, jinr_authorized_id = "#jinr_authorized_id#"
+WHERE doc_id=#doc_id# and version=#DOC_VERSION#
+;
+[end]
+

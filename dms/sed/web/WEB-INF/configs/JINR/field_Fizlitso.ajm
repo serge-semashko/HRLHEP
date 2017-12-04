@@ -1,0 +1,160 @@
+JINR/field_Fizlitso.ajm
+
+[comments]
+descr=Модуль вывода поля "Физлицо ОИЯИ" 
+input=
+output=
+parents=
+childs=
+author=Куняев
+[end]
+
+[parameters]
+request_name=U:физлицо
+KeepLog=true
+ClearLog=false
+[end]
+
+
+[report]
+    $GET_DATA [getFizlitsoDocData] ??!INPUT_ERROR&DOC_TYPE_ID&doc_id
+    $GET_DATA [getFizlitsoInfoData] ??!INPUT_ERROR&info_id&record_id
+    <table border=0>
+        <tr><td class="label">Фамилия:</td><td><input size=30 id="JINR_FIZLITSO_F" name="JINR_FIZLITSO_F" value="#JINR_FIZLITSO_F#" ></td></tr>
+        <tr><td class="label">Имя:</td><td><input size=30 id="JINR_FIZLITSO_I" name="JINR_FIZLITSO_I" value="#JINR_FIZLITSO_I#" ></td></tr>
+        <tr><td class="label">Отчество:</td><td><input size=30 id="JINR_FIZLITSO_O" name="JINR_FIZLITSO_O" value="#JINR_FIZLITSO_O#" ></td></tr>
+
+        <tr><td class="label">Дата&nbsp;рождения:</td>
+        $SET_PARAMETERS JINR_FIZLITSO_dr=#JINR_FIZLITSO_dr_orig#; ??ERROR_JINR_FIZLITSO_dr
+        <td><input id="JINR_FIZLITSO_dr" type="text" size=10 name="JINR_FIZLITSO_dr" value="#JINR_FIZLITSO_dr#" onKeyUp="fixDate(this);" onChange="checkDate(this);">
+        <span class="err_msg">#ERROR_JINR_FIZLITSO_dr#</span>  ??ERROR_JINR_FIZLITSO_dr
+        </td></tr>
+
+        <tr><td class="label">ИНН:</td><td><input size=12 id="JINR_FIZLITSO_inn" name="JINR_FIZLITSO_inn" value="#JINR_FIZLITSO_inn#" >
+        &nbsp;&nbsp; № пенс. Свидетельства: <input size=16 id="JINR_FIZLITSO_pfr" name="JINR_FIZLITSO_pfr" value="#JINR_FIZLITSO_pfr#" ></td></tr>
+
+        <tr><td class="label">Гражданство:</td><td><input size=30 id="JINR_FIZLITSO_strana" name="JINR_FIZLITSO_strana" value="#JINR_FIZLITSO_strana#" ></td></tr>
+
+        <tr><td class="label">Вид документа:</td><td><input size=30 id="JINR_FIZLITSO_vid_doc" name="JINR_FIZLITSO_vid_doc" value="#JINR_FIZLITSO_vid_doc#" ></td></tr> ??
+        <tr><td class="label">Паспорт: </td><td>Серия: <input size=10 id="JINR_FIZLITSO_seria" name="JINR_FIZLITSO_seria" value="#JINR_FIZLITSO_seria#" >
+        Номер: <input size=20 id="JINR_FIZLITSO_nomer" name="JINR_FIZLITSO_nomer" value="#JINR_FIZLITSO_nomer#" ></td></tr>
+
+        <tr><td class="label">Кем выдан:</td><td><input size=55 id="JINR_FIZLITSO_vidan" name="JINR_FIZLITSO_vidan" value="#JINR_FIZLITSO_vidan#" ></td></tr>
+
+        ZZZ<tr><td class="label">Код подразд.:</td><td><input size=16 id="JINR_FIZLITSO_kod_podrazd" name="JINR_FIZLITSO_kod_podrazd" value="#JINR_FIZLITSO_kod_podrazd#" > ??
+        <tr><td class="label">Дата выдачи:</td>
+        $SET_PARAMETERS JINR_FIZLITSO_dat_vid=#JINR_FIZLITSO_dat_vid_orig#; ??ERROR_JINR_FIZLITSO_dat_vid
+        <td><input id="JINR_FIZLITSO_dat_vid" type="text" size=10 name="JINR_FIZLITSO_dat_vid" value="#JINR_FIZLITSO_dat_vid#" onKeyUp="fixDate(this);" onChange="checkDate(this);">
+        <span class="err_msg">#ERROR_JINR_FIZLITSO_dat_vid#</span>  ??ERROR_JINR_FIZLITSO_dat_vid
+        </td></tr>
+
+        <tr><td class="label">Дата регистрации:</td><td><input id="JINR_FIZLITSO_dat_reg" type="text" size=10 name="JINR_FIZLITSO_dat_reg" value="#JINR_FIZLITSO_dat_reg#" onKeyUp="fixDate(this);" onChange="checkDate(this);"></td></tr> ??
+
+        <tr><td class="label">Адрес прописки:</td><td>
+        <textarea id="JINR_FIZLITSO_address" name="JINR_FIZLITSO_address" rows=3 style="width:400pt; height:30pt;" >#JINR_FIZLITSO_address#</textarea>
+        </td></tr>
+
+        <tr><td class="label">Телефон:</td><td><input size=30 id="JINR_FIZLITSO_phon" name="JINR_FIZLITSO_phon" value="#JINR_FIZLITSO_phon#" ></td></tr>
+    </table>
+
+    <script type="text/javascript">
+        $("##JINR_FIZLITSO_dr").datepick({yearRange: 'c-9:c-0', showSpeed: 'fast'});
+        $("##JINR_FIZLITSO_dat_vid").datepick({yearRange: 'c-10:c-0', showSpeed: 'fast'}); 
+        $("##JINR_FIZLITSO_dat_reg").datepick({yearRange: 'c-9:c-0', showSpeed: 'fast'}); ??
+    </script>
+[end]
+
+
+
+[getFizlitsoDocData]
+    SELECT 
+        #FIELD_DB_NAME#_F as "JINR_FIZLITSO_F"
+      , #FIELD_DB_NAME#_I as "JINR_FIZLITSO_I"
+      , #FIELD_DB_NAME#_O as "JINR_FIZLITSO_O"
+      , DATE_FORMAT(#FIELD_DB_NAME#_dr,'#dateFormat#') as "JINR_FIZLITSO_dr"
+      , #FIELD_DB_NAME#_inn as "JINR_FIZLITSO_inn"
+      , #FIELD_DB_NAME#_pfr as "JINR_FIZLITSO_pfr"
+      , #FIELD_DB_NAME#_strana as "JINR_FIZLITSO_strana"
+      , #FIELD_DB_NAME#_sex as "JINR_FIZLITSO_sex"
+      , #FIELD_DB_NAME#_vid_doc as "JINR_FIZLITSO_vid_doc"
+      , #FIELD_DB_NAME#_seria as "JINR_FIZLITSO_seria"
+      , #FIELD_DB_NAME#_nomer as "JINR_FIZLITSO_nomer"
+      , #FIELD_DB_NAME#_vidan as "JINR_FIZLITSO_vidan"
+      , #FIELD_DB_NAME#_kod_podrazd as "JINR_FIZLITSO_kod_podrazd"
+      , DATE_FORMAT(#FIELD_DB_NAME#_dat_vid,'#dateFormat#') as "JINR_FIZLITSO_dat_vid"
+      , DATE_FORMAT(#FIELD_DB_NAME#_dat_reg,'#dateFormat#') as "JINR_FIZLITSO_dat_reg"
+      , #FIELD_DB_NAME#_address as "JINR_FIZLITSO_address"
+      , #FIELD_DB_NAME#_phon as "JINR_FIZLITSO_phon"
+    from d_data_#DOC_TYPE_ID# 
+    where doc_id = #doc_id#
+    ;
+[end]
+
+[getFizlitsoInfoData] 
+    select table_name as "FIZLITSO_INFO_TABLE_NAME"
+    from i_infos
+    where id=#info_id#
+    ;
+    SELECT 
+        F as "JINR_FIZLITSO_F"
+      , I as "JINR_FIZLITSO_I"
+      , O as "JINR_FIZLITSO_O"
+      , DATE_FORMAT(dr,'#dateFormat#') as "JINR_FIZLITSO_dr"
+      , inn as "JINR_FIZLITSO_inn"
+      , pfr as "JINR_FIZLITSO_pfr"
+      , strana as "JINR_FIZLITSO_strana"
+      , sex as "JINR_FIZLITSO_sex"
+      , vid_doc as "JINR_FIZLITSO_vid_doc"
+      , seria as "JINR_FIZLITSO_seria"
+      , nomer as "JINR_FIZLITSO_nomer"
+      , vidan as "JINR_FIZLITSO_vidan"
+      , kod_podrazd as "JINR_FIZLITSO_kod_podrazd"
+      , DATE_FORMAT(dat_vid,'#dateFormat#') as "JINR_FIZLITSO_dat_vid"
+      , DATE_FORMAT(dat_reg,'#dateFormat#') as "JINR_FIZLITSO_dat_reg"
+      , address as "JINR_FIZLITSO_address"
+    from #FIZLITSO_INFO_TABLE_NAME# 
+    where id = #record_id#
+    ;
+[end]
+
+??&record_id
+
+
+[old (full fields) report]  ++++ сейчас не используется
+    $GET_DATA [getFizlitsoDocData] ??DOC_TYPE_ID&doc_id
+    $GET_DATA [getFizlitsoInfoData] ??info_id&record_id
+    <table border=0>
+    <tr><td class="label">Фамилия:</td><td><input size=30 id="JINR_FIZLITSO_F" name="JINR_FIZLITSO_F" value="#JINR_FIZLITSO_F#" ></td></tr>
+    <tr><td class="label">Имя:</td><td><input size=30 id="JINR_FIZLITSO_I" name="JINR_FIZLITSO_I" value="#JINR_FIZLITSO_I#" ></td></tr>
+    <tr><td class="label">Отчество:</td><td><input size=30 id="JINR_FIZLITSO_O" name="JINR_FIZLITSO_O" value="#JINR_FIZLITSO_O#" ></td></tr>
+
+    <tr><td class="label">Дата рождения:</td><td><input id="JINR_FIZLITSO_dr" type="text" size=10 name="JINR_FIZLITSO_dr" value="#JINR_FIZLITSO_dr#"></td></tr>
+
+    <tr><td class="label">ИНН:</td><td><input size=12 id="JINR_FIZLITSO_inn" name="JINR_FIZLITSO_inn" value="#JINR_FIZLITSO_inn#" ></td></tr>
+    <tr><td class="label">ПФР:</td><td><input size=16 id="JINR_FIZLITSO_pfr" name="JINR_FIZLITSO_pfr" value="#JINR_FIZLITSO_pfr#" ></td></tr>
+
+    <tr><td class="label">Страна:</td><td><input size=30 id="JINR_FIZLITSO_strana" name="JINR_FIZLITSO_strana" value="#JINR_FIZLITSO_strana#" ></td></tr>
+
+    <tr><td class="label">Вид документа:</td><td><input size=30 id="JINR_FIZLITSO_vid_doc" name="JINR_FIZLITSO_vid_doc" value="#JINR_FIZLITSO_vid_doc#" ></td></tr>
+    <tr><td class="label">Серия:</td><td><input size=10 id="JINR_FIZLITSO_seria" name="JINR_FIZLITSO_seria" value="#JINR_FIZLITSO_seria#" >
+    Номер: <input size=20 id="JINR_FIZLITSO_nomer" name="JINR_FIZLITSO_nomer" value="#JINR_FIZLITSO_nomer#" ></td></tr>
+
+    <tr><td class="label">Кем выдан:</td><td><input size=55 id="JINR_FIZLITSO_vidan" name="JINR_FIZLITSO_vidan" value="#JINR_FIZLITSO_vidan#" ></td></tr>
+
+    <tr><td class="label">Код подразд.:</td><td><input size=16 id="JINR_FIZLITSO_kod_podrazd" name="JINR_FIZLITSO_kod_podrazd" value="#JINR_FIZLITSO_kod_podrazd#" >
+    Дата выдачи: <input id="JINR_FIZLITSO_dat_vid" type="text" size=10 name="JINR_FIZLITSO_dat_vid" value="#JINR_FIZLITSO_dat_vid#">
+    </td></tr>
+
+    <tr><td class="label">Дата регистрации:</td><td><input id="JINR_FIZLITSO_dat_reg" type="text" size=10 name="JINR_FIZLITSO_dat_reg" value="#JINR_FIZLITSO_dat_reg#"></td></tr>
+
+    <tr><td class="label">Адрес прописки:</td><td>
+    <textarea id="JINR_FIZLITSO_address" name="JINR_FIZLITSO_address" rows=3 style="width:400pt; height:30pt;" >#JINR_FIZLITSO_address#</textarea>
+    </td></tr>
+    </table>
+
+    <script type="text/javascript">
+     $("##JINR_FIZLITSO_dr").datepick({yearRange: 'c-9:c-0', showSpeed: 'fast'});
+     $("##JINR_FIZLITSO_dat_vid").datepick({yearRange: 'c-10:c-0', showSpeed: 'fast'}); 
+     $("##JINR_FIZLITSO_dat_reg").datepick({yearRange: 'c-9:c-0', showSpeed: 'fast'}); 
+    </script>
+[end]

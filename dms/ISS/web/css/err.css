@@ -1,0 +1,33 @@
+body {
+    margin:0;
+    padding:0;
+    background: #edebd5;
+    font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    color: #000;
+}
+#container {
+    width:400px; /*Ширина блока*/
+    height:200px; /*Высота блока*/
+    margin:0 auto;
+    overflow:visible;
+    position:absolute;
+    left:50%;
+    top:50%;
+    margin-left:-200px; /*Смещаем блок на половину всей ширины влево*/
+    margin-top:-100px; /*Смещаем блок на половину высоты вверх*/
+   
+}
+.main {
+    height:100%;
+}
+.main_in_main {
+    height:100%;
+}
+.content {
+    background: red;
+    color: white;
+    border-radius: 5px;
+    padding-top:0px;
+    height:200px;
+}

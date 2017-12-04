@@ -1,0 +1,20 @@
+body {margin:0; background-color: #F4FFF4;}
+
+.ztable {font-family: Arial, Helvetica, sans-serif; background-color: #F4FFF4; border: solid 1px #000000}
+.ztop {font-family: Arial, Helvetica, sans-serif; font-size: 12pt; font-weight: bold; color: #FFFFFF; background-color: #406050}
+.ztoptitle {font-family: Arial, Helvetica, sans-serif; font-size: 14pt; font-weight: bold; color: #FFFFFF; background-color: #406050}
+.ztitle {font-family: Arial, Helvetica, sans-serif; font-size: 16px; font-weight: bold; color: #FF9A31}
+.zdots {font-family: Arial, Helvetica, sans-serif; font-size: 16pt; font-weight: bold; color: #F0FFF0; background-color: #406050 }
+
+.tophref {font-family: Arial, Helvetica, sans-serif; font-weight: bold; color: #FFFFFF; text-decoration: underline}
+.topordot {vertical-align: bottom}
+.zmenu {  background-color: #99ccba}
+.butn {width:90; border-style: outset; cursor:hand; border-width:2px; background-color:#E0F0E0; border-color:#AAAAAA;}
+
+
+.oddrow {background-color: #F0F8FF;}
+.evenrow {background-color: #FFFFFF;}
+.headrow {background-color: whitesmoke;}
+.zmediumtext {font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-weight: bold;}
+.zmediumtextthin {font-family: Arial, Helvetica, sans-serif; font-size: 14px;}
+

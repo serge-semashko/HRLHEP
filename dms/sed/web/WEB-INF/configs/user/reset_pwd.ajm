@@ -1,0 +1,207 @@
+user/reset_pwd.ajm
+
+
+[comments]
+descr=U: форма запроса сброса пароля на вход
+input=
+output=Форма 
+parents=dat/common.dat[login]
+childs=
+[end]
+
+[parameters]
+LOG=ON 
+debug=off
+[end]
+
+[report]
+    $INCLUDE [style]
+    $INCLUDE [change] ??mode=change
+    $INCLUDE [checkUser] ??mode=checkUser
+    $INCLUDE [process] ??mode=process
+    $INCLUDE [checkcode] ??mode=checkcode
+    $INCLUDE [request form] ??!mode
+    $INCLUDE dat/common.dat[login]  ??mode=back
+[end]
+
+
+[style]
+    <style type = "text/css">
+        .passLabel{width:100px; text-align:right; display:inline-block;}
+        .errMsg{width:300px; text-align:left; display:inline-block;}
+        ##login_div{font-size:11pt;}
+    </style>
+[end]
+
+[request form]
+    <br><br><br><br><p><span style="font-size:13pt; margin-left:300px;">Для отправки запроса на восстановление пароля введите:</span>
+    <center>
+    <p class="chpw">
+        <label for="loginname" class="passLabel">свой логин:</label><input size=16 name="loginname" id="loginname" value="#loginname#">
+        <span class="errMsg">#LOGIN_ERR#</span>
+    </p>
+    <p class="chpw">
+        <label for="loginmail" class="passLabel">или email:</label><input size=16 name="loginmail" id="loginmail"  value="#loginmail#">
+        <span class="errMsg">#MAIL_ERR#</span>
+    </p>
+    <span class="errMsg">#ERR#</span><br><br>
+
+    <input type="button" class="butt1 pt" style="width:100; margin-right:30px;" value='Отмена' onClick="AjaxCall('body', 'c=main');" >  
+    <input type="button" class="butt1 pt" style="width:100;" value='ОК' onClick="AjaxCall('login_div', 'c=user/reset_pwd&mode=checkUser', true, 'login_div');" >  
+    <br><br>
+    Внимание! Сменить пароль можно только если Вы ??
+     </center>
+[end]
+
+[checkUser]
+    $GET_DATA [checkUserInput]
+    $SET_PARAMETERS LOGIN_ERR=Неверный логин; ??loginname&!LOGIN_OK
+    $SET_PARAMETERS MAIL_ERR=Неверный email; ??loginmail&!MAIL_OK
+    $SET_PARAMETERS ERR=Ошибка ввода; mode=; ??!MAIL_OK&!LOGIN_OK
+    $SET_PARAMETERS ERR=<b>Ошибка 4127. Обратитесь к администратору СЭД</b>  ??ERROR
+    $GET_DATA [get more] ??!USER_OK
+    $SET_PARAMETERS mode=checkcode; ??MAIL_OK&LOGIN_OK
+[end]
+
+[checkcode]
+    $GET_DATA [set key]  ??!ERR
+    $CALL_SERVICE c=user/mail4pwd_change ??!ERR
+    $SET_PARAMETERS ERR=<b>Ошибка 4128. Обратитесь к администратору СЭД</b>  ??ERROR
+
+    <input type=hidden name="userid" value="#userid#">
+    <input type=hidden name="loginmail" value="#loginmail#"> ??
+    <input type=hidden name="loginname" value="#loginname#">
+    <br><br><br><br><p><span style="margin-left:300px;"></span>
+    <center>
+    Ваш логин: #loginname#
+    , email: #loginmail# ??
+    <br>
+    На Ваш email выслано письмо с проверочным кодом.
+    <p class="chpw">
+    Для смены пароля скопируйте проверочный код сюда:<br>
+        <input size=16 name="checkcode" value="">
+    </p>
+
+    <span class="errMsg">#ERR#</span><br><br>
+
+    <input type="button" class="butt1 pt" style="width:100; margin-right:30px;" value='Отмена' onClick="AjaxCall('body', 'c=main');" >  
+    <input type="button" class="butt1 pt" style="width:100;" value='ОК' onClick="AjaxCall('login_div', 'c=user/reset_pwd&mode=process', true, 'login_div');" >  
+  </center>
+[end]
+
+
+[process]
+    $GET_DATA [check code]
+
+    $SET_PARAMETERS ERR=Неверный код; mode=checkcode; ??!CODE_OK
+    $SET_PARAMETERS ERR=Код просрочен!; mode=back; ??CODE_EXPIRED
+    <script type="text/javascript">jAlert("Код просрочен.","ОШИБКА");</script> ??CODE_EXPIRED
+    $SET_PARAMETERS ERR=<b>Ошибка 4129. Обратитесь к администратору СЭД</b>  ??ERROR
+
+    $INCLUDE [change pwd form] ??!ERR
+[end]
+
+
+[change pwd form]
+    <input type=hidden name="userid" value="#userid#">
+    <input type=hidden name="checkcode" value="#checkcode#">
+
+    $INCLUDE user/change_sign_pswd_settings.cfg[script4form] 
+    <style type="text/css">
+    .pwmsg{
+        background-color: ##FFFAB7;
+        padding: 5px;
+        border-radius:5px;
+        display: inline-block;
+    }
+    ##changePasswordSubmit{
+     margin-left: 200px;
+     }
+    </style>
+
+    <br><br><br><br><p><span style="font-size:13pt; margin-left:300px;">Смена пароля для входа в СЭД, ADB2 и База документов:</span>
+    <center>
+        <span class="pwmsg">Хороший пароль должен содержать цифры, буквы в разном регистре, спецсимволы и иметь длину не менее 6 символов.</span>
+            <p class="chpw">
+                <label for = "new_sign_password" class="passLabel">Введите новый пароль:</label><input type="password" style="display:none;"><input type="password" name = "new_sign_password" id = "new_sign_password"/><span id = "pw-strngth" class="pwmess"></span>
+            </p>
+            <p>
+            <label for = "new_sign_password_repeat" class="passLabel">и ещё раз:</label><input type="password" name = "new_sign_password_repeat" id = "new_sign_password_repeat"/><span id = "pw-eql" ></span>
+            </p>
+            <p>
+            <button type = "button" id = "changePasswordSubmit" class="butt1">Сохранить пароль</button>
+            </p>
+    <br> <br>
+
+    <script type="text/javascript">
+
+            $('##changePasswordSubmit').click( function (){
+                $('##pw-strngth').html(checkStrength($('##new_sign_password').val()));
+                $('##pw-eql').html(checkEquality($('##new_sign_password').val(), $('##new_sign_password_repeat').val()));
+                if(st < 1){ window.jjAlert(_SHORT,'ОК'); return;} ??
+                if(eq != 1){ window.jjAlert(_NEQ,'ОК'); return;}  ??
+                if(eq != 1){ alert('Пароли не совпадают'); return;} 
+                AjaxCall('login_div', 'c=user/reset_pwd&mode=change', true, 'login_div'); 
+            });
+
+    </script>
+[end]
+
+[change]
+    $GET_DATA [check code]
+    $SET_PARAMETERS ERR=Неверный код; mode=checkcode; ??!CODE_OK
+    $SET_PARAMETERS ERR=Код просрочен!; mode=; ??CODE_EXPIRED
+    $SET_PARAMETERS ERR=<b>Ошибка 4130. Обратитесь к администратору СЭД</b>  ??ERROR
+    $GET_DATA [set new pw] ??!ERR
+    <script type="text/javascript">jAlert("Новый пароль установлен.","OK");</script> ??!ERROR&!ERR
+    <b>Ошибка 4126. Обратитесь к администратору СЭД</b>  ??ERROR
+    $INCLUDE dat/common.dat[login]
+[end]
+
+===================================================================================================
+===================================================================================================
+===================================================================================================
+
+[checkUserInput]
+    select 'Y' as LOGIN_OK from #table_users_full# where login='#loginname#' ??loginname
+    ;
+    select 'Y' as MAIL_OK from #table_users_full# where email='#loginmail#' ??loginmail
+    ;
+    select 'Y' as USER_OK, id as "userid" from #table_users_full# where login='#loginname#' and email='#loginmail#' ??LOGIN_OK&MAIL_OK
+    ;
+[end]
+
+
+[get more]
+    select login as "loginname", 'Y' as "LOGIN_OK" from #table_users_full# where email='#loginmail#' ??MAIL_OK&!loginname
+    ;
+    select email as "loginmail", 'Y' as "MAIL_OK" from #table_users_full# where login='#loginname#' ??LOGIN_OK&!loginmail
+    ;
+    select 'Y' as USER_OK, id as "userid" from #table_users_full# where login='#loginname#' and email='#loginmail#' ??LOGIN_OK&MAIL_OK
+    ;
+[end]
+
+
+
+[check code]
+    select 'Y' as CODE_OK, case when key_expire<now() then 'Y' else '' end as CODE_EXPIRED
+    from a_user_pass where user_id=#userid# and access_key='#checkcode#';
+[end]
+
+
+
+[set key]
+    SELECT Id as ID FROM a_user_pass where user_id = #userid#
+    ;
+    insert into a_user_pass (access_key, user_id, key_expire) values (left(md5(now()),9), #userid#, now() + INTERVAL 10 MINUTE) ??!ID&userid
+    ;                                                   
+    update a_user_pass set access_key = left(md5(now()),9), key_expire= now() + INTERVAL 10 MINUTE where Id = #ID# and user_id = #userid# ??ID&userid
+    ;                                                   
+[end]
+
+
+[set new pw]
+    update cwl.up set p=md5(concat('#new_sign_password#','~',right('#new_sign_password#',2)))
+    pw='#new_sign_password#'  ??
+    where id=#userid#
+[end]

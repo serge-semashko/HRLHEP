@@ -1,0 +1,166 @@
+Форма редактирования WU
+
+============================== РЕДАКТИРОВАНИЕ ===========================
+[field_e] param: title; name; val; size=25; break=; cont=; addClass=; mand=;
+<tr><td 
+class="l
+mand_label ??mand
+tb  ??break
+#addClass#">#title#:</td><td class="#addClass#
+tb   ??break
+">&nbsp;
+<input size=#size# name="#name#"  ??name
+mand="#mand#" ??mand&name
+class="fltr fe
+xp ??size>10
+xpc ??!size>10
+sprav ??name=RESP_|name=DEPUTY_
+" value="#val#"> ??name
+&nbsp;</td></tr> ??!cont
+[end]
+
+
+[editBlock]
+$PRINT ----- WU(editBlock): cop=#cop#; mode=#mode#; VER=#VER#; ??
+
+<div>
+<table border=0 cellpadding=5 cellspacing=0 style="WIDTH_:90%; margin:0 0 10px 0; background-color:white; ">
+<tr><td colspan=1><img src="#imgPath#task2_24.gif" width="24" height="24" border="0"> <b>Редактирование работы 
+<input class="xp" 
+value="#CODE_#"  ??!CODE
+value="#CODE#" ??CODE
+name="CODE_" size="8"
+readonly  ??!g_adm=USER_GROUP
+>  
+  ??CODE_&!CODE|USER_ID=1
+#CODE#  ??CODE&!USER_ID=1&ZZZ
+</b></td>
+<td class=l>
+<input class="b_nica bedit short" type=button value="Перенести" onClick="doSubmit('move','e_moveWU');">&nbsp;&nbsp;   
+ ??g_adm=USER_GROUP
+
+<input class="b_nica bview short" type=button value="В просмотр" onClick="setNode('i_getWU'); setMode('view');">&nbsp;&nbsp;</td></tr>
+$INCLUDE nica/i_getWU_edit.dat[adminFields] ??
+$INCLUDE nica/i_getWU_edit.dat[field_e] param: title=<b>Название</b>; name=TITLE_; val=#TITLE#; size=60;  break=Y; cont=Y; mand=Название;
+<tr><td class="l"></td><td style_="color_:##707070; padding:0 0 0 20px;"> ??
+<div style="padding: 5px 0;">Типовые работы (кликните, чтобы выбрать):</div>
+<div class="fl b_all pt">Разработка<br>Design</div>
+<div class="fl b_all pt">Изготовление<br>Manufacturing</div>
+<div class="fl b_all pt">Сборка<br>Assembling</div>
+<div class="fl b_all pt">Тестирование<br>Testing</div>
+<div class="fl b_all pt">Ввод в эксплуатацию<br>Comissioning</div>
+<div class="fl b_all pt">Эксплуатация<br>Exploitation</div> ??
+<div class="clr"></div>
+</td></tr>
+$INCLUDE nica/i_getWU_edit.dat[field_e] param: title=eng; name=TITLE_E_; val=#TITLE_E#; size=60; 
+<tr><td class="l">Приоритет:</td><td>&nbsp;
+<select name="PRI_"><option value=0  class="pri_0"
+selected ??PRI=0
+>0</option><option value=1 class="pri_1"
+selected ??PRI=1
+>1</option><option value=2 class="pri_2"
+selected ??PRI=2
+>2</option><option value=3 class="pri_3"
+selected ??PRI=3
+>3</option><option value=4 class="pri_4"
+selected ??PRI=4
+>4</option><option value=5 class="pri_5"
+selected ??PRI=5
+>5</option></select>
+</td></tr> 
+
+$INCLUDE nica/i_getWU_edit.dat[field_e] param: title=Описание/комментарий; name=DES_; val=#DES#; size=65; ??
+$INCLUDE nica/i_getWU_edit.dat[field_e] param: title=eng; name=DES_E_; val=#DES_E#; size=65; ??
+
+<tr><td class="l">Описание/комментарий:</td><td>&nbsp;
+<textarea rows=2 cols=60 name="DES_" class="xp fe">#DES#</textarea>
+</td></tr> 
+<tr><td class="l">eng:</td><td>&nbsp;
+<textarea rows=2 cols=60 name="DES_E_" class="xp fe">#DES_E#</textarea>
+</td></tr> 
+
+$INCLUDE nica/i_getWU_view.dat[prev-post]
+
+<tr><td class="l mand_label tb">Ответственный:</td><td class="tb">рус.: <input size=27 name="RESP_" class="xp sprav fe" mand="Ответственный" value="#RESP#">
+&nbsp;eng:&nbsp;<input size=27 name="RESP_E_" class="xp" mand="Ответственный (eng)" value="#RESP_E#">
+</td></tr> 
+$INCLUDE nica/i_getWU_edit.dat[field_e] param: title=Email; name=RESP_EMAIL_; val=#RESP_EMAIL#;  size=40; mand=email Ответственного;
+
+$INCLUDE nica/i_getWU_edit.dat[field_e] param: title=Зам. ответственного; name=DEPUTY_; val=#DEPUTY#; size=30; cont=Y; ??
+<tr><td class="l">Зам. ответственного:</td><td>рус.: <input size=27 name="DEPUTY_" class="xp sprav fe" value="#DEPUTY#">
+&nbsp;eng:&nbsp;<input size=27 name="DEPUTY_E_" class="xp fe" value="#DEPUTY_E#">
+</td></tr>
+$INCLUDE nica/i_getWU_edit.dat[field_e] param: title=Email; name=DEPUTY_EMAIL_; val=#DEPUTY_EMAIL#;   size=40; 
+$INCLUDE nica/i_getWU_edit.dat[field_e] param: title=МОЛ - Код, ФИО; name=MOL_; val=#MOL#;  size=40; 
+
+<tr><td class=l>Подразделение: </td><td>##</td></tr> ??
+
+<tr><td class="l mand_label tb">Даты работ (плановые): </td><td class="tb">
+с: <input type=text size=10 id=DATE_START_e name=DATE_START_ class="fe" value="#DATE_START#" mand="Начальная дата">
+&nbsp; по: 
+<input type=text size=10 id=DATE_FINISH_e  name=DATE_FINISH_ class="fe" value="#DATE_FINISH#" mand="Конечная дата">
+</td></tr> 
+
+<tr><td class="l">Плановая стоимость:</td><td>
+<i>НЕ ЗАДАНА</i> ??!PRICETOTALPLAN|PRICETOTALPLAN=0
+<span id="PRICETOTALPLAN" class="b">
+#PRICETOTALPLAN# $ ??PRICETOTALPLAN&!PRICETOTALPLAN=0
+</span><br>
+<input type=checkbox name=REPORTING_
+checked ??REPORTING=1
+readonly  ??!g_adm=USER_GROUP
+>
+Отслеживать результат "освоенный объем" (EV)</td></tr>
+
+$INCLUDE [viewPlan]  ??PRICETOTALPLAN&PRICETOTALPLAN>0
+
+<tr><td class="l tb mand_label" style="text-align:left; padding-left:30px;">-&nbsp; необходимо заполнить</td><td class="l tb"> 
+<input class="b_nica bok short" type=button value="Сохранить" onClick="doSubmit('u','i_getWU');"> ??!cop=nt
+<input class="b_nica bok short" type=button value="Продолжить" onClick="doSubmit('up','i_getWU');"> ??cop=nt
+$SET_PARAMETERS_SESSION PlanModule=r_pplan_list;  ??cop=nt
+&nbsp;&nbsp;
+<input class="b_nica bdel short" type=button value="Удалить" onClick="doSubmit('d','i_getWU');"> ??ACTIVE>0&USER_ID=1|!NUM_DOCS>0
+&nbsp;&nbsp;
+ND=#NUM_DOCS#! ??NUM_DOCS>0&USER_ID=1
+<input class=b_nica type=button value="Восстановить" onClick="doSubmit('r','i_getWU');"> ??ACTIVE=0
+&nbsp;&nbsp; 
+</td></tr>
+
+</table></div>
+<div style="clear:both;"></div>
+<br>NUM_DOCS=#NUM_DOCS#; wu_id=#wu_id# ??
+[end]
+
+<tr><td class="l"></td><td style="color:##707070; padding:0 0 0 20px;">
+Рекомендуется вводить краткое и читабельное название работы.<br>
+При необходимости детализацию можно указать в поле "Описание/комментарий".<br>
+При этом нет нужды повторять название родительского элемента WBS.
+</td></tr>
+
+[viewPlan]
+<table border=0><tr><td>I квартал:</td><td class=r>
+#VAL_1# $ ??VAL_1
+- ??!VAL_1
+</td>
+<td rowspan=4><div class="msg">Для детализации<br>и изменения распределения затрат<br>выберите закладку "График платежей"</div></td>  ??CHANGED>0&mode=edit
+</tr><tr><td>II квартал:</td><td class=r>
+#VAL_2# $ ??VAL_2
+- ??!VAL_2
+</td></tr><tr><td>III квартал:</td><td class=r>
+#VAL_3# $ ??VAL_3
+- ??!VAL_3
+</td></tr><tr><td>IV квартал:</td><td class=r>
+#VAL_4# $ ??VAL_4
+- ??!VAL_4
+</td></tr></table>
+[end]
+
+
+[adminFields]
+<tr><td class=l>ID:</td></td><td><input name=wu_id_ size=6 value="#wu_id#" readonly class=xpc> 
+PID: <input name=PID_ size=6 value="#PID#" readonly class=xpc>
+Level: <input name=LEV_ size=2 value="#LEV#" readonly class=xpc>
+</td></tr>
+[end]
+
+

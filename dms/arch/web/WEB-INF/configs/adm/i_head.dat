@@ -1,0 +1,283 @@
+[head]
+<link rel="stylesheet" href="#adbApplicationURL#/adb/js/adb.css" type="text/css"> 
+
+<link rel="stylesheet" href="#adbApplicationURL#/adb/js/jquery.treeview.css" />
+<link rel="stylesheet" href="#adbApplicationURL#/adb/js/jquery-ui-1.10.1.css" />
+
+<script language="JavaScript" src="#jsPath#calendar.js"></script>
+<SCRIPT language=JavaScript src="#jsPath#cal2.js"></SCRIPT>
+<script type="text/javascript" src="#adbApplicationURL#/adb/js/lib.js"></script>
+<script type="text/javascript" src="#adbApplicationURL#/adb/js/jquery-1.9.1.min.js"></script>
+<script src="#adbApplicationURL#/adb/js/jquery.cookie.js" type="text/javascript"></script>
+<script src="#adbApplicationURL#/adb/js/jquery-ui-1.10.1.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="#adbApplicationURL#/adb/js/jquery-migrate-1.1.1.min.js"></script>
+
+<style type="text/css">
+.moreDistr {display:none;} ??
+
+body {background-color: ##F4FFF4; margin:0;}
+form {margin:0; padding:0;}
+
+----------------- Êíîïêè ------------ ??
+.bok {padding:0 5px 0 20px; background: url(#adbApplicationURL#/adb/images/ok_16.png) no-repeat 6px center ; }
+.bdel {padding:0 5px 0 22px; background: url(#adbApplicationURL#/adb/images/del_16.png) no-repeat 6px center ; }
+.badd {padding:0 5px 0 22px; background: url(#adbApplicationURL#/adb/images/add_16.gif) no-repeat 6px center ; }
+.bwu {padding:0 5px 0 22px; background: url(#adbApplicationURL#/adb/images/task1_16.gif) no-repeat 6px center ; }
+.bwbs {padding:0 5px 0 22px; background: url(#adbApplicationURL#/adb/images/list1_16_.gif) no-repeat 7px center;}
+.bview {padding:0 5px 0 22px; background: url(#adbApplicationURL#/adb/images/view_16_.gif) no-repeat 7px center;}
+.bedit {padding:0 5px 0 24px; background: url(#adbApplicationURL#/adb/images/edit_16.gif) no-repeat 7px center;}
+.bcancel {padding:0 5px 0 24px; background: url(#adbApplicationURL#/adb/images/cancel_16.gif) no-repeat 7px center;}
+.brefresh {padding:0 5px 0 22px; background: url(#adbApplicationURL#/adb/images/refresh_16.gif) no-repeat 7px center;}
+button {background-color: ##e0e0e0;}
+.b_nica {background-color: ##e0e0e0; color:##000080; margin-left:6px; border:outset 1px ##aaaaaa; height:22px; cursor:pointer; border-radius: 12px;}
+.b_nica.short {width:110px;}
+.b_nica.long {width:155px;}
+.b_nica.long2 {width:190px;}
+
+.btn {cursor:pointer; margin:0; vertical-align:top;}
+.ba {background-color:##ffffff; }
+
+
+----------------- Îò÷åòû ------------ ??
+table.tlist {background-color: ##ffffff; border:solid 1px gray; margin:10px 0 10px 0;}
+table.tlist th, table.tlist td {border-right:solid 1px ##b0b0b0; border-bottom:solid 1px ##b0b0b0; padding:1px;} 
+table.tlist td {text-align:right;} 
+table.tlist td.align_left {text-align: left;}
+table.tlist td.align_center {text-align: center;}
+table.tlist th {padding-left:6px; padding-right:12px; background-color:##F0F8Ff;
+	FONT-SIZE: 11px; font-weight: bold; color: ##000080;}
+table.tlist th.srh {cursor:pointer;} 
+table.tlist th.aa {background-color:##FFFFa0; }
+.oddRow {background-color:##E0f0ff; }
+
+td {vertical-align:top;}
+th.sup {background: ##F0F8FF url(#adbApplicationURL#/adb/images/sortUp.gif) no-repeat right bottom ; }
+th.sdown {background: ##F0F8FF url(#adbApplicationURL#/adb/images/sortDown.gif) no-repeat right bottom ; }
+
+table.tfiltr {display:block; border:solid 1px gray; border-top:none; margin:0 0 0px 0; background-color:white;
+border-bottom-right-radius: 4px; border-bottom-left-radius: 4px;} 
+table.tfiltr_wrapper {border:none 1px gray; box-shadow: 3px 3px 4px 0 rgba(0, 0, 0, 0.3);}
+
+##docs_table table, ##totalTable table {border:solid 1px ##808080; background-color:white;}
+##docs_table td {font-size:11px; border-right:solid 1px ##a0a0a0; border-bottom:solid 1px ##a0a0a0;}
+##totalTable td ??
+##totalTable td, ##totalTable th {font-size:13px; border:none; padding:2px 2px 2px 2px;}
+
+.filter {color: ##000080; cursor:pointer;}
+
+.PAST {background-color: ##e0e0e0;}
+.CURRENT {background-color: ##b0FFb0;}
+.FUTURE  {background-color: ##c0e0FF;}
+
+img.up {width:9px; height:16px; margin-bottom:5px; }
+img.down {width:9px; height:16px; margin-top:5px; }
+--------------- TREE & NAV ------------------------??
+.aa {background-color:##FFFFa0; }
+.aaa {background-color:##FFFFb0; }
+
+ul {text-align: left;}
+
+.child {background-color:##FFFFFF; color: ##000080; cursor:pointer;}
+
+fieldset {border:solid 1px ##AAAAAA; background-color:white; color: ##000080; 
+FONT-FAMILY: Verdana, Arial, sans-serif; border-radius: 4px;}
+legend {background-color:white; border:solid 1px ##808080; font-style:italic;}
+
+.ppath { cursor:pointer;  color: ##000080; FONT-SIZE: 10px; color: #0000B0; FONT-FAMILY: Verdana, Arial, sans-serif; }
+.pp0 {display:inline;}
+.pp1 {margin:0 0 0 10px;}
+.pp2 {margin:0 0 0 30px;}
+.pp3 {margin:0 0 0 50px;}
+.pp4 {margin:0 0 0 70px;}
+
+--------------- UI - TABS ------------------------??
+
+.cont {background-color: whitesmoke; 
+border:solid 1px ##AAAAAA; margin:0 0 0 2px; padding:5px;
+border-top:solid 1px gray; border-top-right-radius: 6px;  border-bottom-right-radius: 6px; border-bottom-left-radius: 6px;
+} 
+
+##dt_struct {border-top:solid 1px gray;} ??
+	
+.ui-state-default, .ui-state-active,
+.ui-widget-content .ui-state-default,
+.ui-widget-header .ui-state-default {
+border: 1px solid ##b0b0b0; border-right: 1px solid ##808080; color: ##000000;} 
+
+.ui-tabs .ui-tabs-nav li a, /* first selector in group seems obsolete, but required to overcome bug in Opera applying cursor: text overall if defined elsewhere... */
+.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-active a {FONT-SIZE:14px;	padding:3px 10px 3px 10px; }
+.ui-tabs .ui-tabs-panel { padding:0;}
+
+.ui-widget-content .ui-state-active,
+.ui-widget-header .ui-state-active { background: whitesmoke;	
+border: 1px solid white;	??
+font-weight: normal;	color: #212121;}
+
+.ui-state-hover,
+.ui-widget-content .ui-state-hover,
+.ui-widget-header .ui-state-hover{
+	border: 1px solid #999999;
+background: ##ffffff url(#adbApplicationURL#/adb/js/images/ui-bg_glass_65_ffffff_1x400.png) 50% 50% repeat-x;
+	background: #dadada url(#adbApplicationURL#/adb/js/images/ui-bg_glass_75_dadada_1x400.png) 50% 50% repeat-x; ?? 
+	font-weight: normal; ??
+	color: ##212121; ??
+}
+.ui-helper-reset {line-height: 1;}
+
+##tabs {background: none; border:none; margin:-25px 4px 0 0px;}
+##ltabs {background: none; border:none; margin:0;}
+
+
+--------------- UI - Datepick ------------------------??
+.datepick-ctrl {background-color: ##444444;}
+.datepick-month td .datepick-highlight {background-color: ##ffffff;} ??
+.datepick a {font-size:14px;} 
+.datepick-cmd {	font-size:10px;} ??
+a.datepick-cmd {	font-size: 11px;}
+.datepick-month-header select, .datepick-month-header input {
+	font-size: 12px;
+}
+
+
+================== POP-UP DIALOG =====================?? 
+.dialog_overlay {position: absolute; top: 0; right: 0; bottom: 0; left: 0;
+		height: 100%; width: 100%;
+		margin: 0; padding: 0; background: ##000000;
+		opacity: .35; filter: alpha(opacity=35);
+    -moz-opacity: .35; z-index: 101;
+		display: none;
+}
+
+.dialog table {width: 99.5%; background-color_:whitesmoke; margin-left:2px;} ??
+.dialog table {width: 100%;}
+
+.dialog {display: none; position: absolute; width: 60%; height_: 200px;
+top: 30%; left: 20%; padding: 1px;
+background-color: ##ffffff; ??
+background-color:whitesmoke;
+border: 1px solid #336699; 
+border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;
+z-index: 102; font-family: Verdana; font-size: 10pt;
+}
+
+.dialog_title { border-bottom: solid 2px ##336699; 
+background: ##336699 url(#adbApplicationURL#/adb/images/head_bg.png) repeat-y right top ; 
+padding: 2px 2px 0px 8px; color: white; font-weight:bold;
+}
+.dialog_title a {color: white; text-decoration: none;} ??
+
+table.brothers {width: 100%; border:solid 1px ##336699; margin:0 0 10px 0;}
+table.brothers td {vertical-align:top; border-top:solid 1px ##a0a0a0; padding:0 5px 0 5px;}
+table.brothers th {background-color: ##ffffff;}
+
+--------------------- INLINE DIALOG -----------------------??
+td.title {padding:2px; font-weight:bold; color:white; cursor:pointer;
+border:solid 1px gray;
+background: ##F0F8FF url(#adbApplicationURL#/adb/images/head_bg.png) repeat-y right top ; }
+
+--------------- GENERAL ------------------------??
+.ttc { display: none; position: absolute; 
+  padding: 6px; border: 1px solid gray; border-radius: 6px;
+  background-color: white;	box-shadow: 2px 2px 4px 0 rgba(0, 0, 0, 0.3);
+}
+
+.align_left {text-align: left;}
+.align_right {text-align: right;}
+.align_center {text-align: center;}
+.hid {display:none;}
+.dlg {text-align:center; font-size:13px; font-weight:bold;}
+.ui-dialog-buttonpane button {color:##000080; border-radius: 12px;}
+.ui-button-text-only .ui-button-text {padding: 0.2m 1em;}
+.fl {float:left;}
+.clr {clear:both;}
+.mand_label {font-weight:bold; background: url(#adbApplicationURL#/adb/images/red_star_14.gif) no-repeat 10px top ; }
+
+.b {font-weight:bold;} 
+.f12 {font-size:12px;}
+.pt {cursor:pointer; padding:3px;}
+.b_all {border:solid 1px ##AAAAAA;}
+.tb {border-top:solid 1px ##AAAAAA;}
+.nb {border-left:none; border-right:none; border-top:none; border-bottom:none;}
+.sm {font-size:10px;}
+##sm {font-size:10px;}
+.wu {color: ##000080; cursor:pointer;}
+.wt {background-color:white;}
+.black {color: black;}
+.msg {background-color: ##ffffff; border:solid 1px gray; margin:5px; padding:10px; font-size:12px;
+	box-shadow: 2px 2px 4px 0 rgba(0, 0, 0, 0.3);
+	border-radius: 6px;}
+
+================ NEW ================ ??	
+
+.total_label{font-weight:bold; text-align:right;}
+</style>
+
+<script type="text/javascript">
+var sel = function(ev) {
+	if(ev.type == "mouseover") $(this).addClass("aa");
+	else if(ev.type == "mouseout")	$(this).removeClass("aa");
+	return true;
+}
+
+var sel_b = function(ev) {
+	if(ev.type == "mouseover") $(ev.target).addClass("ba");
+	else if(ev.type == "mouseout") $(ev.target).removeClass("ba");
+	return false;
+}
+
+
+var setSrt = function(ev) {
+	var s_new = $(this).attr("sr");
+	if(s_new) {
+		var s_old = document.theForm.srt.value;
+		if (s_new == s_old)
+		{ if(document.theForm.desc.value == 'desc') document.theForm.desc.value = '';
+			else document.theForm.desc.value = 'desc';
+		}
+		else
+			document.theForm.srt.value = s_new;
+	}
+	doSubmit("", "");
+	return false;
+}
+
+var setFilter = function(ev) {
+	var filter = $(this).attr("f");
+	var val =  $(this).attr("val");
+	alert(filter + " / " + val); ??
+	if(filter && val) {
+		var v = "document.theForm." + filter + ".value=" + val; ??
+		alert(v); ??
+		eval(v); ??
+		eval("document.theForm." + filter + ".value='" + val + "'");
+	doSubmit("", "");
+	}
+	return false;
+}
+
+var showLoading=function(targetDiv)
+{
+	$("##" + targetDiv).html($("##loadingMsg").html() ); 
+}
+
+var doSubmit=function(cop, modul)
+{
+	alert(1); ??
+	showLoading("cont");
+	document.theForm.submit();
+	return false;
+}
+
+var showSrt = function(srt, cl) {$("th[sr='" + srt + "']").addClass(cl); }
+
+var bindEvents=function()
+{
+	$('.srh, .filter').mouseout(sel);
+	$('.srh, .filter').mouseover(sel);
+	$('.srh').click(setSrt);
+	$('.filter').click(setFilter);
+	$('.b_nica').on({"mouseout" : sel_b, "mouseover" : sel_b});
+
+}
+</script>
+[end]

@@ -1,0 +1,121 @@
+zk_protokols.ajm
+
+
+JINR/reports/czk_docs_table.ajm
+
+[comments]
+descr=U: Модуль вывода списка заявок для ЦЗК (вывод самой таблицы)
+
+input=
+output=HTML таблица документов
+parents=reports/czk_docs
+childs=docs/view_doc
+testURL=?c=reports/czk_docs_table
+author=Куняев
+[end]
+
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=U:Таблица протоколов ЦЗК
+LOG=ON 
+tableCfg=table_no
+[end]
+
+
+[report header]
+$INCLUDE dat/common.dat[check login]
+$INCLUDE [OK report header]  ??USER_ID>0|USER_ID<0
+[end]
+
+
+[OK report header]
+$SET_PARAMETERS srn=1; rpp=9999; 
+<table class="tlist tblue" cellspacing=0>
+<tr>
+<th> </th>
+<th>Протокол №</th>
+<th>Создан</th>
+
+<th>Заявка №</th><th>Содержание</th>
+<th>Подразд.</th>
+</tr>
+$SET_PARAMETERS PREV_CZK_DAT=.;
+[end]
+
+
+[item]
+    $SET_PARAMETERS past=(назначенная дата заседания прошла); ??DDD=2
+    <tr><td colspan=8 class="divider"></td></tr>  ??DDD=2&!PREV_CZK_DAT=#CZK_DAT#&CZK_DAT
+    <tr><td colspan=8 class="divider subhead"><b>#CZK_DAT# #past#:</b></td></tr>  ??!PREV_CZK_DAT=#CZK_DAT#&CZK_DAT
+    <tr><td colspan=8 class="divider"></td></tr><tr><td colspan=7 class="divider subhead"><b>Дата не назначена:</b></td></tr>  ??!CZK_DAT&PREV_CZK_DAT
+    ++++++++++++++++++ Строка таблицы - 1 документ +++++++++++++++++++++ ??
+    <tr class="pt
+    oddRow ??oddRow=1
+    " onClick="$('##doc_overlay').show(); AjaxCall('doc_content', 'c=docs/view_doc&doc_id=#ID#&mode=popup', true);">
+
+        $INCLUDE tab_myDocs[linkedMark]
+        <td>
+            #NUMBER#&nbsp;от&nbsp;#PROT_DAT#  ??NUMBER|PROT_DAT
+            -  ??!NUMBER&!PROT_DAT
+        </td> 
+        <td>#CREATED#, #CREATOR#</td> 
+        <td>#REQ_NUMBER#&nbsp;от&nbsp;#REQ_DAT#</td> 
+        <td>#TITLE#</td>
+        <td>#DIVS#</td>
+    </tr>
+    $INCLUDE tab_myDocs.cfg[linkedData] ??!img=none
+    $SET_PARAMETERS PREV_CZK_DAT=#CZK_DAT#;
+[end]
+
+
+[report footer]
+<tr><td colspan=7 class="divider"></td></tr>
+</table>
+<br>&nbsp;
+
+[end]
+
+***************************** Шаблон SQL запроса ***************************
+
+[SQL]
+select
+    dh.ID, dh.NUMBER, DATE_FORMAT(dh.doc_date,'#dateFormat#') as "PROT_DAT"
+    , dh.TITLE, dh.STATUS, dh.DIVS
+    , dh.pid, dh.num_children
+
+    ,dhp.NUMBER as "REQ_NUMBER", DATE_FORMAT(dhp.doc_date,'#dateFormat#') as "REQ_DAT"
+
+    , DATE_FORMAT(dat.czk_dat,'#dateFormat#') as "CZK_DAT", if(dat.czk_dat is null, 1, if(dat.czk_dat < date_sub(now(), interval 1 day), 2, 0)) as DDD
+
+    , dat.manufacturer as "POSTAV"
+
+    , DATE_FORMAT(dh.created,'#dateFormat#') as CREATED 
+    , dh.creator_id
+    , concat(ucr.F, ' ', left(IFNULL(ucr.I,''),1), '.', left(IFNULL(ucr.O,''),1),'.') as CREATOR
+    , DATE_FORMAT(dh.modified,'#dateFormat#') as MODIFIED
+    , dh.modifier_id 
+    , concat(umr.F, ' ', left(IFNULL(umr.I,''),1), '.', left(IFNULL(umr.O,''),1),'.') as MODIFIER
+
+from d_list dh
+    join d_list dhp on dhp.id=dh.pid
+    left join d_data_1 dat on dat.doc_id=dhp.id
+    
+    left join #table_users_full# ucr on ucr.id=dh.creator_id 
+left join #table_users_full# umr on umr.id=dh.modifier_id 
+    join d_divs dd on (dd.doc_id=dh.id and dd.div_id=#f_div_id#) ??f_div_id
+
+where dh.TYPE_ID = 13
+    and dh.is_deleted=0 
+    and dh.status<3
+    and dat.final_decision=3
+
+order by DDD, dat.czk_dat
+    , case when dat.czk_nr is null or length(dat.czk_nr)=0 then 'zzz' when length(dat.czk_nr)>1 then concat('z',dat.czk_nr) else dat.czk_nr end 
+    , dat.summa_usd desc
+[end]
+
+
+
+if(dat.czk_dat is null, 1, if(dat.czk_dat < date_sub(now(), interval 1 day), 2, 0))
+

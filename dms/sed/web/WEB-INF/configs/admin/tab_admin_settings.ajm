@@ -1,0 +1,17 @@
+[parameters]
+debug=off
+[end]
+
+
+[report]
+#c# ??debug=on
+<center><br><br>
+<h4>Системные настройки</h4>
+<br><br>(НЕ РЕАЛИЗОВАНО)</center></div>
+<br><br><br><br>
+</center>
+[end]
+
+
+[preSQLs]
+[end]

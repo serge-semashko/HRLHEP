@@ -1,0 +1,129 @@
+dat/doc_fields_info.dat
+
+================ тип поля "Справочник" - 4 ================= ??
+
+[info]
+    $SET_PARAMETERS item_id_param=#FIELD_DB_NAME#_id
+    $SET_PARAMETERS text_val=^#FIELD_DB_NAME#; val_id=^#item_id_param#;
+    $GET_DATA dat/doc_fields_info.dat[get info type] ??INFO_VIEW
+    $INCLUDE dat/doc_fields_info.dat[info_single] ??MULTI=0|!MULTI
+[end]
+
+[static text] ===== 1 - Статический текст ===
+^#FIELD_DB_NAME# 
+[end]
+
+[get info type]
+    select view, MULTI, editable  from infos_views where id=#INFO_VIEW#
+[end]
+
+[info_single] ***** выпадающий список, одиночный выбор (простой drop-down)
+       editable=1 - возможность вводить новые значения (текст, без ID) ??
+      $SET_PARAMETERS editable=1; ??for_debug
+
+    <input type=hidden id="#FIELD_DB_NAME#_id" name="#FIELD_DB_NAME#_id" size=4 value="#val_id#" >
+    <input type=hidden value="#text_val#" ??!editable=1
+    <textarea style="width:#LX#pt; height:#LY#pt;" ??editable=1
+    id="#FIELD_DB_NAME#_text" name="#FIELD_DB_NAME#">
+    #text_val# </textarea>  ??editable=1
+
+    <span id="#FIELD_DB_NAME#_list" class="info-single"
+    style="display:none;" ??editable=1
+    >
+    $INCLUDE dat/doc_fields_info.dat[info_single_selected_value]   ??text_val
+    </span>
+
+    <span class="info_input big" id="#FIELD_DB_NAME#" style="width:100px; height:22px;"
+    info_id="#INFO_ID#" info_view="#INFO_VIEW#" info_type="#INFO_TYPE#"  mand="#mand#" multi=0
+    searchFor='none' ??!val_id
+    searchFor='#val_id#'  ??val_id
+    >выбрать </span> 
+
+    <font color=red>НЕ ЗАБЫТЬ УКАЗАТЬ СТАТЬЮ БЮДЖЕТА!</font> (для бюджетных источников)   ??editable=1&DOC_TYPE_ID=6&INFO_VIEW=7
+[end]
+
+[info_single_selected_value]
+    <ul class="p0"><li class="nobull">#text_val#
+        <a class="delcross" title="Удалить" onclick="delSelectedInfoItemFromChoice(this)" delfromtext="#FIELD_DB_NAME#_text" delval="#val_id#" delfrom="#FIELD_DB_NAME#_id">X</a>
+    </li></ul>
+[end]
+
+
+
+[set chosens]
+<script type="text/javascript">
+    if(window.jQuery){
+        $(function(){
+console.log("SET CHOOSEN");
+            $('.field_chosen').chosen();
+            $('.field_chosen').change(
+            function(event,params){
+                var target = $(event.target).attr("for");
+                var targetid  = target+'_id';
+                var vals = '' , textvals = '' , selcnt=$('##'+target+'_chosen option:selected').size();
+console.log("CHOOSEN target=" + target + "; selcnt=" + selcnt);
+                for( i = 0;  i <  selcnt ; i++ ){
+                    var optionval = $('##'+target+'_chosen option:selected')[i].value;
+                    var optiontext = $('##'+target+'_chosen option:selected')[i].text;
+                    if (optiontext!=undefined)textvals+=(i==0?'':', ')+optiontext;
+                    if (optionval!=undefined)vals+=(i==0?'':',')+optionval;
+                }
+                $('##'+target).val(textvals);
+                $('##'+targetid).val(vals);
+console.log("CHOOSEN textvals=" + textvals + "; vals=" + vals);
+            });
+        });
+    }
+</script>
+[end]
+
+        $('.field_chosen').chosen().change(
+            function(event,params){
+                var target = $(event.target).attr("for");
+                var targetid  = target+'_id';
+                var vals = '' , textvals = '' , selcnt=$('##'+target+'_chosen option:selected').size();
+console.log("CHOOSEN target=" + target + "; selcnt" + selcnt);
+                for( i = 0;  i <  selcnt ; i++ ){
+                    var optionval = $('##'+target+'_chosen option:selected')[i].value;
+                    var optiontext = $('##'+target+'_chosen option:selected')[i].text;
+                    if (optiontext!=undefined)textvals+=(i==0?'':', ')+optiontext;
+                    if (optionval!=undefined)vals+=(i==0?'':',')+optionval;
+                }
+                $('##'+target).val(textvals);
+                $('##'+targetid).val(vals);
+            });
+
+
+
+============ УСТАРЕЛО! Используется только в админке (криво) =============
+[info_dd]
+$SET_PARAMETERS item_id_param=#FIELD_DB_NAME#_id
+$SET_PARAMETERS text_val=^#FIELD_DB_NAME#; val_id=^#item_id_param#
+$SET_PARAMETERS LX=100; ??!LX
+$SET_PARAMETERS LY=20; ??!LY
+$GET_DATA dat/doc_fields_info.dat[get info type] ??INFO_VIEW
+$INCLUDE dat/doc_fields_info.dat[info_multi] ??MULTI=1
+$INCLUDE dat/doc_fields_info.dat[info_dd_single] ??!MULTI=1
+[end]
+
+
+[info_dd_single] ****** выпадающий список - одиночный выбор
+<input type=hidden name="#FIELD_DB_NAME#_id" id="#FIELD_DB_NAME#_id" size=5 value="#val_id#">
+<input type=hidden name="#FIELD_DB_NAME#" id="#FIELD_DB_NAME#_txt" size=25 value="#text_val#">
+<div class="info_input pt big bg_white" id="#FIELD_DB_NAME#" info_id="#INFO_ID#" info_view="#INFO_VIEW#" info_type="3" searchFor='none' 
+style="display: inline-block; width:#LX#px; height:#LY#px; border:solid 1px gray;">#text_val#
+выбрать ??!text_val
+</div>
+[end]
+
+[info_multi]
+$SET_PARAMETERS fn=#FIELD_DB_NAME#_id;
+<input type=hidden id=#FIELD_DB_NAME#_id name="#FIELD_DB_NAME#_id" size=25 value="^#fn#">
+<input type=hidden id=#FIELD_DB_NAME# name=#FIELD_DB_NAME# size=#SIZE#
+	info_id="#INFO_ID#" info_view="#INFO_VIEW#" info_type="#INFO_TYPE#" 
+value="^#FIELD_DB_NAME#" mand="#mand#">
+$CALL_SERVICE c=svs/info_show_ms;info_id=#INFO_ID#;view=#view#;requesterId=#FIELD_DB_NAME#;selVals=^#fn#;
+[end]
+
+
+

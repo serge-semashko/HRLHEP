@@ -1,0 +1,1 @@
+var pw = window.opener;  

@@ -1,0 +1,340 @@
+reports/jinr_zajavka_detailed.cfg
+
+
+[comments]
+descr=U: Модуль вывода детализированного списка заявок ОИЯИ.
+
+input=
+output=HTML таблица документов
+parents=reports/jinr_report_detailed.cfg
+childs=docs/view_doc
+testURL=?c=reports/jinr_zajavka_detailed
+author=Куняев
+[end]
+
+
+[description]
+[end]
+
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=U:Детализированная таблица документов
+LOG=ON 
+tableCfg=table_no
+[end]
+
+
+[report header]
+$SET_PARAMETERS AR_R=Y;
+$SET_PARAMETERS f_doc_list=#f_doc_list_#; ??!f_doc_list&!done
+$SET_PARAMETERS f_doc_list=444,509,539,561,572,597,608,611,617,630,639,656,656,671,677,734;   ??!f_doc_list&!done                         
+$SET_PARAMETERS_SESSION f_doc_list_=#f_doc_list#; ??done
+$INCLUDE dat/common.dat[check login]  ??
+$INCLUDE [OK report header] 
+   ??USER_ID>0|USER_ID<0
+[end]
+
+
+
+[OK report header]
+$INCLUDE [filters]  ??!cop=XL
+$SET_PARAMETERS br=<br>;  ??!cop=XL
+$SET_PARAMETERS br= ;  ??cop=XL
+$SET_PARAMETERS !report_det=Y; ??
+
+++++++++++++++++++ Шапка таблицы документов +++++++++++++++++++++ ??
+<table
+class="tlist tblue noborder_"  cellpadding=0 cellspacing=0  ??!cop=XL
+>
+<tr>
+$INCLUDE [title_det] ??report_det
+$INCLUDE [title_short]  ??!report_det
+</tr>
+[end]
+
+[title_det]
+<th>№ СЭД</th>
+<th>Шаг</th>
+<th>Тип шага</th>
+<th width=120>Роль</th> 
+<th>Пользователь</th>
+<th>Старт&nbsp;шага</th> 
+<th>Результат</th>
+<th>Завершено</th>
+<th>Комментарий</th>
+[end]
+
+[title_short]
+<th>№#br# СЭД</th>
+<th>Дата заведения#br# СЭД</th>
+<th>прошло#br# дней</th><th>дата утверждения#br# СМТС</th><th>период#br# рассмотрения#br# дни</th>
+
+<th>текст утверждения СМТС</th> 
+<th>дата последнего#br# шага СЭД</th>
+<th>ответственный по#br# последнему шагу СЭД</th> 
+<th>подразд.</th> 
+<th>результат#br# последнего шага СЭД</th>
+[end]
+
+
+[filters]
+$INCLUDE reports/jinr_report_detailed.cfg[filters table start]  
+++++++++++++++++++ Дополнительные фильтры для заявок +++++++++++++++++++++ ??
+---------- ПОКА НЕТ ----------- ??
+$INCLUDE reports/jinr_report_detailed.cfg[filters table end]
+
+[end]
+
+[report footer]
+</table>
+<script type="text/javascript"></script> ??
+[end]
+
+
+==============================================================
+==============================================================
+==============================================================
+
+[item]
+$INCLUDE [item_det]     ??report_det
+$INCLUDE [item_short]   ??!report_det&!doc_id=#LAST_DOC_ID#
+[end]
+
+[item_short]
+$GET_DATA [get doc details]
+<tr> 
+<td class="center">
+<a href="#ServletPath#?c=docs/view_doc&doc_id=#doc_id#&mode=ext" target=_blank> ??!cop=XL
+#number#
+</a> ??!cop=XL
+</td>
+
+<td>#DOC_FINISHED#
+#DOC_STARTED#  ??!DOC_FINISHED
+</td>
+
+<td>#DAYS#</td>
+<td>#SMTS_FINISHED#</td>
+<td>#DAYS_SMTS#</td>
+
+<td>
+final_decision=#final_decision#; ??
+заключить договор на закупку без конкурса ??final_decision=1
+передать в ЛЗК ??final_decision=2
+передать в ЦЗК ??final_decision=3
+</td>
+
+<td>#FINISHED#
+#STARTED#  ??!FINISHED
+</td>
+
+<td>#USER_IOF# </td>
+
+<td>
+#DIV#
+  ??DIV
+СМТС  ??!DIV
+</td>
+
+<td>
+<b>     ??!cop=XL&result_code=#~doc_action_processed#
+#result# 
+#br#(возвращено инициатору) ??result_code=#~doc_action_reject#
+#br#(возвращено в СМТС) ??result_code=#~doc_action_reject_2SMTS#
+</b>     ??!cop=XL&result_code=#~doc_action_processed#
+Ожидание ??STARTED&!result_code
+
+$SET_PARAMETERS SMTS_FINISHED=; DAYS_SMTS=; DAYS=; DOC_FINISHED=; DOC_STARTED=; USER_IOF=; ROLE_NAME=; TARGET_NAME=;
+$SET_PARAMETERS LAST_DOC_ID=#doc_id#;
+</tr>
+[end]
+
+<td> 
+#ROLE_NAME#
+$GET_DATA [get target name] ??role_target_id&INFO_ID
+#TARGET_NAME# 
+#br#(#role_comment#) ??role_comment
+</td>
+
+
+[get doc details]
+select if(wf.started is null, '', DATE_FORMAT(wf.started,'#dateFormat#')) as "DOC_STARTED"
+, if(wf.finished is null, '', DATE_FORMAT(wf.finished,'#dateFormat#')) as "DOC_FINISHED"
+, if(wf.finished is null, wf.started, wf.finished) as "DOC_START_DATE"
+, DATEDIFF(now(), ifnull(wf.finished, wf.started)) as DAYS
+from wf 
+where wf_id=#WF_ID# and step=0
+;
+select DATE_FORMAT(wf.finished,'#dateFormat#') as "SMTS_FINISHED"
+, DATEDIFF(wf.finished, '#DOC_START_DATE#') as DAYS_SMTS ??DOC_START_DATE
+from wf 
+where wf_id=#WF_ID# and role_id=15 and step_type=1 and result_code=8
+;
+[end]
+
+=======================================================================
+[item_det]
+$SET_PARAMETERS st=style="border-top:solid 1px gray&##59"; ??!PREV_STEP=#step#
+$SET_PARAMETERS st=; ??PREV_STEP=#step#&prev_role_id=#role_id#
+
+$SET_PARAMETERS cl=;
+$SET_PARAMETERS cl=bg_gray; ??!STARTED&ZZZ
+$SET_PARAMETERS cl=pt; ??STARTED&is_active=1&ZZZ
+$SET_PARAMETERS cl=#cl# step_waiting; ??STARTED&!result_code&is_active=1
+$SET_PARAMETERS cl=#cl# inactive; ??!is_active=1
+
+$SET_PARAMETERS cl=; st=; ??cop=XL
+
+$INCLUDE [item_beginning]
+<td #st#>#STARTED#</td>
+<td
+class="bg_light_blue" ??!cop=XL&result_code=#~doc_action_forward#
+class="bg_red"        ??!cop=XL&result_code=#~doc_action_reject#|result_code=#~doc_action_reject_2SMTS#
+class="bg_green"      ??!cop=XL&result_code=#~doc_action_sign#|result_code=#~doc_action_delegate#|result_code=#~doc_action_signed#|result_code=#~doc_action_processed#
+ #st#>
+<b>     ??!cop=XL&result_code=#~doc_action_processed#
+#result# 
+#br#(возвращено инициатору) ??result_code=#~doc_action_reject#
+#br#(возвращено в СМТС) ??result_code=#~doc_action_reject_2SMTS#
+</b>     ??!cop=XL&result_code=#~doc_action_processed#
+Ожидание ??STARTED&!result_code
+
+$INCLUDE [final decision info]  ??CUSTOM_DECISION_TEXT&step_type=1&result_code=#~doc_action_signed#
+</td><td #st#>#FINISHED#</td>
+<td #st#>
+#comment#  ??user_id=#USER_ID#|comment_opened>0
+#br#(<small><i>=> #RECEIVERS#)</i></small> ??RECEIVERS&user_id=#USER_ID#|comment_opened>0
+doc_id=#doc_id#;LAST_DOC_ID=#LAST_DOC_ID#; ??
+</td>
+
+$SET_PARAMETERS NEXT_STEP_ID=#step_id#;  ??!NEXT_STEP_ID&STARTED&!result_code
+$SET_PARAMETERS prev_role_id=#role_id#; prev_role_target_id=#role_target_id#; PREV_TARGET_NAME=#TARGET_NAME#; PREV_STEP=#step#;
+$SET_PARAMETERS role_id=; ROLE_NAME=; INFO_ID=; role_target_id=; user_id=; u_FIO=; result_code=; result=; STARTED=; TARGET_NAME=; PREV_STEP=#step#; criteria=;
+$SET_PARAMETERS u_roles=; u_posts=; RECEIVERS=;
+$SET_PARAMETERS LAST_DOC_ID=#doc_id#;
+</tr>
+[end]
+
+
+[final decision info]
+CUSTOM_DECISION_TEXT=#CUSTOM_DECISION_TEXT#; ??
+: #br#<b> 
+$INCLUDE #CUSTOM_DECISION_TEXT# 
+</b>
+[end]
+
+
+[item_beginning]
+<tr><td colspan=10 class="bottom_dotted" style="background-color:##a0a0a0;"></td></tr> ??!cop=XL&LAST_DOC_ID&!doc_id=#LAST_DOC_ID#
+<tr class="#cl#"> 
+<td class="center" #st#>
+<a href="#ServletPath#?c=docs/view_doc&doc_id=#doc_id#&mode=ext" target=_blank> ??!cop=XL
+#number#
+</a> ??!cop=XL
+doc_id=#doc_id#;LAST_DOC_ID=#LAST_DOC_ID#;  ??
+</td>
+
+<td class="center" #st#>
+#step#  ??!criteria=1|st
+</td>
+
+<td #st#>
+$SET_PARAMETERS step_type=#~wf_step_preparation#; ??step=0
+подготовка  ??step_type=#~wf_step_preparation#
+согласование  ??step_type=#~wf_step_in_progress#
+информирование ??step_type=#~wf_step_information#
+утверждение ??step_type=#~wf_step_signed#
+завершение ??step_type=#~wf_step_process#
+</td>
+
+<td class=small #st#> 
+#ROLE_NAME# ??ROLE_NAME&!prev_role_id=#role_id#
+$GET_DATA [get target name] ??role_target_id&INFO_ID
+#TARGET_NAME# ??!PREV_TARGET_NAME=#TARGET_NAME#
+#br#(#role_comment#) ??role_comment
+</td>
+
+
+<td class="
+bottom ??!cop=XL
+center error ??!user_id|user_id=0
+"
+ #st#>
+ ? ??!user_id
+ - ??user_id=0
+#USER_IOF# 
+#br#<span class="bg_yellow" style="color:##000080;">#modifier_comment#</span> ??modifier_comment
+</td>
+[end]
+
+
+
+
+==============================================================
+==============================================================
+==============================================================
+
+[SQL]
+$INCLUDE [SQL_] ??f_doc_list
+[end]
+
+[SQL_]
+select dh.number, dh.id as doc_id
+, wf.id as step_id, wf.step, wf.role_id, wf.role_target_type_id, wf.role_target_id, wf.role_comment
+, wf.step_type, wf.criteria, wf.set_number, wf.post_doc, wf.is_active
+, r.name as "ROLE_NAME", tt.type as "TARGET_TYPE"
+ ,i.name as "INFO_NAME", i.id as "INFO_ID", i.table_name as "INFO_TABLE"
+, wf.user_id, wf.modifier_id, wf.modifier_comment
+, iof(u.F, u.I, u.O) as "USER_IOF"   
+, u.email as "USER_EMAIL"
+, iof(um.F, um.I, um.O) as "MODIFIER_IOF"   
+, result_code, result
+, if(wf.started is null, '', DATE_FORMAT(wf.started,'#shortDateTimeFormat#')) as "STARTED", if(wf.finished is null, '', DATE_FORMAT(wf.finished,'#shortDateTimeFormat#')) as "FINISHED"  ??report_det
+, if(wf.started is null, '', DATE_FORMAT(wf.started,'#dateFormat#')) as "STARTED", if(wf.finished is null, '', DATE_FORMAT(wf.finished,'#dateFormat#')) as "FINISHED"  ??!report_det
+
+, wf.comment, wf.comment_opened
+, d.final_decision
+, wfl.id as WF_ID
+, lab.short_name as "DIV"
+from 
+d_list dh
+left join d_data_1 d on d.doc_id=dh.id
+left join wf_list wfl on wfl.doc_id=dh.id 
+  and wfl.is_active=1 ??
+left join wf on wf.wf_id=wfl.id
+
+left join a_roles r on r.id=wf.role_id
+left join a_target_types tt on tt.id=wf.role_target_type_id
+left join i_infos i on i.id = tt.info_id
+left join #table_users_full# u on u.id=wf.user_id
+left join #table_users_full# um on um.id=wf.modifier_id
+left join info_10 lab on lab.id=u.div_code
+where 
+dh.number IN()'#f_doc_list#'
+and dh.type_id=1
+and dh.status=3 ??f_status=finished
+and dh.status<3 ??f_status=notfinished
+wf.wf_id=#WF_ID# ??
+and not wf.step is null
+and not wf.started is null and  wf.step_type<>3 ??!report_det
+and (wf.result is null or wf.result<>'не требуется')
+
+order by 
+dh.number
+, wf.step ??report_det
+, wf.step desc ??!report_det
+, wf.step_type desc
+, wf.is_active desc, wf.id
+
+[end]
+
+[get target name]
+select field_db_name as "INFO_FIELD_NAME" from i_fields where info_id=#INFO_ID# and view1=1
+;
+select #INFO_FIELD_NAME# as "TARGET_NAME" from #INFO_TABLE# where id=#role_target_id#
+[end]
+
+
+
+

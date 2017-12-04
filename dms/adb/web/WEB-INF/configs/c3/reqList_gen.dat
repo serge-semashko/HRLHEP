@@ -1,0 +1,319 @@
+c3/reqList_gen.dat
+
+[table_title]
+    <table 
+        class="tlist" border=0 cellspacing=0 cellpadding=0 ??!prn
+         border="1" ??prn
+        style="margin:20px;" ??!prn&!RD_LINK&!DETAILS
+        style="margin:0px; border:none;" ??!prn&RD_LINK|DETAILS
+    >
+    <tr bgcolor="F0F4F4"><th class="srh" sr="1">Заявка</th>
+        <th class="srh" sr="WAITING">Ожидает</th> ??f_wait
+        <th style="width:80pt">Документ</th>
+        <th>Счет поставщика</th>
+        <th>Контрагент</th>
+        <th class="srh" sr="case when r.SUMM_RUB_FACT is null then r.SUMM_RUB else r.SUMM_RUB_FACT end">руб.</th>
+        <th class="srh" sr="d.SUMMA_RUB">руб. (ADB)</th>??adbCheck=sumcheck
+        <th class="srh" sr="r.SUMM_RUB-d.SUMMA_RUB">разница (руб)</th>??adbCheck=sumcheck
+        <th class="srh" sr="r.SUMM_USD">USD</th>
+        <th class="srh" sr="d.SUMMA_USD">USD (ADB)</th>??adbCheck=sumcheck
+        <th class="srh" sr="r.SUMM_USD-d.SUMMA_USD">разница (USD)</th>??adbCheck=sumcheck
+        <th class="srh" sr="r.SUMM_EUR">EUR</th>
+
+        <th class="srh" sr="">Подр.</th> ??
+        <th>Подразд.</th>
+        <th class="srh" sr="r.SBJ||r.NICA_CODE">Источник финансирования</th>
+        <th class="srh" sr="r.NICA_ID">Раздел</th> ??f_subject=1065_ZZZ
+        <th>Приказ</th> ??
+        <th class="srh" sr="r.NICA_CODE">НИКА</th> ??PROJECT_ID_ZZZ
+        <th class="srh" sr="r.AGGR">статья
+        <br> ??!prn
+        бюдж.</th>
+
+        <th>Номенклатура</th> ??!adbCheck&ZZZ
+        <th class="srh" sr="r.COMMENTS">Комментарий</th> ??!adbCheck
+
+
+        <th class="srh" sr="b.SBJ_CODE">Пордазд.<br>(ADB2)</th>  ??adbCheck=labcheck
+        <th class="srh" sr="b.SBJ_CODE">Тема<br>(ADB2)</th>  ??adbCheck=sbjcheck
+        <th class="srh" sr="b.AGGR">статья<br>(ADB2)</th> ??adbCheck=aggrcheck
+        <th>Источник<br>(ADB2)</th>   ??adbCheck=budcheck
+        <th class="srh" sr="r.ADB2_NUM">ADB2
+        <br> ??!prn
+        документ</th>
+        <th class="srh" sr="p.ADB2_NUM">примечание</th> ??
+    </tr>
+[end]
+
+
+
+[item]
+    <tr
+    bgcolor="E0F0FF" ??SUMM_RUB_FACT
+    >
+        <td class="align_left">
+            <a href="#ServletPath#?c=c2/request&f_req=#REQUEST_NR#&yr=#REQ_YR#" ??!prn
+            target="RecList#REQUEST_NR#" ??!DETAILS&!prn
+            > ??!prn
+            #REQUEST_NR#
+            </a>,<small>  ??!prn
+            #REQ_DATE#
+            <BR> ??!prn
+            #RESP#
+            #REQUEST_NR#,<small>#REQ_DAT#<BR>#RESP# ??
+            </SMALL> ??!prn
+        </td> 
+        <td>#WAITING#</td> ??f_wait
+        <td class="align_left">
+            <a href="javascript:getPP('#REG_NR#','#REG_DAT#')"> ??DOC_OSN_TYPE=ППИ
+            #DOC_OSN_TYPE#
+            <br> ??!prn
+            #DOC_OSN_NR# <small>#DOC_OSN_DAT#</small> 
+            </a> ??DOC_OSN_TYPE=ППИ
+        </td>
+        <td class="align_left">
+            #SCHET_NR#<br><small>от&nbsp;#SCHET_DAT#</small> ??SCHET_NR&!prn
+            #SCHET_NR# <small>от&nbsp;#SCHET_DAT#</small> ??SCHET_NR&prn
+            &nbsp;
+        </td>
+        <td class="align_left">#CONTRAGENT#&nbsp;</td>
+        <td align="right">#SUMM_RUB#</td>  	??!CURR_CODE=810|prn
+        <td>&nbsp;<b>#SUMM_RUB#</b></td>  ??CURR_CODE=810&!prn
+        <td>&nbsp;#SUMMA_RUB#</td><td>&nbsp;#R_DIFF#</td> 	??adbCheck=sumcheck
+        <td align="right">#SUMM_USD#</td>  			??!CURR_CODE=840|prn
+        <td>&nbsp;<b>#SUMM_USD#</b></td>   ??CURR_CODE=840&!prn
+        <td>&nbsp;#SUMMA_USD#</td><td>&nbsp;#USD_DIFF#</td> 		??adbCheck=sumcheck
+        <td align="right">#SUMM_EUR#</td>	  		??!CURR_CODE=978|prn
+        <td>&nbsp;<b>#SUMM_EUR#</b></td>   ??CURR_CODE=978&!prn
+        <td class="align_center">&nbsp;#DIV_CODE#</td>
+        <td class="align_left"><div
+            class="SRC_V" ??IS_BUDGET=0
+            class="SRC_P" ??PRIKAZ&IS_BUDGET=1
+            >#SBJ#  ??!NICA_CODE
+            >#SBJ#,&nbsp;#NICA_CODE#  ??NICA_CODE
+            ,<br>  ??PRIKAZ&!prn
+            <small>пр.#PRIKAZ# (#PRIKAZ_DAT#) п.#PUNKT#</small> ??PRIKAZ
+            &nbsp;</div>
+        </td>
+        <td class="align_left">#NICA_CODE#&nbsp;</td> ??PROJECT_ID_ZZZ
+        <td class="align_center">#AGGR#&nbsp; </td>
+        <td class="align_left"><div id="n_#REQUEST_NR#" class="sm" onClick="toggleDiv('n_#REQUEST_NR#');">#NOMENKLATURA#</div></td>  ??!adbCheck&ZZZ
+        <td class="align_left">#COMMENTS# &nbsp;</td>  ??!adbCheck
+        <td class="align_center">&nbsp; #D_LAB_CODE#</td>  ??adbCheck=labcheck
+        <td class="align_center">&nbsp;#D_SBJ# <small>(#D_LAB_CODE#)</small></td>  ??adbCheck=sbjcheck
+        <td class="align_center">&nbsp;#D_AGGR#</td>  ??adbCheck=aggrcheck
+        <td class="align_left">&nbsp;#D_DES#</td>  ??adbCheck=budcheck
+        <td  class="align_left">&nbsp;
+            #ADB_NR# ??prn
+            <a href="javascript:showAdb2('#ADB_NR#', '#NICA_CODE##ADB_NICA_ID#')">#ADB_NR#</a> ??ADB_NR>1&!prn
+            <a class=small href='#ServletPath#?c=c2/fixRequests&REQ=#REQUEST_NR#&REQ_YR=#REQ_YR#' target="FIX_REQ"> .*. </a>  ??SHOW_PROBLEMS
+            <br><img src="#imgPath#alert.gif">&nbsp; ??MARK>0&!prn
+            <a class=small href="javascript:showAdb2('#C_OLD_ADB2_NUM#', '#NICA_CODE#')">#C_OLD_ADB2_NUM#</a>=><a class=small href="javascript:showAdb2('#NEW_ADB2_NUM#', '#NICA_CODE#')">#NEW_ADB2_NUM#</a> ??NEW_ADB2_NUM
+            #C_COMMENTS# 
+             ??MARK>0|adb2check|problem
+            <br>doc=#DOC_ID#; C_ADB2_NUM=#C_ADB2_NUM#; ADB2_NUM=#ADB2_NUM#; ??
+        </td>
+    </tr>
+[end]
+
+
+
+================================ SQLs ================================
+
+[preSQLs]
+    select to_char(SYSDATE, 'dd.mm.yyyy') as TODAY from dual; ??
+    select distinct '<option value="'||REG_TYPE||'">'||REG_TYPE||'</OPTION>' as "REG_TYPES"
+    from c2_budgetFact_14 where isPrihod=0
+    ;
+    select distinct '<option value="'||Prikaz||'/'|| to_char(PRIKAZ_DAT, 'DD.MM.YYYY')||'">'||Prikaz|| ' от ' || to_char(PRIKAZ_DAT, 'DD.MM.YYYY')||'</OPTION>' as "PRIK_LIST"
+            , PRIKAZ_DAT
+    from c2_budgetFact_14 where isPrihod=0 and not Prikaz_id is null and not Prikaz_id=0
+    order by PRIKAZ_DAT desc
+    ;
+[end]
+
+
+[SQL]
+    select 
+    ''''||  ??!prn
+      r.REQ_NR as REQUEST_NR
+    , to_char(SYSDATE-r.REQ_DATE,'999990')||' дней'	as WAITING ??f_wait
+    , r.DOC_OSN_NR as DOC_OSN_NR
+    , r.SCHET_NR as SCHET_NR
+    , r.CONTRAGENT
+
+    , to_char(nvl(r.SUMM_RUB,0),'99999999990D00') as SUMM_RUB  ??!adbCheck=sumcheck
+    , to_char(nvl(r.SUMM_USD,0),'99999999990D00') as SUMM_USD ??!adbCheck=sumcheck
+    , to_char(nvl(r.SUMM_EUR,0),'99999999990D00') as SUMM_EUR ??!adbCheck=sumcheck
+
+    , r.SUMM_RUB,  d.SUMMA_RUB, r.SUMM_RUB-d.SUMMA_RUB as R_DIFF 	??adbCheck=sumcheck
+    , r.SUMM_USD,  d.SUMMA_USD, r.SUMM_USD-d.SUMMA_USD as USD_DIFF 	??adbCheck=sumcheck
+    , r.SUMM_EUR	??adbCheck=sumcheck
+
+    , r.DOC_OSN ??
+    , r.DIV_CODE as DIV_CODE
+    , ''''||r.SBJ as SBJ ??
+    , 
+    ''''||  ??!prn
+    p.DES as SBJ
+    , r.AGGR as AGGR
+
+    , r.COMMENTS
+    , r.ADB_NR as ADB_NR
+
+    , r.NOMENKLATURA ??ZZZ
+
+    , to_char(r.DOC_OSN_DAT, 'DD.MM.YYYY') as DOC_OSN_DAT
+    , r.DOC_OSN_TYPE
+
+    , r.CURR_CODE
+
+    , to_char(r.REQ_DATE, 'DD.MM.YYYY') as REQ_DATE
+    , to_char(r.SCHET_DAT, 'DD.MM.YYYY') as SCHET_DAT
+    , r.CONTRAGENT
+
+    , r.NICA_CODE as NICA_CODE
+    , r.PRIKAZ as PRIKAZ
+    , to_char(r.PRIKAZ_DAT, 'DD.MM.YYYY') as PRIKAZ_DAT ??
+    , to_char(r.PRIKAZ_DAT, 'YY')||'г.' as PRIKAZ_DAT
+    , r.PUNKT as PUNKT
+
+
+    , r.NICA ??ZZZ&PROJECT_ID|f_subject=1065
+    , ''''||r.NICA_ID as NICA_ID ??PROJECT_ID|f_subject=1065
+
+    , d.AGGR as ADB_AGGR
+
+    , r.IS_BUDGET as IS_BUDGET
+    , r.SUMM_RUB_FACT, r.SUMM_USD_FACT, r.SUMM_EUR_FACT
+    , r.RESP
+
+    , r.DOGOVOR 
+    , r.VID_OPER ??
+    , r.LINK ??
+    , ''''||to_char(r.REQ_DATE, 'YY') as REQ_YR
+    , ''''||d.PROJECT_ID as ADB_NICA_ID
+    , ''''||bc.SBJ_CODE as D_SBJ   ??adbCheck=sbjcheck
+    , ''''||d.LAB_CODE as D_LAB_CODE   ??adbCheck=labcheck|adbCheck=sbjcheck
+    , ''''||d.AGGR as D_AGGR   ??adbCheck=aggrcheck
+    , ''''||bc.DES as D_DES  ??adbCheck=budcheck
+    , 
+    ''''||  ??!prn
+    r.ADB_NR as ADB_NR
+    , c.MARK, ''''||c.OLD_ADB2_NUM as C_OLD_ADB2_NUM, ''''||c.ADB2_NUM as NEW_ADB2_NUM, c.COMMENTS as "C_COMMENTS" ??!prn
+      ??problem|adbCheck
+
+
+    from C3_Requests r 
+        left join docs d on d.doc_id=r.ADB_NR
+        left join bc bc on bc.code=d.bc ??adbCheck
+        left join c2_req_corr c on (c.REQ=r.REQ_NR  and c.YR+2000=r.REQ_YR)
+        left join c2_budgetFact f on (f.REQUEST=r.REQUEST and f.REG_TYPE='ППИ') 
+        left join C2_PROJECTS p on p.id=r.PROJECT_CODE
+
+    where 1=1
+    $INCLUDE c3/reqList_gen.dat[criteria]
+    order by 
+    #srt# #desc# ??!srt=1
+    r.REQ_DATE #desc#, r.REQ_NR #desc# ??srt=1
+[end]
+
+
+[criteria]
+    $INCLUDE c3/reqList_gen.dat [commonCriteria]    ??!f_Adb2Nr
+    $INCLUDE c3/reqList_gen.dat[ADB2Criteria]   ??f_Adb2Nr
+    $INCLUDE c3/reqList_gen.dat[ADB2Check]  ??adbCheck
+[end]
+
+
+[commonCriteria]
+    and f.REG_NR=#f_pp#  ??f_pp
+    and extract (year from f.REG_DAT)=#f_pp_yr#  ??f_pp_yr&f_pp
+
+    and (r.REQ_YR=20#q_yr# or r.FACT_YR=20#q_yr#) ??!f_pp&ZZZ-TMP
+    and r.REQ_NR=#f_req# ??f_req
+    and r.IS_BUDGET=1 ??f_bud=y
+    and r.IS_BUDGET=0 ??f_bud=n
+
+    and r.SUMM_RUB_FACT is not null ??payed=y
+    and r.SUMM_RUB_FACT is null ??payed=n
+    and (not d.SUMMA_RUB is null and abs(d.SUMMA_RUB - r.SUMM_RUB) > 100 and abs(d.SUMMA_USD - r.SUMM_USD) > 3 and abs(d.SUMMA_EUR - r.SUMM_EUR) > 3 and not r.DOC_OSN_TYPE='Аванс') ??adbCheck=sumcheck
+
+    and r.DOC_OSN_NR=#f_doc# ??f_doc
+    and r.DOC_OSN_TYPE='#f_doc_type#' ??f_doc_type
+    and r.DOC_OSN='#RD_LINK#' ??RD_LINK
+
+    and r.DIV_CODE IN()'#A_LABS#' ??A_LABS
+    and upper(r.SBJ) in('#A_SBJS#') ??A_SBJS
+    and r.DIV_CODE in(#f_lab#)  ??f_lab&!f_lab=XXX&!f_lab=NULL
+    and not r.DIV_CODE in(000, #lab_codes#, #infr_codes#, 919, 011)  ??f_lab=XXX
+    and r.DIV_CODE is null  ??f_lab=NULL
+
+    and (upper(r.SBJ) like upper('#f_subject#%') or upper(r.SBJ) in('#f_subject#'))  ??f_subject&!f_bud=n
+    and (upper(r.CONTRAGENT) like upper('%#f_contrag#%') or upper(r.CONTRAGENT) like upper('%#f_contrag#%')) ??f_contrag
+    and r.NICA_CODE='#f_nica_code#' ??f_nica_code_ZZZ
+    and r.NICA_ID in(select ID from nica_wbs_wu connect by prior id=pid start with id=#PROJECT_ID#) ??PROJECT_ID>0
+    and r.NICA_ID is null ??PROJECT_ID<0
+
+    and r.aggr not IN()'#f_aggr_not#'  ??f_aggr_not
+    and r.aggr IN()'#f_aggr#'  ??f_aggr&!f_aggr=NOT4
+    and (r.aggr is null or r.aggr not IN('01','02','03','04'))  ??f_aggr=NOT4
+    and r.aggr IN()'#ff_aggr#'  ??ff_aggr
+    and (r.aggr is null or not r.aggr IN(1,2,3)) ??!f_aggr
+
+    $INCLUDE c3/reqList_gen.dat[prikCriteria] ??f_prik&!f_bud=n
+    and upper(r.SBJ) like upper('#f_prik#%')  ??f_prik&f_bud=n
+    and upper(r.SBJ) like upper('#f_subject#%')  ??f_bud=n&f_subject&!f_prik
+
+    and r.SUMM_RUB #f_summa_op# #f_summa# ??f_summa&!f_summa_op==
+    and abs(r.SUMM_RUB-#f_summa#) <= #dsumm#+0.5 ??f_summa&f_summa_op==
+
+    and c.mark=1  ??problem=P
+    and not c.REQ is null  ??problem=Y
+    and c.REQ is null  ??problem=N
+    and SYSDATE-r.REQ_DATE>14 and r.SUMM_RUB>0 ??f_wait
+[end]
+
+[ADB2Check]
+    and upper(r.SBJ)<>bc.SBJ_CODE and not bc.SBJ_CODE is null ??adbCheck=sbjcheck
+    and r.DIV_CODE<>to_number(d.LAB_CODE)  ??adbCheck=labcheck
+    and r.aggr<>to_number(d.aggr)  ??adbCheck=aggrcheck
+    and d.is_total='Y' ??adbCheck=svodcheck
+    and d.doc_id is null ??adbCheck=missedcheck
+    and ((r.IS_BUDGET=1 and bc.ROOT_ID=2) or (r.IS_BUDGET=0 and bc.ROOT_ID<>2)) ??adbCheck=budcheck
+    $INCLUDE c3/reqList_gen.dat [ADB2AllCheck]  ??adbCheck=allcheck
+[end]
+
+[ADB2AllCheck]
+    and (
+    upper(r.SBJ)<>bc.SBJ_CODE and not bc.SBJ_CODE is null 
+    or r.DIV_CODE<>to_number(d.LAB_CODE) 
+    or r.aggr<>to_number(d.aggr)
+    or d.is_total='Y' 
+    or ((r.IS_BUDGET=1 and bc.ROOT_ID=2) or (r.IS_BUDGET=0 and bc.ROOT_ID<>2))
+    )
+[end]
+
+
+
+[prikCriteria]
+    and (r.Prikaz is null or r.Prikaz=0) ??f_prik=NULL
+    and not r.Prikaz is null and not r.Prikaz=0  ??f_prik=*
+    and r.Prikaz||'/'|| to_char(r.PRIKAZ_DAT, 'DD.MM.YYYY')='#f_prik#' and r.punkt='#f_punkt#' ??f_punkt&!f_prik=*&!f_prik=NULL
+    and r.Prikaz||'/'|| to_char(r.PRIKAZ_DAT, 'DD.MM.YYYY')='#f_prik#'  ??!f_punkt&!f_prik=*&!f_prik=NULL
+[end]
+
+[ADB2Criteria]
+    and r.ADB_NR in(0#F_ADB2NR#) ??F_ADB2NR
+[end]
+
+and (r.ADB_NR in (select doc_id from docs where doc_id in(#f_Adb2Nr#) or pid in(#f_Adb2Nr#)) 
+	or r.ADB_NR in (select pid from docs where doc_id in(#f_Adb2Nr#) and pid>0)  )
+
+
+[timeCriteria]
+    and p.PLAT_DATE >= to_date('#startdate#','DD.MM.YYYY') ??startdate&!enddate
+    and p.PLAT_DATE between to_date('#startdate#','DD.MM.YYYY') and to_date('#enddate#','DD.MM.YYYY') ??startdate&enddate
+    and p.PLAT_DATE <= to_date('#enddate#','DD.MM.YYYY') ??enddate&!startdate
+[end]
+

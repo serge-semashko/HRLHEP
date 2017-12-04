@@ -1,0 +1,143 @@
+[comments]
+descr=U: Модуль вывода документов на подпись (вывод самой таблицы)
+
+input=
+output=HTML таблица списка документов
+parents=docs/docs_to_sign
+childs=docs/view_doc
+testURL=?c=docs/docs_to_sign_list
+author=Куняев
+[end]
+
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=U:Список документов
+LOG=ON
+tableCfg=table_no
+$INCLUDE dat/common.dat[rowLinks]
+[end]
+
+
+[report header]
+$INCLUDE dat/common.dat[check login]
+$INCLUDE [OK report header]  ??USER_ID>0|USER_ID<0
+[end]
+
+
+[OK report header]
+$SET_PARAMETERS srn_sav=#srn#; rpp_sav=#rpp#
+$SET_PARAMETERS srn=1; rpp=9999; report=sign;
+
+++++++++++++++++++ Шапка таблицы документов +++++++++++++++++++++ ??
+<table brder=1 class="tlist tred" cellspacing=0>
+<tr><th></th>
+<th>Документ</th>
+<th>Содержание</th>
+<th>Создан</th>
+<th class="sup">Последнее действие</th> 
+<th>Согласование</th></tr>
+[end]
+
+
+
+[item]
+<tr><td colspan=7 class="divider subhead"><b>#DOC_TYPE#:</b></td></tr>  ??!PREV_DOC_TYPE=#DOC_TYPE#
+    $INCLUDE tab_myDocs.cfg[linkedMark]
+    <td>
+        №#NUMBER#  ??NUMBER
+        от #DOC_DATE#  ??DOC_DATE
+    </td>
+    <td class="tt" tt_text='#TITLE#'><div class="ellipsis" style="max-width:400px;">#TITLE#</div></td>
+    <td>#CREATOR#</td> 
+    <td>#MODIFIED#, #MODIFIER#</td> 
+    $CALL_SERVICE c=wf/show_wf_status; doc_id=#ID#; 
+</tr>
+$INCLUDE tab_myDocs.cfg[linkedData] ??!img=none
+$SET_PARAMETERS PREV_DOC_TYPE=#DOC_TYPE#;
+[end]
+
+
+[report footer]
+    $GET_DATA [count dog]
+    <tr><td colspan=7 style="padding:0;">
+        <div id="dog_2_sign">
+            $CALL_SERVICE c=JINR/reports/dog_post_2_sign;   ??NUM_DOG>0
+        </div>
+            $CALL_SERVICE c=JINR/reports/dog_rs_2_sign;     ??NUM_DOG_RS>0
+    </td></tr> 
+    <tr>
+        <td colspan=6 class="label last" align=right>
+            $INCLUDE docs/docs_in_progress_table.cfg[wf_legend] 
+        </td>
+    </tr>
+    </table>
+    $SET_PARAMETERS srn=#srn_sav#; rpp=#rpp_sav#
+[end]
+
+
+***************************** Шаблон SQL запроса ***************************
+[count dog]
+    select count(*) as "NUM_DOG"
+    from d_list dh 
+    where dh.type_id=8
+        and dh.id in (select wl.doc_id from wf_list wl join wf on wf.wf_id=wl.id
+            where wf.user_id=#USER_ID# and not wf.started is null and wf.finished is null
+        )
+    ;
+    select count(*) as "NUM_DOG_RS"
+    from d_list dh 
+    where dh.type_id=11
+        and dh.id in (select wl.doc_id from wf_list wl join wf on wf.wf_id=wl.id
+            where wf.user_id=#USER_ID# and not wf.started is null and wf.finished is null
+        )
+[end]
+
+
+[SQL]
+    select
+        dh.ID, dh.TYPE_ID, dtp.NAME AS DOC_TYPE
+        , dh.NUMBER, dh.TITLE
+        , DATE_FORMAT(dh.doc_date,'#dateTimeFormat#') as DOC_DATE 
+        , DATE_FORMAT(dh.created,'#dateTimeFormat#') as CREATED 
+        , dh.creator_id
+        , concat(ucr.F, ' ', left(IFNULL(ucr.I,''),1), '.', left(IFNULL(ucr.O,''),1),'.') as CREATOR
+        , DATE_FORMAT(dh.modified,'#dateTimeFormat#') as MODIFIED
+        , dh.modifier_id 
+        , concat(umr.F, ' ', left(IFNULL(umr.I,''),1), '.', left(IFNULL(umr.O,''),1),'.') as MODIFIER
+        , dh.pid, dh.num_children
+
+        , concat(FORMAT(TIMESTAMPDIFF(day, dh.modified, now()), 0), 'д'
+        , FORMAT(TIMESTAMPDIFF(hour, dh.modified, now())-TIMESTAMPDIFF(day, dh.modified, now())*24,0)) AS WAITING
+        , case when TIMESTAMPDIFF(day, dh.modified, now()) > 1 then 'LONG'
+        else 'SHORT'
+        end
+        AS WAITING_LEVEL
+    from d_list dh
+        left join d_types dtp on dtp.Id = dh.type_id
+        left join #table_users_full# ucr on ucr.id=dh.creator_id 
+        left join #table_users_full# umr on umr.id=dh.modifier_id
+    where dh.status in(#~doc_status_in_progress#,#~doc_status_signed#)
+        and dh.type_id not in(8,11)
+    and dh.id in (select wl.doc_id from wf_list wl join wf on wf.wf_id=wl.id
+        where wf.user_id=#USER_ID# and not wf.started is null and wf.finished is null
+        )
+    order by dtp.sort, dh.NUMBER, dh.modified
+[end]
+
+
+[count docs]
+    select count(dh.ID) as NUM_DOCS_TO_SIGN
+    from d_list dh  
+    where dh.status in(#~doc_status_in_progress#,#~doc_status_signed#)
+      and dh.is_deleted=0 and dh.id in (select wl.doc_id from wf_list wl join wf on wf.wf_id=wl.id
+        where wf.user_id=#USER_ID# and not wf.started is null and wf.finished is null
+    )
+    ;
+    select count(dh.ID) as NUM_DOCS_TO_PROCESS
+    from d_list dh  
+    where dh.status in(#~doc_status_signed#)
+      and dh.is_deleted=0 and dh.id in (select wl.doc_id from wf_list wl join wf on wf.wf_id=wl.id
+      where wf.user_id=#USER_ID# and not wf.started is null and wf.finished is null
+    )
+[end]

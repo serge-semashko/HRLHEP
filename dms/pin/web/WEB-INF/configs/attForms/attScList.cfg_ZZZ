@@ -1,0 +1,111 @@
+[parameters]
+of=bin 
+service=jinr.pin.ServiceData ??
+dateShortFormat=%d.%m.%Y
+dateVeryShortFormat=%m.%Y
+floatDecimals=4
+vspace=<tr><td style='font-size:4.0pt'>&nbsp;</td></tr>
+contentType=application/msword
+mimeType=application/msword
+fileName=publications.doc
+[end]
+
+
+[report]
+$SET_PARAMETERS person_id=#id#
+<HTML><HEAD><TITLE>#title#</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=windows-1251">
+</head>
+
+<body style="margin:10; background-color:white;">
+<center>
+<table border=0 cellspacing=0 cellpadding=0 width=643>
+ <tr><td valign=top style='font-size:14.0pt;'><b>#name# #name1# #name2#,</b></td> </tr>
+ <tr><td valign=top style='font-size:12.0pt;'> (
+	#DIV#, ??DIV
+	#OTD#, #DOLZHN#)</td></tr>
+	 	
+#vspace#
+ <tr><td valign=top align=center style='font-size:14.0pt;'><b>Список научных работ</b></td> </tr>
+ <tr><td valign=top align=center style='font-size:12.0pt;'>
+ за период с #YR_BEG_a# по #YR_END_a#гг. ??YR_BEG_a&YR_END_a
+ начиная с #YR_BEG_a# г. ??YR_BEG_a&!YR_END_a
+  по #YR_END_a# г.	??!YR_BEG_a&YR_END_a
+	(данные на #TODAY#)
+ </td> </tr>
+#vspace#
+ 
+ <tr><td>
+
+$EXECUTE_LOOP event_type; #TYPE_IDS#; [printType]
+
+</td></tr></table></center>
+</body></html>
+[end]
+
+
+[printType]
+$GET_DATA [getTypeName]
+$EXECUTE_LOOP event_subtype; #SUBTYPE_IDS#; [printSubType]  ??SUBTYPE_IDS
+<b>#TYPE_NAME#:</b> ??!SUBTYPE_IDS
+$CALL_SERVICE c=attForms/typeList  ??!SUBTYPE_IDS
+$SET_PARAMETERS SUBTYPE_IDS=; TYPE_NAME=; event_subtype=;
+[end]
+
+
+[printSubType]
+$GET_DATA [getSubTypeName]
+<b>#TYPE_NAME# (#SUBTYPE_NAME#):</b><br>
+
+$CALL_SERVICE c=attForms/typeList
+
+$SET_PARAMETERS SUBTYPE_NAME=;
+[end]
+
+
+[getSubTypeName]
+select name as "SUBTYPE_NAME" from event_subtypes where id=#event_subtype#
+;
+[end]
+
+[getTypeName]
+select name as "TYPE_NAME" from event_types where id=#event_type#
+;
+select distinct	concat(',',subtype_id) as "SUBTYPE_IDS"
+from 
+person_event pe join event_values ev on ev.id=pe.event_id
+	join event_subtypes est on est.id=ev.subtype_id
+where 
+	pe.person_id=#person_id# 
+	and ev.type_id=#event_type#
+	and ev.date>=str_to_date('01.01.#YR_BEG_a#','#dateShortFormat#') ??YR_BEG_a
+	and ev.date<=str_to_date('31.12.#YR_END_a#','#dateShortFormat#') ??YR_END_a
+order by 
+	est.sort
+[end]
+
+[preSQLs]
+$SET_PARAMETERS YR_BEG_a=;	??YR_BEG_a=-
+$SET_PARAMETERS YR_END_a=;	??YR_END_a=-
+$INCLUDE attForms/bills.cfg[preSQLs]
+;
+select distinct
+	concat(',',type_id) as "TYPE_IDS"
+from 
+person_event pe join event_values ev on ev.id=pe.event_id
+	join event_types et on et.id=ev.type_id
+where 
+	pe.person_id=#id# 
+	and et.tab='sc' 
+	and ev.date>=str_to_date('01.01.#YR_BEG_a#','#dateShortFormat#') ??YR_BEG_a
+	and ev.date<=str_to_date('31.12.#YR_END_a#','#dateShortFormat#') ??YR_END_a
+order by 
+	et.sort,subtype_id
+;
+select DATE_FORMAT(now(),'#dateFormat#') as "TODAY"
+;
+[end]
+
+	and ev.date>=str_to_date('#F_DAT_BEG#','#dateShortFormat#') ??F_DAT_BEG
+	and ev.date<=str_to_date('#F_DAT_END#','#dateShortFormat#') ??F_DAT_END
+

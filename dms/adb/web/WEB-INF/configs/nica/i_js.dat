@@ -1,0 +1,930 @@
+
+[js]
+<script type="text/javascript">
+var atab="t_struct";
+var atab="t_pplan"; ??
+var module="r_pplan"; ??
+var module="i_getWBS";
+var mode="view";
+var curr_id=0;
+var prj_id=0;
+var wbs_id=0;
+var wu_id=0;
+var frm=document.theForm;
+var dialogOn = false;
+var g;
+
+if ($.browser.msie && $.browser.version < 10) ??
+alert($.browser.msie + " : " + $.browser.mozilla + " : " + $.browser.webkit + " : " + $.browser.opera + " : " + $.browser.version); ??
+
+
+function openNode()
+{
+  loadFrame("c=nica/" + module + "&mode=" + mode + "&curr_id=" + curr_id + "&prj_id=" + prj_id + "&wu_id=" + wu_id);
+}
+
+
++++++++++++++++++++++++++ Текущее +++++++++++++++++++++++ ??
+var setPriceTotal=function(wu_id)
+{
+	
+}
+
+function editDoc(docId, prjId)
+{ 
+	openWindow("c=nica/docEdit&DOC_ID="+docId + "&PROJECT_ID=" + prjId,"e_docEdit"+docId,1000,620);
+//	openWindow("c=nica/e_docEdit&DOC_ID="+docId + "&PROJECT_ID=" + prjId,"e_docEdit"+docId,1000,620);
+}
+
+
+/*=============================== TABs ====================================*/ ??
+/*=========================================================================*/ ??
+function tabSel(m){ 
+	showMsg(".cont");	
+  clrLocalFields();
+	setElement("popupCont",""); 
+	module=m;	
+	openNode(); 
+}
+
+function t_struct() {	tabSel("i_getWBS"); }
+function t_pplan() {tabSel("r_pplan"); }
+function t_planfact() {tabSel("r_planfact");}
+
+function t_status() {tabSel("r_EVM_Status");}
+function t_repEVM() {tabSel("r_EVM_graph");}
+function t_Admin() {tabSel("r_Admin"); }
+function t_listDocs() {clrLocalFields(); showMsg(".cont"); loadFrame("c=nica/r_listDocs&curr_id=" + curr_id); }
+
+var t_Admin_users=function() {clrLocalFields(); doSubmit("start", "r_Admin_Users");}
+var t_Admin_struct=function() {clrLocalFields(); doSubmit("keep", "r_Admin_Structure");}
+var t_Admin_vers=function() {clrLocalFields(); doSubmit("keep", "r_Admin_Versions");}
+
+var t_pplan_items=function() {clrLocalFields(); doSubmit("start", "r_pplan_list");}
+var t_pplan_svod=function() {clrLocalFields(); doSubmit("start", "r_pplan_svod");}
+var t_pplan_EV=function() {clrLocalFields(); doSubmit("start", "r_pplan_EV");}
+var t_pplan_check=function() {clrLocalFields(); AjaxCall("r_title", "theForm", "nica/check/plan-costbook");}
+
+var t_costbook=function() {clrLocalFields(); AjaxCall("c_costbook", "theForm", "nica/costbook/tab_costbook");}
+
+var t_costbook_data=function() {clrLocalFields(); document.theForm.CostbookModule.value="r_data"; AjaxCall("c_costbook", "theForm", "nica/costbook/tab_costbook");}
+var t_costbook_check=function() {clrLocalFields(); document.theForm.CostbookModule.value="r_check"; AjaxCall("c_costbook", "theForm", "nica/costbook/tab_costbook");}
+var t_costbook_list=function() {clrLocalFields(); document.theForm.CostbookModule.value="r_list_all"; AjaxCall("c_costbook", "theForm", "nica/costbook/tab_costbook");}
+var t_costbook_svod=function() {clrLocalFields(); document.theForm.CostbookModule.value="r_svod"; AjaxCall("c_costbook", "theForm", "nica/costbook/tab_costbook");}
+var t_costbook_RF=function() {clrLocalFields(); document.theForm.CostbookModule.value="r_RF"; AjaxCall("c_costbook", "theForm", "nica/costbook/tab_costbook");}
+
+var t_costbook_overdraft=function() {clrLocalFields(); document.theForm.CostbookModule.value="r_overdraft"; AjaxCall("c_costbook", "theForm", "nica/costbook/tab_costbook");} ??
+
+var t_costbook_check=function() {clrLocalFields(); AjaxCall("r_title", "theForm", "nica/costbook/r_check");}  ??
+var t_costbook_svod=function() {AjaxCall("r_title", "theForm", "nica/costbook/r_svod");}  ??
+var t_costbook_overdraft=function() {AjaxCall("r_title", "theForm", "nica/costbook/r_overdraft");} ??
+var t_costbook_list=function() {AjaxCall("r_title", "theForm", "nica/costbook/r_list_all");} ??
+
+var clrLocalFields=function(){
+$('.local').val(''); 
+alert(1); ??
+}
+
+var setPri=function(id, sel) {
+var p = getSelectedVal(sel);
+	loadFrame("c=nica/e_setWuPri&id=" + id + "&pri=" + p, "wf2");
+}
+
+
+var setTabsClicks=function(tabDivId, act)
+{
+	var a = 0;
+	if (act) a = act;
+	$( "##" + tabDivId ).tabs({
+	active: a,
+	beforeActivate: function( ev, ui ) 
+	{
+		alert(ui.newTab[0]["id"]); ??
+		if(checkChanged())
+		{
+			atab=ui.newTab[0]["id"];
+			eval(atab + "();");
+		}
+		else
+			return false;
+	}
+});
+}
+
+var checkChanged=function()
+{
+	if(formChanged)
+	{	if (confirm('При переходе изменения данных будут потеряны!\n\r\n\rНажмите "OK" для подтверждения перехода,\n\r"Отмена" для сохранения данных'))
+			formChanged = false;
+		else
+			return false;
+	}	
+	return true;
+}
+
+var setChanged=function()
+{
+	formChanged=true;
+}
+
+var clickTab=function(id)
+{
+	alert(id); ??
+showProps($("##" + id + " a"));  ??
+	$("##" + id + " a").click();
+}
+
+/*=========================== Вызов модуля ==========================*/ ??
+/*===================================================================*/ ??
+
+/*
+ * AJAX-загрузка контента в target_div.
+ * formContainerId - ID блока с input-эл-тами, которые надо собрать.
+ * если formContainerId=theForm - собрать все эл-ты формы, 
+ *  если при этом заданы c и cop - сначала поставить их в форму
+ * query - дополнительные параметы запроса в URL-формате (param1=val1&param2=val2)
+ */
+var AjaxCall=function(target_div, formContainerId, c, cop, query) {
+
+    console.log("AjaxCall: " + formContainerId + "=>" + target_div + "; c=" + c + "; query=" + query); 
+    var data = [];
+
+    if(formContainerId) {
+        if(formContainerId === "theForm") {
+            if(c) document.theForm.c.value=c;
+            if(cop) document.theForm.cop.value=cop;
+            else  document.theForm.cop.value="";
+            data = $('form').serializeArray();
+        }
+        else
+            data = $("##"+formContainerId+" input, ##" +formContainerId+" textarea, ##"+formContainerId + " select" ).serializeArray();
+    }
+
+    if(query) {
+        var params = query.split("&");
+        for(i=0; i<params.length; i++){
+            var p = params[i].split("=");
+            data.push({name:p[0], value:p[1]});
+        }
+    }
+    data.push({name:"ajax", value:"Y"});
+    console.log("AjaxCall: => " + target_div); data2log(data);
+    formChanged=false;
+
+    var request = $.ajax({ url: "#ServletPath#", type: "POST", data:data, dataType: "html" });
+        request.done(function( msg ) { if(target_div) $( "##" + target_div ).html( msg ); setStandardEvents(); });
+        request.fail(function( jqXHR, textStatus ) { alert( "Ошибка: " + textStatus ); });
+/*
+    if(target_div !== "d_tooltip"
+      && target_div !== "field_property_panel"
+      && target_div !== "doctype_form_panel"
+      && target_div !== "toolbar_panel"
+    )
+    showLoading(target_div); /**/
+}
+
+
+var data2log = function(d) {
+    for(i=0; i<d.length; i++) {
+        console.log(i + ": " + d[i].name + "=" + d[i].value);
+    }
+}
+
+
+function loadFrame(param, f, host)
+{ 
+	var wf = "wf";
+	if (f) wf = f;
+	if(host) {
+		alert(wf); ??
+		frames[wf].window.location.replace(host + "?" + param );
+	}
+	else {
+	var tm = (new Date()).getTime();
+	alert(tm); ??
+//	  + "&tm=" + tm
+	var ver = getSelectedVal(document.theForm.VER);
+	alert(" / " + ver);  ??
+	var yr = getSelectedVal(document.theForm.f_nica_year); 
+	alert(yr + " / " + ver);  ??
+console.log("loadFrame: " + param + "&f_nica_year=" + yr + "&VER=" + ver );
+	frames[wf].window.location.replace("#ServletPath#?" + param 
+	+ "&f_nica_year=" + yr + "&VER=" + ver 
+	+ "&tm=" + tm);
+	}
+}
+
+/*=============================== JQuery ============================*/ ??
+/*===================================================================*/ ??
+
+/*------------------ Дерево -------------------- */
+function setTree()
+{
+	$("##d_tree").hide();
+	$("##tree").treeview({
+		collapsed: true,
+		animated: "fast",
+		unique: true,
+		control:"##sidetreecontrol",
+		persist: "location"
+	});
+	$("##d_tree").show(); 
+	$("##d_tree").show("blind", {}, 500); ?? clip fold ??
+	setTreeClicks();
+}
+
+function setYear(){
+var yr = getSelectedVal(document.theForm.f_nica_year);
+alert(yr); ??
+	loadFrame("c=nica/i_setVersions&yr=" + yr, "wf2"); 
+}
+
+var f_CURR_YR = "#f_CURR_YR#";
+
+function refreshTree(currId, setCurrYr, currYrOnly)
+{
+	if (!currId)currId=prj_id;
+	alert(currId);  ??
+	var s = "";
+	if (setCurrYr) s = "&CURR_YR_ONLY=" + currYrOnly;
+	if (!currYrOnly) f_CURR_YR="";
+	alert(s); ??
+	loadFrame("c=nica/i_getProjectTree&ext=y&currId=" + currId + s, "wf2");
+}
+
+
+function printTree(ver, currId)
+{
+	if (!currId)currId=prj_id;
+	var tm = (new Date()).getTime();
+  var win= window.open( "#ServletPath#?c=nica/i_getProjectTreePrint&f_CURR_YR=" + f_CURR_YR + "&VER=" + ver + "&tm=" +  tm + "&currId=" + currId,  "printWindow" + tm,
+  "toolbar=no,location=no,directories=no,status=no,menubar=yes,scrollbars=yes," +
+  "resizable=yes,copyhistory=no,width=900,height=600");
+}
+
+function getEV_Tree(ver, currId)
+{
+	if (!currId)currId=prj_id;
+	var tm = (new Date()).getTime();
+  var win= window.open( "#ServletPath#?c=nica/i_get_EV_Tree&VER=" + ver + "&f_CURR_YR=" + f_CURR_YR + "&currId=" + currId + "&tm=" + tm,  "EVWindow",
+  "toolbar=no,location=no,directories=no,status=no,menubar=yes,scrollbars=yes," +
+  "resizable=yes,copyhistory=no,width=800,height=600");
+}
+
+//------ Раскрыть узел дерева  -----??
+function expandNode(id, pre)
+{
+	try { 
+	var t = $('##n' + pre + id);
+	if(pre) 
+		if ($('##ch' + pre + id + ':visible').length > 0)
+		{ $("##chp" + id).hide();
+			$("##lip" + id + " div:first").removeClass("collapsable-hitarea").addClass("expandable-hitarea");
+		}
+		else
+		{ $("##chp" + id).show();
+			$("##lip" + id + " div:first").removeClass("expandable-hitarea").addClass("collapsable-hitarea");
+		}
+	else if (! $('##ch' + pre + id + ':visible').length > 0)
+			t.prev().click();
+	} catch (e) {;}
+}
+
+//------ Подргузка WU для дерева  -----??
+var next_id=0;
+function loadWUList(pid, nid)
+{
+			alert("loadWUList: pid=" + pid + "; next_id=" + nid); ??
+			alert( $('##li' + pid)[0].children.length); ??
+	try {
+		if( $('##li' + pid)[0].children.length<2)
+		{	next_id = 0; if (nid) next_id=nid;
+			loadFrame("c=nica/i_loadWUList&pid=" + pid, "wf2");
+			return true;
+		}
+		return false;
+	} catch (e) { alert(e);}
+}
+
+//------ Добавление WU к дереву -----??
+function addWUList(pid, branches)
+{
+		var id = '##li' + pid; 
+		$(id).treeview({add: $(id).append(branches) });
+		bindEvents();
+		setTreeClicks();
+		expandNode(pid);
+		if( next_id>0 )	
+		{	loadFrame("c=nica/i_expandPath&prj_id=" + pid, "wf2");
+			mode="view";
+			clickNode(next_id);
+		}		
+}
+
+//-----  клики по дереву -----??
+function setTreeClicks()
+{
+	$('.c').unbind('click');
+	$('.c').click(function()
+		{	if(checkChanged())
+			{	$('.c').removeClass("aaa"); 
+				$(this).addClass("aaa"); 
+				getId($(this).attr("id"));
+				alert(atab); ??
+				eval(atab+"();");
+			}
+		}
+	);	
+}
+
+//----- для внешнего упрощенного использования
+var clickNode = function(id) {	$('##' + id).click();}
+
+/*------------------ клики-эффекты -------------------- */ ??
+
+//-----  другие линки на структуру -----??
+var sel = function(ev) {
+	if(ev.type == "mouseover") $(this).addClass("aa");
+	else if(ev.type == "mouseout")	$(this).removeClass("aa");
+	else if(ev.type == "click")
+	{
+		alert($('##' + $(ev.target).attr("nid")).attr("id")); ??
+		console.log($(ev.target).attr("nid") + " / " + $(ev.target).attr("atab") + " / " +  + $(this).attr("nid")); 
+			if($(this).attr("atab")) 
+			{	atab = $(this).attr("atab");	
+				if(atab=="t_struct")
+					$( "##tabs" ).tabs( "option", "active", 0 );
+			}
+		if ($('##' + $(this).attr("nid")).attr("id"))
+			$('##' + $(this).attr("nid")).click();
+		else if($(this).attr("nid"))
+		{	getId($(this).attr("nid"));
+			eval(atab+"();");
+		}
+	}
+	return true;
+}
+var doCmd = function(ev) {
+	alert($(this).attr("par")); ??
+		alert($(ev.target).attr("nid") + " / " + $(ev.target).attr("atab") + " / " +  + $(this).attr("nid")); ??
+	if($(this).attr("par")) 
+		{	par = $(this).attr("par");	
+			alert(par); ??
+			loadFrame(par);
+			, "wf2" ??
+		}
+}
+
+var makeTableCfg="";
+
+/**
+ * Установка параметров сортировки и вызов модуля постоения таблицы,
+ * заданного в makeTableCfg.
+ */
+var setSrt = function(ev) {
+	var s_new = $(this).attr("sr");
+alert(makeTableCfg + " / " + s_new); ??
+	var s_old = frm.srt.value;
+	if (s_new == s_old)
+	{ if(frm.desc.value == 'desc') frm.desc.value = '';
+		else frm.desc.value = 'desc';
+	}
+	else
+		frm.srt.value = s_new;
+	doSubmit("", makeTableCfg);
+	return false;
+}
+
+/**
+ * ЗАГЛУШКА - определена в nica/costbook/tab_costbook.cfg
+ * 
+ */
+var setSrt_A = function(ev) {
+}
+
+var showSrt = function(srt, cl) {$("th[sr='" + srt + "']").addClass(cl); }
+
+//------------- pop-up справочник ---------------??
+var timeout_id=false;
+
+var showSprav = function(ev) {
+	if(ev.type == "blur")
+		timeout_id = window.setTimeout(function(){$('##d_sprav_window').hide();}, 300);
+	else
+	{	var fn = $(ev.target).attr("name");
+		var val = eval("document.theForm." + fn + ".value");
+		var o = $('input[name=' + fn + ']');
+		var t = o.offset().top - o.height() - 30;
+		var l = o.offset().left - 480;
+		$('##d_sprav_window').css({'top': t, 'left': l}); 
+		document.theForm.mode.value=fn;
+		document.theForm.cop.value=val;
+	  if (timeout_id) clearTimeout(timeout_id);
+		timeout_id = window.setTimeout(doShowSprav, 700);
+		$('##d_sprav').html($('##loadingMsg').html());
+	}
+	return false;
+}
+
+
+function doShowSprav()
+{	
+	document.theForm.c.value="nica/i_getRespList";
+	document.theForm.submit();
+	$('##d_sprav_window').show();
+}
+
+var setSpravItem=function(ev)
+{
+	var o = $(this).find(':first-child');
+	var tg = $('input[name=' + document.theForm.mode.value + ']');
+	tg.val(o.html());
+	tg.next('input').val(o.next().html());
+	tg.parent().parent().next('tr').find('input').val(o.next().next().html());
+	return false; 
+}
+
+
+//----- для кнопок -----??
+var sel_b = function(ev) {
+	if(ev.type == "mouseover") $(ev.target).addClass("ba");
+	else if(ev.type == "mouseout") $(ev.target).removeClass("ba");
+	return false;
+}
+
+var formChanged=false;
+
+var setTaskName=function(ev)
+{
+    try {
+	var a = $(ev.target).html().split("<br>");
+	document.theForm.TITLE_.value=a[0];
+	document.theForm.TITLE_E_.value=a[1];
+	formChanged=true;
+    }
+    catch(e) {;}
+}
+
+var bindEvents=function()
+{
+$('.ppath, .pcmd, .c, .cp, .pt, .spr, .b_nica, .srh, .sra, .sprav, .spr_item, .fe').unbind(); ??
+	$('.ppath').click(sel);
+	$('.pcmd').click(doCmd);
+	$('.ppath, .c, .cp, .srh, .sra, td.spr_item, .pt, .pcmd').mouseout(sel);
+	$('.ppath, .c, .cp, .srh, .sra, td.spr_item, .pt, .pcmd').mouseover(sel);
+	$('.b_nica').on({"mouseout" : sel_b, "mouseover" : sel_b});
+	$('.b_nica').mouseover(sel_b);??
+	$('.srh').click(setSrt);
+	$('.sra').click(setSrt_A);
+
+	$('.pt').click(setTaskName);
+	$('.sprav').on({"keyup":showSprav, "focus_" :showSprav, "blur":showSprav});
+	$('td.spr_item').click(setSpravItem);
+	$('.fe').change(setChanged);
+}
+
+var toggleIt = function(sel){$(sel).toggle();} 
+var toggleIt = function(sel){if($(sel).is(':visible')) hideIt(sel); else showIt(sel);} ??
+var hideIt = function(sel){if(document.all) $(sel).hide(); else $(sel).hide("blind", {}, 300);}
+var showIt = function(sel){if(document.all) $(sel).show(); else $(sel).show("blind", {}, 300);}
+/*============================ Редактирование дерева ======================*/ ??
+/*=========================================================================*/ ??
+
+//--- вызывается по клику на дереве или на другом линке --- ??
+function getId(id)
+{
+	alert(id + "/" + id.substr(0,1)); ??
+	if (id)
+		if (IsNumeric(id))
+		{ if (module=="i_getWBS") prj_id=id;
+			else wu_id=id;
+			curr_id=id;
+		}
+		else
+		{	curr_id=id.substr(1);
+			if (id.substr(0,1) == "n")
+			{ module="i_getWBS";
+				prj_id=curr_id;
+//				if ( $('##' + nid).length == 0)
+				loadWUList(prj_id);
+			}
+			else
+			{	module="i_getWU";
+				wu_id=curr_id;
+			}
+		document.theForm.curr_id.value=curr_id;
+		document.theForm.prj_id.value=prj_id;
+		document.theForm.wu_id.value=wu_id;
+		expandNode(curr_id); ??
+	}
+}
+
+function setNode(module_, mod, id)
+{
+	module=module_;
+	alert(module); ??
+	if(mode) mode=mod;
+	if(id)
+	{	curr_id = id;
+		if (module=="i_getWBS")	prj_id=id;
+		else wu_id=id;
+		document.theForm.curr_id.value=curr_id;
+		document.theForm.prj_id.value=prj_id;
+		document.theForm.wu_id.value=wu_id;
+	}
+}
+
+function setMode(mod)
+{ 
+	mode=mod;
+	document.theForm.mode.value=mode;
+	openNode();
+}
+
+
+var checkInput=function(o)
+{
+	var msg="";
+	o.each( function(ind)
+	{
+		
+		if($(this)[0].type == "radio")
+		{ 
+			if(!$('input[name=' + $(this)[0].name + ']:checked').val())
+			{
+				alert($(this)[0].type + ":" + $(this)[0].name); ??
+				if(msg.indexOf($(this).attr("mand"))<0)
+					msg += ', "' + $(this).attr("mand") + '"'; 
+			}
+		}	else if ($(this).val()=='' && $(this).attr("mand")) 
+		{		msg += ', "' + $(this).attr("mand") + '"'; 
+				showProps($(this)[0]); ??
+			}
+	}	);
+
+	if (msg)
+	{	alert("Не задано:\n\r " + msg.substr(1)); 
+		return false;
+	}
+	return true;
+}
+
+var checkPlan=function()
+{
+	if($('##PRICETOTALPLAN').html().length <3) 
+	{ alert("Введите распределение затрат");
+		return false;
+	}
+	return true;
+}
+
+var doSubmit=function(cop, modul, keepDialog, keepMode)
+{
+	formChanged=false;
+	if(modul) { module=modul;
+    document.theForm.c.value="nica/" + modul;
+  }
+	if (cop=='d'
+	&& !confirm("Запись будет удалена!\n\r\n\rПродолжить?"))
+	{
+		document.theForm.mode.value=mode;
+		document.theForm.cop.value="";
+		return;
+	}
+	if(cop && (cop=='u' || cop=='n') && !checkInput($("[mand]"))) return;
+	if (confirm(module + ":" + cop + ":" + mode)) ??
+	{ ??
+		document.theForm.c.value="nica/" + module;
+		if(cop && !keepMode) {
+			mode = "edit";
+			document.theForm.mode.value="edit";
+		}
+	alert(module + ":" + cop + ":" + mode);  ??
+		if(cop!='keep')
+			document.theForm.cop.value=cop;
+		document.theForm.submit();
+	} ??
+	if (!keepDialog)
+		HideDialog();
+}
+
+var getObjectById=function(elementId) {
+return document.getElementById(elementId);
+}
+
+function setEV(id)
+{
+	showMsg("##popupCont");
+	showProps($("##popupTree")[0]); ??
+	alert($("##popupTree").attr("id")); ??
+	alert($("##popupTree")[0].innerHTML.length); ??
+	showMsg("##dialog_title", "Ввод Earned Value");
+	loadFrame("c=nica/i_WuEv&cop=form&id=" + id);
+	ShowDialog(true);
+}
+
+//------------------------- Зависимости ----------------------??
+function changePrev(id, prev, refresh)
+{
+	showMsg("##popupCont");
+	showProps($("##popupTree")[0]); ??
+	alert($("##popupTree").attr("id")); ??
+	alert($("##popupTree")[0].innerHTML.length); ??
+	if (prev)	showMsg("##dialog_title", "Выбор предшествующих работ");
+	else showMsg("##dialog_title", "Выбор последующих работ");
+	loadFrame("c=nica/i_getBrothers&id=" + id); ??
+	if(refresh) $("##popupTree").html("-");
+	loadFrame("c=nica/i_getProjectTreeSelect&id=" + id + "&prev=" + prev + "&ready=" + $("##popupTree")[0].innerHTML.length);
+	ShowDialog(false);
+}
+
+function savePrev(id,prev)
+{
+	var ids = "";
+	$("input.brth:checked").each(function() {
+	alert($(this).attr("id")); ??
+	ids = ids + "," + $(this).attr("id");
+	});
+	alert(ids); ??
+	loadFrame("c=nica/i_setPrev&id=" + id + "&ids=" + ids + "&prev=" + prev);
+	HideDialog(); ??
+}
+
+// ------------ Дерево зависимостей ----------------------??
+
+function setTreeS()
+{
+	alert(prev_ids); ??
+	$("##d_tree").hide(); ??
+	$("##trees").treeview({
+		collapsed: true,
+		animated: "fast",
+		unique: false,
+		control:"##sidetreecontrol",
+		persist: "location"
+	});
+	$("##d_tree").show(); ??
+	$("##d_tree").show("blind", {}, 500); ?? clip fold ??
+	$('.cp').unbind('click');
+	$('.cp').click(function(){
+			expandNode($(this).attr("id").substr(2), "p");
+			eval(atab+"();"); ??
+		}
+	);	
+}
+
+
+function setPrevCB(prev_ids)
+{
+	$("##popupCont").hide();
+	$("##popupTree").show();
+	$("[id^=chp]").hide();
+	$("[id^=lip] div.collapsable-hitarea").removeClass("collapsable-hitarea").addClass("expandable-hitarea");
+	$(".brth").each(function() {$(this)[0].checked=false; $(this)[0].disabled=false;});
+	var a = prev_ids.split(',');
+	for (i=0; i<a.length; i++)
+		if(a[i]) document.getElementById(a[i]).checked=true;
+	document.getElementById(curr_id).disabled=true;
+}
+
+/*=============================== Startup ============================*/ ??
+$(function(){
+setTree(); 
+setTabsClicks("tabs"); 
+
+$("##d_tree").show("blind", {}, 500);  
+$("##tabs").show("fold", {}, 500); 
+clickNode(curr_id); ??ZZZ
+eval(atab + "();");		
+showProps($("a[href='##d" + atab + "']")); ??ZZ
+$("a[href='##d" + atab + "']").click(); 
+
+})
+
+/*=============================== Popup-диалоги ============================*/ ??
+/*=========================================================================*/ ??
+var showDlg=function(dlg_id)
+{
+$("##" + dlg_id).dialog({
+		modal: true,
+		autoOpen: false,
+    position: ["center","10%"],
+    buttons: {"Закрыть": function() { $(this).dialog("close"); }},
+		beforeClose: function(event, ui) {
+				$(this).dialog("destroy");
+				return true;
+			}
+	});
+	$("##" + dlg_id).dialog("open");
+}
+
+function showLocalDialog(contentId, modal)
+{
+	showMsg("##dialog_title", "Создание потомка"); ??
+	showMsg("##popupCont", document.getElementById(contentId).innerHTML); ??
+	ShowDialog(modal); ??
+	showDialogCont("Создание потомка", document.getElementById(contentId).innerHTML, modal)
+}
+
+function showDialogCont(title, content, modal)
+{
+	showMsg("##dialog_title", title);
+	showMsg("##popupCont", content);
+	ShowDialog(modal);
+}
+
+function ShowDialog(modal)
+{
+	$("##overlay").show(); ??
+	$("##popupCont").show();
+	$("##popupTree").hide();
+	$('##overlay').height($(document).height()).fadeIn(300); ??
+	$('##overlay').height($(document).height()).show();
+	$("##dialog").fadeIn(300); ??
+	$("##dialog").show();
+	if (modal)
+			$("##overlay").unbind("click");
+	else
+			$("##overlay").click(function (e) {HideDialog(); });
+	$( "##dialog" ).draggable({
+	containment:'parent', ??
+	handle: '.dialog_title'});	
+	dialogOn = true;
+	centerDialog();
+}
+
+function HideDialog()
+{
+	$("##overlay").hide();
+	$("##dialog").fadeOut(300);
+	$("##popupCont").html("");
+	dialogOn = false;
+} 
+
+
+function showMsg(selector, msg)
+{
+	var m= (msg)? msg: "<center><h3><br><br><br>Загрузка...<br><br><br><br></h3>";
+	$(selector).each(function() {$(this).html(m); });
+	{$(this)[0].innerHTML=m; }); ??
+}
+
+// http://ruseller.com/lessons.php?rub=2&id=554  ??
+
+function centerDialog(){
+	if (!dialogOn) return;
+
+	var h = document.body.offsetHeight-200;
+	if(document.all) h = h - 40; ??
+	if (h<200) h=200;
+	if (h>500) h=500;
+	$('##ptree').height(h);
+	
+//  if(document.all) t = ($("body").innerHeight() - $('.dialog').outerHeight())/2 + $(window).scrollTop(); ??
+//	else t = ($("window").innerHeight() - $('.dialog').outerHeight())/2 + $(window).scrollTop(); ??
+//	t=$(window).scrollTop() + 10;
+	var t = window.document.body.scrollTop + 50 + (h - $('.dialog').outerHeight())/2 ;
+	if (t<10) t=10;
+	$('.dialog').css({
+		position:'absolute',
+		left: ($("body").innerWidth() - $('.dialog').outerWidth())/2,
+		top: t
+	});
+}
+
+$(window).resize(function(){
+centerDialog();
+	});
+
+
+/*============================ Сервис =====================================*/ ??
+/*=========================================================================*/ ??
+
+$.fn.ezpz_tooltip.positions.topLeft = function(contentInfo, mouseX, mouseY, offset, targetInfo) {
+  contentInfo['top'] = mouseY-50;
+  contentInfo['left'] = mouseX-280;
+	alert(offset); ??
+	showProps(targetInfo); ??
+  return contentInfo;
+};
+
+function getResult(div_id, res)
+{
+	setElement(div_id,res.innerHTML);
+	if(res.innerHTML) { setStandardEvents(); 
+		 res.innerHTML = "";  ??
+	}
+	if (div_id=="popupCont") centerDialog();
+
+/*
+ $(".ttt").ezpz_tooltip(
+	  {
+			contentPosition: 'topLeft'
+			contentPosition: 'aboveRightFollow' ??
+			, beforeShow: function(content){showProps(content[0]);	} ??
+		}
+	);
+	/**/
+}
+
+var setStandardEvents = function()
+{		bindEvents();
+		setCalendars();
+}
+
+var setElement = function(div_id, txt)
+{ 
+	document.getElementById(div_id).innerHTML=txt; ??
+	$("##"+div_id).html(txt); 
+}
+
+
+var setCalendars = function() {
+	$("##DATE_PLAT_").datepick({yearRange:	'c-0:c+2', showSpeed: 'fast'}); 
+	$("##DATE_START_").datepick({yearRange:	'c-2:c+7', showSpeed: 'fast'});
+	$("##DATE_FINISH_").datepick({yearRange:	'c-2:c+7', showSpeed: 'fast'});
+	$("##PLANNED_FINISH_").datepick({yearRange:	'c-0:c+1', showSpeed: 'fast'});
+}
+
+
+function IsNumeric(input)
+{ return (input - 0) == input && input.length > 0;
+}
+
+function showProps(o)
+{
+	try {
+	var v= "tag:" + o.tagName + "; id=" + o.id + "<table border=1>";
+	for(var key in o) {
+//		if (o[key] && o[key].indexOf("function") < 0) 
+		if(o[key] && !$.isFunction(o[key]) && !$.isEmptyObject(o[key]))
+			v=v+ '<tr><td>'+key + '</td><td> ' + o[key] + '</td></tr>';
+			alert('key: ' + key + '\n' + 'value: ' + o[key]); ??
+	}
+	document.getElementById("debug").innerHTML=v+"</table>";
+	return v+"</table>"; ??
+	} catch (e) { document.getElementById("debug").innerHTML="NO OBJECT";}
+}
+
+var showLoading=function(targetDiv)
+{
+	$("##" + targetDiv).html($("##loadingMsg").html() ); 
+}
+
+function getRequest(reqNr, dat)
+{
+	openWindow("c=c2/request&f_req=" + reqNr + "&f_dat=" + dat, "REQ", 1000,800);  ??q_yr>12
+	openWindow("c=c1/platList3&f_platNr=" + nomPlat, "plat", 1000,800);  ??q_yr<13
+}
+
+
+function showAdb2(docId, prjId)
+{
+if (prjId)
+openWindow("c=nica/docEdit&DOC_ID="+docId,"docEdit"+docId,1000,700);
+else
+openWindow("c=doc/docEdit&DOC_ID="+docId,"docEdit"+docId,1000,650);
+}
+
+function goToRow(nr)
+{ 
+  frm.srn.value=nr;  
+//  alert (frm.srn.value);
+  frm.submit();
+}
+
+</script>
+[end]
+
+
+
+
+
+
+
+
+
+
+
+
+/*================== функции выбора проекта при регистрации в ADB2 - НЕ ИСПОЛЬЗУЮТСЯ! ==============*/
+/*
+function setProject()
+{
+	window.opener.document.theForm.PROJECT_ID.value = "#prj_id#";
+	window.opener.pasteResults(document.getElementById("path_result").innerHTML, "prjPath");
+	window.opener.document.theForm.submit(); ??LIST=Y
+	window.close();
+}
+
+function clearProject()
+{ if (confirm("Этот документ не относится к проекту NICA?\n\rУдалить привязку к проекту?"))
+	{
+		window.opener.document.theForm.PROJECT_ID.value = "";
+		window.opener.document.theForm.c.value = "doc/docEdit";
+		window.opener.save();
+		window.close();
+	}
+}
+*/
+

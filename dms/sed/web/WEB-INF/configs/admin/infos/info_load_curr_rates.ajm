@@ -1,0 +1,98 @@
+admin/infos/info_load_curr_rates.cfg
+
+[comments]
+descr=А: Обновление справочника куров валют
+
+input=
+output=
+parents=admin/infos/infos_list_table.cfg
+childs=
+test_URL=?c=admin/infos/info_load_curr_rates
+author=Куняев
+[end]
+
+[description]
+[end]
+
+
+[parameters]
+request_name=A:загрузка курсов
+info_id=13
+service=jinr.sed.ServiceGetCurrRates
+KeepLog=false
+ClearLog=true
+debugPrint=true
+currCodes=,840,978,
+uri=http://www.cbr.ru/scripts/XML_daily.asp?date_req=#NEXT_DATE#
+[end]
+
+
+
+[report header]
+$SET_PARAMETERS FILL_HOLES=Y;  ??!NEXT_DATE
+$GET_DATA [get next date]  ??!NEXT_DATE
+Обновление данных справочника "#INFO_NAME#" NEXT_DATE=#NEXT_DATE#;
+DATA_MISSING=#DATA_MISSING#;<br>
+[end]
+
+[report footer]
+$INCLUDE [item] ??DATA_MISSING=Y
+<b>ОШИБКА:</b> #ERROR# ??ERROR
+$INCLUDE [fill holes]  ??FILL_HOLES=Y
+[end]
+
+[item]
+<b>КУРС  #charCode#(#code#) на #NEXT_DATE#: #rate# за #nominal# </b><br> 
+<xmp>
+$INCLUDE [put record]
+</xmp>
+[end]
+
+
+[fill holes] ЦИКЛ: Заполнение пропусков, если они есть, в предыдущих данных
+$GET_DATA [get holes]
+NEXT_DATES=#NEXT_DATES#;
+$SET_PARAMETERS FILL_HOLES=; DATA_MISSING=Y;
+$EXECUTE_LOOP NEXT_DATE; #NEXT_DATES#; [fill hole]  ??NEXT_DATES
+[end]
+
+$SET_PARAMETERS NEXT_DATES=;
+$CALL_SERVICE c=admin/infos/info_load_curr_rates; NEXT_DATE=; 
+
+
+[fill hole] Заполнение одного пропуска
+<hr> +++++++ Заполнение пропуска:  NEXT_DATE=#NEXT_DATE#;<br>
+$CALL_SERVICE c=admin/infos/info_load_curr_rates; NEXT_DATE=#NEXT_DATE#;
+[end]
+
+
+[preSQLs]
+$INCLUDE admin/infos/info_data.cfg[getInfoSQL]  ??!TABLE_NAME
+[end]
+
+[get next date] Получение очередной незаполненной даты
+select DATE_FORMAT(DATE_ADD(max(date),INTERVAL 1 DAY) ,'%d/%m/%Y') as "NEXT_DATE"
+from #TABLE_NAME#
+;
+select case when STR_TO_DATE('#NEXT_DATE#', '%d/%m/%Y') < now() then 'Y' else 'N' end as "DATA_MISSING" 
+[end]
+
+
+[put record]  Занесение в БД курса одной валюты на дату
+insert into #TABLE_NAME# (date, code, curr,rate, sort, changed)
+values (STR_TO_DATE('#NEXT_DATE#', '%d/%m/%Y'), #code#, '#charCode#'
+, #rate# / #nominal#
+, DATEDIFF(STR_TO_DATE('01.01.2016', '#dateFormat#'), STR_TO_DATE('#NEXT_DATE#', '%d/%m/%Y'))
+, now()
+)
+[end]
+
+
+delete from #TABLE_NAME# where date=STR_TO_DATE('#date#', '#dateFormat#') and code=#code#; ??
+
+[get holes]  Поиск пропусков в старых данных
+select GROUP_CONCAT(distinct DATE_FORMAT(DATE_SUB(a.date,INTERVAL 1 DAY),'%d/%m/%Y')) as NEXT_DATES
+from i_curr_rate a
+left join i_curr_rate b on b.date=DATE_SUB(a.date,INTERVAL 1 DAY) and b.code=a.code
+where b.date is null and a.date<now() and a.date>DATE_SUB(now(), INTERVAL 2 MONTH)
+[end]

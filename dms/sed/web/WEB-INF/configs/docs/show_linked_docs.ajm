@@ -1,0 +1,118 @@
+show_linked_docs.cfg
+
+[comments]
+descr=U: Выбор типа документа при создании потомка
+input=pid=562; child_type_id=8
+output=Перечень возможных типов документов-потомков
+parents=docs/view_doc.cfg
+childs=docs/edit_doc
+test_URL=?c=docs/create_child_type&pid=562
+author=Куняев
+[end]
+
+
+[parameters]
+request_name=U:Создание потомка документа
+service=dubna.walt.service.TableServiceSpecial
+tableCfg=table_no
+LOG=ON
+[end]
+
+
+[report header]
+<table style="margin:0 0 0 0px; border-right:dotted 1px gray;" cellspacing=0> ??mode=list
+$INCLUDE [t_header] ??!mode=list
+$INCLUDE [parent]
+<tr><td colspan=5>Порожденные документы:</td></tr>  ??NUM_CHILDS>0
+[end]
+
+[t_header]
+<table class="tlist tblue" style="margin:0;" cellspacing=0 width=100%> 
+<tr><th>
+id ??AR_DEV=1_ZZZ
+</th> 
+<th>Документ</th>
+<th>Статус</th> ??
+<th>Содержание</th>
+<th>Подразд.</th> ??
+<th>Создан</th> 
+<th>Изменен</th> ??
+<th class="pt" style="padding: 3px; width:1%;" onClick="$('##linked_cont').hide(100);">&nbsp;X</th> </tr>
+[end]
+
+[parent]
+$GET_DATA [get parent]
+<tr><td colspan=5>Документ-основание:</td></tr> ??PID
+$GET_DATA [SQL]  ??PID
+$INCLUDE [item] ??PID
+$SET_PARAMETERS PID=;
+[end]
+
+
+[item]
+++++++++++++++++++ Строка таблицы - 1 документ +++++++++++++++++++++ ??
+<tr class="pt" 
+onClick="$('##doc_overlay').show(); AjaxCall('doc_content', 'c=docs/view_doc&doc_id=#ID#&mode=popup', true);">  ??!mode=ext
+onClick="window.location.href='#ServletPath#?c=docs/view_doc&doc_id=#ID#&mode=ext';">  ??mode=ext
+<td class="bottom_dotted" style="padding:0; width:20px;">
+#ID# ??AR_DEV=1_ZZZ
+</td> 
+<td class="bottom_dotted
+bg_red ??is_deleted=1
+" >#DOC_TYPE#
+№#NUMBER#  ??NUMBER
+от #DOC_DATE#  ??DOC_DATE
+</td> 
+<td class="bottom_dotted">#TITLE#</td>
+<td class="bottom_dotted">#DIVS#</td> ??
+<td colspan=2 class="bottom_dotted">#CREATED#, #CREATOR#</td> 
+<td>#MODIFIED#, #MODIFIER#</td>  ??
+</tr>
+$SET_PARAMETERS is_deleted=;
+[end]
+
+
+<td class="bottom_dotted" >
+В процессе согласования ??STATUS=1
+На этапе завершения ??STATUS=2
+Завершен ??STATUS=3
+</td>
+
+
+[report footer]
+</table>
+[end]
+
+
+[preSQLs]
+select pid as PID from d_list where id=#doc_id#;
+select count(dh.id) as NUM_CHILDS from d_list dh join d_types dt on dt.id=dh.type_id and dt.group_id<98 where dh.pid=#doc_id#;
+[end]
+
+[SQL]
+select
+dh.ID, dh.TYPE_ID, dh.status, dtp.NAME AS DOC_TYPE
+, dh.NUMBER, dh.TITLE, dh.STATUS, dh.DIVS
+, DATE_FORMAT(dh.doc_date,'%d.%m.%Y') as DOC_DATE
+, DATE_FORMAT(dh.created,'%d.%m.%Y') as CREATED
+, dh.creator_id
+, concat(ucr.F, ' ', left(IFNULL(ucr.I,''),1), '.', left(IFNULL(ucr.O,''),1),'.') as CREATOR
+, DATE_FORMAT(dh.modified,'%d.%m.%Y') as MODIFIED
+, dh.modifier_id
+, concat(umr.F, ' ', left(IFNULL(umr.I,''),1), '.', left(IFNULL(umr.O,''),1),'.') as MODIFIER
+, fyi.cnt, wfh.cnt as hist_cnt
+, dh.status AS "STATUS"
+, dh.is_deleted
+from d_list dh
+left join d_types dtp on dtp.Id = dh.type_id
+left join a_users_jinr ucr on ucr.id=dh.creator_id
+left join a_users_jinr umr on umr.id=dh.modifier_id
+left join d_sent_FYI_count fyi on fyi.doc_id=dh.id and fyi.user_id=#USER_ID#
+left join wf_history_count wfh on wfh.doc_id=dh.id and wfh.user_id=#USER_ID#
+where
+dh.pid=#doc_id#  ??!PID
+dh.id=#PID#  ??PID
+and dh.is_deleted=0 ??
+and dtp.group_id<98
+order by dh.STATUS , dh.modified desc
+[end]

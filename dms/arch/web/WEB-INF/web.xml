@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app>
+ <character-encoding>Cp1251</character-encoding>
+    <session-config>
+      <session-timeout>300</session-timeout>
+    </session-config>
+
+    <display-name>ARCH</display-name>
+    <description>ARCH application.</description>
+
+    <servlet>
+        <servlet-name>ARCH</servlet-name>
+        <servlet-class>jinr.arch.Arch</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ARCH</servlet-name>
+        <url-pattern>/arch</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ARCH_Redir</servlet-name>
+        <servlet-class>jinr.arch.ServletRedir</servlet-class>
+    </servlet>
+   
+    <servlet-mapping>
+        <servlet-name>ARCH_Redir</servlet-name>
+        <url-pattern>/d</url-pattern>
+    </servlet-mapping>  
+
+    <servlet>
+        <servlet-name>UPLOAD</servlet-name>
+        <servlet-class>jinr.arch.upload.UploadServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>UPLOAD</servlet-name>
+        <url-pattern>/upload</url-pattern>
+    </servlet-mapping>
+
+    <mime-mapping>
+        <extension>xls</extension>
+        <mime-type>application/vnd.ms-excel</mime-type>
+        <!--extension>pdf</extension>
+        <mime-type>application/pdf</mime-type -->
+    </mime-mapping>
+
+
+
+<!-- security-constraint>
+	<web-resource-collection>
+		<web-resource-name>Entire Application</web-resource-name>
+		<url-pattern>/*</url-pattern>
+	</web-resource-collection>
+	<user-data-constraint>
+		<transport-guarantee>CONFIDENTIAL</transport-guarantee>
+	</user-data-constraint>
+</security-constraint -->
+    
+</web-app>

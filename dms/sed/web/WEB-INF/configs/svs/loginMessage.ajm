@@ -1,0 +1,99 @@
+svs/loginMessage.ajm
+
+[comments]
+descr=U: Вывод сообщения после входа
+
+output=Вывод pop-up диалога с сообщением 
+parents=free/main_js_noDB.cfg
+author=Куняев
+[end]
+
+[description]
+Общая часть:
+<ul>
+    <li>Получение информации о юзере</li>
+    <li>Вывод сообщения</li>
+</ul>
+
+[end]
+
+
+[parameters]
+request_name=U:Сообщение
+LOG=ON
+msg_id=1
+debug=off
+[end]
+
+
+[report]
+    $GET_DATA [check msg]
+    $INCLUDE [msg] ??user_roles&!not_show=1
+[end]
+
+[msg]
+    <center>
+    <h3>
+    Уважаемый  ??user_sex=М
+    Уважаемая  ??user_sex=Ж
+    #user_I# #user_O#!</h3>
+    <div style="margin:20px; font-size:12pt;">
+    21.10.2017 была обновлена версия СЭД.<br><br>
+    Несмотря на тщательное тестирование, не исключено появление новых ошибок.<br>
+    Если Вы их обнаружите, пожалуйста, напишите нам по адресу: <a href="mailto:sed@jinr.ru">sed@jinr.ru</a><br> 
+    или позвоните по тел. 216-23-33.
+    <br><br>
+
+    $INCLUDE [admin msg] ??ZZZ&AR_SYS_ADMIN=1|AR_LAB_ADMIN=1
+    </div>
+
+    <input type=checkbox onChange='setShowInfo(this.checked);'>Не показывать больше это сообщение
+    <input type="button" class="butt1 pt" style="width:120;" value="Закрыть" onClick="HideDialog();">  
+    <br><br>
+
+    <script type="text/javascript" language="javascript">
+    window.scrollTo(0, 0);
+    showMsg("##dialog_title", "Информация:");
+    ShowDialog(true);
+    centerDialog(); 
+
+    var setShowInfo=function(not_show){
+        AjaxCall("c_settings", "c=svs/loginMessageProtokol&msg_id=#msg_id#&not_show=" + not_show, true);
+    }
+    </script>
+    $GET_DATA [register]
+[end]
+
+    В СЭД была существенно переработана система проверки<br>
+     <b>прав доступа</b> пользователя на просмотр документов.<br><br>
+    Несмотря на тщательное тестирование, не исключено, <br>
+    что Вы не увидите в списках  каких-то документов, которые Вы видели раньше.<br>
+    Если это произойдет, пожалуйста, напишите нам по адресу: <a href="mailto:sed@jinr.ru">sed@jinr.ru</a><br> 
+    или позвоните по тел. 216-23-33, 216-38-01.
+
+[admin msg]
+    #user_I# #user_O#, так как Вы являетесь администратором 
+    системы ??AR_SYS_ADMIN=1
+    $GET_DATA [get admin lab]   ??AR_LAB_ADMIN=1
+    СЭД по #LAB#,  ??AR_LAB_ADMIN=1
+    <br>
+    просьба ознакомиться с интерфейсом задания прав доступа в закладке "Пользователи"<br>
+    и проверить права доступа пользователей #LAB#<br>   ??AR_LAB_ADMIN=1
+
+    Если в связи с этим у Вас возникнуть вопросы -<br> пишите <a href="mailto:sed@jinr.ru">sed@jinr.ru</a> 
+    звоните: 216-23-33, 216-38-01.
+[end]
+
+[check msg]
+    select 1 as "not_show" from u_msg_protokol
+    where msg_id=#msg_id# and user_id=#USER_ID#
+[end]
+
+[get admin lab]
+    select short_name as "LAB" from info_10
+    where id=#U_LAB_CODE#
+[end]
+
+[register]
+    replace into u_msg_protokol (msg_id, user_id, ip) values (1,#USER_ID#, '#ClientIP#')
+[end]

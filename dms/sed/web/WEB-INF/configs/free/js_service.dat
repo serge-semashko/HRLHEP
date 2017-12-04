@@ -1,0 +1,264 @@
+[comments]
+descr=JavaScript - сервисные функции общего применения
+testURL=free/js_service.dat
+[end]
+
+[log function]
+    $INCLUDE free/js_service.dat[log function_] ??AR_SYS_ADMIN=1|VU
+    var log = function(level, msg){}  ??!AR_SYS_ADMIN=1&!VU
+[end]
+
+[log function_]
+............ отладочный вывод в console .................??
+
+var logLevel=7;
+
+var log = function(level, msg){
+    if(level <= logLevel) { 
+        switch (level) {
+            case 0: console.error("%c" + msg, logCss[level]); break;
+            case 1: console.warn("%c" + msg, logCss[level]); break;
+            case 2: console.info("%c" + msg, logCss[level]); break;
+            case 3: console.log("%c" + msg, logCss[level]); break;
+            case 4: console.log("%c" + msg, logCss[level]); break;
+            default: console.log(msg);
+        }
+    }
+}
+
+var logCss=[
+    'color: red; font-weight: bold; font-size: 10pt; padding: 4px'
+   , 'color: red; font-weight: normal; font-size: 9pt; padding: 2px'
+   , 'color: ##000080; font-weight: normal; font-size: 8pt; background-color: ##F8FFC0; padding: 2px'
+   , 'color: ##000000; font-size: 8pt; background-color: ##f0f8ff; padding-left: 10px;'
+   , 'color: ##808080; font-size: 7pt; background-color: ##f0f0f0; padding-left: 10px;'
+];
+[end]
+
+
+[report]
+/*============================ Сервис =====================================*/ ??
+/*=========================================================================*/ ??
+
+............ фиксация ввода и проверка значения даты (1900 - 2099) .................??
+var fixDate=function(el){
+if(el.value) {
+    el.value = el.value.replace( /[-]/g, "\.").replace(/[^0-9\.]/g, ""); 
+}
+}
+
+/*
+ *
+ */
+var checkDate=function(el){
+    var v = el.value;
+    if(v.length== 0) return true;
+    if(v.length>7 && v.length<10) {v = "0" + v;
+        el.value = v;
+    }
+
+    var valid = /^[0-3][0-9].[0|1][0-9].(19|20)[0-9]{2}/;
+    if(!valid.test(v)) {
+        alert("Ошибка в формате даты: " + el.value);
+        return;
+    }
+    var vv = v.substring(6,10) + "-" + v.substring(3,5) + "-" + v.substring(0,2);
+    var d = Date.parse(vv);
+    if(isNaN(d)) alert("Неверная дата: " + v);
+}
+
+..........................................................................??
+
+$.fn.zoomtext = function (c) {
+    var a = {
+        min: 4, //минимальный размер шрифта  - 0 без ограничения
+        max: 32, //максимальный размер шрифта - 0 без ограничения
+        increment: "+=1", //приращение или размер например "24px"
+        recovery: !1, //вернуть исходный размер
+        skip: !1  //нераспространять параметры шрифта на этих потомков  - селектор потомков "*"
+    }, a = $.extend(a, c);
+    c = $("*", this).add(this);
+    c.each(function (a, c) {
+        var b = $(this).css("fontSize");
+        !$(this).data("fontSize") && $(this).data("fontSize", b).css("fontSize", b)
+    });
+    a.skip && (c = c.not($(a.skip, this)));
+    return c.each(function (c, d) {
+        var b = $(this).css("fontSize"),
+            b = $("<div/>", {
+                css: {
+                    fontSize: b
+                }
+            }).css("fontSize", a.increment).css("fontSize");
+        a.max && parseFloat(b) > a.max && (b = a.max);
+        a.min && parseFloat(b) < a.min && (b = a.min);
+        a.recovery && (b = $(this).data("fontSize"));
+        $(this).css({
+            fontSize: b
+        })
+    })
+};
+
+
+var pbTimer;
+/**
+ *
+ * http://api.jqueryui.com/progressbar/ ??
+ * https://wcoder.github.io/notes/progress-indicator-with-jquery - реальный прогресс AJAX-загрузки ??
+ * If lengthComputable is false within the XMLHttpRequestProgressEvent, 
+ * that means the server never sent a Content-Length header in the response.
+ *
+ */
+var showLoading=function(show)
+{
+log(4, "showLoading: show=" + show);
+    stopPB();
+    if(show) {
+	$('##sprav_overlay').height($(document).height()).show();
+	$('##progressbar_wrapper').show();
+        $( "##progressbar" ).progressbar({ 
+            value: 1 
+        }); 
+        centerDiv("progressbar_wrapper");
+        increaseProgress();
+    }
+    else {
+        $('##progressbar_wrapper').hide();
+        $('##sprav_overlay').hide();
+    }
+}
+
+var increaseProgress=function(ps){
+    var v = $( "##progressbar" ).progressbar( "value" );
+    var v = v + 1;
+    var max = $( "##progressbar" ).progressbar( "option", "max" );
+    log(4, "PB: " + v + " / " + max + "; ps=" + ps);  ??
+    if(ps) v = ps * max / 100;
+    if(v < 97*max/100) {
+        $( "##progressbar" ).progressbar( "value", v );
+        pbTimer = window.setTimeout(increaseProgress, v*4);
+    }
+    else {
+        stopPB();
+     //   alert("Ошибка загрузки данных!");
+        showLoading(false);
+    }
+}
+
+var stopPB = function() {
+    if (pbTimer){
+        clearTimeout(pbTimer);
+        pbTimer = null;
+    }
+}
+
+var toggleDiv = function(target_div, delay) {
+  if ($('##' + target_div).css('display') == 'none' ) {
+    $('##' + target_div).show(delay);
+    return true;
+  }
+  else {
+    $('##' + target_div).hide(delay);
+    return false;
+  }
+}
+
+var getObjectById=function(elementId) { return document.getElementById(elementId);}
+
+
+/**
+ * Распознавание Float в значении input и вставка распознанного float обратно в input.
+ * Если float не распознаётся - вставляется 0.
+ */
+var fixFloat = function(input)
+{
+  var val = replaceAll(input.value,",",".");
+  val = val.replace(/[^\.0-9]/gim,'');
+  if(val.length<1) 
+    input.value = "";
+  else {
+    val = parseFloat(val);
+    if(isNaN(val)) val = "";
+    input.value = val;
+  }
+}
+
+IsNumeric = function(input)
+{ return (input - 0) == input && input.length > 0;
+}
+
+var mouseX, mouseY;
+$(document).mousemove(function(e) {
+    mouseX = e.pageX;
+    mouseY = e.pageY;
+		log(4, "x=" + mouseX + "; y=" + mouseY); ??
+});
+.mouseover(); // call the handler immediately ??
+
+
+var setElement = function(div_id, txt)
+{ 
+	document.getElementById(div_id).innerHTML=txt; ??
+  if(div_id && txt)
+    $("##"+div_id).html(txt); 
+}
+
+var replaceAll = function(src, what, replacement) {
+ return src.replace(new RegExp(what,'g'),replacement); 
+}
+
+var fixSQL_TEXT = function(toDB){
+if(toDB)
+	document.theForm.SQL_TEXT.value=replaceAll(document.theForm.SQL_TEXT.value, "'", "''");
+else
+	document.theForm.SQL_TEXT.value=replaceAll(document.theForm.SQL_TEXT.value, "''", "'");
+}
+
+//
+//=================  Авторесайз TextArea - временно - перенесено в lib.JS================== ??
+
+var lastEvent;
+
+/**
+ * Авторесайз TextArea
+ */
+var resize = function (ev) {
+    if (!ev)
+        ev = lastEvent;
+    doResize(ev.target);
+}
+
+var doResize = function (elem) {
+    elem.style.height = 'auto';
+    var h = elem.scrollHeight + 3;
+        log(4, $(elem).prop("id") + ": " + elem.scrollHeight + " / " + h);
+
+    elem.style.height = h + 'px';
+}
+
+var delayedResize = function (ev) {
+        log(4, "delayedResize... ");
+    lastEvent = ev;
+    window.setTimeout(resize, 0);
+}
+
+/* 0-timeout to get the already changed text */
+var resizeAll = function () {
+        log(4, "resizeAll... ");
+    $('textarea.autoresize').each(function () {
+        log(4, "х ");
+        doResize(this);
+    });
+}
+
+var textAreaResize = function () {
+        log(4, "textAreaResize... ");
+    $('textarea.autoresize').keypress(delayedResize);
+//    $('textarea').change(resize); 
+    resizeAll();
+//    $(window).on('resize',resizeAll);   
+}
+
+[end]
+
+

@@ -1,0 +1,115 @@
+svs/info_show_plain_data
+
+[comments]
+descr=Модуль вывода данных плоского справочника (непосредственно вывод таблицы)
+input=requesterId - ID элемента для результата, info_id - ID справочника; view - № представления. По умолчанию - 1; searchFor - строка поиска.
+output=html-таблица заданного представления справочника. По клику возвращает 1-е (код записи или ID) и 2-е (текст) поля представления. 
+parents=svs/info_show_plain
+childs=
+testURL=?c=svs/info_show_plain_data&info_id=11&view=1&standalone=yes
+author=Куняев
+[end]
+
+[parameters]
+request_name=U:вывод данных к справочника
+service=jinr.sed.ServiceShowInfoData
+LOG=ON
+SYS_FIELDS=id as "RECORD_ID"
+orderByField=sort
+[end]
+
+
+CRITERIA=where IS_DELETED=0 and view#view#=1  ??!info_src=true
+CRITERIA=where IS_DELETED=0 and view#view#=1 and id in(select record_id from u_info_favorites where info_id=#info_id# and user_id=#USER_ID#) ??info_src=true
+
+[report header]
+    $GET_DATA [get jinr div criteria] ??info_id=11&f_div_id
+    $SET_PARAMETERS CRITERIA=where IS_DELETED=0 and view#view#=1 #JINR_LAB_CRITERIA# ??!info_src=true
+    $SET_PARAMETERS CRITERIA=where IS_DELETED=0 and view#view#=1 and id in(select record_id from u_info_favorites where info_id=#info_id# and user_id=#USER_ID#) #JINR_LAB_CRITERIA# ??info_src=true
+    $SET_PARAMETERS CRITERIA=#CRITERIA# and not #FIELD_1# is null and #FIELD_1#<>'' ; ??FIELD_1_TYPE=varchar
+    $SET_PARAMETERS CRITERIA=#CRITERIA# and not #FIELD_1# is null ; ??FIELD_1_TYPE=int
+
+    $SET_PARAMETERS callback=pasteInfoResult; ??!callback
+
+    <center>
+    ============ Начало таблицы =============== ??
+    <table border=0 class="tlist dd_info" id = "#requesterId#_info_table" cellpadding=0 cellspacing=0>
+    <tr><td></td>#TableColsHeaders#</tr>
+[end]
+
+[get jinr div criteria]
+    select concat(' and posts like ''%: ', short_name, ' /%''') as JINR_LAB_CRITERIA from info_10 where 
+    id=#f_div_id# ??f_div_id
+    id=#f_person_div_id# ??!f_div_id
+[end]
+
+============ Строка таблицы =============== ??
+[item]
+    <tr class="pt" onClick="
+        registerHit(#recordId#); ??!q_vu_id&info_src=false&do_favorites=1
+        selectInfoItem(this,'#returnValue#');
+        #callback#('#requesterId#', '#returnId#', '#returnValue#'); ??
+    " info_id=#info_id# view=3 returnId="#returnId#" recordId="#recordId#"
+        onMouseOver="showInfoToolTip(event, $(this));" onMouseOut="hideToolTip();" 
+    >
+    <td class="marked-cell"> </td>
+    #record#</tr>
+[end]
+
+[record] ***** заносится сервисом в параметр "record"
+    <td 
+    class='right' ??field_type=int
+    >#val#</td>
+[end]
+
+
+[prevLink]
+    <span class="pt" onClick="showNext(-1);"> << </span>
+[end]
+
+[nextLink]
+    <span class="pt" onClick="showNext(1);"> >> </span>
+[end]
+
+
+[report footer]
+    </table>
+    $INCLUDE [prevLink] ??HAS_PREV=Y
+    строки #START_REC#-#END_REC# из #TOT_NUM_RECS#  ??TOT_NUM_RECS>0
+    #TOT_NUM_RECS#: <b>"#searchFor#" НЕ НАЙДЕНО!</b>  ??!TOT_NUM_RECS>0
+    $INCLUDE [nextLink] ??HAS_NEXT=Y
+    <input type="button" class="butt1 pt" style="width:80; margin:5px 0 0 100px;" value="OK" onclick="hideSprav();">  
+
+    </center>
+    <b>ОШИБКА:</b> #ERROR# ??ERROR
+    <script type="text/javascript" language="javascript">document.infoForm.info_src[1].checked=true; doSearch();</script> ??!TOT_NUM_RECS>0&info_src=true
+[end]
+
+
+==============================================================
+==============================================================
+==============================================================
+
+[preSQLs]
+    select concat(field_db_name, ',') as FIELDS
+        , concat(name, ',') as FIELDS_NAMES 
+        , concat(type, ',') as FIELDS_TYPES
+        , concat(view#view#, ',') as FIELDS_ORDER
+    from i_fields
+    where info_id=#info_id#
+        and view#view# > -1
+    order by view#view#, nr
+    ;
+    select field_db_name as FIELD_1, type as FIELD_1_TYPE
+    from i_fields
+    where info_id=#info_id#
+        and view#view# > 0
+    order by view#view#, nr
+     LIMIT 0,1
+    ;
+    select concat(field_db_name, ',') as ALL_FIELDS, concat(type, ',') as ALL_FIELDS_TYPES ??searchFor
+    from i_fields where info_id=#info_id# and type='varchar'  ??searchFor
+    ;
+    select count(field_db_name) as NUM_FIELDS, count(field_db_name)+ 1 as NUM_COLUMNS
+    from i_fields where info_id=#info_id# and view#view# >-1
+[end]

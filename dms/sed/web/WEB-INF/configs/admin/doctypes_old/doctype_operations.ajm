@@ -1,0 +1,58 @@
+[comments]
+descr=A: Операции с данными для типа документа
+
+input=cop - код операции: "switch" - изменение статуса is_active для типа документа с ID = type_id;
+"create" - создание таблице в БД (d_data_) для хранения документов для типа документа с ID = type_id;
+type_id - ID типа документа (из таблицы d_types);
+output=Выполнение операций с записями в таблице d_fields и вызов таблицы типов документов (doctypes.cfg)
+parents=admin/doctypes/doctype_panel.cfg, admin/doctypes/doctype_form_editor.cfg
+childs=
+test_URL=?c=
+author=Яковлев, Куняев
+[end]
+
+
+[parameters]
+request_name=A: Операции с данными для типа документа
+KeepLog=false
+debug=off
+[end]
+
+
+[report]
+$GET_DATA [make is not active] ??IS_ACTIVE=1&cop=switch
+$GET_DATA [make is active] ??IS_ACTIVE=0&cop=switch
+$GET_DATA [modify doc table] ??cop=create
+$CALL_SERVICE c=admin/doctypes/doctype_panel ??!ERROR
+
+[end]
+
+[make is active]
+update d_types dtp 
+set is_active = 1
+, changed = now()
+, modifier_id = #USER_ID#
+where dtp.id = #type_id#
+[end]
+
+[make is not active]
+update d_types dtp 
+set is_active = 0
+, changed = now()
+, modifier_id = #USER_ID#
+where dtp.id = #type_id#
+[end]
+
+[modify doc table]
+call modify_doc_table(#type_id#)
+;
+[end]
+
+[preSQLs]
+select dtp.ID
+, dtp.IS_ACTIVE
+from d_types dtp
+where dtp.Id = #type_id#
+;
+
+[end]

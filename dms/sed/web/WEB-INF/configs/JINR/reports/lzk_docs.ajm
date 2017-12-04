@@ -1,0 +1,114 @@
+JINR/reports/lzk_docs.cfg
+
+[comments]
+descr=U: Модуль выбора модуля вывода списка заявод для ЛЗК
+
+input=
+output=HTML таблица документов
+parents=tab_lzk.cfg
+childs=JINR/reports/lzk_docs_table
+testURL=?c=JINR/reports/lzk_docs
+author=Куняев
+[end]
+
+
+[parameters]
+request_name=U:Таблица документов
+NumTableCols=7
+LOG=ON 
+[end]
+
+
+[report]
+        $SET_PARAMETERS srt=dat.summa_usd; desc=desc; ??!srt
+        $SET_PARAMETERS ZK=lzk;
+
+        $INCLUDE JINR/reports/czk_docs[filters] 
+
+        <fieldset class="sp"><legend class="pt" onClick="toggleDiv('currDocs', 0);"> Заявки в работе</span>: </legend>
+            <div id="currDocs" style="padding:0 0 0 20px; ">
+                $CALL_SERVICE c=JINR/reports/lzk_docs_table;
+            </div>
+        </fieldset>
+    </form>
+
+    <form name="oldDataForm" method="POST" enctype="multipart/form-data" 
+        onSubmit="return getOldData();" id = "oldDataForm"
+    >
+
+    <fieldset class="sp"><legend class="pt" onClick="toggleDiv('oldDocs', 0);" 
+    > Завершенные заявки</span>: </legend>
+        <div id="oldDocs" style="padding:0 0 0 20px; display:none;">
+        </div>
+
+        <input type="hidden" name="srn">
+        <input type="submit" class="butt1 pt" style="width:100; display:none;" value="ОК">
+    </fieldset>
+
+    $INCLUDE JINR/reports/czk_docs[script]
+[end]
+
+
+[zzzreport]
++++++++ сортировка таблицы по умолчанию ++++ ??
+$SET_PARAMETERS srt=dat.summa_usd; desc=desc; ??!srt
+$GET_DATA [get user divs] 
+$SET_PARAMETERS f_div_id=#LZK_DIVS#;  ??NUM_DIVS=1
+
+$INCLUDE JINR/reports/lzk_docs.cfg[filters]
+    $INCLUDE JINR/reports/czk_docs.cfg[filters] ??
+
+
+$SET_PARAMETERS modul_table=JINR/reports/lzk_docs_table;
+$CALL_SERVICE c=#modul_table#;
+
+[end]
+
+
+[ZZZfilters]
++++++ Фильтры +++++ ??
+<div id="filters_div">
+<input type=hidden name="srn" value="#srn#"> 
+<input type=hidden name="srt" value="#srt#">
+<input type=hidden name="desc" value="#desc#">
+
+<table border=0 cellpadding=5 style="margin:20px 0 20px 100px; border:solid 1px white;">
+<tr><td class="nowrap label" nowrap>
+Подразделение:</td><td>
+<input type=hidden value="#f_div_id#" size="5" name="f_div_id">
+<input type=hidden value="#f_div#" name="f_div">
+<div id="f_div" class="info_input pt big bg_white" style="display: inline-block; width:100px; height:20px; border:solid 1px gray; " info_view="11" info_id="10"> ??!NUM_DIVS=1
+все ??!f_div
+#f_div#
+</div>  ??!NUM_DIVS=1
+</td></tr>
+
+<tr><td class="nowrap label" nowrap>
+№ заявки:</td><td><input size="7" name="f_doc_number" value="#f_doc_number#">
+ID: <input size="7" name="f_doc_id" value="#f_doc_id#"> ??USER_ID=2309_ЯЯЯ
+</td></tr>
+
+
+++++++++++++++++++ кнопка +++++++++++++++++++++ ??
+<tr><td class="label">
+Искать текст:</td><td><input size=40 name="f_search" value="#f_search#"> &nbsp; 
+<div style="float:right;">
+<input type="submit" class="butt1 pt" style="width:100;" value="ОК" 
+onClick='AjaxCall("lzk_docs", "c=JINR/reports/lzk_docs", true, "filters_div");'>  ??
+</div>
+</td></tr></table>
+<div style="clear:both;"></div>
+</div>
+
+[end]
+
+
+[get user divs]
+select group_concat(target_code) as "LZK_DIVS", count(target_code) as "NUM_DIVS"
+from a_user_role
+ where user_id=#USER_ID# 
+and role_id in(18,37,38,39) and not target_code is null
+and active=1
+;
+select short_name as "f_div" from info_10 where id in(#LZK_DIVS#) order by id;  ??LZK_DIVS&NUM_DIVS=1
+[end]

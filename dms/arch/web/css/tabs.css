@@ -1,0 +1,47 @@
+th.i {color: #505050; cursor:hand; font-size : 11pt; font-weight:bold;
+padding-left:8px; padding-right:2px;  padding-top:2px; padding-bottom:0px;
+background-image: url("/arch/images/tab_i.gif");
+border-bottom: solid 1px black;
+cursor:pointer;
+}
+
+th.a {color: black; cursor:hand; font-size:11pt; font-weight:bold;
+padding-left:8px; padding-right:0px;
+padding-top:2px; padding-bottom:0px;
+background-image: url("/arch/images/tab_a.gif");
+cursor:pointer;
+}
+th.a2 {background-image: url("/arch/images/tab_a2.gif"); }
+th.i2 {background-image: url("/arch/images/tab_i2.gif"); width:7px; border-bottom: solid 1px black;cursor:pointer;}
+
+.b {border-bottom: solid 1px black;}
+.lr {border-left: solid 1px black; border-right: solid 1px black; }
+.rtb {border-top: solid 1px black; border-right: solid 1px black; border-bottom: solid 1px black;}
+.lrb {border-left: solid 1px black; border-right: solid 1px black; border-bottom: solid 1px black;}
+#tab_cont {
+    border-bottom: 1px solid black;
+    height:24px;
+    padding-left:44px;
+}
+.tab{
+    float:left;
+    color: #505050;
+    cursor: pointer;
+    font-size: 11pt;
+    font-weight: bold;
+    border-top:#A0A0A0 solid 1px;
+    border-radius: 10px 10px 0 0;   
+    border-left: #A0A0A0 solid 1px;
+    border-right: #A0A0A0 solid 1px;
+    height:22px;
+    padding:0;
+    padding-left:30px;
+    padding-right:30px;
+    padding-top:2px;
+}
+.tab.active {
+    color:black;
+    border-color: black;
+    background-color: white;
+    box-shadow: 0 -3px 3px rgba(0,3,0,0.1); 
+}

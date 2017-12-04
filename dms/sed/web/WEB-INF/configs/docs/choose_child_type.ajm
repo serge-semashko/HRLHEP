@@ -1,0 +1,196 @@
+docs/choose_child_type.ajm
+
+[comments]
+descr=U: Выбор типа документа при создании потомка
+
+input=
+output=Перечень возможных типов документов-потомков
+parents=docs/view_doc
+childs=docs/edit_doc
+author=Куняев
+[end]
+
+[parameters]
+request_name=U:Создание потомка документа
+service=dubna.walt.service.TableServiceSpecial
+tableCfg=table_no
+LOG=ON
+[end]
+
+[report header]
+    $INCLUDE dat/common.dat[check login]
+
+    <div id="dataContainer" class="big" style="padding:20px 0 30px 20px;">
+        Выберите тип создаваемого документа: ??NUM_TYPES>1
+        <table border=0 cellpadding=0 cellspacing=3 class="big">
+        <tr><td style="width:30px;"></td><td></td></tr>  
+        <tr><td valign=top class="big" colspan=2 style="padding:0;">Тип создаваемого документа:</td></tr>  ??NUM_TYPES=1
+[end]
+
+
+============== Вывод одного поля  ======= ??
+[item]
+    $SET_PARAMETERS CAN_CREATE=Y; ??!rights_to_create_doc
+    $GET_DATA [get doc roles]   ??rights_to_create_doc
+    $SET_PARAMETERS CAN_CREATE=; ??!is_active=1
+
+    <tr><td class=object_table colspan=2><b>#group_name#:</b></td></tr>  ??!OLD_GROUP_NAME=#group_name#
+    <tr><td></td>
+    <td class="pt big gray_border
+    bg_white ??CAN_CREATE
+    " 
+    onClick="$('##NO_ACC_MSG').html(''); $('.gray_border').removeClass('bg_green').removeClass('bg_red'); 
+
+    $('##do_link').hide(); ??!child_type_id=#DOC_TYPE_ID#
+    $('##do_link').show(); ??child_type_id=#DOC_TYPE_ID#&CAN_CREATE
+
+    $(this).addClass('bg_green'); $('##child_type_id').val('#child_type_id#');  ??CAN_CREATE
+    $(this).addClass('bg_red');  noAccessMsg(#child_type_id#); ??!CAN_CREATE
+    ">#doc_type# 
+    (v.#curr_doc_type_version#) ??curr_doc_type_version>1
+    / #CAN_CREATE# ??
+    $INCLUDE [noAccessMsg] ??!CAN_CREATE
+    </td></tr>
+
+    $SET_PARAMETERS OLD_GROUP_NAME=#group_name#; rights_to_create_doc=; ROLES=; CAN_CREATE=;
+[end]
+
+
+[report footer]
+    </table>
+    <input type=hidden id="doLink" name="doLink" value="Y">
+
+    <div id="do_link" style="display:none;">
+        Cвязать с исходным документом: <input type=radio name="doLink" value="Y" checked>Да ??
+        <input type=radio name="doLink" value="">Нет ??
+        <br><br> ??
+
+        <input type=checkbox id="copyData" name="copyData" value="Y" checked> копировать содержание документа
+        <br>
+        <input type=checkbox id="copyFiles" name="copyFiles" value="Y" checked> копировать приложенные файлы
+
+        #tag_fs_info#
+        Будет создана копия данного документа.<br>
+        Не забудьте <b>скорректировать</b> содержание<br>документа и приложенные файлы!
+    </div>
+
+    <div id="NO_ACC_MSG" 
+    style="border:none 1px gray; padding:5px 0 0 0; background-color:white;" ??
+    ></div>
+
+    $SET_PARAMETERS child_type_id=; ??NUM_TYPES>1
+    <input type=hidden id="child_type_id" name="child_type_id" value="#child_type_id#"> 
+    </div>
+
+    <div id="create_buttons" class="center" style="padding:20px;">
+    <input type="button" class="butt1 pt" style="width:160;" value="Создать документ" 
+    onClick="createDoc();">  
+    <input type="button" class="butt1 pt" style="width:120;" value="Отмена" onClick="HideDialog();">  
+</div>
+
+<script type="text/javascript">
+    showMsg("##dialog_title", "Создание нового документа на основании существующего&nbsp;");
+    ShowDialog(true);
+    centerDialog(); 
+
+var createDoc = function(){
+    var child_type_id = $('##child_type_id').val();
+    if(child_type_id) 
+    {
+        if(child_type_id == #DOC_TYPE_ID#) {
+            $('##doLink').val(''); 
+        }
+        else {
+            $('##doLink').val('Y'); 
+            $('##copyData').prop('checked', true);
+            if(child_type_id == 9 || child_type_id == 13)  // для доп.соглашения  и протокола ЗК не копируем файлы
+                $('##copyFiles').prop('checked', false);
+            else
+                $('##copyFiles').prop('checked', true);
+        }
+        AjaxCall('doc_content','c=docs/create_child_doc&pid=#doc_id#', true, 'dataContainer'); 
+        $('##create_buttons').html("Копирование данных документа. Ждите...");
+    }
+    else alert('Выберите допустимый тип нового документа'); 
+}
+
+var noAccessMsg = function(type_id) {
+    $("##NO_ACC_MSG").html($("##msg_" + type_id).html() );
+    $('##child_type_id').val('');
+}
+
+</script>
+[end]
+
+[noAccessMsg]
+    <div id="msg_#child_type_id#" style="display:none;"> 
+        #tag_fs_info_err#<center>
+        <b>Этот документ еще не запущен в СЭД.</b><br><br> ??!is_active=1
+        </center>
+        $INCLUDE [roles msg]  ??ROLES
+    </div> 
+[end]
+
+
+[roles msg]
+    Этот документ может быть создан только<br>
+    <b>пользователем с ролью:</b></center>
+    <div style="padding-left:70px;">#ROLES#</div>
+[end]
+
+
+***************************** Шаблоны SQL запросов ***************************
+
+[preSQLs]
+    select type_id as "DOC_TYPE_ID" from d_list where id=#doc_id#
+    ;
+    select count(dtc.id) as NUM_TYPES, child_type_id from d_types_children dtc
+    left join d_types dtp on dtp.id=dtc.child_type_id
+    where dtc.type_id=#DOC_TYPE_ID#
+     and (dtp.is_active=1
+    or dtp.group_id=98 ??USER_ID=2309
+    )
+    group by child_type_id
+[end]
+
+[get doc roles]
+    select concat('-',r.name,'<br>') as "ROLES"
+    from a_roles r
+    where r.id in(#rights_to_create_doc#)
+    ;
+    select 'Y' as "CAN_CREATE"
+    from a_user_role ur 
+    where ur.user_id=#USER_ID# and ur.active=1
+    and ur.role_id in(#rights_to_create_doc#)
+[end]
+
+
+[SQL]
+    select distinct grp.group_name, dtc.child_type_id, dtp.name as "doc_type"
+        , dtp.is_active, dtp.curr_doc_type_version, dtp.rights_to_create_doc
+        , grp.id, grp.sort, dtp.sort
+    from doc_groups grp 
+        join d_types dtp on dtp.group_id=grp.id
+        join d_types_children dtc on dtc.child_type_id=dtp.id
+        left join d_types dtp on dtp.id=dtc.child_type_id ??
+    where dtc.type_id=#DOC_TYPE_ID#
+    order by grp.id desc, grp.sort, dtp.sort
+[end]
+
+
+
+ and (dtp.is_active=1
+or dtp.group_id=98 ??USER_ID=2309
+)
+
+
+left join a_user_role ur 
+ /* join с таблицей ролей пользователей */
+     on (concat(',',dtp.rights_to_create_doc,',') like concat('%,',cast(ur.role_id as char), ',%') 
+        and ur.user_id=#USER_ID# and ur.active=1)
+
+
+/* фильтр - или открыто всем*/
+and (dtp.rights_to_create_doc IS NULL or dtp.rights_to_create_doc='' 
+/* или только определенным ролям */
+    OR not ur.user_id is null)

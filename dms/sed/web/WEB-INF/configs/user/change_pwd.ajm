@@ -1,0 +1,139 @@
+change_pwd.cfg
+
+[comments]
+descr=U: кнопка и форма смены пароля на вход
+input=chpwd=1 выводить форму смены пароля (+ нужен key) chpwd= выводить кнопку для отправки письма на email, key - ключ доступа из письма
+output=Форма или кнопка
+parents=tab_settings.cfg
+childs=
+[end]
+
+[parameters]
+LOG=ON 
+debug=off
+[end]
+
+[report]
+$INCLUDE [process] ??mode=change
+$INCLUDE [form report] ??!mode=change
+[end]
+
+[form report]
+$GET_DATA [check key] ??
+$INCLUDE [change pwd button] ??!chpwd
+$INCLUDE [change pwd form] ??chpwd
+$INCLUDE [key expired] ??KEY_OK=0&chpwd
+[end]
+
+[key expired]
+<br><br><b><center>Ключ просрочен!</center></b>
+[end]
+
+
+[change pwd form]
+$INCLUDE user/change_sign_pswd_settings.cfg[script4form] 
+<style type="text/css">
+.pwmsg{
+    background-color: ##FFFAB7;
+    padding: 5px;
+    border-radius:5px;
+    display: inline-block;
+}
+##changePasswordSubmit{
+ margin-left: 200px;
+ }
+</style>
+
+<fieldset>
+<legend>Изменение пароля на вход в СЭД, ADB2, База документов:</legend>
+    <span class="pwmsg">Хороший пароль должен содержать цифры, буквы в разном регистре, спецсимволы и иметь длину не менее 6 символов.</span>
+        <p class="chpw">
+            <label for = "old_sign_password" class="passLabel">Введите старый пароль:</label><input type="password" style="display:none;"><input type="password" name = "old_sign_password" id = "old_sign_password"/>
+        </p>
+        <p class="chpw">
+            <label for = "new_sign_password" class="passLabel">Введите новый пароль:</label><input type="password" style="display:none;"><input type="password" name = "new_sign_password" id = "new_sign_password"/><span id = "pw-strngth" class="pwmess"></span>
+        </p>
+        <p>
+        <label for = "new_sign_password_repeat" class="passLabel">и ещё раз:</label><input type="password" name = "new_sign_password_repeat" id = "new_sign_password_repeat"/><span id = "pw-eql" ></span>
+        </p>
+        <p>
+        <button type = "button" id = "changePasswordSubmit" class="butt1">Сохранить пароль</button>
+        </p>
+Ошибка: <b>#ERROR#</b>  ??ERROR
+</fieldset>
+
+<script type="text/javascript">
+
+        $('##changePasswordSubmit').click( function (){
+            $('##pw-strngth').html(checkStrength($('##new_sign_password').val()));
+            $('##pw-eql').html(checkEquality($('##new_sign_password').val(), $('##new_sign_password_repeat').val()));
+            if(st < 1){ window.jjAlert(_SHORT,'ОК'); return;} ??
+            if(eq != 1){ window.jjAlert(_NEQ,'ОК'); return;}  ??
+            if(eq != 1){ alert('Пароли не совпадают'); return;} 
+            var old_pass = $('##old_sign_password').val();
+            var pass1 = $('##new_sign_password').val();
+            var pass2 = $('##new_sign_password_repeat').val();
+    
+AjaxCall('chpwd', 'c=user/change_pwd&mode=change&old_pass=' + old_pass + "&pass1=" + pass1); 
+        });
+
+</script>
+[end]
+
+
+[process]
+$SET_PARAMETERS OLD_PW_OK=;
+$GET_DATA [check old pw]
+$GET_DATA [set new pw] ??OLD_PW_OK=Y
+$INCLUDE [confirm]  ??OLD_PW_OK=Y&!ERROR
+$INCLUDE [err msg]  ??!OLD_PW_OK=Y|ERROR
+[end]
+
+[err msg]
+$SET_PARAMETERS ERROR=Неверен старый пароль;  ??!OLD_PW_OK=Y
+$SET_PARAMETERS ERROR=Ошибка 4125. Обратитесь к администратору СЭД  ??OLD_PW_OK=Y
+$SET_PARAMETERS mode=; chpwd=Y; 
+<script type="text/javascript">
+alert("#ERROR#");
+</script>
+[end]
+
+[confirm]
+<script type="text/javascript">
+jAlert("Новый пароль установлен.","OK");
+t_settings();
+</script>
+[end]
+
+[check old pw]
+select 'Y' as "OLD_PW_OK"
+from cwl.up where id=#USER_ID# 
+and pw='#old_pass#'  ??
+and p=md5(concat('#old_pass#','~',right('#old_pass#',2)))
+[end]
+
+[set new pw]
+update cwl.up set p=md5(concat('#pass1#','~',right('#pass1#',2)))
+pw='#pass1#' ??
+where id=#USER_ID# 
+and pw='#old_pass#' ??
+and p=md5(concat('#old_pass#','~',right('#old_pass#',2)))
+[end]
+
+, changed=now(), modifier_id=#USER_ID# where id=#user_person_id# ??pw1
+
+
+
+[ZZZ_change pwd button]
+$INCLUDE [script4button] 
+<button type = "button" id = "changeSignPassword" class="butt1">Сменить пароль на вход</button>
+[end]
+
+
+
+[ZZZZ_check key]
+  SELECT count(Id) as KEY_OK from a_user_pass where access_key = '#key#' and key_expire>now() and user_id = #USER_ID#
+  ;
+[end]
+
+

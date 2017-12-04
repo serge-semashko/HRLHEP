@@ -1,0 +1,43 @@
+get_role_targets.cfg
+
+[parameters]
+request_name=A:Редактирование роли пользователя
+LOG=OFF
+[end]
+
+[report]
+$SET_PARAMETERS TARGET_CODE=; ??TARGET_CODE<1
+$INCLUDE [div dd info] ??target_type_id=1
+$INCLUDE [bc popup info] ??target_type_id=2_ZZZ
+$INCLUDE [input field] ??!target_type_id=1&!target_type_id=2_ZZZ
+[end]
+
+[div dd info]
+$GET_DATA [get div text] ??TARGET_CODE
+<input type=hidden name=target_code_#CURRENT_ROLE_ID# id=target_code_#CURRENT_ROLE_ID#_id size=5 value="#TARGET_CODE#">
+<div class="info_input pt big bg_white" id="target_code_#CURRENT_ROLE_ID#" info_id="10" info_view="11" info_type="3" searchFor='none' 
+style="display: inline-block; width:90px; border:solid 1px gray; ">
+выбрать ??!DIV_NAME
+#DIV_NAME#
+</div>
+[end]
+
+[get div text]
+select short_name as DIV_NAME from info_10 where id=#TARGET_CODE#
+[end]
+
+[bc popup info] - пока не работает!
+<input name=target_code_#CURRENT_ROLE_ID# id=target_code_#CURRENT_ROLE_ID#_id size=8 value="#TARGET_CODE#">
+<input id="test_BC_text" name="test_BC_text" size=20 value=""> ??
+<span class="info_input" id="target_code_#CURRENT_ROLE_ID#" info_id="1005" searchFor="none" info_view="1">бюдж.код</span> 
+<div id = "test_BC_list"></div>
+
+[end]
+
+[input field]
+<input size=6 class="xp center" name=target_code_#CURRENT_ROLE_ID# value=#TARGET_CODE#>&nbsp;
+[end]
+
+[preSQLs]
+
+[end]

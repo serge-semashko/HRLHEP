@@ -1,0 +1,617 @@
+<html>
+    <head>
+        <title>HR LHEP Log</title>
+        <META http-equiv=Content-Type content="text/html; charset=utf-8">
+        <style>
+            body{background-color:#eefff4;}
+            xmp {margin:0;} 
+            .pt {cursor:pointer;} 
+            span.req_start {border:solid 1px red; font-weight:bold; background-color:#FFFFA0;}
+            span.req_end {border:solid 1px red; font-weight:bold; background-color:#D0FFB0;}
+            div.req {display:none; border:solid 1px red; padding:4px; background-color:white;}
+
+            span.ss_start {border:solid 1px red; background-color:#D0E8FF;}
+            span.ss_back {border:solid 1px blue; background-color:#D0FFB0;}
+            div.ss {display:none; border:solid 1px green; border-right:none; padding:6px; margin-left:5px;}
+        </style>
+        <script type="text/javascript">
+            var toggleDiv = function (id) {
+                var d = document.getElementById(id);
+                if (d.style.display === "block")
+                    d.style.display = "none";
+                else
+                    d.style.display = "block";
+            };
+        </script>
+    </head><body>
+===== get System Const SQL:select alias, value from sys_const<BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_1");'> Request_HR_LHEP_1 [29.11 00:28:28] : 0:0:0:0:0:0:0:1 c=main</span><div id='Request_HR_LHEP_1' class='req'> queryString:c=main; log=true; session inactive=min;<br>====== main.cfg; <br><b>$INCLUDE </b>main.cfg[top]<BR>
+<b>$INCLUDE </b>dat/common.dat[head]<BR>
+<b>$INCLUDE </b>free/main_css_noDB.cfg[css]<BR>
+<b>$INCLUDE </b>free/main_css_noDB.cfg[report]<BR>
+<b>$INCLUDE </b>free/main_js_noDB.cfg[js]<BR>
+<b>$INCLUDE </b>free/main_js_noDB.cfg[report]<BR>
+<b>$INCLUDE </b>free/js_tabs.dat[report]<BR>
+<b>$INCLUDE </b>free/js_forms.dat[report]<BR>
+<b>$INCLUDE </b>free/js_jQuery.dat[report]<BR>
+<b>$INCLUDE </b>free/js_popup.dat[report]<BR>
+<b>$INCLUDE </b>free/js_service.dat[report]<BR>
+<b>$INCLUDE </b>free/js_CallModule.dat[report]<BR>
+<b>$INCLUDE </b>dat/common.dat[form]<BR>
+<b>$INCLUDE </b>main.cfg[tabs]<BR>
+<b>$INCLUDE </b>main.cfg[bottom]<BR>
+<b>$INCLUDE </b>main.cfg[logged bottom]<BR>
+<b>$INCLUDE </b>dat/common.dat[popup divs]<BR>
+<b>$INCLUDE </b>dat/debugTools.dat[debug links]<BR>
+<b>$INCLUDE </b>dat/debugTools.dat[play]<BR>
+<b>$INCLUDE </b>free/main_js_noDB.cfg[startup script]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_1");'>Request_HR_LHEP_1 (main) DONE! (760ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_2");'> Request_HR_LHEP_2 [29.11 00:28:29] 2309: 0:0:0:0:0:0:0:1 c=tab_personal</span><div id='Request_HR_LHEP_2' class='req'> queryString:c=tab_personal&ajax=Y; log=true; session inactive=min;<br><br> <b>SQL: [[get dropdowns] (1) ]:</b><xmp>select distinct concat('<option value="', post, '" '
+, case when post='' then 'selected' else '' end
+, '>' , post, '</option>') as POST
+from sotrudniki
+order by post
+</xmp><xmp>***** 111 record(s) retrieved. Filled 1 parameters: 
+POST=<option value="аппаратчик ожижения водорода и гелия" >аппаратчик ожижения водорода и гелия</option><option value="ведущий инженер по охране труда" >ведущий инженер по охране труда</option><option value="ведущий инженер" >ведущий инженер</option><option value="ведущий конструктор" >ведущий конструктор</option><option value="ведущий научный сотрудник" >ведущий научный сотрудник</option><option value="ведущий программист" >ведущий программист</option><option value="ведущий технолог" >ведущий технолог</option><option value="ведущий экономист" >ведущий экономист</option><option value="ведущий электроник" >ведущий электроник</option><option value="гальваник" >гальваник</option><option value="главный инженер лаборатории" >главный инженер лаборатории</option><option value="главный инженер установки" >главный инженер установки</option><option value="главный научный сотрудник" >главный научный сотрудник</option><option value="главный технический специалист" >главный технический специалист</option><option value="гравер" >гравер</option><option value="директор лаборатории" >директор лаборатории</option><option value="заведующий складом" >заведующий складом</option><option value="заведующий техническим архивом" >заведующий техническим архивом</option><option value="заведующий хозяйством" >заведующий хозяйством</option><option value="заместитель главного инженера лаборатории" >заместитель главного инженера лаборатории</option><option value="заместитель директора лаборатории по научной работе" >заместитель директора лаборатории по научной работе</option><option value="заместитель начальника отдела" >заместитель начальника отдела</option><option value="заместитель начальника отделения по научной работе" >заместитель начальника отделения по научной работе</option><option value="заместитель начальника цеха" >заместитель начальника цеха</option><option value="заточник" >заточник</option><option value="и.о.ведущего научного сотрудника" >и.о.ведущего научного сотрудника</option><option value="и.о.научного сотрудника" >и.о.научного сотрудника</option><option value="и.о.начальника сектора" >и.о.начальника сектора</option><option value="и.о.старшего научного сотрудника" >и.о.старшего научного сотрудника</option><option value="инженер" >инженер</option><option value="инженер-конструктор 1 категории" >инженер-конструктор 1 категории</option><option value="инженер-конструктор 2 категории" >инженер-конструктор 2 категории</option><option value="инженер-конструктор 3 категории" >инженер-конструктор 3 категории</option><option value="инженер-конструктор" >инженер-конструктор</option><option value="инженер-программист 1 категории" >инженер-программист 1 категории</option><option value="инженер-программист" >инженер-программист</option><option value="инженер-технолог 1 категории" >инженер-технолог 1 категории</option><option value="инженер-технолог 3 категории" >инженер-технолог 3 категории</option><option value="инженер-технолог" >инженер-технолог</option><option value="инженер-электроник 1 категории" >инженер-электроник 1 категории</option><option value="инженер-электроник 2 категории" >инженер-электроник 2 категории</option><option value="инженер-электроник" >инженер-электроник</option><option value="кладовщик инструментальной кладовой" >кладовщик инструментальной кладовой</option><option value="консультант при дирекции лаборатории" >консультант при дирекции лаборатории</option><option value="консультант" >консультант</option><option value="лаборант обработки фильмовой информации физического эксперимента" >лаборант обработки фильмовой информации физического эксперимента</option><option value="лаборант ускорительной установки" >лаборант ускорительной установки</option><option value="лаборант физической лаборатории" >лаборант физической лаборатории</option><option value="лаборант химико-технологических исследований" >лаборант химико-технологических исследований</option><option value="лаборант" >лаборант</option><option value="маляр" >маляр</option><option value="мастер" >мастер</option><option value="машинист компрессорных установок" >машинист компрессорных установок</option><option value="машинист по стирке и ремонту спецодежды" >машинист по стирке и ремонту спецодежды</option><option value="механик цеха" >механик цеха</option><option value="механик экспериментальных стендов и установок" >механик экспериментальных стендов и установок</option><option value="младший научный сотрудник" >младший научный сотрудник</option><option value="монтажник радиоэлектронной аппаратуры и приборов" >монтажник радиоэлектронной аппаратуры и приборов</option><option value="монтажник санитарно-технических систем и оборудования" >монтажник санитарно-технических систем и оборудования</option><option value="монтажник технологического оборудования и связанных с ним конструкций" >монтажник технологического оборудования и связанных с ним конструкций</option><option value="научный сотрудник" >научный сотрудник</option><option value="начальник бюро" >начальник бюро</option><option value="начальник группы" >начальник группы</option><option value="начальник отдела " >начальник отдела </option><option value="начальник отдела" >начальник отдела</option><option value="начальник отделения" >начальник отделения</option><option value="начальник сектора" >начальник сектора</option><option value="начальник службы" >начальник службы</option><option value="начальник цеха" >начальник цеха</option><option value="переводчик" >переводчик</option><option value="плотник" >плотник</option><option value="подсобный рабочий" >подсобный рабочий</option><option value="полировщик" >полировщик</option><option value="помощник директора лаборатории по капитальному строительству" >помощник директора лаборатории по капитальному строительству</option><option value="помощник директора лаборатории по общим вопросам" >помощник директора лаборатории по общим вопросам</option><option value="помощник директора лаборатории по финансовым вопросам" >помощник директора лаборатории по финансовым вопросам</option><option value="помощник начальника цеха по хозяйственным вопросам" >помощник начальника цеха по хозяйственным вопросам</option><option value="почетный директор лаборатории" >почетный директор лаборатории</option><option value="сверловщик" >сверловщик</option><option value="секретарь-референт" >секретарь-референт</option><option value="слесарь аварийно-восстановительных работ" >слесарь аварийно-восстановительных работ</option><option value="слесарь механосборочных работ" >слесарь механосборочных работ</option><option value="слесарь по контрольно-измерительным приборам и автоматике" >слесарь по контрольно-измерительным приборам и автоматике</option><option value="слесарь по ремонту и обслуживанию систем вентиляции и кондиционирования" >слесарь по ремонту и обслуживанию систем вентиляции и кондиционирования</option><option value="слесарь-ремонтник" >слесарь-ремонтник</option><option value="слесарь-сборщик радиоэлектронной аппаратуры и приборов" >слесарь-сборщик радиоэлектронной аппаратуры и приборов</option><option value="советник при дирекции лаборатории" >советник при дирекции лаборатории</option><option value="советник" >советник</option><option value="станочник широкого профиля" >станочник широкого профиля</option><option value="старший инженер" >старший инженер</option><option value="старший инспектор" >старший инспектор</option><option value="старший лаборант" >старший лаборант</option><option value="старший лаборант, имеющий высшее образование" >старший лаборант, имеющий высшее образование</option><option value="старший мастер" >старший мастер</option><option value="старший научный сотрудник" >старший научный сотрудник</option><option value="старший переводчик" >старший переводчик</option><option value="старший техник" >старший техник</option><option value="старший товаровед" >старший товаровед</option><option value="старший экономист" >старший экономист</option><option value="столяр" >столяр</option><option value="техник" >техник</option><option value="токарь" >токарь</option><option value="тракторист" >тракторист</option><option value="уборщик производственных помещений" >уборщик производственных помещений</option><option value="ученый секретарь лаборатории" >ученый секретарь лаборатории</option><option value="фрезеровщик" >фрезеровщик</option><option value="художник" >художник</option><option value="электрогазосварщик" >электрогазосварщик</option><option value="электромонтер по обслуживанию электрооборудования" >электромонтер по обслуживанию электрооборудования</option><option value="электромонтер по ремонту и обслуживанию электрооборудования" >электромонтер по ремонту и обслуживанию электрооборудования</option><option value="электросварщик ручной сварки" >электросварщик ручной сварки</option></xmp>------ SQL done, 58ms.<br><BR>
+<br> <b>SQL: [[get dropdowns] (2) ]:</b><xmp>select distinct concat('<option value="', category, '" '
+, case when category='' then 'selected' else '' end
+, '>' , category, '</option>')as CATEGORIES
+from sotrudniki
+</xmp><xmp>***** 4 record(s) retrieved. Filled 1 parameters: 
+CATEGORIES=<option value="Научные и научно-педагогические работники" >Научные и научно-педагогические работники</option><option value="Специалисты" >Специалисты</option><option value="Рабочие" >Рабочие</option><option value="Руководители" >Руководители</option></xmp>------ SQL done, 20ms.<br><BR>
+<br> <b>SQL: [[get dropdowns] (3) ]:</b><xmp>select distinct concat('<option value="', stepen, '" '
+, case when stepen='' then 'selected' else '' end
+, '>' , stepen, '</option>')as STEPEN
+from sotrudniki
+</xmp><xmp>***** 3 record(s) retrieved. Filled 1 parameters: 
+STEPEN=<option value="" selected></option><option value="Доктор наук" >Доктор наук</option><option value="Кандидат наук" >Кандидат наук</option></xmp>------ SQL done, 10ms.<br><BR>
+<br> <b>SQL: [[get dropdowns] (4) ]:</b><xmp>select distinct concat('<option value="', grazhdan, '" '
+, case when grazhdan='' then 'selected' else '' end
+, '>' , grazhdan, '</option>')as GRAZHDAN
+from sotrudniki
+order by grazhdan
+</xmp><xmp>***** 18 record(s) retrieved. Filled 1 parameters: 
+GRAZHDAN=<option value="АЗЕРБАЙДЖАН" >АЗЕРБАЙДЖАН</option><option value="АРМЕНИЯ" >АРМЕНИЯ</option><option value="БЕЛАРУСЬ" >БЕЛАРУСЬ</option><option value="БОЛГАРИЯ" >БОЛГАРИЯ</option><option value="ГЕРМАНИЯ" >ГЕРМАНИЯ</option><option value="ГРУЗИЯ" >ГРУЗИЯ</option><option value="КАЗАХСТАН" >КАЗАХСТАН</option><option value="ЛИТВА" >ЛИТВА</option><option value="МОЛДОВА, РЕСПУБЛИКА" >МОЛДОВА, РЕСПУБЛИКА</option><option value="МОНГОЛИЯ" >МОНГОЛИЯ</option><option value="НИГЕРИЯ" >НИГЕРИЯ</option><option value="ПОЛЬША" >ПОЛЬША</option><option value="РОССИЯ" >РОССИЯ</option><option value="РУМЫНИЯ" >РУМЫНИЯ</option><option value="СЛОВАКИЯ" >СЛОВАКИЯ</option><option value="УЗБЕКИСТАН" >УЗБЕКИСТАН</option><option value="УКРАИНА" >УКРАИНА</option><option value="ЧЕШСКАЯ РЕСПУБЛИКА" >ЧЕШСКАЯ РЕСПУБЛИКА</option></xmp>------ SQL done, 8ms.<br><BR>
+<br> <b>SQL: [[get dropdowns] (5) ]:</b><xmp>select distinct concat('<option value="', otdel, '" '
+, case when otdel='' then 'selected' else '' end
+, '>' , otdel, '</option>')as OTDEL
+from sotrudniki
+order by otdel
+</xmp><xmp>***** 38 record(s) retrieved. Filled 1 parameters: 
+OTDEL=<option value="АБ" >АБ</option><option value="ГСиК" >ГСиК</option><option value="ДСН" >ДСН</option><option value="ИЭО" >ИЭО</option><option value="КО" >КО</option><option value="НИКО" >НИКО</option><option value="НИОСЭН" >НИОСЭН</option><option value="НМО КТС" >НМО КТС</option><option value="НТОП" >НТОП</option><option value="НЭО ИиКН" >НЭО ИиКН</option><option value="НЭО СМиТ" >НЭО СМиТ</option><option value="НЭО ФCMS" >НЭО ФCMS</option><option value="НЭОАФИ" >НЭОАФИ</option><option value="НЭОИФПУ" >НЭОИФПУ</option><option value="НЭОЛКЛ" >НЭОЛКЛ</option><option value="НЭОМД (MPD)" >НЭОМД (MPD)</option><option value="НЭОРЭС" >НЭОРЭС</option><option value="НЭОСФМС" >НЭОСФМС</option><option value="НЭОУС" >НЭОУС</option><option value="НЭОФТИ на LHC" >НЭОФТИ на LHC</option><option value="НЭОФТИ на RHIC" >НЭОФТИ на RHIC</option><option value="НЭОФТИ" >НЭОФТИ</option><option value="Отделение №1 Ускорительное" >Отделение №1 Ускорительное</option><option value="Отделение №2 Нуклотрон-NICA" >Отделение №2 Нуклотрон-NICA</option><option value="Отделение №3 - Физики адронов" >Отделение №3 - Физики адронов</option><option value="Отделение №5-НМИиИ" >Отделение №5-НМИиИ</option><option value="Отделение №6 - ГИ" >Отделение №6 - ГИ</option><option value="ПФБ" >ПФБ</option><option value="рук-во ЛФВЭ" >рук-во ЛФВЭ</option><option value="СДС" >СДС</option><option value="СКИ" >СКИ</option><option value="СНЭО" >СНЭО</option><option value="СРС" >СРС</option><option value="ССД" >ССД</option><option value="СФ АТЛАС" >СФ АТЛАС</option><option value="СФСКЯ" >СФСКЯ</option><option value="ХО" >ХО</option><option value="ЦОЭП" >ЦОЭП</option></xmp>------ SQL done, 8ms.<br><BR>
+<br><span class='ss_start pt'  onClick='toggleDiv("tab_personal_table1511904509462");'> $CALL_SERVICE: <b>tab_personal.cfg => tab_personal_table</b> (request:HR_LHEP_2)</span><div id='tab_personal_table1511904509462' class='ss'><b>$INCLUDE </b>[criteria]<BR>
+<br> <b>SQL: [[get Totals] (1) ]:</b><xmp>select count(*) as "NUM_RECORDS"
+from sotrudniki sotr
+where 1=1
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+NUM_RECORDS=1081</xmp>------ SQL done, 3ms.<br><BR>
+<b>$INCLUDE </b>[criteria]<BR>
+ SQL: [SQL]<BR>
+<b>$INCLUDE </b>[criteria]<BR>
+<br> <b>SQL: [SQL]:</b><xmp>select sotr.tab_n, sotr.FIO, sotr.history_contract, sotr.stepen, sotr.otdel, sotr.shtat_direct
+, sotr.division, sotr.div_code, sotr.post, date_format(sotr.dr,'%d.%m.%Y') birthday
+, sotr.usl_truda, sotr.usl_rab, sotr.category, sotr.grazhdan, date_format(sotr.nachalo_rab,'%d.%m.%Y') nachalo_rab
+, date_format(sotr.okonch_rab,'%d.%m.%Y') okonch_rab, sotr.otdel, sotr.shtat_direct
+, sotr.sovmeshenie
+, ((YEAR(CURRENT_DATE)-YEAR(dr))-(DATE_FORMAT(CURRENT_DATE, '%m%d')<DATE_FORMAT(dr, '%m%d'))) AS age
+from sotrudniki sotr
+where 1=1
+order by sotr.FIO
+</xmp> <b> Processed in 50ms. </b><br> <b> NumTableRows=200; </b><BR>
+<b>$INCLUDE </b>dat/common.dat[rpp]<BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("tab_personal_table1511904509462");'> BACK: <b>tab_personal_table => tab_personal.cfg; (355ms.)</b></span><BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_2");'>Request_HR_LHEP_2 (tab_personal) DONE! (595ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_3");'> Request_HR_LHEP_3 [29.11 00:31:57] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_3' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=1&Command=PutObject&ObjectType=8&SrcObjectID=871&GateObjectID=115819&Time=28.11.2017 17:40:10&Object={
+"Код": "0000000871",
+"Наименование": "Гоголева Светлана Валерьевна",
+"ПометкаУдаления": "Нет",
+"Образование": [
+{
+"ВидОбразования": "e55e3b58-60ef-4006-b0eb-a6fd3c5ec3a0",
+"ВидОбразованияКод": "07",
+"ВидОбразованияНаименование": "Высшее образование - специалитет, магистратура",
+"УчебноеЗаведение": "e8485d29-28aa-11e2-ab6e-000e0ce597c9",
+"УчебноеЗаведен.....; log=true; session inactive=min;<br><hr>gateway/receive.cfg<br>gateway/receive.cfg: ClientID=1; Command=PutObject; ObjectType=8; ObjectID=; GlobalID=; ClientObjectID=;<br> Наименование=Гоголева Светлана Валерьевна<BR>
+ ПометкаУдаления=Нет<BR>
+<br><b>*** UNKNOWN ARRAY:</b> Образование;<BR>
+<br><b>*** ARRAY: </b>Образование:<BR>
+ ...* Образование.1.СпециальностьНаименование=промышленная электроника<BR>
+ ...* Образование.1.ВидОбразованияНаименование=Высшее образование - специалитет, магистратура<BR>
+ ...* Образование.1.ГодОкончания=1992<BR>
+ ...* Образование.1.ВидОбразованияКод=07<BR>
+ ...* Образование.1.УчебноеЗаведениеНаименование=Московский государственный институт радиотехники, электроники и автоматики<BR>
+ ...* Образование.1.ВидОбразования=e55e3b58-60ef-4006-b0eb-a6fd3c5ec3a0<BR>
+ ...* Образование.1.Квалификация=<BR>
+ ...* Образование.1.СпециальностьКод=888903<BR>
+ ...* Образование.1.Диплом=<BR>
+ ...* Образование.1.Специальность=62a3bcdc-27e5-11e2-ab6e-000e0ce597c9<BR>
+ ...* Образование.1.УчебноеЗаведение=e8485d29-28aa-11e2-ab6e-000e0ce597c9<BR>
+ ...* Образование.1.УчебноеЗаведениеКод=000000370<BR>
+<b> ...* ARRAY TOTAL: </b>Образование.count=1; Образование.items=1;<br><BR>
+<br><b>*** UNKNOWN ARRAY:</b> ПерсональныеДанные;<BR>
+<br><b>*** ARRAY: </b>ПерсональныеДанные:<BR>
+ ...* ПерсональныеДанные.1.ПаспортаДата=22.04.2014 00:00:00<BR>
+ ...* ПерсональныеДанные.1.ПаспортНомер=441248<BR>
+ ...* ПерсональныеДанные.1.ТипаПенсииКод=000000289<BR>
+ ...* ПерсональныеДанные.1.Гражданство=982d33e2-bee6-453a-992e-11d13fa66fa7<BR>
+ ...* ПерсональныеДанные.1.КоличествоДетей=2<BR>
+ ...* ПерсональныеДанные.1.ДатаРождения=18.03.1969 00:00:00<BR>
+ ...* ПерсональныеДанные.1.Пол=Женский<BR>
+ ...* ПерсональныеДанные.1.СемейногоПоложения=9ba95afb-12dd-11e2-ab6e-000e0ce597c9<BR>
+ ...* ПерсональныеДанные.1.СемейногоПоложенияКод=2<BR>
+ ...* ПерсональныеДанные.1.МестоРождения=0,Дубна,,Московская,<BR>
+ ...* ПерсональныеДанные.1.Адрес=141980, Московская обл, Дубна г, Строителей ул, дом № 4, кв.406<BR>
+ ...* ПерсональныеДанные.1.СемейноеПоложениеНаименование=Состоит в зарегистрированном браке<BR>
+ ...* ПерсональныеДанные.1.ГражданствоНаименование=РОССИЯ<BR>
+ ...* ПерсональныеДанные.1.ПаспортСерия=46 14<BR>
+ ...* ПерсональныеДанные.1.ГражданствоКод=643<BR>
+ ...* ПерсональныеДанные.1.ТипПенсииНаименование=не пенсионер<BR>
+ ...* ПерсональныеДанные.1.ИНН=501001367374<BR>
+ ...* ПерсональныеДанные.1.ИмеетСудимость=<BR>
+ ...* ПерсональныеДанные.1.УчастникВойны=<BR>
+ ...* ПерсональныеДанные.1.СтраховойНомерПФР=003-859-468 61<BR>
+ ...* ПерсональныеДанные.1.ПаспорКемВыдан=ТП № 1 ОУФМС России по М.О. по городскому округу Дубна<BR>
+ ...* ПерсональныеДанные.1.АдресПоПрописке=141980, Московская обл, Дубна г, Строителей ул, дом № 4, кв.406<BR>
+ ...* ПерсональныеДанные.1.ТипаПенсии=b9cec3eb-1f43-11e2-ab6e-000e0ce597c9<BR>
+<b> ...* ARRAY TOTAL: </b>ПерсональныеДанные.count=1; ПерсональныеДанные.items=1;<br><BR>
+ Код=0000000871<BR>
+<br><b>*** UNKNOWN ARRAY:</b> Стажи;<BR>
+<br><b>*** ARRAY: </b>Стажи:<BR>
+ ...* Стажи.1.РазмерДней=<BR>
+ ...* Стажи.1.ДатаОтсчета=14.07.1989 00:00:00<BR>
+ ...* Стажи.1.ВидСтажа=ba17f8b8-7432-49b2-a8d9-af1b2d17cdfa<BR>
+ ...* Стажи.1.ВидСтажаКод=00004<BR>
+ ...* Стажи.1.РазмерМесяцев=<BR>
+ ...* Стажи.1.ВидСтажаНаименование=Страховой стаж для оплаты больничных листов<BR>
+ ...* Стажи.2.РазмерДней=<BR>
+ ...* Стажи.2.ДатаОтсчета=01.09.1989 00:00:00<BR>
+ ...* Стажи.2.ВидСтажа=f4619d6c-5da3-45d4-9dac-3e6e16a4b88e<BR>
+ ...* Стажи.2.ВидСтажаКод=00003<BR>
+ ...* Стажи.2.РазмерМесяцев=<BR>
+ ...* Стажи.2.ВидСтажаНаименование=Стаж на надбавку за выслугу лет<BR>
+<b> ...* ARRAY TOTAL: </b>Стажи.count=2; Стажи.items=1,2;<br><BR>
+<br><b>*** UNKNOWN ARRAY:</b> Награды;<BR>
+<br><b>*** ARRAY: </b>Награды:<BR>
+ ...* Награды.1.Награда=52c78870-800d-11e2-93f0-0025907d24fa<BR>
+ ...* Награды.1.НаградаНаименование=Ветеран атомной энергетики и промышленности<BR>
+ ...* Награды.1.ЧейПриказ=<BR>
+ ...* Награды.1.ДатаПриказа=01.01.2011 00:00:00<BR>
+ ...* Награды.1.НомерПриказа=<BR>
+ ...* Награды.2.Награда=52c7887b-800d-11e2-93f0-0025907d24fa<BR>
+ ...* Награды.2.НаградаНаименование=Почетная грамота ОИЯИ<BR>
+ ...* Награды.2.ЧейПриказ=<BR>
+ ...* Награды.2.ДатаПриказа=21.08.2013 00:00:00<BR>
+ ...* Награды.2.НомерПриказа=3357<BR>
+ ...* Награды.3.Награда=52c7887b-800d-11e2-93f0-0025907d24fa<BR>
+ ...* Награды.3.НаградаНаименование=Почетная грамота ОИЯИ<BR>
+ ...* Награды.3.ЧейПриказ=<BR>
+ ...* Награды.3.ДатаПриказа=16.03.2016 00:00:00<BR>
+ ...* Награды.3.НомерПриказа=1065 лс<BR>
+<b> ...* ARRAY TOTAL: </b>Награды.count=3; Награды.items=1,2,3;<br><BR>
+* JSON Keys=Наименование, ПометкаУдаления, Образование, ПерсональныеДанные, Код, Стажи, Награды<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+<hr>gateway/receive.cfg[process receive] ObjectType=8<br><br><span class='ss_start pt'  onClick='toggleDiv("gateway/receive_8_fizlitso1511904718008");'> $CALL_SERVICE: <b>gateway/receive.cfg => gateway/receive_8_fizlitso</b> (request:HR_LHEP_3)</span><div id='gateway/receive_8_fizlitso1511904718008' class='ss'><hr><b>===>>> receive_8_fizlitco</b><br><br> <b>SQL: [[check existing record] (1) ]:</b><xmp>select 'Y' as REC_EXISTS, id as REC_ID, is_manual from i_fizlitsa
+where ID=0000000871
+</xmp><xmp>***** 1 record(s) retrieved. Filled 3 parameters: 
+REC_EXISTS=Y
+REC_ID=871
+is_manual=0</xmp>------ SQL done, 7ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (1) ]:</b><xmp>select SUBSTRING_INDEX('Гоголева Светлана Валерьевна ', ' ', 1) AS F
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+F=Гоголева</xmp>------ SQL done, 2ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (2) ]:</b><xmp>select replace('Гоголева Светлана Валерьевна ', 'Гоголева ','') AS IO
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+IO=Светлана Валерьевна </xmp>------ SQL done, 2ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (3) ]:</b><xmp>select SUBSTRING_INDEX('Светлана Валерьевна ', ' ', 1) AS I
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+I=Светлана</xmp>------ SQL done, 2ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (4) ]:</b><xmp>select replace('Светлана Валерьевна ', 'Светлана ','') AS O
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+O=Валерьевна </xmp>------ SQL done, 2ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (5) ]:</b><xmp></xmp><b>$INCLUDE </b>[PutObject]<BR>
+<br> <b>SQL: [[update record] (1) ]:</b><xmp>update i_fizlitsa set F='Гоголева', I='Светлана', O='Валерьевна'
+, dr=STR_TO_DATE('18.03.1969 00:00:00', '%d.%m.%Y %H:%i:%s')
+, strana='РОССИЯ', sex=''
+, is_deleted=0, changed=now()
+where ID=0000000871
+</xmp> DONE! 1 record(s) affected------ SQL done, 21ms.<br><BR>
+<br> <b>SQL: [[update record] (2) ]:</b><xmp></xmp></div><span class='ss_back pt'  onClick='toggleDiv("gateway/receive_8_fizlitso1511904718008");'> BACK: <b>gateway/receive_8_fizlitso => gateway/receive.cfg; (40ms.)</b></span><BR>
+<hr>----- gateway/receive.cfg[report]: ERR_CODE=0; ERROR=; <br>+++++<b>$INCLUDE </b>gateway/receive[OK]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_3");'>Request_HR_LHEP_3 (gateway/receive) DONE! (219ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_4");'> Request_HR_LHEP_4 [29.11 00:31:58] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_4' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=1&Command=PutObject&ObjectType=8&SrcObjectID=60c3601a-d449-11e7-948c-0025907d24fa&GateObjectID=115821&Time=28.11.2017 17:45:09&Object={
+"Код": "0000000888",
+"Наименование": "Голосова Наталья Олеговна",
+"ПометкаУдаления": "Нет",
+"Образование": [
+{
+"ВидОбразования": "e55e3b58-60ef-4006-b0eb-a6fd3c5ec3a0",
+"ВидОбразованияКод": "07",
+"ВидОбразованияНаименование": "Высшее образование - специалитет, магистратура",
+"УчебноеЗаведение": "e8485e92-28aa-11e2-ab6e-0.....; log=true; session inactive=min;<br><hr>gateway/receive.cfg<br>gateway/receive.cfg: ClientID=1; Command=PutObject; ObjectType=8; ObjectID=; GlobalID=; ClientObjectID=;<br> Наименование=Голосова Наталья Олеговна<BR>
+<br><b>*** UNKNOWN ARRAY:</b> УченыеЗвания;<BR>
+<br><b>*** ARRAY: </b>УченыеЗвания:<BR>
+ ...* УченыеЗвания.1.УченоеЗваниеДата=<BR>
+ ...* УченыеЗвания.1.УченоеЗваниеКод=<BR>
+ ...* УченыеЗвания.1.УченоеЗваниеНаименование=<BR>
+ ...* УченыеЗвания.1.НаучнаяСпециальностьКод=999901<BR>
+ ...* УченыеЗвания.1.АттестатКемВыдан=<BR>
+ ...* УченыеЗвания.1.НаучнаяСпециальность=b38d7c90-1f62-11e2-ab6e-000e0ce597c9<BR>
+ ...* УченыеЗвания.1.АттестатСерия=<BR>
+ ...* УченыеЗвания.1.АттестатНомер=<BR>
+ ...* УченыеЗвания.1.УченоеЗвание=<BR>
+ ...* УченыеЗвания.1.НаучнаяСпециальностьНаименование=физика конденсированного состояния вещества<BR>
+<b> ...* ARRAY TOTAL: </b>УченыеЗвания.count=1; УченыеЗвания.items=1;<br><BR>
+ ПометкаУдаления=Нет<BR>
+<br><b>*** UNKNOWN ARRAY:</b> Образование;<BR>
+<br><b>*** ARRAY: </b>Образование:<BR>
+ ...* Образование.1.СпециальностьНаименование=физика<BR>
+ ...* Образование.1.ВидОбразованияНаименование=Высшее образование - специалитет, магистратура<BR>
+ ...* Образование.1.ГодОкончания=2001<BR>
+ ...* Образование.1.ВидОбразованияКод=07<BR>
+ ...* Образование.1.УчебноеЗаведениеНаименование=Уральский государственный университет<BR>
+ ...* Образование.1.ВидОбразования=e55e3b58-60ef-4006-b0eb-a6fd3c5ec3a0<BR>
+ ...* Образование.1.Квалификация=<BR>
+ ...* Образование.1.СпециальностьКод=010701<BR>
+ ...* Образование.1.Диплом=<BR>
+ ...* Образование.1.Специальность=d3e03aa0-16bc-11e2-ab6e-000e0ce597c9<BR>
+ ...* Образование.1.УчебноеЗаведение=e8485e92-28aa-11e2-ab6e-000e0ce597c9<BR>
+ ...* Образование.1.УчебноеЗаведениеКод=000000731<BR>
+<b> ...* ARRAY TOTAL: </b>Образование.count=1; Образование.items=1;<br><BR>
+<br><b>*** UNKNOWN ARRAY:</b> ПерсональныеДанные;<BR>
+<br><b>*** ARRAY: </b>ПерсональныеДанные:<BR>
+ ...* ПерсональныеДанные.1.ПаспортаДата=25.06.2001 00:00:00<BR>
+ ...* ПерсональныеДанные.1.ПаспортНомер=810091<BR>
+ ...* ПерсональныеДанные.1.ТипаПенсииКод=000000289<BR>
+ ...* ПерсональныеДанные.1.Гражданство=982d33e2-bee6-453a-992e-11d13fa66fa7<BR>
+ ...* ПерсональныеДанные.1.КоличествоДетей=2<BR>
+ ...* ПерсональныеДанные.1.ДатаРождения=25.07.1978 00:00:00<BR>
+ ...* ПерсональныеДанные.1.Пол=Женский<BR>
+ ...* ПерсональныеДанные.1.СемейногоПоложения=9ba95afb-12dd-11e2-ab6e-000e0ce597c9<BR>
+ ...* ПерсональныеДанные.1.СемейногоПоложенияКод=2<BR>
+ ...* ПерсональныеДанные.1.МестоРождения=<BR>
+ ...* ПерсональныеДанные.1.Адрес=<BR>
+ ...* ПерсональныеДанные.1.СемейноеПоложениеНаименование=Состоит в зарегистрированном браке<BR>
+ ...* ПерсональныеДанные.1.ГражданствоНаименование=РОССИЯ<BR>
+ ...* ПерсональныеДанные.1.ПаспортСерия=65 01<BR>
+ ...* ПерсональныеДанные.1.ГражданствоКод=643<BR>
+ ...* ПерсональныеДанные.1.ТипПенсииНаименование=не пенсионер<BR>
+ ...* ПерсональныеДанные.1.ИНН=660901275051<BR>
+ ...* ПерсональныеДанные.1.ИмеетСудимость=<BR>
+ ...* ПерсональныеДанные.1.УчастникВойны=<BR>
+ ...* ПерсональныеДанные.1.СтраховойНомерПФР=055-090-360 40<BR>
+ ...* ПерсональныеДанные.1.ПаспорКемВыдан=Ленинским РУВД г.Екатеринбурга<BR>
+ ...* ПерсональныеДанные.1.АдресПоПрописке=141986, Московская обл, Дубна г, Боголюбова пр-кт, дом № 16, корпус 2, кв.9<BR>
+ ...* ПерсональныеДанные.1.ТипаПенсии=b9cec3eb-1f43-11e2-ab6e-000e0ce597c9<BR>
+<b> ...* ARRAY TOTAL: </b>ПерсональныеДанные.count=1; ПерсональныеДанные.items=1;<br><BR>
+<br><b>*** UNKNOWN ARRAY:</b> УченыеСтепени;<BR>
+<br><b>*** ARRAY: </b>УченыеСтепени:<BR>
+ ...* УченыеСтепени.1.УченаяСтепень=2b9bde8c-d7be-11e1-bad5-e0cb4eda5b1f<BR>
+ ...* УченыеСтепени.1.УченаяСтепеньКод=2<BR>
+ ...* УченыеСтепени.1.УченаяСтепеньНаименование=Кандидат наук<BR>
+ ...* УченыеСтепени.1.УченаяСтепеньДата=10.12.2010 00:00:00<BR>
+ ...* УченыеСтепени.1.ОтрасльНауки=физико-математ.<BR>
+ ...* УченыеСтепени.1.ДипломКемВыдан=<BR>
+ ...* УченыеСтепени.1.ДипломСерияНомер=<BR>
+<b> ...* ARRAY TOTAL: </b>УченыеСтепени.count=1; УченыеСтепени.items=1;<br><BR>
+ Код=0000000888<BR>
+<br><b>*** UNKNOWN ARRAY:</b> Стажи;<BR>
+<br><b>*** ARRAY: </b>Стажи:<BR>
+ ...* Стажи.1.РазмерДней=<BR>
+ ...* Стажи.1.ДатаОтсчета=02.11.1998 00:00:00<BR>
+ ...* Стажи.1.ВидСтажа=ba17f8b8-7432-49b2-a8d9-af1b2d17cdfa<BR>
+ ...* Стажи.1.ВидСтажаКод=00004<BR>
+ ...* Стажи.1.РазмерМесяцев=<BR>
+ ...* Стажи.1.ВидСтажаНаименование=Страховой стаж для оплаты больничных листов<BR>
+ ...* Стажи.2.РазмерДней=<BR>
+ ...* Стажи.2.ДатаОтсчета=18.02.2003 00:00:00<BR>
+ ...* Стажи.2.ВидСтажа=f4619d6c-5da3-45d4-9dac-3e6e16a4b88e<BR>
+ ...* Стажи.2.ВидСтажаКод=00003<BR>
+ ...* Стажи.2.РазмерМесяцев=<BR>
+ ...* Стажи.2.ВидСтажаНаименование=Стаж на надбавку за выслугу лет<BR>
+<b> ...* ARRAY TOTAL: </b>Стажи.count=2; Стажи.items=1,2;<br><BR>
+* JSON Keys=Наименование, УченыеЗвания, ПометкаУдаления, Образование, ПерсональныеДанные, УченыеСтепени, Код, Стажи<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+<hr>gateway/receive.cfg[process receive] ObjectType=8<br><br><span class='ss_start pt'  onClick='toggleDiv("gateway/receive_8_fizlitso1511904718211");'> $CALL_SERVICE: <b>gateway/receive.cfg => gateway/receive_8_fizlitso</b> (request:HR_LHEP_4)</span><div id='gateway/receive_8_fizlitso1511904718211' class='ss'><hr><b>===>>> receive_8_fizlitco</b><br><br> <b>SQL: [[check existing record] (1) ]:</b><xmp>select 'Y' as REC_EXISTS, id as REC_ID, is_manual from i_fizlitsa
+where ID=0000000888
+</xmp><xmp>***** 1 record(s) retrieved. Filled 3 parameters: 
+REC_EXISTS=Y
+REC_ID=888
+is_manual=0</xmp>------ SQL done, 6ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (1) ]:</b><xmp>select SUBSTRING_INDEX('Голосова Наталья Олеговна ', ' ', 1) AS F
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+F=Голосова</xmp>------ SQL done, 3ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (2) ]:</b><xmp>select replace('Голосова Наталья Олеговна ', 'Голосова ','') AS IO
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+IO=Наталья Олеговна </xmp>------ SQL done, 2ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (3) ]:</b><xmp>select SUBSTRING_INDEX('Наталья Олеговна ', ' ', 1) AS I
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+I=Наталья</xmp>------ SQL done, 2ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (4) ]:</b><xmp>select replace('Наталья Олеговна ', 'Наталья ','') AS O
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+O=Олеговна </xmp>------ SQL done, 1ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (5) ]:</b><xmp></xmp><b>$INCLUDE </b>[PutObject]<BR>
+<br> <b>SQL: [[update record] (1) ]:</b><xmp>update i_fizlitsa set F='Голосова', I='Наталья', O='Олеговна'
+, dr=STR_TO_DATE('25.07.1978 00:00:00', '%d.%m.%Y %H:%i:%s')
+, strana='РОССИЯ', sex=''
+, is_deleted=0, changed=now()
+where ID=0000000888
+</xmp> DONE! 1 record(s) affected------ SQL done, 20ms.<br><BR>
+<br> <b>SQL: [[update record] (2) ]:</b><xmp></xmp></div><span class='ss_back pt'  onClick='toggleDiv("gateway/receive_8_fizlitso1511904718211");'> BACK: <b>gateway/receive_8_fizlitso => gateway/receive.cfg; (49ms.)</b></span><BR>
+<hr>----- gateway/receive.cfg[report]: ERR_CODE=0; ERROR=; <br>+++++<b>$INCLUDE </b>gateway/receive[OK]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_4");'>Request_HR_LHEP_4 (gateway/receive) DONE! (120ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_5");'> Request_HR_LHEP_5 [29.11 00:31:58] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_5' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=1&Command=PutObject&ObjectType=3&SrcObjectID=f0e4b568-d445-11e7-948c-0025907d24fa&GateObjectID=115812&Time=28.11.2017 17:14:47&Object={
+"Код": "537010",
+"Наименование": "Механический участок",
+"РодительКод": "537000",
+"ПометкаУдаления": "Нет"
+}; log=true; session inactive=min;<br><hr>gateway/receive.cfg<br>gateway/receive.cfg: ClientID=1; Command=PutObject; ObjectType=3; ObjectID=; GlobalID=; ClientObjectID=;<br> Наименование=Механический участок<BR>
+ ПометкаУдаления=Нет<BR>
+ РодительКод=537000<BR>
+ Код=537010<BR>
+* JSON Keys=Наименование, ПометкаУдаления, РодительКод, Код<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+<hr>gateway/receive.cfg[process receive] ObjectType=3<br><br><span class='ss_start pt'  onClick='toggleDiv("gateway/receive_3_podrazd1511904718342");'> $CALL_SERVICE: <b>gateway/receive.cfg => gateway/receive_3_podrazd</b> (request:HR_LHEP_5)</span><div id='gateway/receive_3_podrazd1511904718342' class='ss'><hr><b>===>>> receive_3_podrazd.cfg</b><br>object={
+"Код": "537010",
+"Наименование": "Механический участок",
+"РодительКод": "537000",
+"ПометкаУдаления": "Нет"
+};<br><br> <b>SQL: [[check existing record] (1) ]:</b><xmp>select 'Y' as REC_EXISTS, id as REC_ID, pid as "OLD_PID", is_manual from info_10
+where ID=537010
+</xmp><xmp>***** 0 record(s) retrieved. Filled 0 parameters: </xmp>------ SQL done, 4ms.<br><BR>
+<b>$INCLUDE </b>[PutObject]<BR>
+<br> <b>SQL: [[check parent] (1) ]:</b><xmp>select 'Y' as "PARENT_EXISTS"
+from info_10
+where ID=537000 and is_deleted=0
+</xmp><xmp>***** 0 record(s) retrieved. Filled 0 parameters: </xmp>------ SQL done, 4ms.<br><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/receive_3_podrazd1511904718342");'> BACK: <b>gateway/receive_3_podrazd => gateway/receive.cfg; (16ms.)</b></span><BR>
+<hr>----- gateway/receive.cfg[report]: ERR_CODE=3; ERROR=Ошибка: нет родительского подразделения (код: 537000); <br>+++++<b>$INCLUDE </b>gateway/receive[ERROR]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_5");'>Request_HR_LHEP_5 (gateway/receive) DONE! (85ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_6");'> Request_HR_LHEP_6 [29.11 00:31:58] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_6' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=1&Command=PutObject&ObjectType=3&SrcObjectID=03331a87-d446-11e7-948c-0025907d24fa&GateObjectID=115813&Time=28.11.2017 17:14:48&Object={
+"Код": "537020",
+"Наименование": "Слесарный участок",
+"РодительКод": "537000",
+"ПометкаУдаления": "Нет"
+}; log=true; session inactive=min;<br><hr>gateway/receive.cfg<br>gateway/receive.cfg: ClientID=1; Command=PutObject; ObjectType=3; ObjectID=; GlobalID=; ClientObjectID=;<br> Наименование=Слесарный участок<BR>
+ ПометкаУдаления=Нет<BR>
+ РодительКод=537000<BR>
+ Код=537020<BR>
+* JSON Keys=Наименование, ПометкаУдаления, РодительКод, Код<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+<hr>gateway/receive.cfg[process receive] ObjectType=3<br><br><span class='ss_start pt'  onClick='toggleDiv("gateway/receive_3_podrazd1511904718435");'> $CALL_SERVICE: <b>gateway/receive.cfg => gateway/receive_3_podrazd</b> (request:HR_LHEP_6)</span><div id='gateway/receive_3_podrazd1511904718435' class='ss'><hr><b>===>>> receive_3_podrazd.cfg</b><br>object={
+"Код": "537020",
+"Наименование": "Слесарный участок",
+"РодительКод": "537000",
+"ПометкаУдаления": "Нет"
+};<br><br> <b>SQL: [[check existing record] (1) ]:</b><xmp>select 'Y' as REC_EXISTS, id as REC_ID, pid as "OLD_PID", is_manual from info_10
+where ID=537020
+</xmp><xmp>***** 0 record(s) retrieved. Filled 0 parameters: </xmp>------ SQL done, 2ms.<br><BR>
+<b>$INCLUDE </b>[PutObject]<BR>
+<br> <b>SQL: [[check parent] (1) ]:</b><xmp>select 'Y' as "PARENT_EXISTS"
+from info_10
+where ID=537000 and is_deleted=0
+</xmp><xmp>***** 0 record(s) retrieved. Filled 0 parameters: </xmp>------ SQL done, 1ms.<br><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/receive_3_podrazd1511904718435");'> BACK: <b>gateway/receive_3_podrazd => gateway/receive.cfg; (5ms.)</b></span><BR>
+<hr>----- gateway/receive.cfg[report]: ERR_CODE=3; ERROR=Ошибка: нет родительского подразделения (код: 537000); <br>+++++<b>$INCLUDE </b>gateway/receive[ERROR]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_6");'>Request_HR_LHEP_6 (gateway/receive) DONE! (69ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_7");'> Request_HR_LHEP_7 [29.11 00:31:58] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_7' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=1&Command=PutObject&ObjectType=3&SrcObjectID=30312&GateObjectID=115806&Time=28.11.2017 17:09:58&Object={
+"Код": "536020",
+"Наименование": "Группа №2 ремонтно-монтажных работ",
+"РодительКод": "536000",
+"ПометкаУдаления": "Нет"
+}; log=true; session inactive=min;<br><hr>gateway/receive.cfg<br>gateway/receive.cfg: ClientID=1; Command=PutObject; ObjectType=3; ObjectID=; GlobalID=; ClientObjectID=;<br> Наименование=Группа №2 ремонтно-монтажных работ<BR>
+ ПометкаУдаления=Нет<BR>
+ РодительКод=536000<BR>
+ Код=536020<BR>
+* JSON Keys=Наименование, ПометкаУдаления, РодительКод, Код<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+<hr>gateway/receive.cfg[process receive] ObjectType=3<br><br><span class='ss_start pt'  onClick='toggleDiv("gateway/receive_3_podrazd1511904718523");'> $CALL_SERVICE: <b>gateway/receive.cfg => gateway/receive_3_podrazd</b> (request:HR_LHEP_7)</span><div id='gateway/receive_3_podrazd1511904718523' class='ss'><hr><b>===>>> receive_3_podrazd.cfg</b><br>object={
+"Код": "536020",
+"Наименование": "Группа №2 ремонтно-монтажных работ",
+"РодительКод": "536000",
+"ПометкаУдаления": "Нет"
+};<br><br> <b>SQL: [[check existing record] (1) ]:</b><xmp>select 'Y' as REC_EXISTS, id as REC_ID, pid as "OLD_PID", is_manual from info_10
+where ID=536020
+</xmp><xmp>***** 0 record(s) retrieved. Filled 0 parameters: </xmp>------ SQL done, 1ms.<br><BR>
+<b>$INCLUDE </b>[PutObject]<BR>
+<br> <b>SQL: [[check parent] (1) ]:</b><xmp>select 'Y' as "PARENT_EXISTS"
+from info_10
+where ID=536000 and is_deleted=0
+</xmp><xmp>***** 0 record(s) retrieved. Filled 0 parameters: </xmp>------ SQL done, 1ms.<br><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/receive_3_podrazd1511904718523");'> BACK: <b>gateway/receive_3_podrazd => gateway/receive.cfg; (4ms.)</b></span><BR>
+<hr>----- gateway/receive.cfg[report]: ERR_CODE=3; ERROR=Ошибка: нет родительского подразделения (код: 536000); <br>+++++<b>$INCLUDE </b>gateway/receive[ERROR]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_7");'>Request_HR_LHEP_7 (gateway/receive) DONE! (73ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_8");'> Request_HR_LHEP_8 [29.11 00:31:58] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_8' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=1&Command=PutObject&ObjectType=3&SrcObjectID=dde949db-d445-11e7-948c-0025907d24fa&GateObjectID=115811&Time=28.11.2017 17:14:46&Object={
+"Код": "537000",
+"Наименование": "Отделение технического обслуживания ускорителей и физических установок",
+"РодительКод": "530000",
+"ПометкаУдаления": "Нет"
+}; log=true; session inactive=min;<br><hr>gateway/receive.cfg<br>gateway/receive.cfg: ClientID=1; Command=PutObject; ObjectType=3; ObjectID=; GlobalID=; ClientObjectID=;<br> Наименование=Отделение технического обслуживания ускорителей и физических установок<BR>
+ ПометкаУдаления=Нет<BR>
+ РодительКод=530000<BR>
+ Код=537000<BR>
+* JSON Keys=Наименование, ПометкаУдаления, РодительКод, Код<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+<hr>gateway/receive.cfg[process receive] ObjectType=3<br><br><span class='ss_start pt'  onClick='toggleDiv("gateway/receive_3_podrazd1511904718606");'> $CALL_SERVICE: <b>gateway/receive.cfg => gateway/receive_3_podrazd</b> (request:HR_LHEP_8)</span><div id='gateway/receive_3_podrazd1511904718606' class='ss'><hr><b>===>>> receive_3_podrazd.cfg</b><br>object={
+"Код": "537000",
+"Наименование": "Отделение технического обслуживания ускорителей и физических установок",
+"РодительКод": "530000",
+"ПометкаУдаления": "Нет"
+};<br><br> <b>SQL: [[check existing record] (1) ]:</b><xmp>select 'Y' as REC_EXISTS, id as REC_ID, pid as "OLD_PID", is_manual from info_10
+where ID=537000
+</xmp><xmp>***** 0 record(s) retrieved. Filled 0 parameters: </xmp>------ SQL done, 2ms.<br><BR>
+<b>$INCLUDE </b>[PutObject]<BR>
+<br> <b>SQL: [[check parent] (1) ]:</b><xmp>select 'Y' as "PARENT_EXISTS"
+from info_10
+where ID=530000 and is_deleted=0
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+PARENT_EXISTS=Y</xmp>------ SQL done, 3ms.<br><BR>
+<br> <b>SQL: [[create record] (1) ]:</b><xmp>insert into info_10 (ID, pid, short_code, name, short_name, changed)
+values(537000, 530000, left('537000', 3), 'Отделение технического обслуживания ускорителей и физических установок', 'Отделение технического обслуживания ускорителей и физических установок', now())
+</xmp> DONE! 1 record(s) affected------ SQL done, 11ms.<br><BR>
+<br> <b>SQL: [[create record] (2) ]:</b><xmp></xmp><br><span class='ss_start pt'  onClick='toggleDiv("gateway/jinr_setDivParents1511904718637");'> $CALL_SERVICE: <b>gateway/receive_3_podrazd.cfg => gateway/jinr_setDivParents</b> (request:HR_LHEP_8)</span><div id='gateway/jinr_setDivParents1511904718637' class='ss'><br> <b>SQL: [[setNodeLevel] (1) ]:</b><xmp>select pid, level as LEV_OLD from info_10 where id=537000
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+pid=530000</xmp>------ SQL done, 1ms.<br><BR>
+<br> <b>SQL: [[setNodeLevel] (2) ]:</b><xmp>select level+1 as "LEV" from info_10 where id=530000
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+LEV=4</xmp>------ SQL done, 2ms.<br><BR>
+<br> <b>SQL: [[setNodeLevel] (3) ]:</b><xmp>update info_10 set level=4 where id=537000
+</xmp> DONE! 1 record(s) affected------ SQL done, 1ms.<br><BR>
+<br> <b>SQL: [[setNodeLevel] (4) ]:</b><xmp>update info_10 set level=4+1 where pid=537000
+</xmp> DONE! 0 record(s) affected------ SQL done, 32ms.<br><BR>
+<br> <b>SQL: [[setNodeLevel] (5) ]:</b><xmp></xmp> SQL: [SQL]<BR>
+<br> <b>SQL: [SQL]:</b><xmp>select id, path as "PATH"
+from
+(select i1.id, i1.pid, i1.name, i1.short_name, i1.level
+, concat(
+ifnull(concat(i5.short_name, ' / '),'')
+, ifnull(concat(i4.short_name, ' / '),'')
+, ifnull(concat(i3.short_name, ' / '),'')
+, ifnull(concat(i2.short_name, ' / '),'')
+, i1.short_name) as "PATH"
+, i1.changed
+, i1.is_deleted
+, i1.is_manual
+from info_10 i1
+left join info_10 i2 on (i2.id=i1.pid and i2.id>4)
+left join info_10 i3 on (i3.id=i2.pid and i3.id>4)
+left join info_10 i4 on (i4.id=i3.pid and i4.id>4)
+left join info_10 i5 on (i5.id=i4.pid and i5.id>4)
+) vw
+where vw.id=537000
+</xmp> <b> Processed in 3ms. </b><br><br> <b>SQL: [[updateNode] (1) ]:</b><xmp>try: update info_10 set path='ЛЯР / Служба главного инженера / Отделение технического обслуживания ускорителей и физических установок' where id=537000
+</xmp> DONE! 1 record(s) affected------ SQL done, 2ms.<br><BR>
+<br> <b>SQL: [[updateNode] (2) ]:</b><xmp></xmp> <b> NumTableRows=1; </b><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/jinr_setDivParents1511904718637");'> BACK: <b>gateway/jinr_setDivParents => gateway/receive_3_podrazd.cfg; (47ms.)</b></span><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/receive_3_podrazd1511904718606");'> BACK: <b>gateway/receive_3_podrazd => gateway/receive.cfg; (78ms.)</b></span><BR>
+<hr>----- gateway/receive.cfg[report]: ERR_CODE=0; ERROR=; <br>+++++<b>$INCLUDE </b>gateway/receive[OK]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_8");'>Request_HR_LHEP_8 (gateway/receive) DONE! (144ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_9");'> Request_HR_LHEP_9 [29.11 00:32:7] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_9' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=1&Command=PutObject&ObjectType=3&SrcObjectID=f0e4b568-d445-11e7-948c-0025907d24fa&GateObjectID=115812&ClientObjectID=537010&Time=28.11.2017 17:14:47&Object={
+"Код": "537010",
+"Наименование": "Механический участок",
+"РодительКод": "537000",
+"ПометкаУдаления": "Нет"
+}; log=true; session inactive=min;<br><hr>gateway/receive.cfg<br>gateway/receive.cfg: ClientID=1; Command=PutObject; ObjectType=3; ObjectID=; GlobalID=; ClientObjectID=537010;<br> Наименование=Механический участок<BR>
+ ПометкаУдаления=Нет<BR>
+ РодительКод=537000<BR>
+ Код=537010<BR>
+* JSON Keys=Наименование, ПометкаУдаления, РодительКод, Код<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+<hr>gateway/receive.cfg[process receive] ObjectType=3<br><br><span class='ss_start pt'  onClick='toggleDiv("gateway/receive_3_podrazd1511904727952");'> $CALL_SERVICE: <b>gateway/receive.cfg => gateway/receive_3_podrazd</b> (request:HR_LHEP_9)</span><div id='gateway/receive_3_podrazd1511904727952' class='ss'><hr><b>===>>> receive_3_podrazd.cfg</b><br>object={
+"Код": "537010",
+"Наименование": "Механический участок",
+"РодительКод": "537000",
+"ПометкаУдаления": "Нет"
+};<br><br> <b>SQL: [[check existing record] (1) ]:</b><xmp>select 'Y' as REC_EXISTS, id as REC_ID, pid as "OLD_PID", is_manual from info_10
+where ID=537010
+</xmp><xmp>***** 0 record(s) retrieved. Filled 0 parameters: </xmp>------ SQL done, 3ms.<br><BR>
+<b>$INCLUDE </b>[PutObject]<BR>
+<br> <b>SQL: [[check parent] (1) ]:</b><xmp>select 'Y' as "PARENT_EXISTS"
+from info_10
+where ID=537000 and is_deleted=0
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+PARENT_EXISTS=Y</xmp>------ SQL done, 2ms.<br><BR>
+<br> <b>SQL: [[create record] (1) ]:</b><xmp>insert into info_10 (ID, pid, short_code, name, short_name, changed)
+values(537010, 537000, left('537010', 3), 'Механический участок', 'Механический участок', now())
+</xmp> DONE! 1 record(s) affected------ SQL done, 1ms.<br><BR>
+<br> <b>SQL: [[create record] (2) ]:</b><xmp></xmp><br><span class='ss_start pt'  onClick='toggleDiv("gateway/jinr_setDivParents1511904727961");'> $CALL_SERVICE: <b>gateway/receive_3_podrazd.cfg => gateway/jinr_setDivParents</b> (request:HR_LHEP_9)</span><div id='gateway/jinr_setDivParents1511904727961' class='ss'><br> <b>SQL: [[setNodeLevel] (1) ]:</b><xmp>select pid, level as LEV_OLD from info_10 where id=537010
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+pid=537000</xmp>------ SQL done, 1ms.<br><BR>
+<br> <b>SQL: [[setNodeLevel] (2) ]:</b><xmp>select level+1 as "LEV" from info_10 where id=537000
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+LEV=5</xmp>------ SQL done, 1ms.<br><BR>
+<br> <b>SQL: [[setNodeLevel] (3) ]:</b><xmp>update info_10 set level=5 where id=537010
+</xmp> DONE! 1 record(s) affected------ SQL done, 2ms.<br><BR>
+<br> <b>SQL: [[setNodeLevel] (4) ]:</b><xmp>update info_10 set level=5+1 where pid=537010
+</xmp> DONE! 0 record(s) affected------ SQL done, 2ms.<br><BR>
+<br> <b>SQL: [[setNodeLevel] (5) ]:</b><xmp></xmp> SQL: [SQL]<BR>
+<br> <b>SQL: [SQL]:</b><xmp>select id, path as "PATH"
+from
+(select i1.id, i1.pid, i1.name, i1.short_name, i1.level
+, concat(
+ifnull(concat(i5.short_name, ' / '),'')
+, ifnull(concat(i4.short_name, ' / '),'')
+, ifnull(concat(i3.short_name, ' / '),'')
+, ifnull(concat(i2.short_name, ' / '),'')
+, i1.short_name) as "PATH"
+, i1.changed
+, i1.is_deleted
+, i1.is_manual
+from info_10 i1
+left join info_10 i2 on (i2.id=i1.pid and i2.id>4)
+left join info_10 i3 on (i3.id=i2.pid and i3.id>4)
+left join info_10 i4 on (i4.id=i3.pid and i4.id>4)
+left join info_10 i5 on (i5.id=i4.pid and i5.id>4)
+) vw
+where vw.id=537010
+</xmp> <b> Processed in 2ms. </b><br><br> <b>SQL: [[updateNode] (1) ]:</b><xmp>try: update info_10 set path='ЛЯР / Служба главного инженера / Отделение технического обслуживания ускорителей и физических установок / Механический участок' where id=537010
+</xmp> DONE! 1 record(s) affected------ SQL done, 1ms.<br><BR>
+<br> <b>SQL: [[updateNode] (2) ]:</b><xmp></xmp> <b> NumTableRows=1; </b><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/jinr_setDivParents1511904727961");'> BACK: <b>gateway/jinr_setDivParents => gateway/receive_3_podrazd.cfg; (15ms.)</b></span><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/receive_3_podrazd1511904727952");'> BACK: <b>gateway/receive_3_podrazd => gateway/receive.cfg; (24ms.)</b></span><BR>
+<hr>----- gateway/receive.cfg[report]: ERR_CODE=0; ERROR=; <br>+++++<b>$INCLUDE </b>gateway/receive[OK]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_9");'>Request_HR_LHEP_9 (gateway/receive) DONE! (103ms)</span> <BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_10");'> Request_HR_LHEP_10 [29.11 00:32:12] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_10' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=1&Command=PutObject&ObjectType=3&SrcObjectID=f0e4b568-d445-11e7-948c-0025907d24fa&GateObjectID=115812&ClientObjectID=537010&Time=28.11.2017 17:14:47&Object={
+"Код": "537010",
+"Наименование": "Механический участок",
+"РодительКод": "537000",
+"ПометкаУдаления": "Нет"
+}; log=true; session inactive=min;<br><hr>gateway/receive.cfg<br>gateway/receive.cfg: ClientID=1; Command=PutObject; ObjectType=3; ObjectID=; GlobalID=; ClientObjectID=537010;<br> Наименование=Механический участок<BR>
+ ПометкаУдаления=Нет<BR>
+ РодительКод=537000<BR>
+ Код=537010<BR>
+* JSON Keys=Наименование, ПометкаУдаления, РодительКод, Код<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+<hr>gateway/receive.cfg[process receive] ObjectType=3<br><br><span class='ss_start pt'  onClick='toggleDiv("gateway/receive_3_podrazd1511904732003");'> $CALL_SERVICE: <b>gateway/receive.cfg => gateway/receive_3_podrazd</b> (request:HR_LHEP_10)</span><div id='gateway/receive_3_podrazd1511904732003' class='ss'><hr><b>===>>> receive_3_podrazd.cfg</b><br>object={
+"Код": "537010",
+"Наименование": "Механический участок",
+"РодительКод": "537000",
+"ПометкаУдаления": "Нет"
+};<br><br> <b>SQL: [[check existing record] (1) ]:</b><xmp>select 'Y' as REC_EXISTS, id as REC_ID, pid as "OLD_PID", is_manual from info_10
+where ID=537010
+</xmp><xmp>***** 1 record(s) retrieved. Filled 4 parameters: 
+REC_EXISTS=Y
+REC_ID=537010
+OLD_PID=537000
+is_manual=0</xmp>------ SQL done, 2ms.<br><BR>
+<b>$INCLUDE </b>[PutObject]<BR>
+<br> <b>SQL: [[check parent] (1) ]:</b><xmp>select 'Y' as "PARENT_EXISTS"
+from info_10
+where ID=537000 and is_deleted=0
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+PARENT_EXISTS=Y</xmp>------ SQL done, 2ms.<br><BR>
+<br> <b>SQL: [[update record] (1) ]:</b><xmp>update info_10 set pid=537000, name='Механический участок', is_deleted=0, changed=now() where ID=537010
+</xmp> DONE! 1 record(s) affected------ SQL done, 1ms.<br><BR>
+<br> <b>SQL: [[update record] (2) ]:</b><xmp></xmp><br><span class='ss_start pt'  onClick='toggleDiv("gateway/jinr_setDivParents1511904732011");'> $CALL_SERVICE: <b>gateway/receive_3_podrazd.cfg => gateway/jinr_setDivParents</b> (request:HR_LHEP_10)</span><div id='gateway/jinr_setDivParents1511904732011' class='ss'><br> <b>SQL: [[setNodeLevel] (1) ]:</b><xmp>select pid, level as LEV_OLD from info_10 where id=537010
+</xmp><xmp>***** 1 record(s) retrieved. Filled 2 parameters: 
+pid=537000
+LEV_OLD=5</xmp>------ SQL done, 1ms.<br><BR>
+<br> <b>SQL: [[setNodeLevel] (2) ]:</b><xmp>select level+1 as "LEV" from info_10 where id=537000
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+LEV=5</xmp>------ SQL done, 2ms.<br><BR>
+<br> <b>SQL: [[setNodeLevel] (3) ]:</b><xmp></xmp> SQL: [SQL]<BR>
+<br> <b>SQL: [SQL]:</b><xmp>select id, path as "PATH"
+from
+(select i1.id, i1.pid, i1.name, i1.short_name, i1.level
+, concat(
+ifnull(concat(i5.short_name, ' / '),'')
+, ifnull(concat(i4.short_name, ' / '),'')
+, ifnull(concat(i3.short_name, ' / '),'')
+, ifnull(concat(i2.short_name, ' / '),'')
+, i1.short_name) as "PATH"
+, i1.changed
+, i1.is_deleted
+, i1.is_manual
+from info_10 i1
+left join info_10 i2 on (i2.id=i1.pid and i2.id>4)
+left join info_10 i3 on (i3.id=i2.pid and i3.id>4)
+left join info_10 i4 on (i4.id=i3.pid and i4.id>4)
+left join info_10 i5 on (i5.id=i4.pid and i5.id>4)
+) vw
+where vw.id=537010
+</xmp> <b> Processed in 2ms. </b><br><br> <b>SQL: [[updateNode] (1) ]:</b><xmp>try: update info_10 set path='ЛЯР / Служба главного инженера / Отделение технического обслуживания ускорителей и физических установок / Механический участок' where id=537010
+</xmp> DONE! 1 record(s) affected------ SQL done, 2ms.<br><BR>
+<br> <b>SQL: [[updateNode] (2) ]:</b><xmp></xmp> <b> NumTableRows=1; </b><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/jinr_setDivParents1511904732011");'> BACK: <b>gateway/jinr_setDivParents => gateway/receive_3_podrazd.cfg; (10ms.)</b></span><BR>
+</div><span class='ss_back pt'  onClick='toggleDiv("gateway/receive_3_podrazd1511904732003");'> BACK: <b>gateway/receive_3_podrazd => gateway/receive.cfg; (18ms.)</b></span><BR>
+<hr>----- gateway/receive.cfg[report]: ERR_CODE=0; ERROR=; <br>+++++<b>$INCLUDE </b>gateway/receive[OK]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_10");'>Request_HR_LHEP_10 (gateway/receive) DONE! (96ms)</span> <BR>

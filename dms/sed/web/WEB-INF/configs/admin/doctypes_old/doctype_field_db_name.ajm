@@ -1,0 +1,172 @@
+[comments]
+descr=A: Переименование поля в таблице БД на сервере.
+doctype_field_db_name.cfg
+
+input=type_field_id - ID поля типа документа (из таблицы d_fields)
+output=HTML форма для переименования поля в таблице БД 
+parents=admin/doctypes/doctype_field_property.cfg
+childs=
+test_URL=?c=admin/doctypes/doctype_field_db_name.cfg&type_field_id=1
+author=Яковлев, Куняев
+[end]
+
+
+[parameters]
+request_name=A: Переименование поля в таблице БД на сервере
+tableCfg=table_no
+KeepLog=false
+ClearLog=true
+divider=<tr><td colspan=2 class="bg_white" style="height:10px; border-top:solid 1px gray;"></td></tr>
+[end]
+
+
+[report]
+++++ временно - открыто всем. Потом - проверить R и RW права пользователя +++ ??
+$SET_PARAMETERS RWACC=Y; RACC=Y;
+$INCLUDE [report_]  ??RACC
+[end]
+
+=========================
+
+[report_]
+$GET_DATA [getFieldInfoSQL]
+$INCLUDE [result]
+
+<script>
+AjaxCall('rename_field_db_name_panel', 'c=admin/doctypes/doctype_rename_field_db_name&type_field_id=#type_field_id#');
+</script>
+[end]
+
+
+[result]
+#c# ??debug=on
+<input type=hidden name="type_field_id" value="#type_field_id#">
+<input type=hidden name="TYPE_ID" value="#TYPE_ID#">
+<input type=hidden name="FORM_FIELD_TYPE" value="#FORM_FIELD_TYPE#">
+<input type=hidden name="DOC_TYPE_IS_ACTIVE" value="#DOC_TYPE_IS_ACTIVE#">
+<input type=hidden name="FIELD_IS_ACTIVE" value="#FIELD_IS_ACTIVE#">
+
+<table width="100%" style="background-color:whitesmoke; ">
+<tr><th class="bg_red big" colspan=2>
+<b>Переименование поля в БД</b>
+</th></tr>
+
+<tr><td class="label bottom_dotted" width="40%" nowrap><b>Название поля<br>документа:</b></td> 
+<td class="big bg_white bottom_dotted">
+<b>#NAME#</b>
+</td></tr>
+
+<tr><td class="label bottom_dotted" width="40%" nowrap><b>Текущее имя<br>поля в таблице:</b></td> 
+<td class="big bg_white bottom_dotted">
+<b>#FIELD_DB_NAME#</b>
+</td></tr>
+
+$INCLUDE [rename field db name] ??DOC_TYPE_IS_ACTIVE=0
+
+</table>
+
+[end]
+
+[rename field db name]
+<tr><td class="label bottom_dotted" width="40%" nowrap><b>Новое имя поля<br>в таблице БД:</b></td>
+<td>
+<table width="100%" style="background-color:whitesmoke; ">
+<tr><td class="big bg_white bottom_dotted">
+
+<script type="text/javascript">
+function changeInputValue(input) {
+    var f_db_name = input.value;
+
+    f_db_name = f_db_name.replace(/[^\.a-z0-9_]/gim,'');
+    input.value = f_db_name;
+    AjaxCall('rename_field_db_name_panel', 'c=admin/doctypes/doctype_rename_field_db_name&type_field_id=#type_field_id#&new_field_db_name=' + input.value);
+}
+
+
+var searchKeyPressed = function(input, ev) {
+	changeInputValue(input); ??
+		console.log("key:" + ev.which); 
+
+	if(
+	 ev.which != 16  // <shift> 
+	&& ev.which != 32 //space ??
+	&& ev.which != 8  // <del> ??
+	&& ev.which != 13  // <enter> ??
+	&& ev.which != 17  // <ctrl> 
+	&& ev.which != 18  // <alt> 
+	&& ev.which != 27 // <esc>
+	&& ev.which != 37 // <-
+	&& ev.which != 38 // <-
+	&& ev.which != 39 // UP
+	&& ev.which != 40 // DOWN
+	&& ev.which != 190  // .
+	) {
+		scheduleSearch();
+		scheduleSearch(); ??
+	}
+}
+
+var scheduleSearch = function(){
+		console.log("scheduleSearch... timeout_id=" + timeout_id); 
+	  if (timeout_id) clearTimeout(timeout_id);  //таймаут поиска по справочнику. 
+		timeout_id = window.setTimeout(doSearch, 1700);
+}
+
+var doSearch = function(){
+	try{
+	if (timeout_id) clearTimeout(timeout_id);  //сбросить таймаут поиска данных. 
+	} catch(e){}
+    changeInputValue(input);
+}
+
+</script>
+
+
+<input size=20 id="f_new_field_db_name" name="f_new_field_db_name" value="" onkeyup="changeInputValue(this)">  ??
+<input size=20 id="f_new_field_db_name" name="f_new_field_db_name" value="" onkeyup="searchKeyPressed(this, event)"> 
+
+</td></tr>
+
+<tr><td>
+<div id="rename_field_db_name_panel">Переименование поля в таблице БД...</div>
+</td></tr>
+</table>
+
+</td></tr>
+[end]
+
+
+***************************** Шаблоны SQL запросов ***************************
+[getFieldInfoSQL]
+select /* doc data fields description */
+ dtf.ID
+, dtf.TYPE_ID
+, dtf.FIELD_CATEGORY
+, dtf.NR
+, dtf.NAME
+, dtf.TYPE
+, dtf.FORM_FIELD_TYPE
+, dtf.SIZE
+, dtf.NULLS
+, dtf.INFO_ID
+, dtf.info_view_nr as INFO_VIEW
+, dtf.FIELD_DB_NAME
+, dtf.IS_VISIBLE
+, dtf.LX
+, dtf.LY
+, dtf.is_active as FIELD_IS_ACTIVE
+, ifnull(DATE_FORMAT(dtf.created,'#dateTimeFormat#'),'') as CREATED
+, ifnull(DATE_FORMAT(dtf.modified,'#dateTimeFormat#'),'') as MODIFIED
+, dtf.creator_id
+, dtf.modifier_id
+, u.FIO as CREATOR
+, uu.FIO as MODIFIER
+, dtp.is_active as DOC_TYPE_IS_ACTIVE
+from d_fields dtf
+left join d_types dtp on dtp.ID=dtf.TYPE_ID
+left join #table_users_full# u on u.Id = dtf.creator_id
+left join #table_users_full# uu on uu.Id = dtf.modifier_id
+where dtf.Id = #type_field_id#
+;
+[end]
+

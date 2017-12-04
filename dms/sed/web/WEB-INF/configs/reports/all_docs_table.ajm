@@ -1,0 +1,120 @@
+reports/all_docs_table.cfg
+
+[comments]
+descr=U: Модуль вывода списка документов (вывод самой таблицы) Вызывается из tab_allDocs (Submit)
+
+input=
+output=HTML таблица документов
+parents=reports/all_docs
+childs=docs/view_doc
+testURL=?c=reports/all_docs_table&FULL_READ_ACCESS=Y
+author=Куняев, Яковлев
+[end]
+
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=U:Таблица всех документов
+LOG=ON 
+tableCfg=table_no
+$INCLUDE dat/common.dat[rowLinks]  ??!of=xl
+[end]
+
+
+[report header]
+$INCLUDE dat/common.dat[check login]
+$INCLUDE [OK report header]  ??USER_ID>0|USER_ID<0
+[end]
+
+
+[OK report header]
+$SET_PARAMETERS f_doc_type_id=#f_doc_type_id# union select 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18 ??
+$SET_PARAMETERS f_doc_type_id=#f_doc_type_id# union select doc_id, 5,6, description, summa, divisions,7,8,9,10,11,12,13,14,15,16,17,18 from d_data_1 ??
+$INCLUDE reports/all_docs.cfg[filters table start] ??!of=xl
+$INCLUDE reports/all_docs.cfg[filters table end] ??!of=xl
+
+++++++++++++++++++ Шапка таблицы документов +++++++++++++++++++++ ??
+<table 
+class="tlist tblue" cellspacing=0 ??!of=xl
+border=1  ??of=xl
+><tr>
+<th class="srh" sr="dh.ID"></th> ??!of=xl
+<th class="srh" sr="dh.TYPE_ID">Документ</th>
+<th class="srh" sr="dh.status">Статус</th> 
+<th class="srh" sr="dh.TITLE">Содержание</th>
+<th class="srh" sr="dh.DIVS">Подразд.</th>
+<th class="srh" sr="dh.created">Создан</th> 
+<th class="srh" sr="dh.modified">Последнее действие</th> 
+</tr>
+[end]
+
+
+[item]  *******
+<tr class="pt
+oddRow ??oddRow=1
+" onClick="AjaxCall('doc_content', 'c=docs/view_doc&doc_id=#ID#&mode=popup', true, '',true);">
+
+$INCLUDE tab_myDocs.cfg[linkedMark] ??!of=xl
+
+<td>
+$INCLUDE reports/all_docs_table.cfg[mark]  ??MARKED
+#DOC_TYPE# 
+№#NUMBER#  ??NUMBER
+от #DOC_DATE#  ??DOC_DATE
+</td> 
+<td>
+В процессе согласования ??STATUS=1
+На этапе завершения ??STATUS=2
+Завершен ??STATUS=3
+</td>
+<td>#TITLE#</td> ??
+<td class="tt" tt_text='#TITLE#'><div class="ellipsis" style="max-width:450px;">#TITLE#</div></td>
+
+<td>#DIVS#</td>
+<td>#CREATED#, #CREATOR#</td> 
+<td>#MODIFIED#, #MODIFIER#</td> 
+</tr>
+
+$INCLUDE tab_myDocs.cfg[linkedData] ??!img=none&!of=xl
+
+$SET_PARAMETERS MARKED=;
+[end]
+
+[info mark]
+<td style="padding:0;">
+#ID# ??USER_ID=2309
+<img src="#imgPath#info_16.png" width=16 height=16> ??cnt>0&!hist_cnt>0
+cnt=#cnt#; hist_cnt=#hist_cnt#; ??
+</td> 
+[end]
+
+[mark]
+<i class="fa fa-flag clr-red" aria-hidden="true"></i>
+[end]
+
+[report footer]
+$SET_PARAMETERS NumTableCols=7;
+[end]
+
+***************************** Шаблон SQL запроса ***************************
+
+[SQL]
+select
+dh.ID, dh.TYPE_ID, dh.status, dtp.NAME AS DOC_TYPE, dh.pid, dh.num_children
+, dh.NUMBER, dh.TITLE, dh.STATUS, dh.DIVS
+, DATE_FORMAT(dh.doc_date,'#dateFormat#') as DOC_DATE 
+, DATE_FORMAT(dh.created,'#dateFormat#') as CREATED 
+, dh.creator_id
+, concat(ucr.F, ' ', left(IFNULL(ucr.I,''),1), '.', left(IFNULL(ucr.O,''),1),'.') as CREATOR
+, DATE_FORMAT(dh.modified,'#dateFormat#') as MODIFIED
+, dh.modifier_id 
+, concat(umr.F, ' ', left(IFNULL(umr.I,''),1), '.', left(IFNULL(umr.O,''),1),'.') as MODIFIER
+, fyi.cnt, wfh.cnt as hist_cnt
+, dh.status AS "STATUS", dm.doc_id as "MARKED"
+, a.user_id as "VIEWED" 
+
+from d_list dh
+$INCLUDE reports/all_docs[criteria]  
+and upper(title) like '%а%' ??
+order by #srt# #desc#, dh.modified desc 
+[end]

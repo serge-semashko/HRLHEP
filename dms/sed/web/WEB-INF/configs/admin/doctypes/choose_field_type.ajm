@@ -1,0 +1,126 @@
+admin/doctypes/choose_field_type.ajm
+
+
+[comments]
+descr=A: 
+input= 
+output=
+parents=
+author=Куняев
+[end]
+
+[description]
+<ul>
+<li>
+</li>
+</ul>
+
+<ul>
+<li></li>
+
+</ul>
+[end]
+
+
+[parameters]
+request_name=A:
+service=dubna.walt.service.TableServiceSpecial
+LOG=ON
+[end]
+
+[report header]
+$INCLUDE [report header_]   ??AR_SYS_ADMIN=1
+$LOG +++++ ERROR=#ERROR#;  ??ERROR
+[end]
+
+
+[report header_] 
+<form name="popupForm" id="popupForm" method="POST" enctype="multipart/form-data" target="wf" autocomplete="off">
+<input type=hidden name="c" value="#c#">
+<input type=hidden name="type_id" value='#type_id#'>
+
+<div style="overflow:auto; height:400px; padding:5px; margin-bottom:10px; border:solid 1px ##a0a0a0; background-color:white;">
+<table border=1 cellpadding=5 cellspacing=0>
+[end]
+
+[item]
+$INCLUDE [split JINR]  ??id>1000&!SPLIT_DONE
+<tr class="pt" onClick="AjaxCall('popupCont','c=admin/doctypes/editFieldAttr&type_id=#type_id#&field_type_id=#id#');">
+<td class="center">#id#</td> ??
+<td class="icon">#icon#</td><td>#comment#</td>
+</tr>
+[end]
+
+[split JINR]
+$SET_PARAMETERS SPLIT_DONE=Y;
+<tr>
+<td class="big bg_white" colspan=3><b><i>Специфические поля ОИЯИ:</i></b></td>
+</tr>
+[end]
+
+[report footer]
+<tr><td colspan=3 class=big>  </td></tr>
+
+
+<tr><td colspan=2 class=center><br>
+</td></tr>
+</table>
+</div>
+
+<center>
+<input type="button" class="butt1" style="width:100px;" value="Отмена" onClick="HideDialog();">&nbsp; &nbsp;
+
+<input type="button" class="butt1" style="width:100px;" value="OK"
+onClick="AjaxCall('popupCont', 'cop=u', true, 'popupForm', true);"
+> 
+</center>
+
+<script type="text/javascript">
+    showMsg("##dialog_title", "Выбор типа нового поля:" );
+alert(1); ??
+    ShowDialog(true);
+alert(2); ??
+    var p = $( "##t_add" ).position();
+log(2, p.left + ":" + p.top)
+	$('.dialog').css({
+		position:'absolute', 
+		left: p.left+40,
+		left: ($("body").innerWidth() - $('.dialog').outerWidth())/2, ??
+		top: p.top+70
+	});
+</script>
+[end]
+
+
+==============================================================================
+***************************** Шаблоны SQL запросов ***************************
+==============================================================================
+
+[SQL]
+select id, comment, t.icon, t.src_file, t.section_w, t.section_r, t.section_s, t.doc_types
+ from d_form_fields_types t
+where is_active=1
+order by sort
+[end]
+
+
+[get field]
+select f.field_category, f.nr, f.name
+, f.form_field_type, t.comment as "TYPE_NAME", f.type
+, t.src_file, t.section_w, t.section_r, t.section_s, t.doc_types
+, i.name as "INFO_NAME"
+, f.size, f.nulls
+
+, f.lx, f.maxWidth, f.ly
+, f.info_id, f.info_view_nr
+, f.field_db_name, f.is_visible, f.is_active
+, f.min_doc_type_version, f.max_doc_type_version  ??
+, f.created, f.creator_id, f.modified, f.modifier_id ??
+
+from d_fields f join d_form_fields_types t on t.id=f.form_field_type
+left join i_infos i on i.id=f.info_id
+where f.id=#field_id#
+[end]
+
+
+select Id, comment, src_file, section_w, section_r, section_s, doc_types from d_form_fields_types where

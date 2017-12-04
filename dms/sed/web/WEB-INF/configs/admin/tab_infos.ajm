@@ -1,0 +1,49 @@
+[comments]
+descr=А: Список справочников - вывод фильтров и вызов admin/infos/info_list_table.cfg для вывода самой таблицы
+input=none
+output=Форма фильтров, HTML таблица -список справочников
+parents=admin/admin_js_noDB.cfg
+childs=admin/infos/infos_list_table.cfg
+testURL=?c=admin/tab_infos
+[end]
+
+[parameters]
+request_name=A:Список справочников
+KeepLog=false
+[end]
+
+[report]
+++++ временно - открыто всем. Потом - проверить R и RW права пользователя +++ ??
+$SET_PARAMETERS RWACC=Y; RACC=Y;
+$INCLUDE [report_]  ??RACC
+[end]
+
+
+[report_]
+#c# ??debug=on
+<center>
+<input type=hidden name="atab" value="t_infos"> 
+<input type=hidden name="module" value="admin/infos/tab_infos"> 
+
++++++ Фильтры +++++ ??
+<table border=0 bgcolor=white cellpadding=4 style="border:none 1px gray;">
+
+<tr><td class=label>Название справочника:</td><td> <input size=20 name="f_nam" value="#f_nam#"> &nbsp; 
+<td><input type="button" class="butt1 pt" style="width:80;" value="OK" 
+onclick="doSubmit('', 'admin/infos/infos_list_table');" >
+<input type="submit" style="display:none;" value="Submit" >
+</td>
+</tr></table>
+
++++++ Контейнер таблицы +++++ ??
+<div id="content_table" style="margin:0;">=====</div>
+
+<script>
+$( "##content_table" ).animate({ margin: "0;" }, 100, function() { });
+doSubmit('', 'admin/infos/infos_list_table', false);
+</script>
+[end]
+
+[preSQLs]
+
+[end]

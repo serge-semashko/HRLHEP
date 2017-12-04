@@ -1,0 +1,138 @@
+docs/docs_in_process_table.ajm
+
+
+[comments]
+descr=U: Вывод списка документов в процессе согласования (вывод самой таблицы)
+input=
+output=HTML таблица документов на завершении
+parents=tab_myDocs
+childs=docs/edit_document
+author=Куняев
+[end]
+
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=U:Список документов
+LOG=ON
+tableCfg=table_no
+$INCLUDE dat/common.dat[rowLinks]
+[end]
+
+
+[report header]
+    $INCLUDE dat/common.dat[check login]
+    $INCLUDE [OK report header]  ??USER_ID>0|USER_ID<0
+[end]
+
+
+[OK report header]
++++++++ начальная строка и кол-во строк на странице по умолчанию ++++ ??
+$SET_PARAMETERS srn=1; rpp=100000;  ??!srn                                             	
+
+$GET_DATA [get doctypes] 
+++++++++++++++++++ Шапка таблицы документов +++++++++++++++++++++ ??
+<table class="tlist tblue" cellspacing=0>
+    <tr><th></th>
+        <th>Документ</th>
+        <th>Содержание</th>
+        <th>Подразделение</th> 
+        <th>Создан</th> 
+        <th class="sdown">Ожидает</th> 
+        <th >Согласование</th>
+    </tr>
+    </tr>
+    <tr style="background-color:##efefef">
+        <td> </td> 
+        <td>тип: <select name="f_proc_doctype" style="max-width:200px;" onChange="getProgData();"><option value=""></option>#DOC_TYPES_LIST#
+        </select> №
+        <input name="f_proc_req_nr" value="#f_proc_req_nr#" style="width:70px;"></td>
+        <td><input name="f_proc_title" value="#f_proc_title#" style="width:100%; max-width:500px;"></td>
+        <td>
+            <input type=hidden name="f_proc_div_id"  id="f_proc_div_id" value="#f_proc_div_id#">
+            <input type=hidden name="f_proc_div_txt" id="f_proc_div_txt"  value="#f_proc_div_txt#">
+            <div class="info_input pt big bg_white" id="f_proc_div" info_id="10" info_view="11"  callback="filterProcByDiv" 
+                style="display: inline-block; width:70px; border:solid 1px gray;">#f_proc_div_txt#&nbsp;</div>
+        </td>
+        <td></td><td></td><td></td>
+    </tr>
+
+[end]
+
+
+[item]
+    $INCLUDE tab_myDocs.cfg[linkedMark]
+        <td>
+            $INCLUDE reports/all_docs_table.cfg[mark]  ??MARKED
+            #DOC_TYPE#
+            №#NUMBER#  ??NUMBER
+            от #DOC_DATE#  ??DOC_DATE
+        </td>
+        <td><div class="ellipsis">#TITLE#</div></td>
+        <td>#DIVS#</td>
+        <td>#CREATOR#</td> 
+        $CALL_SERVICE c=wf/show_wf_status; doc_id=#ID#; show_persons=Y;  
+    </tr>
+    $INCLUDE tab_myDocs.cfg[linkedData] ??!img=none
+[end]
+
+
+[report footer]
+    <tr><td colspan=7 class="label last" align=right></td></tr>
+    </table>
+    <script type="text/javascript">$("##num_docs_in_proсess").html("#NumTableRows#");</script>
+[end]
+
+
+***************************** Шаблон SQL запроса ***************************
+[get doctypes]
+    select concat('<option value=', cast(dt.id as char) 
+        , case when dt.id=#f_proc_doctype# then ' selected' else '' end  ??f_proc_doctype
+        , '>', dt.short_name, '</option>') as DOC_TYPES_LIST
+    from d_types dt 
+        join doc_groups dg on (dg.id=dt.group_id and dg.has_wf=1) ??
+    where dt.is_active = 1 and dt.group_id<98
+        and dt.id in
+           (select distinct dh.TYPE_ID
+            from d_list dh
+                join wf_history_count wfh on wfh.doc_id=dh.id and wfh.user_id=#USER_ID#
+            where dh.is_deleted=0
+                and dh.status=2
+           )
+    order by dt.sort
+[end]
+
+[SQL]
+    select
+        dh.ID, dh.TYPE_ID, dtp.NAME AS DOC_TYPE
+        , dh.NUMBER, dh.TITLE, dh.DIVS
+        , DATE_FORMAT(dh.doc_date,'#dateFormat#') as DOC_DATE 
+        , DATE_FORMAT(dh.created,'#dateTimeFormat#') as CREATED 
+        , dh.creator_id
+        , fio(ucr.F, ucr.I, ucr.O) as CREATOR
+        , DATE_FORMAT(dh.modified,'#dateTimeFormat#') as MODIFIED
+
+        , concat(FORMAT(TIMESTAMPDIFF(day,  dh.modified, now()), 0), 'д') AS WAITING 
+        , case when TIMESTAMPDIFF(day, dh.modified, now()) > 14 then 'LONG' else 'SHORT' end AS WAITING_LEVEL 
+
+        , dh.modifier_id, fio(umr.F, umr.I, umr.O) as MODIFIER
+        , fyi.cnt, wfh.cnt as hist_cnt
+        , dh.pid, dh.num_children
+        , dm.doc_id as "MARKED"
+    $INCLUDE docs/docs_in_progress_table[access criteria]
+        and dh.status=2
+
+        and dh.TYPE_ID=#f_proc_doctype# ??f_proc_doctype
+        and (dh.NUMBER like '%-#f_proc_req_nr#' or dh.NUMBER like '#f_proc_req_nr#') ??f_proc_req_nr
+        and dh.TITLE like '%#f_proc_title#%' ??f_proc_title
+    order by dh.modified
+[end]
+
+[count docs]
+    select count(dh.ID) as NUM_DOCS_IN_PROСESS
+    $INCLUDE docs/docs_in_progress_table[access criteria]
+      and dh.status=2
+[end]
+
+
+

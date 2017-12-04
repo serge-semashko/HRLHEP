@@ -1,0 +1,42 @@
+admin/doctypes/template_files_upld.ajm
+
+[comments]
+descr=A: Загрузка шаблона Word к типу документа
+author=Устенко
+input=new_file - файл, type_id = id типа документа
+output=сообщение о загрузке или об ошибке
+parents=admin/doctypes/attr.ajm
+[end]
+
+[parameters]
+idDirParamName=type_id
+service=jinr.sed.ServiceUploadFile
+file_storage_subpath=templates/
+[end]
+
+[before all]
+[end]
+
+[ok]
+Файл загружен ??!field_id
+[end]
+
+[no ok]
+Ошибка загрузки файла! #UPLOAD_ERROR#
+[end]
+
+[preSQLs]
+select IFNULL(max(norder)+1,0) as norder from doc_templates_files where type_id = #type_id#
+;
+insert into doc_templates_files(type_id, norder, file_name, file_ext, upload_date)
+values(#type_id#, #norder#, '#new_file#', '#new_file_TYPE#', now())
+;
+select LAST_INSERT_ID() as "NEW_FILE_ID"
+[end]
+
+[register file]
+    update doc_templates_files set 
+        file_content_type='#new_file_CONTENT_TYPE#', file_size=#file_size#, fs_file_name='#fs_file_name#'
+    where id=#NEW_FILE_ID#
+[end]
+

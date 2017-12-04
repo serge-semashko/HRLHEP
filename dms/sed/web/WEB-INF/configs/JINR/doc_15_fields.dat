@@ -1,0 +1,133 @@
+JINR/doc_15_fields.dat
+
+========================= 1015 - тип поля: Заказ пропуска  =====
+[pass_R]
+    $GET_DATA JINR/doc_15_fields.dat[get pass]
+    $SET_PARAMETERS NO_PASS=Y; ??!pass_LIAP=1&!pass_LVE=1
+    не требуется ??NO_PASS=Y
+    ЛЯП, ??pass_LIAP=1
+    ЛВЭ, ??pass_LVE=1
+     с 08:00 до 20:00, ??!NO_PASS&pass_time=0
+     с 00:00 до 24:00, ??!NO_PASS&pass_time=1
+    даты пропуска: с #pass_date# по #pass_date_end# &nbsp;
+    <a href="#ServletPath#?c=JINR/doc_15_print_request&doc_id=#doc_id#" target="_blank">заявка на пропуск >></a>
+[end]
+
+[pass_W]
+    $GET_DATA JINR/doc_15_fields.dat[get pass]
+    на площадку
+    <input type=checkbox name="pass_LIAP" value="1"
+        checked ??pass_LIAP=1
+    >ЛЯП
+    <input type=checkbox name="pass_LVE" value="1"
+        checked ??pass_LVE=1
+    >ЛВЭ &nbsp;
+    время прохода:
+    <input type=radio name="pass_time" value="0"
+        checked ??!pass_time=1
+    >8-20
+    <input type=radio name="pass_time" value="1"
+        checked ??pass_time=1
+    >0-24,
+    даты пропуска: с
+        $SET_PARAMETERS FIELD_DB_NAME=pass_date; yr_min=0; yr_max=2;
+        $INCLUDE  dat/doc_fields.dat[date field w]
+        $SET_PARAMETERS FIELD_DB_NAME=pass_date_end; yr_min=0; yr_max=2;
+    по
+        $INCLUDE  dat/doc_fields.dat[date field w]
+[end]
+
+
+[pass_S]
+    $GET_DATA JINR/doc_15_fields.dat[set pass]
+[end]
+
+
+[get pass]
+    select pass_LIAP, pass_LVE, pass_time
+        , pass_date, pass_date_end
+    from d_data_15
+    where id=#DOC_DATA_RECORD_ID#
+[end]
+        , DATE_FORMAT(pass_date,'#dateFormat#') AS "pass_date"
+        , DATE_FORMAT(pass_date_end,'#dateFormat#') AS "pass_date_end"
+
+
+[set pass]
+    update d_data_15 set 
+        pass_LIAP=0 ??!pass_LIAP=1
+        pass_LIAP=1 ??pass_LIAP=1
+        , pass_LVE=0 ??!pass_LVE=1
+        , pass_LVE=1 ??pass_LVE=1
+        , pass_time=#pass_time#
+        , pass_date=STR_TO_DATE('#pass_date#','#dateFormat#')  ??pass_date
+        , pass_date=null  ??!pass_date
+        , pass_date_end=STR_TO_DATE('#pass_date_end#','#dateFormat#') ??pass_date_end
+        , pass_date_end=null ??!pass_date_end
+    where id=#DOC_DATA_RECORD_ID#
+[end]
+
+
+JINR/doc_15_fields.dat
+
+[base_R]
+    $GET_DATA JINR/doc_15_fields.dat[get base]
+    ИБР-2 (экспериментальный зал) ??base_IBR=1
+    нет ??!base_IBR=1
+[end]
+
+[base_W]
+    $GET_DATA JINR/doc_15_fields.dat[get base]
+    <input type=checkbox name="base_IBR" value="1"
+        checked ??base_IBR=1
+    >    ИБР-2 (экспериментальный зал)
+
+[end]
+
+
+[base_S]
+    $GET_DATA JINR/doc_15_fields.dat[set base]
+[end]
+
+
+[get base]
+    select base_IBR
+    from d_data_15
+    where id=#DOC_DATA_RECORD_ID#
+[end]
+
+
+[set base]
+    update d_data_15 set 
+        base_IBR=1  ??base_IBR
+        base_IBR=0  ??!base_IBR
+    where id=#DOC_DATA_RECORD_ID#
+[end]
+
+
+========================= 1021 - тип поля "FIO"  =====
+
+[FIO_read]
+    $SET_PARAMETERS  tmp_F_field=#FIELD_DB_NAME#_surname; tmp_I_field=#FIELD_DB_NAME#_name; tmp_O_field=#FIELD_DB_NAME#_patronymic;
+    $GET_DATA dat/doc_fields.dat[FIO_get]
+    ^#tmp_F_field# ^#tmp_I_field# ^#tmp_O_field#
+[end]
+
+
+[FIO_write]
+    $SET_PARAMETERS  tmp_F_field=#FIELD_DB_NAME#_surname; tmp_I_field=#FIELD_DB_NAME#_name; tmp_O_field=#FIELD_DB_NAME#_patronymic;
+    $GET_DATA dat/doc_fields.dat[FIO_get]
+    <input size="20" name='#tmp_F_field#' value='^#tmp_F_field#'>
+    <input size="20" name='#tmp_I_field#' value='^#tmp_I_field#'>
+    <input size="20" name='#tmp_O_field#' value='^#tmp_O_field#'>
+[end]
+
+[FIO_save]
+    $SET_PARAMETERS  tmp_F_field=#CUSTOM_FIELD_DB_NAME#_surname; tmp_I_field=#CUSTOM_FIELD_DB_NAME#_name; tmp_O_field=#CUSTOM_FIELD_DB_NAME#_patronymic;
+    $GET_DATA dat/doc_fields.dat[FIO_set]
+[end]
+
+[ZZZ FIO_get]
+    SELECT #tmp_F_field#, #tmp_I_field#, #tmp_O_field#
+    from d_data_#DOC_TYPE_ID# where doc_id = #doc_id#
+[end]

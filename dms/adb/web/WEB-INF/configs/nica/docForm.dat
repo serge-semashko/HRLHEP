@@ -1,0 +1,122 @@
+<!-- rkc/rkcForm.dat -->
+<CENTER>
+<TABLE BORDER=6 CELLSPACING=3 BGCOLOR=cornsilk>		<!-- THE FORM TABLE -->
+<FORM NAME="theForm" METHOD="GET" ACTION="#servletURL#" onSubmit="return submitForm()">
+	<INPUT TYPE="hidden" NAME="s" VALUE="rkc/rkc">
+	<INPUT TYPE="hidden" NAME="srn" VALUE="0">
+	<INPUT TYPE="hidden" NAME="m" VALUE="">
+	<INPUT TYPE="hidden" NAME="repName" VALUE="">
+	<INPUT TYPE="hidden" NAME="tm" VALUE="">
+	<INPUT TYPE="hidden" NAME="cols" VALUE="#cols#">
+	<INPUT TYPE="hidden" NAME="sort1" VALUE="#sort1#">
+	<INPUT TYPE="hidden" NAME="sort2" VALUE="#sort2#">
+	<INPUT TYPE="hidden" NAME="opt_t1" VALUE="#opt_t1#">
+	<INPUT TYPE="hidden" NAME="opt_t2" VALUE="#opt_t2#">
+	<INPUT TYPE="hidden" NAME="opt" VALUE="#opt_r#">
+
+<TR><TD ALIGN="CENTER">
+<TABLE BORDER=0 CELLPADDING=2>  <!-- THE Basic Data FILTERS TABLE -->
+
+<TR><TD colspan=2 align=center><B>Основные фильтры данных:</B></TD></TR>
+<TR><TD colspan=2 nowrap=true>
+$INCLUDE Common/Filters.dat[client_f]
+&nbsp;&nbsp;&nbsp;
+$INCLUDE Common/Filters.dat[list_f]
+</TD></TR>
+
+<TR><TD nowrap=true align=center colspan=2>
+$INCLUDE Common/Filters.dat[acc_f]  ??aa
+</TD></TR>
+
+<TR><TD align=center>
+<!--table border=1><TR><TD>
+ $INCLUDE Common/Filters.dat[opt_curr]
+</TD><TD valign=top>
+ $INCLUDE Common/Filters.dat[opt_intrn]
+
+</td></tr></table-->
+</TD><TD align=right valign=bottom>
+<INPUT TYPE="Button" VALUE="Сброс" OnClick="clearBasicFilter()">
+
+</TD></TR></TABLE>	 <!-- THE Basic Data FILTERS TABLE -->
+</TD>
+
+<TD ROWSPAN=3 VALIGN="TOP">
+$INCLUDE Common/Filters.dat[buttons]
+</TD></TR>
+
+<TR><td align=center>
+$INCLUDE Common/Filters.dat[time_per]
+</td></TR>
+
+<TR><TD align="CENTER" nowrap=true>
+	<B>Дополнительные фильтры:</B><br>
+	&nbsp;&nbsp;&nbsp;<SELECT NAME="a1" >
+		<OPTION VALUE="0:">
+		<OPTION VALUE="1:and Ground"> Основание
+		<OPTION VALUE="2:and szShortName"> Наим. клиента
+		<OPTION VALUE="3:and upper(contragent)"> Контрагент
+		<OPTION VALUE="4:and upper(bank_contragent)"> Банк контрагента
+		<OPTION VALUE="5:and contr_acc"> Счет контрагента
+		<OPTION VALUE="6:and Debet[N]"> Дебет
+		<OPTION VALUE="7:and Kredit[N]"> Кредит
+	</SELECT>
+$INCLUDE Common/Filters.dat[adv1]
+
+	<br>&nbsp;&nbsp;&nbsp;<SELECT NAME="a2">
+		<OPTION VALUE="0:">
+		<OPTION VALUE="1:and ord"> Основание
+		<OPTION VALUE="2:and szShortName"> Наим. клиента
+		<OPTION VALUE="3:and upper(contragent)"> Контрагент
+		<OPTION VALUE="4:and upper(bank_contragent)"> Банк контрагента
+		<OPTION VALUE="5:and contr_acc"> Счет контрагента
+		<OPTION VALUE="6:and Debet[N]"> Дебет
+		<OPTION VALUE="7:and Kredit[N]"> Кредит
+	</SELECT>
+$INCLUDE Common/Filters.dat[adv2]
+</TD></TR></TABLE> 	<!-- THE FORM TABLE -->
+</FORM>
+<br>
+
+<SCRIPT>
+frm=document.theForm;
+setRpp(#rpp#);	??rpp
+
+frm.a1.selectedIndex=#dd_a1#		??a1
+frm.a2.selectedIndex=#dd_a2#		??a2
+frm.op1.options.selectedIndex=#dd_op1#;	??op1
+frm.op2.options.selectedIndex=#dd_op2#;	??op2
+selectOptionByVal(frm.list_f,"#list_f#") ??list_f
+
+function clearBasicFilter()
+{
+  frm.client_f.value="";
+  frm.acc1_f.value="";  ??aa
+  frm.acc2_f.value="";  ??aa
+  frm.acc3_f.value="";  ??aa
+  frm.acc4_f.value="";  ??aa
+  frm.acc1_type_f.options.selectedIndex = frm.acc1_type_f.options.length - 1; ??aa
+  frm.opt_client_f.options.selectedIndex = 0;
+  frm.list_f.options.selectedIndex = 0;
+  frm.opt_list_f.options.selectedIndex = 0;
+}
+
+function setIntrn()
+{
+  frm.cols.value = setChars(frm.cols.value, 5, 2, '01');
+}
+function setOuter()
+{
+  frm.cols.value = setChars(frm.cols.value, 5, 2, '10');
+}
+function setRub()
+{
+  frm.cols.value = setChars(frm.cols.value, 7, 5, '11000');
+}
+function setCurr()
+{
+  frm.cols.value = setChars(frm.cols.value, 7, 5, '00011');
+}
+
+</SCRIPT>
+<!-- rkc/rkcForm.dat - END -->

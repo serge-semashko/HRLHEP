@@ -1,0 +1,281 @@
+sys/audit/doc_acc.cfg
+
+
+[comments]
+descr=S: Вывод лога 
+
+parents=sys/audit/tab_audit.cfg
+author=Куняев
+[end]
+
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=U:Таблица всех документов
+LOG=ON 
+tableCfg=table_no
+$INCLUDE dat/common.dat[rowLinks]
+[end]
+
+
+[report header]
+$INCLUDE dat/common.dat[check login]
+$INCLUDE [OK report header]  ??USER_ID=4918|USER_ID=2309
+[end]
+
+
+[OK report header]
+$SET_PARAMETERS srn=1; rpp=20;  ??!srn
+$SET_PARAMETERS rpp=20; ??!rpp
+
+C:<input type_=hidden size=30 name="f_c" value="#f_c#"> ??
+
+================================== FILTERS ==================================== ??
+$SET_PARAMETERS f_table=a_req_log;  ??!f_table
+<table border=0 cellpadding=6 cellspacing=0 style="border:none 1px gray; margin:10px 0 0 200px; background-color:white;">
+<tr><td class="label">Пользователь:</td><td><input size=20 name="f_user" value="#f_user#">
+</td><td class="r">Данные: <select name="f_table" onChange="goToRow(1);"><option value="a_req_log">текущие</option>#TNAMES#</select>
+</td></tr>
+
+<tr><td class="label">Действие:</td><td colspan=2>
+$INCLUDE [not me]  ??USER_ID=2309_
+<input type=radio name="f_oper" value="" onClick="goToRow(1);"
+checked ??!f_oper
+>все
+<input type=radio name="f_oper" value="f" onClick="goToRow(1);"
+checked ??f_oper=f
+>просмотр / скачивание файлов
+<input type=radio name="f_oper" value="d" onClick="goToRow(1);"
+checked ??f_oper=d
+>просмотр документов
+</td></tr>
+
+<tr><td class="label">
+Документы: </td><td><select name="f_doc_type_id" class=norm onChange='goToRow(1);' ><option value="">все</option>#DOC_TYPES_LIST#</select>
+№ <input size=12 name="f_doc_nr" value="#f_doc_nr#"> </td><td>id:<input size=7 name="f_doc" value="#f_doc#"></td></tr>
+
+<tr><td  class="label">Браузер:</td><td><input size=42 name="f_agent" value="#f_agent#">
+</td><td>Dev ID:<input size=15 name="f_did" value="#f_did#"></td></tr>
+<tr><td class="label">IP:</td><td><input size=15 name="f_IP" value="#f_IP#">
+сессия: <input size=10 name="f_sess_id" value="#f_sess_id#">
+</td></tr>
+
+
+<tr><td class="label">Дата:</td><td>с <input size=10 class="f_date" name="f_dat1" value="#f_dat1#"> [по <input size=10  class="f_date" name="f_dat2" value="#f_dat2#"> ] (ДД.ММ.ГГГГ)
+<td><input type="submit" class="butt1 pt" style="margin-left:50px; width:80px;" value=" OK " >
+</td></tr>
+
+
+</table>
+================================== FILTERS-END ==================================== ??
+
+<script>
+selectOptionByVal(frm.f_table,'#f_table#'); ??f_table
+selectOptionByVal(frm.f_doc_type_id,'#f_doc_type_id#'); ??f_doc_type_id
+
+var submitForm_=function() {
+    alert(1); goToRow(1);
+}
+
+function refrSelf()
+{ submitForm();
+}
+
+function showQuery(row) {
+   openWindow("c=sys/viewRequest&f_table=#f_table#&row=" + row ,"accReq"+row,900,700);  
+}
+
+try{
+ $(".f_date").datepick({yearRange: 'c-3:c+0', showSpeed: 'fast'});
+}
+catch (e) { console.log(" (.f_date).datepick: " + e);}
+</script>
+
+<div id=cont style="margin:20px;">
+
+<table class="tlist tblue" style="border:solid 1px ##004060;" cellspacing=0>
+<tr><th style="width:110px;" class="srh" sr="a.DAT">Дата</th>
+<th style="width:130px;">Пользователь</th>
+<th style="min-width:140px;">Действие</th>
+<th>Документ</th>
+<th>Файл</th>
+<th class="srh" sr="a.IP">IP</th> 
+<th>Сессия</th>
+<th style="min-width:350px;">Браузер</th>
+<th class="srh"  sr="a.DID">Dev.</th>
+</tr>
+[end]
+
+[not me]
+<input type=checkbox name=exceptMe
+checked ??exceptMe
+> кроме меня<br>
+[end]
+
+[item]
+$SET_PARAMETERS REQUEST_NAME=Скачивание файла; ??C=docs/doc_files_dnld|C=files/download_file
+$SET_PARAMETERS REQUEST_NAME=Просмотр файла; ??C=viewer/show_file
+$SET_PARAMETERS REQUEST_NAME=Просмотр документа; ??C=docs/view_doc
+<tr
+class=oddRow ??oddRow=1
+><td>#DAT#<br><small>#ROWID#</small></td>
+
+<td class="filter" f="f_user" val="#USERNAME#">#U_FIO#
+<br><small>(#USERNAME#: #U_ID#)</small> ??U_ID>0
+<br>* #UR_FIO# <small>(#UR_ID#)</small>   ??UR_ID>0&!UR_ID=#U_ID#
+</td>
+
+<td class="pt" onClick="showQuery('#ROWID#');">#REQUEST_NAME#<br><small>(#C#)</small></td>
+
+$GET_DATA [get file id] ??!file_id&C=docs/doc_files_dnld|C=viewer/show_file
+$INCLUDE [get doc id] ??!doc_id>0
+$GET_DATA [doc details]  ??doc_id&!title
+
+<td class="pt" f="f_doc" val="#doc_id#" onClick='window.open("#ServletPath#?c=docs/view_doc&doc_id=#doc_id#&mode=ext", "view_#doc_id#");'>
+#DOC_TYPE#
+№#DOC_NR# от #DOC_DAT# ??DOC_NR
+: #title# <small>(#doc_id#)</small> 
+</td>
+
+<td 
+class="pt" onClick="viewFile('#file_id#');" ??file_id
+>#file_name#
+<br>#file_comment# ??file_comment
+<br><small>(#file_id#)</small> ??file_id
+</td>
+
+<td class="filter small" f="f_IP" val="#IP#">#IP#</td>
+<td class="filter min" f="f_sess_id" val="#SESS_ID#">#SESS_ID#</td>
+<td class="filter min" f="f_agent" val="#AGENT#">#AGENT#</td>
+
+<td class="filter min" f="f_did" val="#DID#">#DID#</td>
+ 
+</tr>
+$SET_PARAMETERS DID=; doc_id=; file_id=; file_name=; file_comment=;
+[end]
+
+
+[get doc id]
+$GET_DATA [doc id by view]  ??C=docs/view_doc
+$GET_DATA [doc id by file]  ??C=docs/doc_files_dnld
+[end]
+
+
+[report footer]
+<tr><td colspan=9 class="pager">
+$INCLUDE dat/common.dat[rpp]  ??!NumTableRows=0
+<input type=hidden name="rpp" value="#rpp#"> ??NumTableRows=0
+</TD></TR></TABLE>  
+</div>
+
+#ERROR#
+$SET_PARAMETERS srt=; ??ERROR
+
+[end]
+
+<script type="text/javascript">
+</script>
+
+
+****************************************************************************
+****************************************************************************
+****************************************************************************
+
+
+[preSQLs]
+try: select cast('#f_user#' as unsigned) as f_user_id ??f_user
+;
+try: select #srn# + #rpp# * 10 as LIM ??srn&rpp
+;
+try: select concat('<option value="', table_name ,'">',
+    replace(replace(table_name,'a_req_log_','архив до '),'a_req_log','текущие'),'</option>') as TNAMES
+from information_schema.tables
+where table_schema='#database#'
+and table_name like 'a_req_log_%'
+order by 
+create_time desc ??
+table_schema ??
+table_name desc 
+;
+select concat('<option value=', cast(id as char), '>', name, '</option>') as DOC_TYPES_LIST
+from d_types where is_active = 1 and group_id<98
+order by sort
+;
+select case when instr ('#f_doc_nr#', '-') > 0 then '#f_doc_nr#' else '%-#f_doc_nr#' end as "f_doc_nr_"  ??f_doc_nr
+[end]
+
+
+[SQL]
+select a.ID as ROWID
+, a.USER_ID as U_ID, u.login as USERNAME, u.F as U_FIO
+, a.REAL_USER_ID as UR_ID, ur.F as UR_FIO
+, a.C, a.REQUEST_NAME, a.doc_id, a.QUERY
+, t.short_name as "DOC_TYPE", d.title, d.number as "DOC_NR", DATE_FORMAT(d.doc_date,'#dateFormat#') as "DOC_DAT"
+, DATE_FORMAT(a.DAT,'#dateTimeSecFormat#') as DAT 
+, a.IP
+, a.user_agent AGENT
+, concat(substr(a.REF,1,30),'...') as REF
+, a.SESS_ID, a.DID
+from #f_table# a
+    left join #table_users_full# u on u.id=a.user_id  
+    left join #table_users_full# ur on ur.id=a.real_user_id 
+    left join d_list d on d.id=a.doc_id 
+    left join d_types t on t.id=d.type_id 
+where 
+ a.c in('docs/view_doc','viewer/show_file','files/download_file','docs/doc_files_dnld')  ??!f_oper
+ a.c in('viewer/show_file','files/download_file','docs/doc_files_dnld')  ??f_oper=f
+ a.c in('docs/view_doc')  ??f_oper=d
+ and a.user_id=#f_user_id# ??f_user_id>0
+ and (upper(u.login) like upper('#f_user#%') or upper(u.FIO) like upper('#f_user#%')) ??f_user&f_user_id=0
+ and a.USER_ID<>#USER_ID# and a.IP<>'#ClientIP#' ??exceptMe
+ and a.user_agent like '%#f_agent#%' ??f_agent
+
+ and a.IP like '#f_IP#%' ??f_IP
+ and a.C like '#f_c#%' ??f_c
+ and d.number like '#f_doc_nr_#' ??f_doc_nr_
+ and d.type_id=#f_doc_type_id# ??f_doc_type_id
+ and a.doc_id=#f_doc# ??f_doc
+ and a.did='#f_did#' ??f_did
+ and a.sess_id=#f_sess_id# ??f_sess_id
+ 
+and DATE_FORMAT(a.DAT,'%d.%m.%Y')='#f_dat1#' ??f_dat1&!f_dat2
+and a.DAT between STR_TO_DATE('#f_dat1#','%d.%m.%Y') and DATE_ADD(STR_TO_DATE('#f_dat2#','%d.%m.%Y'), INTERVAL 1 DAY)  ??f_dat1&f_dat2
+and a.DAT < DATE_ADD(STR_TO_DATE('#f_dat2#','%d.%m.%Y'), INTERVAL 1 DAY) ??!f_dat1&f_dat2
+
+order by 
+ #srt# #desc# ??srt
+a.DAT desc ??!srt
+limit #LIM# ??LIM>0
+[end]
+
+[doc id by view]  ***** doc_id из запроса на просмотр дока
+select instr('#QUERY#', 'doc_id=') as "i1";
+select substr('#QUERY#', #i1#+7) as "doc_id"; ??i1>0
+select SUBSTRING_INDEX('#doc_id#', '&', 1) as "doc_id"  ??doc_id
+[end]
+
+[doc id by file]  ***** doc_id из запроса на просмотр файла
+select instr('#QUERY#', 'id=') as "i1";
+select substr('#QUERY#', #i1#+3) as "file_id"; ??i1>0
+select SUBSTRING_INDEX('#file_id#', '&', 1) as "file_id"; ??file_id
+select doc_id from doc_files where id=#file_id#  ??file_id>0
+;
+select concat(file_name, "; ", ifnull(comment,'')) as "FILE" from doc_files where id=#file_id#  ??file_id>0
+[end]
+
+[doc details]
+select t.short_name as "DOC_TYPE", d.title, d.number as "DOC_NR", DATE_FORMAT(d.doc_date,'#dateFormat#') as "DOC_DAT"
+from d_list d 
+left join d_types t on t.id=d.type_id 
+where d.id=#doc_id#
+[end]
+
+
+[get file id]   ***** file_id и doc_id из запроса на просмотр файла
+select instr('#QUERY#', 'id=') as "i1";
+select substr('#QUERY#', #i1#+3) as "file_id"; ??i1>0
+select SUBSTRING_INDEX('#file_id#', '&', 1) as "file_id";   ??file_id
+select doc_id from doc_files where id=#file_id#  ??file_id>0
+;
+select file_name, comment as "file_comment" from doc_files where id=#file_id#  ??file_id>0
+[end]

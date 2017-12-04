@@ -1,0 +1,140 @@
+[no params]
+<tr><td  align=center colspan=2>Нет настраиваемых параметров</td>
+</td></tr>
+[end]
+
+
+[tbl header]
+<tr><td class=headrow2 align=center colspan=2><b>#TYPE_NAME# 
+&mdash; #NAME#  ??NAME
+</b></td></tr>
+[end]
+
+[render]
+[end]
+[render-old]
+<tr><td  align=right>Отображение:</td>
+<td>
+<select name="RENDER">
+<option value="1">исполнять</option>
+<option value="">игнорировать</option>
+</select>
+</td></tr>
+<script>
+selectOptionByVal(document.theForm.RENDER,'#RENDER#');
+</script>
+[end]
+
+[tex]
+<tr><td colspan=2 align=center>
+<input type="checkbox" name="TEX"
+checked ??TEX
+>TEX
+</td>
+</tr>
+<script>
+selectOptionByVal(document.theForm.RENDER,'#RENDER#');
+</script>
+
+
+[end]
+[var name]
+<tr><td  align=right>Отображаемое имя:</td>
+<td><input name="NAME" value="#NAME#" type="text">
+</td></tr>
+[end]
+
+[var type]
+<input type="hidden" name="CFG" value="#CFG#">
+[end]
+
+
+[view fieldname]
+<tr><td align="right">
+Поле в таблице данных:
+</td>
+<td>
+<select name="VIEW_FIELD_NAME">
+<option value="#VIEW_FIELD_NAME#" style="color: ##AA0000">#VIEW_FIELD_NAME#</option> ??VIEW_FIELD_NAME
+#UNUSED_NAMES_OPTS#
+</select>
+</td></tr>
+
+[end]
+
+
+[list show]
+<tr><td align="center" colspan="2">
+<input type="checkbox" name="LIST"
+checked ??LIST
+> показывать поле в списке
+</td></tr>
+[end]
+
+[list max len]
+<tr><td align="right">Ограничивать длину в списке до</td><td>
+<select name="LIST_MAX_LEN"> 
+<option value="10000">не огр.</option>
+<option value="">512</option>
+<option value="256">256</option>
+<option value="180">180</option>
+</select>
+симв.</td></tr>
+<script>
+selectOptionByVal(document.theForm.LIST_MAX_LEN,'#LIST_MAX_LEN#');
+</script>
+
+[end]
+
+[edit use calc]
+<tr><td align="center" colspan="2">
+<input type="checkbox" name="USECALC"
+checked ??USECALC=1
+> использовать калькулятор
+</td></tr>
+[end]
+
+[edit var comment]
+<tr><td align="right">Комментарий:</td><td><textarea name="COMMENT" cols=50  rows=5>#COMMENT#</textarea></td></tr>
+[end]
+
+[edit var field size]
+<tr><td align="right">Размер поля ввода в форме редактирования:</td><td>
+<select name="VARCHAR_FIELD_SIZE"> 
+<option value="">по умолчанию</option>
+<option value="27">27</option>
+<option value="10">10</option>
+</select>
+</td></tr>
+<script>
+selectOptionByVal(document.theForm.VARCHAR_FIELD_SIZE,'#VARCHAR_FIELD_SIZE#');
+</script>
+[end]
+
+[edit var default value]
+<tr><td align="right">Значение по умолчанию:</td><td><input type="text" name="DEFAULT_VALUE" value="#DEFAULT_VALUE#"></td></tr>
+[end]
+
+
+[list params]
+<tr><td align="right">Параметры отображения в списке:</td><td><textarea name="LIST_TD_PARAMS"  cols=50 rows=5>#LIST_TD_PARAMS#</textarea></td></tr>
+[end]
+
+[view params]
+<tr><td align="right">Параметры отображения в форме просмотра:</td><td><textarea name="VIEW_TD_PARAMS" cols=50 rows=5>#VIEW_TD_PARAMS#</textarea></td></tr>
+[end]
+
+[searchable]
+<tr><td>&nbsp;</td><td><input type="checkbox" name="SEARCHABLE"
+checked ??SEARCHABLE
+> осуществлять поиск по полю
+</td></tr>
+[end]
+
+[edit use textarea]
+<tr><td align="center" colspan="2">
+<input type="checkbox" name="USETEXTAREA"
+checked ??USETEXTAREA=1
+> использовать многострочное поле ввода
+</td></tr>
+[end]

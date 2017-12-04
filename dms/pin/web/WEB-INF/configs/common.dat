@@ -1,0 +1,382 @@
+[parameters]
+table_tree=tree
+[end]
+
+
+[head]
+<HTML><HEAD><TITLE>#title#</TITLE>
+<META http-equiv=Content-Type content="text/html;charset=utf-8">
+<LINK REL=STYLESHEET TYPE="text/css" HREF="#ServletPath#?c=css/css">  
+<SCRIPT language=JavaScript src="#jsPath#lib.js"></SCRIPT>
+<SCRIPT language=JavaScript src="#jsPath#divNframe.js"></SCRIPT>
+[end]
+
+[header]
+<HTML><HEAD><TITLE>#title#</TITLE>
+<META http-equiv=Content-Type content="text/html;charset=utf-8">
+<LINK REL=STYLESHEET TYPE="text/css" HREF="#ServletPath#?c=css/css"> 
+<SCRIPT language=JavaScript src="#jsPath#lib.js"></SCRIPT>
+<SCRIPT language=JavaScript src="#jsPath#divNframe.js"></SCRIPT>
+</HEAD><body >
+$INCLUDE common.dat[form]
+$INCLUDE common.dat[ItemPath] ??
+[end]
+
+[form]
+<form name="theForm" method="POST" enctype="multipart/form-data" onSubmit="return doIt();" style="margin:0; padding:0;">
+<input type=hidden name=c value="#c#">
+<input type=hidden name=v value="#v#">
+<input type=hidden name=object_id value="#object_id#">
+<input type=hidden name=child_id value="#child_id#">
+<input type=hidden name=cop value="">
+<script>
+function doIt()
+{ return true;
+}
+</script>
+[end]
+
+[workFrame]
+<iframe width=750 name="workframe" id="workframe" src="#ServletPath#?c=empty" frameborder="0" style="border-top:solid 1px ##607080;"
+scrolling="no" height=1 ??!debug=on
+scrolling="auto" height=250 ??debug=on
+>
+</iframe>
+[end]
+
+
+[ItemPath]
+$GET_DATA common.dat[getItemPath]
+<span class=rb id=itemPath style="background-color:white; padding:5;">
+<a class=location href="javascript:top.openNode(#PID_1#)"><img src="#imgPath#reds1.gif" border=0 width=10 height=10>Home</a> / ??
+<a class=location href="javascript:top.openNode(#PID_3#)">Home</a> / ??
+<a class=location href="javascript:top.openNode(#PID_3#)">#NODE_4#</a> / ??NODE_4
+<a class=location href="javascript:top.openNode(#PID_2#)">#NODE_3#</a> / ??NODE_3
+<a class=location href="javascript:top.openNode(#PID_1#)">#NODE_2#</a> / ??NODE_2
+<a class=location href="javascript:top.openNode(#PID_0#)">#NODE_1#</a> / ??NODE_1
+<b><i>#NODE_0#</i></b></span>
+[end]
+
+[getItemPath]
+$INCLUDE common.dat[getNode] param: curr_id=#folder_id#;
+$INCLUDE common.dat[getNode] param: curr_id=#PID_0#; level=1 ??PID_0
+$INCLUDE common.dat[getNode] param: curr_id=#PID_1#; level=2 ??PID_1
+$INCLUDE common.dat[getNode] param: curr_id=#PID_2#; level=3 ??PID_2
+$INCLUDE common.dat[getNode] param: curr_id=#PID_3#; level=4 ??PID_3
+[end]
+
+[getNode] param: curr_id; level=0
+select PID as PID_#level#, LABEL as NODE_#level# from menu_def 
+where id=#curr_id# and id>0 and ActionType <> 'NONE'
+union select PID as PID_#level#, LABEL as NODE_#level# from user_folders 
+where id=#curr_id# and User_Id=#USER_ID#;
+[end]
+
+[button_s] param: label; onClick; width;
+<td nowrap=true class=but_i onMouseOver="this.className='but_a'"  onMouseOut="this.className='but_i'" 
+width=#width#  ??width
+onClick="#onClick#">#label#</td>
+[end]
+
+<style type="text/css">
+
+input.loginbutton
+{
+   font-size:12px;
+   font-family:Verdana,sans-serif;
+   color:#000000;
+   width:58px;
+   height:19px;
+   background-image:url(button4pin.png);
+   border-style:none;
+}
+
+</style>
+
+[butt] param: label; onClick; width; ancId; img;
+<span class=button
+><span class=button2><A class=butt href='javascript:#onClick#' 
+style="width:#width#px;" ??width
+id=#ancId# ??ancId
+>
+<img src="#imgPath##img#" border=0 width=12 height=12 align=middle> ??img
+&nbsp;#label#&nbsp;</A></span></span>
+[end]
+
+[butt_d] param: label; width; img;
+<span class=button><span
+style="width:#width#px;" ??width
+>
+<img src="#imgPath##img#" border=0 width=12 height=12 align=middle> ??img
+#label#</span></span>
+[end]
+
+
+
+[button] param: label; onClick; width;
+<td class=but_b><img src="#imgPath#btn_left1.gif" border=0 width=7 height=20></td>
+<td nowrap=true class=but_i1 onMouseOver="this.className='but_a1'"  onMouseOut="this.className='but_i1'" 
+width=#width#  ??width
+onClick="#onClick#">#label#</td>
+<td class=but_b><img src="#imgPath#btn_right.gif" border=0 width=7 height=20></td>
+<td>&nbsp;</td>
+[end]
+
+[abutton] param: label; onClick; width; disabled;
+<table border=0 cellpadding=0 cellspacing=0><tr height=20>
+<td class=but_b><img src="#imgPath#btn_left1.gif" border=0 width=7 height=20></td>
+<td class=but_i1#disabled# 
+onMouseOver="this.className='but_a1'"  onMouseOut="this.className='but_i1'" onClick="#onClick#" ??!disabled
+width=#width#  ??width
+nowrap=true>#label#</td><td class=but_b><img src="#imgPath#btn_right.gif" border=0 width=7 height=20></td></tr></table>
+[end]
+
+
+[portlet top]
+<script>
+var advSearch=#SearchMode#;   ??SearchMode
+var advSearch=false;          ??!SearchMode
+
+function setSearhMode(mode)
+{ if (mode)
+  { 
+    showDiv("d_Search", 220, true); 
+  	document.getElementById("searchMode").innerHTML = "&nbsp; убрать &lt;&lt;";
+    document.getElementById("search_max").style.display="none";
+    document.getElementById("search_min").style.display="inline";
+  }
+  else
+  { hideDiv("d_Search");
+  	document.getElementById("searchMode").innerHTML = "еще &gt;&gt;";
+    document.getElementById("search_min").style.display="none";
+    document.getElementById("search_max").style.display="inline";
+  }
+  advSearch = mode;
+  frm.p1_Mode.value = mode;
+}
+</script>
+
+<table border=0 cellspacing="0" cellpadding="0" >
+<tr><td width=6></td><td width=99%></td><td width=1%></td></tr>
+
+<tr><td class=but_b colspan=2 
+onClick="setSearhMode(!advSearch)" ??
+align=left nowrap=true 
+background="#imgPath#bg_titleb.gif" 
+><img src="#imgPath#filler.gif" width=10 height=14 border=0 align=left><span 
+class=portlet_title><i>Расширенный ПОИСК</i></span>
+<span id=searchMode style="width:250; text-align:right;">еще >></span> ??
+</td>
+
+<td class=but_b style="border-top:solid 1px black; border-right:solid 1px black; background-color:##C0E0F8" nowrap=true align=right width=1%> 
+<img src="#imgPath#w_close.gif" align=absbottom width=16 height=15 border=0 onClick="showSearch();">&nbsp; 
+<img src="#imgPath#w_close_dis.gif" align=absbottom width=16 height=15 border=0 onClick=";">&nbsp;  ??
+</td>
+</tr>
+<tr><td colspan=3 style="padding:0;">
+[end]
+
+[portlet bottom]
+</td></tr>
+<tr><td width=7 style="padding:0;"><img src="#imgPath#bg_shadow_l.gif" width=7 height=6 border=0></td>
+<td background="#imgPath#bg_shadow.gif"></td>
+<td align=right style="padding:0;"
+background="#imgPath#bg_shadow.gif"></td>
+<img src="#imgPath#bg_shadow_r.gif" width=7 height=6 border=0 align=right > ??
+</tr></table>
+
+<input type=hidden name="p1_Mode" value="#p1_Mode#">
+
+
+[end]
+
+[hidden submit]
+<input type=submit value="&nbsp;" style="border:none; 
+background-color:##e4f0f8;"
+>
+[end]
+
+
+[popUpDiv] param: divID; divTitle;
+<div name="#divID#" id="#divID#" style="padding:0; display:none; height=0; overflow:hidden; z-index:999; position:absolute; background-color:whitesmoke;"> 
+<table border=0 cellspacing="0" cellpadding="0" width=10>
+<tr><td class=but_b align=left nowrap=true
+background="#imgPath#bg_titleb.gif" 
+><img src="#imgPath#filler.gif" width=10 height=14 border=0 align=left><span 
+class=portlet_title><i>#divTitle#</i></span></td>
+<td style="border-top:solid 1px black; border-right:solid 1px black; background-color:##85AAD5" 
+nowrap=true align=right width=1%> 
+<img src="#imgPath#w_close.gif" align=absbottom width=16 height=15 border=0 onClick="showPopUp('#divID#', false);"></td>
+</tr><tr><td colspan=2 class=lrb style="padding:0;">
+<div id=#divID#_cont></div></td></tr>
+<tr><td class=lrb colspan=2 align=center style="padding:5;">
+$INCLUDE common.dat[butt] param: label=Cancel; onClick=showPopUp("#divID#", false); width=60;
+<td></tr></table></div> 
+[end]
+
+[pages_top]
+<a href="javascript:goToPage(#currPageNr# -1)">??!currPageNr=1
+<img  border="0" align=absbottom
+src="#imgPath#bullet_l.gif"></a>   ??!currPageNr=1
+src="#imgPath#bullet_l_i.gif"> ??currPageNr=1
+<font color="787878" size="1">&nbsp;<b>#pageList#</b>&nbsp;</font>
+<a href="javascript:goToPage(#currPageNr#+1)">??!currPageNr=#totNumPages#
+<img border="0" align=absbottom
+src="#imgPath#bullet_r.gif"></a>    ??!currPageNr=#totNumPages#
+src="#imgPath#bullet_r_i.gif">  ??currPageNr=#totNumPages#
+[end]
+
+[XXXpages_bot]
+<a href="javascript:goToPage(#currPageNr# -1)">??!currPageNr=1
+<img  border="0" align=absbottom
+src="#imgPath#left_arrow.gif"></a>   ??!currPageNr=1
+src="#imgPath#left_arrow_i.gif"> ??currPageNr=1
+&nbsp;#pageList#&nbsp;
+<a href="javascript:goToPage(#currPageNr#+1)">??!currPageNr=#totNumPages#
+<img border="0" align=absbottom
+src="#imgPath#right_arrow.gif"></a>    ??!currPageNr=#totNumPages#
+src="#imgPath#right_arrow_i.gif">  ??currPageNr=#totNumPages#
+[end]
+
+[setAccRights]
+$SET_PARAMETERS R_VIEW=; R_MODIF=; R_ADMIN=;
+$SET_PARAMETERS R_VIEW=1; 	??ACC_RIGHS={{1|3|5|7}}
+$SET_PARAMETERS R_MODIF=1; 	??ACC_RIGHS={{2|3|7}}
+$SET_PARAMETERS R_ADMIN=1; 	??ACC_RIGHS=7
+<small>ACC_RIGHS:#ACC_RIGHS# R_VIEW=#R_VIEW#; R_MODIF=#R_MODIF#; R_ADMIN=#R_ADMIN# </small> ??debug=on
+[end]
+
+[dat] param: fd_name; fd_val; class=xp; yr1=-1; yr2=0; onChange;
+<input size=10 name='#fd_name#' value='#fd_val#'
+class=#class# ??class
+onChange="#onChange#" ??onChange
+><a href="javascript:show_calendar(document.theForm.#fd_name#, #yr1#, #yr2#);"><img align=absmiddle src="#imgPath#show-calendar.gif" width=24 height=22 border=0 alt="Выбор даты из календаря"></a>
+<input type=hidden name='f_#fd_name#' value=''>  
+[end]
+
+[dat between] param: fd_name1; fd_val1; fd_name2; fd_val2; class=xp; yr1=-1; yr2=0; onChange;
+<input size=12 name='#fd_name1#' value='#fd_val1#'
+class=#class# ??class
+onChange="#onChange#" ??onChange
+>
+<a href="javascript:show_calendar(document.theForm.#fd_name1#, #yr1#, #yr2#);"><img align=absbottom src="#imgPath#show-calendar.gif" width=24 height=22 border=0 alt="Выбор даты из календаря"></a>
+<input type=hidden name='f_#fd_name1#' value=''>  
+[по
+<input size=12 name='#fd_name2#' value='#fd_val2#'
+class=#class# ??class
+onChange="#onChange#" ??onChange
+>
+<a href="javascript:show_calendar(document.theForm.#fd_name2#, #yr1#, #yr2#);"><img align=absbottom src="#imgPath#show-calendar.gif" width=24 height=22 border=0 alt="Выбор даты из календаря"></a> 
+]
+<input type=hidden name='f_#fd_name2#' value=''>  
+[end]
+
+[yrs_common]
+$GET_DATA common.dat[getYr] ??!YEAR_NOW|!YEAR_2|!YEAR_3|!YEAR_5
+
+$SET_PARAMETERS YR_BEG=#SESS_YR_BEG# ??!YR_BEG
+$SET_PARAMETERS YR_END=#SESS_YR_END# ??!YR_END
+$SET_PARAMETERS_SESSION SESS_YR_N=#YR_N# ??YR_N
+$SET_PARAMETERS_SESSION SESS_YR_BEG=#YR_BEG# ??YR_BEG
+$SET_PARAMETERS_SESSION SESS_YR_END=#YR_END# ??YR_END
+$SET_PARAMETERS YR_BEG=; ??YR_BEG={{-|NaN}}
+$SET_PARAMETERS YR_END=; ??YR_END={{-|NaN}}
+
+$SET_PARAMETERS YR_N=0	??!vd=sc
+$SET_PARAMETERS YR_N=-1 ??YR_BEG=#YEAR_2#&YR_END=#YEAR_1#
+$SET_PARAMETERS YR_N=-2 ??YR_BEG=#YEAR_3#&YR_END=#YEAR_2#
+$SET_PARAMETERS YR_N=1 ??YR_BEG=#YEAR_NOW#&YR_END=#YEAR_NOW#
+$SET_PARAMETERS YR_N=3 ??YR_BEG=#YEAR_3#&YR_END=#YEAR_NOW#
+$SET_PARAMETERS YR_N=5 ??YR_BEG=#YEAR_5#&YR_END=#YEAR_NOW#
+$SET_PARAMETERS YR_N=0 ??!YR_BEG&!YR_END
+vd:#vd#; YR_N:#YR_N#; <br> ??
+<style>
+.yr_i {padding:3px; background-color:white; color:##204080; cursor:pointer; text-decoration: none; border: solid 1px gray}
+.yr_act {padding:3px; background-color:##FFFFA0; font-weight:bold; cursor:pointer; border: solid 1px gray}
+</style>
+<script>
+
+function checkYrs()
+{ v = parseInt(document.theForm.YR_BEG.value);
+	if (isNaN(v)) v="-";
+	document.theForm.YR_BEG.value = v;
+	v = parseInt(document.theForm.YR_END.value);
+	if (isNaN(v)) v="-";
+	document.theForm.YR_END.value = v;
+}
+
+function setYRS(n,beg,end)
+{ document.theForm.YR_N.value=n;
+	document.theForm.YR_BEG.value=beg; 
+	document.theForm.YR_END.value=end; 
+	#chYearFunction#;
+}
+</script>
+[end]
+
+[yrs_enum] param: chYearFunction=chYR(); cp=; 
+$INCLUDE common.dat[yrs_common]
+$SET_PARAMETERS YR_N=0; YR_BEG=#YEAR_1#; YR_END=#YEAR_NOW# ??YR_N>0
+<div> ??
+Данные на: 
+<span onClick="setYRS(0,#YEAR_1#,#YEAR_NOW#);"
+class=yr_act ??YR_N=0
+class=yr_i ??!YR_N=0
+>#YEAR_NEXT#</span><span onClick="setYRS(-1,#YEAR_2#,#YEAR_1#);"
+class=yr_act ??YR_N=-1
+class=yr_i ??!YR_N=-1
+>#YEAR_NOW#</span><span onClick="setYRS(-2,#YEAR_3#,#YEAR_2#);"
+class=yr_act ??YR_N=-2
+class=yr_i ??!YR_N=-2
+>#YEAR_1#</span> год <i>(учитываются результаты работы за предыдущие два года: #YR_BEG#-#YR_END#)</i>
+
+<input name="YR_BEG" value='#YR_BEG#' type=hidden> 
+<input name="YR_END" value='#YR_END#' type=hidden> 
+<input type=hidden name="YR_N" value='#YR_N#'>
+</div> ??
+[end]
+
+
+[yrs] param: chYearFunction=chYR(); cp=; 
+$INCLUDE common.dat[yrs_common]
+YR_N=#YR_N#; YR_BEG=#YEAR_NOW#; YR_END=#YEAR_NOW# ??
+$SET_PARAMETERS YR_N=1; YR_BEG=#YEAR_NOW#; YR_END=#YEAR_NOW# ??YR_N<0&!vd=sc&!vd=ac
+<div>
+cp:#cp#; chYearFunction:#chYearFunction# ??
+
+Данные за: 
+<span id=yr_1 onClick="setYRS(1,#YEAR_NOW#,#YEAR_NOW#);"
+class=yr_act ??YR_N=1
+class=yr_i ??!YR_N=1
+>#YEAR_NOW# г.</span><span id=yr_3 onClick="setYRS(3,#YEAR_3#,#YEAR_NOW#);"
+class=yr_act ??YR_N=3
+class=yr_i ??!YR_N=3
+>3 года</span><span id=yr_5 onClick="setYRS(5,#YEAR_5#,#YEAR_NOW#);"
+class=yr_act ??YR_N=5
+class=yr_i ??!YR_N=5
+>5 лет</span><span id=yr_0 onClick="setYRS(0,'-','-');"
+class=yr_act ??YR_N=0
+class=yr_i ??!YR_N=0
+>всё время</span> &nbsp;
+
+с  ??!cp
+<input name="YR_BEG" value='#YR_BEG#' class=xpc size=4
+type=hidden ??cp
+> 
+по ??!cp
+<input name="YR_END" value='#YR_END#' class=xpc size=4
+type=hidden ??cp
+> <input type=hidden name="YR_N" value='#YR_N#'>
+$INCLUDE common.dat[butt] param: label=Обновить; onClick=#chYearFunction#; img=table1.gif;  ??chYearFunction&!cp
+</div>
+
+[end]
+
+[getYr]
+select 
+	year(NOW()) as YEAR_NOW_, year(NOW())+1 as YEAR_NEXT_
+ ,year(NOW())-1 as YEAR_1_, year(NOW())-2 as YEAR_2_
+ ,year(NOW())-3 as YEAR_3_, year(NOW())-4 as YEAR_4_, year(NOW())-5 as YEAR_5_
+;
+$SET_PARAMETERS_GLOBAL YEAR_NOW=#YEAR_NOW_#; YEAR_NEXT=#YEAR_NEXT_#; YEAR_1=#YEAR_1_#;  YEAR_2=#YEAR_2_#; YEAR_3=#YEAR_3_#; YEAR_4=#YEAR_4_#; YEAR_5=#YEAR_5_#;
+[end]

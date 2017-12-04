@@ -1,0 +1,78 @@
+[comments]
+descr=A: Панель инструментов для редактора форм документов из списка типов документа
+
+input=type_id - ID типа документа (из таблицы d_types), 
+output=HTML форма с инструментами (кнопками) для создания полей в форме документа
+parents=admin/doctypes/doctype_form_editor.cfg
+childs=
+test_URL=?c=admin/doctypes/common_field_menu&type_id=1
+author=Яковлев, Куняев
+[end]
+
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=A: Панель инструментов для редактора форм документов (Тип документа)
+tableCfg=table_no
+KeepLog=false
+ClearLog=true
+[end]
+
+
+
+
+[report header]
+<input type=hidden name=type_id value='#type_id#'>
+
+<div id="result_table"> 
+
+++++++++++++++++++ Шапка таблицы +++++++++++++++++++++ ??
+<table class="tlist tgreen" >
+<tr>
+<th>Доступные типы полей</th>
+</tr>
+[end]
+
+
+[item]
+++++++++++++++++++ Строка таблицы - 1 элемент +++++++++++++++++++++ ??
+
+<tr>
+
+<td>
+<input type="button" class="butt1 pt" style="width:285; margin-right:20px;" value="#FIELD_TYPE_NAME#" 
+onClick="AjaxCall('doctype_form_panel', 'c=admin/doctypes/doctype_field_operations&cop=add&type_id=#type_id#&field_type=#FIELD_TYPE_ID#');">
+</td>
+</tr>
+
+[end]
+
+
+
+
+[report footer]
+</table>
+
+</div>
+
+
++++++++++ Скрипт возврата результатов в вызывавшую страницу ++++ ??
+<script>
+window.parent.getResult("create_field_menu_panel", document.getElementById("result_table")); 
+window.parent.setModule("admin/doctypes/common_field_menu&type_id=#type_id#"); 
+</script>
+[end]
+
+
+***************************** Шаблон SQL запроса ***************************
+
+[SQL]
+
+select id as "FIELD_TYPE_ID"
+, comment as "FIELD_TYPE_NAME"
+from d_form_fields_types where id<1000
+order by id
+;
+
+
+[end]

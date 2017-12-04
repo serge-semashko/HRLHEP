@@ -1,0 +1,462 @@
+
+===================== INPUT FIELDS ===========================
+[accept]
+$SET_PARAMETERS DEFAULT_LEGAL_DEPT=omega@jinr.ru
+	<tr><td valign=top align=left nowrap=true>
+	<fieldset class=xpg>
+			<legend>
+			<img src="#imgPath#small/attached_doc.gif" border="0" onClick="doSelectFile()" width=26 height=26><b>&nbsp; Согласование: &nbsp;</b>
+			</legend>
+
+<table>
+<tr>
+<td align="right" valign="top">
+<a href="javascript:selectInit('#USER_ID#','INITIATOR_ID','INITIATOR_TEXT', false,0)"/>Инициатор:</a> 
+</td>
+<td valign="top">
+<input type = "hidden" name = "INITIATOR_ID" id = "INITIATOR_ID" value = "#INITIATOR_ID#" />
+<input readonly="readonly" type = "text" name = "INITIATOR_TEXT" id = "INITIATOR_TEXT" style="width:280px;" value = "#INITIATOR_TEXT#"/><a href="javascript:selectInit('#USER_ID#','INITIATOR_ID','INITIATOR_TEXT', false,0)"/><img src="images/small/user.gif" style="margin-right:20px;"/></a>
+<div style="text-align:right">
+    <span class="button"><span><a class="butt" onclick = "sendMailAccept(1);">Отправить инициатору</a></span></span> 
+</div>
+
+</td>
+<td align="right" valign="top">
+<a href="javascript:selectInit('#USER_ID#','ACCEPTORS_ID','ACCEPTORS_TEXT', true, 1)"/>Согласующие:</a>
+</td>
+<td valign="top">
+<input type = "hidden" name = "ACCEPTORS_ID" id = "ACCEPTORS_ID" value = "#ACCEPTORS_ID#"
+/>
+<textarea name = "ACCEPTORS_TEXT" id = "ACCEPTORS_TEXT" style="width:300px;" readonly="readonly">#ACCEPTORS_TEXT#</textarea>
+<a href="javascript:selectInit('#USER_ID#','ACCEPTORS_ID','ACCEPTORS_TEXT', true, 1)"/><img src="images/small/user_group.gif"/></a>
+</td>
+</tr>
+
+<tr>
+<td colspan="2" align="right">
+    <div id = "legDepButt">
+    <span class="button"><span><a class="butt" onclick = "sendMailAccept(2);">Отправить в Юр.отдел</a></span></span> 
+    </div>
+                                                                                                                              xx ??xxINITIATOR_ID
+</td>
+<td colspan="2" align="right">
+    <span class="button"><span><a class="butt" onclick = "sendMailAccept(4);">Отправить согласующим</a></span></span>  
+    <span class="button"><span><a class="butt" onclick = "sendMailAccept(4);">Дослать</a></span></span>  ??
+         ??xxxxxxxxxxSHOW_DOSYLKA&!SHOW_DOSYLKA=0
+                                                                                                                               xx ??xxACCEPTORS_ID
+    
+</td>
+</table>
+<input type="hidden" name = "IS_INITIATOR" id = "IS_INITIATOR"/>
+<input type = "hidden" name = "IS_LEGAL_DEPT" id = "IS_LEGAL_DEPT"/>
+<iframe name="fr_accept" id="fr_accept" frameborder="no" style="display:none;" height="0" width="0" src="#servletPath#?c=empty" scrolling="no"></iframe> 
+<style type="text/css">
+.log{
+color: gray;
+}
+##printlink {
+    text-align:right;
+    padding-top:10px;
+}
+##acceptlisttable{
+    width:100%;
+    border: 1px black solid;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+##acceptlisttable th{
+    background: #eaeaea;
+    border: 1px #bbbbbb solid;
+    vertical-align:top;
+
+}
+##acceptlisttable td{
+    background: #F8F8F8;
+    border: 1px #bbbbbb solid;
+    vertical-align:top;
+}
+.initiator{
+    font-weight:bold;
+}
+.status{
+color:black;
+}
+.status1{
+color:green;
+}
+.status0{
+color:red;
+}
+</style>
+История согласования:
+<div id = "acceptlistplace">
+
+</div>
+
+
+<script type="text/javascript" language="javascript">
+function setControls(){
+    if($('##LEGAL_DEPT').prop("checked")){
+        $('##legDepButt').show();
+    }else{
+            $('##legDepButt').hide();
+    }
+}
+    setControls();
+    getAcceptList(#ID#);
+</script>
+	</fieldset>
+	</TD></tr>	
+
+
+
+[end]
+[YR_select]
+<strong>
+Год <select name="DOC_YEAR" onchange="docChanged();">
+  <option value="NULL">Все</option>#YRS_PRESENT_OPTIONS#</select></strong>
+[end]
+
+[tr_data_text]
+#field_row#
+дата (текст):</td><td nowrap align=left >
+		&nbsp;&nbsp;	
+	<input type="text" name="DATA_TEXT" value='#DATA_TEXT#' class=xpg size=30 onchange="docChanged();"> 
+</td></tr>
+[end]
+
+[lab_select]
+<a href="javascript: show_named_panel('lab_select','a_lab_select','.',':')" id='a_lab_select'>.</a> 
+<div id="lab_select" style="display:none;">															
+<b>лабор.:</b><br>
+	<select name="LAB_CODE" size=12 multiple  onchange="docChanged();">#LABS#</select>
+</div>																								
+[end]
+
+[tr_lab-select]
+#field_row#
+Подр.:</td><td  valign=top nowrap>
+	<select style="width: 600px;" class="chosen" name="LAB_CODE"  multiple="multiple" onchange="docChanged();">#LABS#</select>
+</td></tr>
+<script type="text/javascript">
+$(document).ready(function(){
+    $('.chosen').chosen({
+      placeholder_text_multiple: "Выберите подразделение",
+      no_results_text: "Не найдено"
+    });
+    $(".chosen").attr('disabled', true).trigger("chosen:updated") ??USR_LAB_CODE
+});
+</script>
+
+[end]
+
+
+
+[tr_doctype]
+#field_row#
+вид документа:</td><td  valign=top nowrap>
+	<select name="DOCTYPE" class=xpg onchange="docChanged();">#DOCTYPES#</select>
+</td></tr>
+[end]
+
+[tr_num-dat_doc]
+#field_row#
+дата:</td><td nowrap=true class=field_label valign=top>
+	$INCLUDE common.dat[dat] param: fd_name=DAT_DOC; fd_val=#DAT_DOC#; yr1=-#YR_interval#; yr2=0; class=xpg; onChange=docChanged(); 
+	&nbsp;&nbsp; №
+	<input type="text" name="NUM" value='#NUM#' class=xpg size=20 tabindex=0 onchange="docChanged();"> 
+</td></tr>
+[end]
+
+[tr_regnum-dat]
+$SET_PARAMETERS DOC_INDEX=#INDEX_DEF#; ??!DOC_INDEX&IZ_ISH
+#field_row#
+дата регистрации:</td><td nowrap=true class=field_label>
+	$INCLUDE common.dat[dat] param: fd_name=DAT; fd_val=#DAT#; yr1=-#YR_interval#; yr2=0; class=xpg; onChange=docChanged();	??#NOT#SHOW_REGNUM_DAT=1
+		&nbsp;&nbsp;	индекс: <input type="text" name="DOC_INDEX" value='#DOC_INDEX#' onChange="docChanged();" class=xpg size=14> ??#NOT#SHOW_INDEX=1
+		№: <input type="text" name="REGNUM" value='#REGNUM#' class=xpg size=4 tabindex=0 onchange="docChanged();"> ??#NOT#SHOW_REGNUM_DAT=1&!AUTONUMBER=Y
+		№: <input type="text" name="REGNUM" value='#REGNUM#' readonly class=xpg size=4 tabindex=0 onchange="docChanged();"> ??#NOT#SHOW_REGNUM_DAT=1&AUTONUMBER=Y
+		<input type="text" name="LITERA" value='#LITERA#' class=xpg size=2  onchange="docChanged();"> ??#NOT#SHOW_LITERA=1 
+</td></tr>
+[end]
+
+[tr_link]
+#field_row#
+ссылка:</td><td nowrap align=left >
+	$INCLUDE common.dat[dat] param: fd_name=LINK_DAT; fd_val=#LINK_DAT#; yr1=-#YR_interval#; yr2=0; class=xpg; onChange=docChanged();
+		&nbsp;&nbsp;	
+	<input type="text" name="LINK" value='#LINK#' class=xpg size=45 onchange="docChanged();"> 
+</td></tr>
+[end]
+
+[tr_data_text]
+#field_row#
+дата (текст):</td><td nowrap align=left><input type="text" name="DATA_TEXT" value='#DATA_TEXT#' class=xpg size=25 onchange="docChanged();"> 
+</td></tr>
+[end]
+
+[tr_des]
+#field_row#<a class=field_label href="javascript: flipFlopRows('DES',5,20);">
+решение по пунктам:</td><td nowrap  valign=top >
+	<textarea   cols="90" rows="5" id="DES" name="DES" class=xpg style="scroll:auto;" onChange="docChanged();">#DES#</textarea>
+</td></tr>
+[end]
+
+
+[tr_url]
+#field_row#
+URL:</td><td nowrap align=left >
+	<input type="text" name="URL" value='#URL#' class=xpg size=45 onchange="docChanged();"> 
+	<input type=checkbox name=new_win
+	checked ??NEW_WINDOW=1
+	>открывать в новом окне
+</td></tr>
+[end]
+
+[tr_np]
+#field_row#
+кол-во страниц:  ??#NOT#SHOW_NP=1
+</td><td nowrap=true class=field_label valign=top>
+<input type="text" size="4" name="NP" value='#NP#' class=xpg> &nbsp; &nbsp; &nbsp;  ??#NOT#SHOW_NP=1
+том: ??#NOT#SHOW_TOM=1
+
+<input type="text" size="4" name="TOM" value='#TOM#' class=xpg> &nbsp; &nbsp; &nbsp; ??#NOT#SHOW_TOM=1
+$INCLUDE doc/edit_fields.dat[control]	??#NOT#SHOW_CONTROL=1
+</td></tr>
+[end]
+
+[control]
+контроль:	<input type="checkbox" value="1" name="CONTROL"	onClick="docChanged();"
+	checked ??CONTROL=1
+ >
+$INCLUDE common.dat[dat] param: fd_name=CONTROL_DAT; fd_val=#CONTROL_DAT#; yr1=0; yr2=1; class=xpg; onChange=docChanged();	
+[end]
+
+
+[tr_subject]
+#field_row#краткое содержание:</td><td nowrap  valign=top >
+	<input type=text class=xpg size=87 name="SUBJECT"  onChange="docChanged();" value='#SUBJECT#'>
+</td></tr>
+[end]
+
+[tr_content]
+#field_row#<a class=field_label href="javascript: flipFlopRows('CONTENT',2,12);">
+содержание:</td><td nowrap  valign=top >
+	<textarea   cols="90" rows="2" id="CONTENT" name="CONTENT" class=xpg style="scroll:auto;" onChange="docChanged();">#CONTENT#</textarea>
+$INCLUDE doc/edit_fields.dat[content_add] ??activeNode=1|activeNode=335|activeNode=348|activeNode=349|activeNode=350|activeNode=351|activeNode=352
+</td></tr>
+[end]
+
+[content_add]
+<br>
+<span onClick="addText('CONTENT','Договор')" onMouseOver="addClass(this, 'y')" onMouseOut="removeClass(this, 'y')" class=addBut>Договор</span>
+<span onClick="addText('CONTENT','Контракт')" onMouseOver="addClass(this, 'y')" onMouseOut="removeClass(this, 'y')" class=addBut>Контракт</span>
+<span onClick="addText('CONTENT','Соглашение')" onMouseOver="addClass(this, 'y')" onMouseOut="removeClass(this, 'y')" class=addBut>Соглашение</span>
+<span onClick="addText('CONTENT','Доп.соглашение')" onMouseOver="addClass(this, 'y')" onMouseOut="removeClass(this, 'y')" class=addBut>Доп.соглашение</span>
+[end]
+
+
+[tr_result]
+#field_row#<a class=field_label href="javascript: flipFlopRows('RESULT',2,8);">
+результат:</a></td><td valign=top nowrap=true>
+	<textarea  cols="90" rows="1" name="RESULT" id="RESULT" class=xpg style="scroll:auto;" onChange="docChanged();">#RESULT#</textarea> 
+</td></tr>
+[end]
+
+
+[tr_correspondent]
+#field_row#
+адресат / корреспондент:</td><td nowrap  valign=top>
+	<input type=text  class=xpg size=87 name="CORRESPONDENT" id="CORRESPONDENT" onChange="docChanged();" value='#CORRESPONDENT#'><a href='javascript:selectPersons("CORRESPONDENT")'>&nbsp;#popupImg#</a>
+</td></tr>
+[end]
+
+[legal dept]
+<!--br/><label for = "LEGAL_DEPT"><a>Юр.отдел</a></label><input onchange="docChanged" type="checkbox" name = "LEGAL_DEPT" id = "LEGAL_DEPT" value = "1"
+checked ??LEGAL_DEPT=1
+onclick="docChanged();setControls();"
+/-->
+[end]
+
+[tr_kto_zabral]
+#field_row#
+кто забрал:</td><td nowrap  valign=top>
+	<input type=text  class=xpg size=40 name="KTO_ZABRAL" id="KTO_ZABRAL" onChange="docChanged();" value='#KTO_ZABRAL#'><a href='javascript:selectPersons("KTO_ZABRAL")'>&nbsp;#popupImg#</a>
+</td></tr>
+[end]
+
+[tr_komu_napravlen]
+#field_row#
+кому направлен:</td><td nowrap  valign=top>
+	<input type=text  class=xpg size=50 name="KOMU_NAPRAVLEN" id="KOMU_NAPRAVLEN" onChange="docChanged();" value='#KOMU_NAPRAVLEN#'><a href='javascript:selectPersons("KOMU_NAPRAVLEN")'>&nbsp;#popupImg#</a>
+</td></tr>
+[end]
+
+[tr_podpis]
+#field_row#
+подпись:</td><td nowrap  valign=top>
+	<input type=text  class=xpg size=50 name="PODPIS" id="PODPIS" onChange="docChanged();" value='#PODPIS#'><a href='javascript:selectPersons("PODPIS")'>&nbsp;#popupImg#</a>
+</td></tr>
+[end]
+
+[tr_resolution]
+#field_row# <a class=field_label href="javascript: flipFlopRows('RESOLUTION',1,4);">
+резолюция:</a></td><td nowrap=true valign=top>
+	<textarea  cols="90" rows="2" name="RESOLUTION" id="RESOLUTION" class=xpg style="scroll:auto;" onChange="docChanged();">#RESOLUTION#</textarea><a href='javascript:selectPersons("RESOLUTION")'>&nbsp;#popupImg#</a>
+$INCLUDE doc/edit_fields.dat[resolution_add] ??activeNode=1|activeNode=335|activeNode=348|activeNode=349|activeNode=350|activeNode=351|activeNode=352
+</td></tr>
+[end]
+
+
+[resolution_add]
+<br>
+<div onClick="addText('RESOLUTION','СМТС',1)" onMouseOver="addClass(this, 'y')" onMouseOut="removeClass(this, 'y')" class=addBut>СМТС</div> ??activeNode=335|activeNode=348|activeNode=349|activeNode=350|activeNode=351|activeNode=352
+<div onClick="addText('RESOLUTION','Михан АА',1)" onMouseOver="addClass(this, 'y')" onMouseOut="removeClass(this, 'y')" class=addBut>Михан АА</div>
+<div onClick="addText('RESOLUTION','ФЭУ',1)" onMouseOver="addClass(this, 'y')" onMouseOut="removeClass(this, 'y')" class=addBut>ФЭУ</div>  ??activeNode=1
+<div onClick="addText('RESOLUTION','ПФО',1)" onMouseOver="addClass(this, 'y')" onMouseOut="removeClass(this, 'y')" class=addBut>ПФО</div>
+<div onClick="addText('RESOLUTION','ЮО',1)" onMouseOver="addClass(this, 'y')" onMouseOut="removeClass(this, 'y')" class=addBut>ЮО</div>
+<div onClick="addText('RESOLUTION','Бух.',1)" onMouseOver="addClass(this, 'y')" onMouseOut="removeClass(this, 'y')" class=addBut>Бух.</div>
+<div onClick="addText('RESOLUTION','ООТ',1)" onMouseOver="addClass(this, 'y')" onMouseOut="removeClass(this, 'y')" class=addBut>ООТ</div>
+<div onClick="addText('RESOLUTION','СБ',1)" onMouseOver="addClass(this, 'y')" onMouseOut="removeClass(this, 'y')" class=addBut>СБ</div>
+<div onClick="addText('RESOLUTION','ООТиЗ',1)" onMouseOver="addClass(this, 'y')" onMouseOut="removeClass(this, 'y')" class=addBut>ООТиЗ</div>
+<div style="clear:both;"></div>
+<div onClick="addText('RESOLUTION','Подпись',1)" onMouseOver="addClass(this, 'y')" onMouseOut="removeClass(this, 'y')" class=addBut>Подпись</div>
+<div onClick="addText('RESOLUTION','Матвеев ВА',0)" onMouseOver="addClass(this, 'y')" onMouseOut="removeClass(this, 'y')" class=addBut>Матвеев</div>
+<div onClick="addText('RESOLUTION','Иткис МГ')" onMouseOver="addClass(this, 'y')" onMouseOut="removeClass(this, 'y')" class=addBut>Иткис</div>
+<div onClick="addText('RESOLUTION','Ледницки Р')" onMouseOver="addClass(this, 'y')" onMouseOut="removeClass(this, 'y')" class=addBut>Ледницки</div>
+<div onClick="addText('RESOLUTION','Ширков ГД')" onMouseOver="addClass(this, 'y')" onMouseOut="removeClass(this, 'y')" class=addBut>Ширков</div>
+
+<script>
+
+function addClass(o, c){
+    var re = new RegExp("(^|\\s)" + c + "(\\s|$)", "g")
+    if (re.test(o.className)) return;
+    o.className = (o.className + " " + c).replace(/\s+/g, " ").replace(/(^ | $)/g, "");
+}
+function removeClass(o, c){
+    var re = new RegExp("(^|\\s)" + c + "(\\s|$)", "g");
+    o.className = o.className.replace(re, "$1").replace(/\s+/g, " ").replace(/(^ | $)/g, "");
+}
+
+
+function addText(field, text, dat)
+{
+	try {
+		var f = eval("document.theForm." + field);
+		if (f.value.length>0) f.value = f.value + " ";
+		f.value = f.value + text
+		if (dat) f.value = f.value + "-#TODAY#; ";
+//		if (text!='Подпись') f.value = f.value + ";"
+		docChanged();
+	}
+	catch (e)
+	{ alert(e)
+	}
+}
+</script>
+[end]
+
+
+[tr_ispolnitel]
+#field_row# <a class=field_label href="javascript: flipFlopRows('ISPOLNITEL',1,4);">
+исполнитель:</a></td><td nowrap=true valign=top>
+	<textarea  cols="90" rows="1" name="ISPOLNITEL" id="ISPOLNITEL" class=xpg style="scroll:auto;" onChange="docChanged();">#ISPOLNITEL#</textarea><a href='javascript:selectPersons("ISPOLNITEL")'>&nbsp;#popupImg#</a>
+</td></tr>
+[end]
+
+
+
+[tr_comment]
+#field_row#<a class=field_label href="javascript:flipFlopRows('COMMENTS',2,8);">
+комментарий:</a></td><td nowrap  valign=top>
+	<textarea  cols="90" rows="2" name="COMMENTS" id="COMMENTS" class=xpg style="scroll:auto;" onChange="docChanged();">#COMMENTS#</textarea>
+</td></tr>
+[end]
+
+[tr_valid_dates]
+#field_row#
+срок действия:</td><td nowrap   valign=top>
+	$INCLUDE common.dat[dat between] param: fd_name1=DAT_B; fd_val1=#DAT_B#; fd_name2=DAT_E; fd_val2=#DAT_E#; yr1=-20; yr2=20; onChange=docChanged();	        
+</td></tr>
+[end]
+
+[tr_need_check]
+<tr>
+		<td nowrap   valign=top>&nbsp;	</td>
+		<td nowrap   valign=top> 
+						<input type="checkbox" name="NEED_CHECK" value="1"
+    		checked ??NEED_CHECK=1
+    	onClick="docChanged();">документ требует уточнения
+		</td>
+</tr>
+[end]
+
+===================== UPLOAD ===========================
+
+
+[upload block]
+&nbsp; Загрузить файл: &nbsp;
+<input type="file" name="FILE_1" size="60" class=xpg onChange="docChanged();"> 
+<img src="#imgPath#filler.gif" width=70 height=1> ??
+$INCLUDE common.dat[butt] param: label=<font color=Blue>сохранить</font>; onClick=save_form();  width=100;  ??
+
+$INCLUDE doc/edit_fields.dat[upload applet] ??
+[end]
+
+[upload applet]
+</td></tr>
+<TR><td>
+<div align="right">
+$INCLUDE common.dat[butt] param: label=Загрузить файл(ы); onClick=doUpload();  width=100;  
+</div>
+<iframe name="upload" id="upload" height="0" width="800" src="#servletPath#?c=doc/upload&ID=#ID#&tm=#tm#" frameborder="no"  scrolling="no" style="border: solid 1px gray;"></iframe> 
+
+<script language="JavaScript">
+function doUpload()
+{  setFrameHeight("upload",150, true, 8);
+}
+
+function uploadDone()
+{	document.getElementById("upload").style.height="0px"; 
+	setFrameHeight("upload",1, true, 8); 
+}
+</script>
+[end]
+
+===================== MAILS ===========================
+
+
+[tr_mails]
+<TR><td>
+<fieldset class=xpg>
+<legend>
+<img src="#imgPath#small/mail.gif" border="0" onClick="doSelectFile()"><b>&nbsp; Рассылка:</b> &nbsp;
+</legend>
+<a href="javascript:sendMails()">send</a> ??
+<img src="#imgPath#filler.gif" width=120 height=1> ??
+<input type=text  class=xpg size=61 name="sent"  onChange="docChanged();" value="#SENT#">??
+<input type=hidden name="SENTIDS" value="#SENTIDS#" >
+<table border=0 width=100% cellspacing=3 cellpadding=0>
+<tr>
+<td align=right nowrap=true class=field_label valign=top>
+<a href="javascript:flipFlopRows('sent',4,10);"><i>Адресаты:</i></a>&nbsp;&nbsp;
+</td>
+<td valign=top>
+<textarea name="sent"   style="background-color: whitesmoke; border: none;"  onChange="docChanged();" cols=60 rows=4 readonly>#SENT#</textarea>
+</td>
+<td align=right valign=top nowrap>
+$INCLUDE common.dat[butt] param: label=<img src=#imgPath#small/user_group.gif border=0><font color=Blue> Выбрать</font>; onClick=selectMails("#USER_ID#",""); width=100; 
+$INCLUDE common.dat[butt] param: label=<img src=#imgPath#small/mail.gif border=0><font color=Red> Разослать</font>; onClick=sendMails(); width=100; 
+<div style="margin-right:10px;" id='divSent'>
+ <small>*&nbsp;разослано <br> #DATE_SENT#</small>??DATE_SENT&SENTIDS
+</div>
+</td>
+</tr>
+</table>
+
+
+
+<iframe name="fr_send" id="fr_send" frameborder="no" height="0" width="600" src="#servletPath#?c=empty" scrolling="no"></iframe> 
+</fieldset>
+</TD></tr>
+[end]

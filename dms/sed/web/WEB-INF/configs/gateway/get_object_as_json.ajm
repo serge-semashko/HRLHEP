@@ -1,0 +1,120 @@
+get_object_as_json
+
+
+[comments]
+descr=S: Упаковка объекта в JSON
+input=object_id - ID объекта (из таблицы d_list)
+output=
+parents=gateway/get_table_part
+childs=
+test_URL=?c=gateway/get_object_as_json&object_id=564&doc_id=564
+author=Куняев
+[end]
+
+
+[parameters]
+request_name=S:Упаковка объекта в JSON
+service=jinr.sed.gateway.ServiceObject2Json
+tableCfg=table_no
+LOG=ON
+SYS_FIELDS=DOC_ID, IS_ACTIVE, DATE_FORMAT(modified,'#dateTimeFormat#') as DOC_MODIFIED, VERSION
+SYS_FIELDS_TYPES=int,int,varchar,int
+[end]
+
+
+[report header]
+$LOG <b>============== post_doc: doc_id=#doc_id#; USER_ID=#USER_ID#; ==================</b><br>
+$GET_DATA [getDocInfo]
+$SET_PARAMETERS INITIATOR_COMMENT=;  ??DOC_TYPE_ID=16
+$INCLUDE docs/custom_settings[set custom object data] 
+[end]
+
+
+[report footer]
+
+[end]
+
+
+[object header]
+DOC_TYPE=#DOC_TYPE#
+DOC_TYPE_ID=#DOC_TYPE_ID#
+DOC_TYPE_VERSION=#DOC_TYPE_VERSION#
+CREATOR=#CREATOR#
+MODIFIER=#MODIFIER#
+CREATED=#CREATED#
+MODIFIED=#MODIFIED#
+INITIATOR_COMMENT=#INITIATOR_COMMENT#. #ITEM_INITIATOR_COMMENT#  ??INITIATOR_COMMENT
+INITIATOR_COMMENT=#ITEM_INITIATOR_COMMENT#  ??!INITIATOR_COMMENT&ITEM_INITIATOR_COMMENT
+$INCLUDE docs/custom_settings[custom object data] 
+[end]
+
+
+==============================================================================
+***************************** Шаблоны SQL запросов ***************************
+==============================================================================
+[getDocInfo]
+select 
+  dtp.NAME as "DOC_TYPE", dtp.ID as "DOC_TYPE_ID", dtp.gateway_object_id as "ObjectType"
+ , concat('d_data_', cast(dtp.id as char)) as TABLE_NAME
+ , dh.type_version as "DOC_TYPE_VERSION", dh.pid as PARENT_DOC_ID
+ , dh.comment as "ITEM_INITIATOR_COMMENT"  
+
+ , u.FIO as CREATOR, uu.FIO as MODIFIER
+ , ifnull(DATE_FORMAT(dh.created,'#dateTimeSecFormat#'),'') as CREATED
+ , ifnull(DATE_FORMAT(dh.modified,'#dateTimeSecFormat#'),'') as MODIFIED
+
+from d_list dh 
+left join d_types dtp on dtp.Id = dh.type_id
+left join #table_users_full# u on u.Id = dh.creator_id
+left join #table_users_full# uu on uu.Id = dh.modifier_id
+where dh.Id = #doc_id#
+; 
+
+select /* LAST doc data record ID */ id as DOC_DATA_RECORD_ID 
+from #TABLE_NAME# 
+where doc_id = #doc_id# and is_active=1
+ and version=#DOC_VERSION# ??DOC VERSIONS NOT IMPLEMENTED
+order by modified desc
+limit 0,1
+;
+
+select concat(dtf.field_db_name, ',') as FIELDS
+ , concat(dtf.name, ',') as FIELDS_NAMES 
+ , concat(dtf.type, ',') as FIELDS_TYPES
+ , concat(dtf.form_field_type, ',') as FORM_FIELDS_TYPES
+from d_fields dtf
+where dtf.type_id = #DOC_TYPE_ID#
+    and dtf.is_visible=1 ??
+    and dtf.is_active=1 
+    and dtf.min_doc_type_version <= #DOC_TYPE_VERSION#  
+    and dtf.max_doc_type_version >= #DOC_TYPE_VERSION#  
+    and dtf.field_category>1  ??request=write 
+order by nr
+;
+[end]
+
+
+Общий запрос для view_doc_no_wf, view_doc_wf, doc_edit, obj/edit_object
+[SQL]
+select /* doc data fields description */
+  dtf.NR, dtf.NAME, dtf.TYPE, dtf.SIZE, dtf.FORM_FIELD_TYPE, dtf.FIELD_DB_NAME, dtf.NULLS
+, dtf.INFO_ID, dtf.info_view_nr as INFO_VIEW
+, ifnull(dtf.lx, 400) as LX, ifnull(dtf.ly, 40) as LY, ROUND((ifnull(dtf.ly, 40) + 5)/15) as ROWS
+, ft.src_file as "FIELD_SRC_FILE"
+, ft.section_r  ??request=read
+, ft.section_w  ??request=write 
+  as "FIELD_SECTION"
+from d_fields dtf
+left join d_form_fields_types ft on (ft.id = dtf.form_field_type)
+left join d_list dh on dtf.type_id = dh.type_id
+where dh.Id = #doc_id# 
+    and dtf.is_visible=1 
+    and dtf.is_active=1
+    and dtf.min_doc_type_version <= #DOC_TYPE_VERSION#  
+    and dtf.max_doc_type_version >= #DOC_TYPE_VERSION#  
+    and dtf.field_category>1  ??request=write 
+order by nr
+[end]
+
+
+

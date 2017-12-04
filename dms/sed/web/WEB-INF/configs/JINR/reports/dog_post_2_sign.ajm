@@ -1,0 +1,142 @@
+
+JINR/reports/dog_post_2_sign.cfg
+
+[comments]
+descr=U: Модуль вывода списка ОЖИДАЮЩИХ договоров поставки ОИЯИ.
+
+input=
+output=HTML таблица документов
+parents=all_docs
+childs=docs/view_doc
+author=Куняев
+[end]
+
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=U:Таблица всех документов
+LOG=ON 
+tableCfg=table_no
+$INCLUDE dat/common.dat[rowLinks]
+[end]
+
+
+[report header]
+$INCLUDE dat/common.dat[check login]
+$INCLUDE [OK report header]  ??USER_ID>0|USER_ID<0
+[end]
+
+
+[OK report header]
+$GET_DATA [count docs]
+$SET_PARAMETERS  stage_type=el; ??!stage_type
+$SET_PARAMETERS  stage_type=all; ??f_dog_req_nr
+    <table class="tlist tblue" cellpadding=0 cellspacing=0>
+    <tr><td colspan=7 class="divider subhead"><b>Договоры поставки:</b></td></tr> 
+    <tr>
+        <th style="width:1%;"></th>
+        <th>№ договора</th>
+        <th>Содержание</th>
+        <th>Контрагент</th>
+        <th>Подр.</th>
+        <th>Ожидает</th> 
+        <th colspan=1>Согласование</th> 
+    </tr>
+    $INCLUDE [filters row] ??NUM_DOGS_2_SIGN>7
+[end]
+
+[filters row]
+    <tr style="background-color:##efefef">
+        <td></td>
+        <td><input name="f_dog_req_nr" value="#f_dog_req_nr#" style="width:95px;"></td>
+        <td><input name="f_dog_title" value="#f_dog_title#" style="width:400px;"></td>
+        <td><input name="f_dog_manufacturer" value="#f_dog_manufacturer#" style="width:350px;"></td>
+        <td>
+            <input type=hidden name="f_dog_div_id" id="f_dog_div_id" value="#f_dog_div_id#">
+            <input type=hidden name="f_dog_div_txt" id="f_dog_div_txt" value="#f_dog_div_txt#">
+            <div class="info_input pt big bg_white" id="f_dog_div" info_id="10" info_view="11" callback="filterDogByDiv"
+                style="display: inline-block; width:60px; border:solid 1px gray;">#f_dog_div_txt#&nbsp;</div>
+        </td>
+        <td></td>
+        <td>
+            <input type="radio" name="stage_type" value="el" onClick="getDogData();"
+                checked  ??stage_type=el
+            >электронный этап&nbsp;<input type="radio" name="stage_type" value="paper" onClick="getDogData();"
+                checked  ??stage_type=paper
+            >бумажный&nbsp;<input type="radio" name="stage_type" value="all" onClick="getDogData();"
+                checked  ??stage_type=all
+            >все
+        </td>
+    </tr>
+[end]
+
+[item]
+$INCLUDE tab_myDocs.cfg[linkedMark]
+    <td>
+        №#NUMBER#  ??NUMBER
+        от #DOC_DATE#  ??DOC_DATE
+    </td> 
+    <td class="tt" tt_text='#TITLE#' style="padding-right:0;"><div class="ellipsis">#TITLE#</div></td>
+    <td class="tt" tt_text='#POSTAV#' style="padding-right:0;"><div class="ellipsis">#POSTAV#</div></td>
+    <td>#DIVS#</td>
+    <td class= "right nowrap" >#PRICE_USD#</td> ??
+    $CALL_SERVICE c=wf/show_wf_status; doc_id=#ID#; show_persons=Y; 
+</tr>
+
+    $INCLUDE tab_myDocs.cfg[linkedData] ??!img=none&!of=xl
+    $SET_PARAMETERS MARKED=;
+[end]
+
+
+
+[report footer]
+</table>
+[end]
+
+
+***************************** Шаблон SQL запроса ***************************
+
+[SQL]
+    select
+        dh.ID, dh.TYPE_ID, dh.status, dh.pid, dh.num_children
+            , dh.NUMBER, dh.TITLE, dh.STATUS, dh.DIVS
+            , DATE_FORMAT(dh.doc_date,'#dateFormat#') as DOC_DATE 
+            , DATE_FORMAT(dh.modified,'#dateFormat#') as MODIFIED
+            , ifnull(dat.kontragent_text, concat('- ', dat.kontragent)) as "POSTAV"
+            , concat(FORMAT(TIMESTAMPDIFF(day, dh.modified, now()), 0), 'д'
+               , FORMAT(TIMESTAMPDIFF(hour, dh.modified, now())-TIMESTAMPDIFF(day, dh.modified, now())*24,0)) AS WAITING 
+        , case when TIMESTAMPDIFF(day, dh.modified, now()) > 1 then 'LONG'
+            else 'SHORT'
+            end
+        AS WAITING_LEVEL 
+        , p.PAPER_STARTED
+        from d_list dh
+        join d_data_8 dat on dat.doc_id=dh.id
+        join d_divs dd on (dd.doc_id=dh.id and dd.div_id=#f_dog_div_id#) ??f_dog_div_id
+
+        left join (select doc_id, max(stage) as "LAST_STAGE", 1 as "PAPER_STARTED" from doc_paper_processing group by doc_id)
+            p on(p.doc_id=dh.id and p.LAST_STAGE in(1,3,5,6))
+    $INCLUDE [common criteria]
+        and (dh.NUMBER like '%-#f_dog_req_nr#' or dh.NUMBER like '#f_dog_req_nr#') ??f_dog_req_nr
+        and dh.TITLE like '%#f_dog_title#%' ??f_dog_title
+        and (dat.kontragent_text like '%#f_dog_manufacturer#%' or dat.kontragent like '%#f_dog_manufacturer#%')  ??f_dog_manufacturer
+        and p.PAPER_STARTED=1   ??stage_type=paper
+        and p.PAPER_STARTED is null  ??stage_type=el
+    order by p.PAPER_STARTED
+    , dh.NUMBER, dh.modified 
+[end]
+
+[common criteria]
+    where dh.type_id=8 and dh.is_deleted=0 
+        and dh.id in (select wl.doc_id from wf_list wl join wf on wf.wf_id=wl.id
+          where wf.user_id=#USER_ID# and not wf.started is null and wf.finished is null
+        )
+[end]
+
+[count docs]
+    select count(dh.ID) as NUM_DOGS_2_SIGN
+    from d_list dh  
+        left join d_list dc on (dc.pid=dh.id and dc.type_id in(8,10,11,12) and dc.is_deleted=0)
+        left join d_data_1 dat on dat.doc_id=dh.id
+    $INCLUDE [common criteria]
+[end]

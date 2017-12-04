@@ -1,0 +1,234 @@
+reports/all_docs.ajm
+
+
+[comments]
+descr=U: Модуль выбора модуля вывода списка документов по типу документа
+
+input=
+output=HTML таблица документов
+parents=tab_allDocs
+childs=reports/all_docs_table
+testURL=?c=reports/all_docs
+author=Куняев, Яковлев
+[end]
+
+
+[parameters]
+request_name=U:Таблица документов
+NumTableCols=7
+contentLength=1000 ??
+LOG=ON
+[end]
+
+
+[report]
+$INCLUDE dat/common.dat[check login]
+$INCLUDE [report_] ??USER_ID
+[end]
+
+
+убрано по новым правилам:
+$SET_PARAMETERS f_div_id=#U_LAB_CODE#;  ??!f_div_id
+$SET_PARAMETERS f_div_id=#user_access_div#; ??user_access_div&!f_div_id
+
+
+[report_]
++++++++ сортировка таблицы по умолчанию ++++ ??
+$SET_PARAMETERS srt=dh.status; desc=; ??!srt
+$SET_PARAMETERS srn=1; rpp=20;  ??!srn
+$SET_PARAMETERS rpp=20; ??!rpp
+
+<style>td.label {padding-top:5px;}</style>
+
+srn=#srn#; rpp=#rpp#; ??
+$GET_DATA reports/all_docs.cfg[getFilters]
+$SET_PARAMETERS modul_table=reports/all_docs_table; ??!modul_table
+$SET_PARAMETERS modul_table=JINR/reports/zajavka_table; ??f_doc_type_id=1
+$SET_PARAMETERS modul_table=JINR/reports/dog_podr_table; ??f_doc_type_id=6
+$SET_PARAMETERS modul_table=JINR/reports/dog_post_table; ??f_doc_type_id=8|f_doc_type_id=11
+$CALL_SERVICE c=#modul_table#;
+
+<tr><td colspan=#NumTableCols# class="pager last">
+$INCLUDE dat/common.dat[rpp]  ??!NumTableRows=0
+<input type=hidden name="rpp" value="#rpp#"> ??NumTableRows=0
+</td></tr>
+</table>
+</div> <!-- filters_div -->
+
+<script type="text/javascript">
+    selectOptionByVal(document.theForm.f_doc_type_id,'#f_doc_type_id#'); ??f_doc_type_id
+    showSrt("#srt#","sup"); ??!desc&ajax
+    showSrt("#srt#","sdown"); ??desc&ajax
+
+    var goToRow=function(nr)
+    { 
+      document.theForm.srn.value=nr;  
+      log (2, "reports/all_docs.ajm.goToRow: srn=" + document.theForm.srn.value + "; rpp=" + getSelectedVal(document.theForm.rpp));
+      document.theForm.submit(); ??
+      submitForm(false);
+    }
+</script>
+[end]
+
+
+[filters table start]
++++++ Фильтры +++++ ??
+<div id="filters_div">
+<input type=hidden name="srn" value="#srn#"> 
+<input type=hidden name="srt" value="#srt#">
+<input type=hidden name="desc" value="#desc#">
+
+<table border=0 cellpadding=3 cellspacing=3 style="margin:20px 0 20px 100px; border:solid 1px white;">
+<tr><td class="nowrap label" nowrap>
+$INCLUDE dat/common.dat[f_year]
+
+Подразделение:</td><td><input type=hidden value="#f_div_id#" size="5" name="f_div_id">
+<input type=hidden value="#f_div#" name="f_div">
+<div id="f_div" class="info_input pt big bg_white" style="display: inline-block; width:120px; height:20px; border:solid 1px gray; " info_view="11" info_id="10">
+все ??!f_div
+#f_div#</div>
+
+$SET_PARAMETERS  SHOW_NICA=Y; ??USER_ID={{^10936$|^2309$|^4177$|^11291$|^10429$|^3305$}}
+$SET_PARAMETERS  SHOW_NICA=; ??f_doc_type_id&!f_doc_type_id=1
+<span class="pt bg_white" onClick='AjaxCall("all_docs", "c=reports/jinr_report_detailed", true);' style="margin-left:100px; border:solid 1px gray">Детализация по заявкам НИКА РФ >></span> ??SHOW_NICA
+</td></tr>
+
+<tr><td class="nowrap label" nowrap>
+Тип документа: </td><td><select name=f_doc_type_id class=norm 
+onChange='resetSort(); AjaxCall("all_docs", "c=reports/all_docs", true, "filters_div");' 
+><option value="">все</option>#DOC_TYPES_LIST#</select>
+
+№ документа: <input size="7" name="f_doc_number" value="#f_doc_number#">
+ID: <input size="7" name="f_doc_id" value="#f_doc_id#"> ??USER_ID=2309
+</td></tr>
+
+$SET_PARAMETERS f_stat=#f_stat#;
+<tr><td class=label style="white-space:nowrap;" nowrap>Статус:</td><td>
+<input type=radio name=f_stat value="-2" 
+checked ??f_stat=-2|!f_stat
+onClick="submitForm(true);">все
+<input type=radio name=f_stat value="1" 
+checked ??f_stat=1
+onClick="submitForm(true);">в процессе согласования
+<input type=radio name=f_stat value="2" 
+checked  ??f_stat=2
+onClick="submitForm(true);">на этапе завершения
+<input type=radio name=f_stat value="3" 
+checked  ??f_stat=3
+onClick="submitForm(true);">завершенные
+<input type=radio name=f_stat value="0" 
+checked  ??f_stat=0
+onClick="submitForm(true);">черновики<br>
+
+
+<input type=checkbox name=f_marked onClick='submitForm(true);'
+checked ??f_marked
+><i class="fa fa-flag 
+clr-red ??f_marked
+clr-gray ??!f_marked
+" aria-hidden="true"></i> только отмеченные
+</td></tr>
+
+<tr><td class=label style="white-space:nowrap;" nowrap>Дата создания:</td>
+<td>с <input class="f_date"  type="text" size=8 name="creation_date_1" value="#creation_date_1#"> 
+по <input class="f_date"  type="text" size=8 name="creation_date_2" value="#creation_date_2#"> 
+&nbsp;
+Дата изменения: с <input class="f_date"  type="text" size=8 name="modif_date_1" value="#modif_date_1#"> 
+по:<input class="f_date"  type="text" size=8 name="modif_date_2" value="#modif_date_2#"> 
+</td></tr>
+[end]
+
+
+
+[filters table end]
+++++++++++++++++++ кнопка +++++++++++++++++++++ ??
+<tr><td class="label">
+Искать текст:</td><td><input size=40 name="f_search" value="#f_search#"> &nbsp; 
+<div style="float:right;"><input type="submit" class="butt1 pt" style="width:100;" value="ОК"><div style="clear:both;"></div></td>
+<td class="pt" onClick="getXL('c=reports/all_docs_XL', 'filters_div');"><img src="/sed/images/XL.png"  width=24 height=24></td>
+</tr></table>
+
+<script type="text/javascript">
+try{
+ $(".f_date").datepick({yearRange: 'c-3:c+0', showSpeed: 'fast'});
+}
+catch (e) { console.log(" (.f_date).datepick: " + e);}
+</script>
+
+[end]
+
+
+===============================================================================
+===============================================================================
+===============================================================================
+[getFilters]
+select concat('<option value=', cast(id as char), '>', name, '</option>') as DOC_TYPES_LIST
+from d_types where is_active = 1 and group_id<98
+order by sort
+;
+select count(short_name) as num_divs from info_10 where id in(#f_div_id#) ??f_div_id
+select short_name as f_div from info_10 where id in(#f_div_id#) ??f_div_id&num_divs=1
+[end]
+
+
+
+[preSQLs]
+select modul_table from d_types where id=#f_doc_type_id#  ??f_doc_type_id
+[end]
+
+
+[criteria]
+left  ??!f_marked
+join d_marked dm on (dm.doc_id=dh.id and dm.user_id=#USER_ID#)
+left join d_types dtp on dtp.Id = dh.type_id
+left join #table_users_full# ucr on ucr.id=dh.creator_id 
+left join #table_users_full# umr on umr.id=dh.modifier_id 
+join d_divs dd on (dd.doc_id=dh.id and dd.div_id in(#f_div_id#)) ??f_div_id
+left join d_sent_FYI_count fyi on fyi.doc_id=dh.id and fyi.user_id=#USER_ID#
+left join wf_history_count wfh on wfh.doc_id=dh.id and wfh.user_id=#USER_ID# 
+    ??убрано из-за БАГА, когда валится рассылка в wf_history заносятся левые записи
+
+left join d_access a on(a.doc_id=dh.id and a.doc_version=dh.version and a.user_id=#USER_ID#) 
+
+where dtp.group_id<98
+and extract(year from dh.created) in(#f_year#) ??f_year&!f_year=ALL&!f_doc_id
+and dh.is_deleted=0  ??!f_doc_id&!f_doc_number
+    
+and dh.status in(#f_stat#) ??f_stat&!f_stat=-2
+and dh.status in(1,2,3) ??!f_doc_id&!f_stat|f_stat=-2
+and dh.NUMBER like '#f_doc_number#%' ??f_doc_number
+and dh.TYPE_ID = #f_doc_type_id# ??f_doc_type_id
+and dh.creator_id=#f_initiator_id# ??f_initiator_id
+and dh.id in(select doc_id from d_index where context like '%#f_search#%') ??f_search
+and dh.id=#f_doc_id# ??f_doc_id
+
+and dh.created > STR_TO_DATE('#creation_date_1#', '%d.%m.%Y')  ??creation_date_1
+and dh.created <= STR_TO_DATE('#creation_date_2#', '%d.%m.%Y')  ??creation_date_2
+and dh.modified > STR_TO_DATE('#modif_date_1#', '%d.%m.%Y')  ??modif_date_1
+and dh.modified <= STR_TO_DATE('#modif_date_2#', '%d.%m.%Y')  ??modif_date_2
+
+$INCLUDE reports/all_docs[access_filter] ??!FULL_READ_ACCESS=Y
+and (dh.is_confidential=0 or not fyi.cnt is null)
+[end]
+
+
+[access_filter]
+and (dh.creator_id=#USER_ID# or 
+dh.id in(select doc_id from p_permits where user_id=#USER_ID#
+and not rule_nr is null ??
+)  )
+[end]
+
+
+$INCLUDE reports/all_docs.cfg[old access_filter] ??!FULL_READ_ACCESS=Y&!AR_SYS_ADMIN=1&ZZZ
+
+[old access_filter]
+and (dh.creator_id=#USER_ID#
+    or dh.id in(select doc_id from d_divs where div_id in(#user_access_div#)) ??user_access_div
+    or not wfh.cnt is null 
+   ??убрано из-за БАГА, когда валится рассылка в wf_history заносятся левые записи
+    or not fyi.cnt is null
+  )
+[end]
+
+

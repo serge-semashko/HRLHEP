@@ -1,0 +1,48 @@
+JINR/reports/lzk_all_docs_table.ajm
+
+[comments]
+descr=U: Вывод списка старых заявок для ЛЗК (вывод самой таблицы)
+input=
+output=HTML таблица документов
+parents=reports/czk_docs
+childs=docs/view_doc
+author=Куняев
+[end]
+
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=U:Таблица заявок для ЦЗК
+LOG=ON 
+tableCfg=table_no
+
+    rowLink=|<a class=page href="javascript:goToRowA(#srn_i#);">#srn_i#-#ern_i#</a> ??!currentPage
+    rowLink=|<span class=actPage>#srn_i#-#ern_i#</span> ??currentPage
+    prevSetLink=<a class=page href="javascript:goToRowA(#srn_i#);"> <<< предыд. </a> 
+    nextSetLink=| <a class=page href="javascript:goToRowA(#srn_i#);"> следующие >>> </a>
+[end]
+
+
+[report header]
+    $INCLUDE dat/common.dat[check login]
+    $SET_PARAMETERS ZK=lzk;
+    $INCLUDE JINR/reports/czk_all_docs_table[OK report header]  ??USER_ID>0|USER_ID<0
+[end]
+
+
+[item]
+    $INCLUDE JINR/reports/czk_all_docs_table[item]
+[end]
+
+
+[report footer]
+    $INCLUDE JINR/reports/czk_all_docs_table[report footer]
+[end]
+
+
+***************************** Шаблон SQL запроса ***************************
+
+[SQL]
+    $INCLUDE JINR/reports/czk_all_docs_table[SQL]
+[end]
+

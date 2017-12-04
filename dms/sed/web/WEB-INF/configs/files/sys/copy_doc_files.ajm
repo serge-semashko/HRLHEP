@@ -1,0 +1,112 @@
+copy_doc_files.cfg
+
+[comments]
+descr=S: Копирование аттачментов к документу в другой документ
+input=src_doc_id=; dest_doc_id
+output=
+parents=docs/view_doc.cfg
+childs=docs/edit_doc
+test_URL=?c=files/sys/copy_doc_files&src_doc_id=562&dest_doc_id=617
+author=Куняев
+[end]
+
+
+[parameters]
+request_name=S:Копирование файлов
+service=dubna.walt.service.TableServiceSpecial
+tableCfg=table_no
+LOG=ON
+[end]
+
+
+[report header]
+[end]
+
+
+
+[item]
+$SET_PARAMETERS do_copy=Y;  ??!field_id
+$GET_DATA [check dest doc type]  ??field_id
+$GET_DATA [add file]  ??do_copy&!ERROR
+$COPY_FILE #file_storage_path##fs_file_name#; #file_storage_path##NEW_DOC_PATH#f#NEW_REC_ID#.#file_ext# ??do_copy&!ERROR
+$SET_PARAMETERS do_copy=; field_id=;
+[end]
+
+$COPY_FILE /home/serg/apache-tomcat-8.0.27/webapps/sed/WEB-INF/web.xml;  bbb.txt; bbb
+
+
+[report footer]
+$GET_DATA [commit] ??
+$INCLUDE [err msg] ??ERROR
+[end]
+
+[err msg]
+$LOG_ERROR #ERROR#  ??ERROR
+<script>
+alert ("Ошибка при копировании файлов документа: #ERROR#");
+</script>
+$SET_PARAMETERS ERROR=;
+[end]
+
+
+[preSQLs]
+select type_id as "dest_type_id" from d_list where id=#dest_doc_id#
+;
+lock tables doc_files write, d_data_#dest_type_id# write; ??лочилось и неразлочивалось
+START TRANSACTION; ??
+[end]
+
+[check dest doc type]
+select 'Y' as "do_copy" from d_fields where type_id=#dest_type_id# and field_db_name='#field_id#'
+[end]
+
+
+[SQL]
+    select id as "SRC_REC_ID"
+        , norder ??
+        , file_name, comment
+        , file_ext, file_content_type, file_size
+        , DATE_FORMAT(upload_date,'#dateTimeSecFormat#') as "upload_date"
+        , fs_file_name, field_id, uploader_id
+    from doc_files
+    where doc_id=#src_doc_id#
+        and is_deleted=0
+[end]
+
+[get new file path]
+
+
+
+
+[end]
+
+
+[add file]
+select concat(date_format(d.created,'%Y/%m'), '/#doc_id#/') as "NEW_DOC_PATH"
+, IFNULL(max(f.norder)+1,0) as new_norder
+from d_list d 
+  left join doc_files f on f.doc_id=d.id
+where d.id = #dest_doc_id#
+and f.field_id='#field_id#' ??field_id
+and f.field_id is null      ??!field_id
+;
+insert into doc_files(doc_id, norder, file_name, comment, file_ext, file_content_type, file_size, uploader_id
+, upload_date, field_id)
+values (#dest_doc_id#, #new_norder#, '#file_name#', '#comment#', '#file_ext#', '#file_content_type#', #file_size#, #uploader_id#
+, STR_TO_DATE('#upload_date#', '#dateTimeSecFormat#')
+, '#field_id#' ??field_id
+, null ??!field_id
+);
+select LAST_INSERT_ID() as "NEW_REC_ID"
+;
+update doc_files set fs_file_name='#NEW_DOC_PATH#f#NEW_REC_ID#.#file_ext#' where id=#NEW_REC_ID#
+;
+update d_data_#dest_type_id# set #field_id#_id=#NEW_REC_ID# where doc_id=#dest_doc_id# ??field_id
+[end]
+
+
+[zzzcommit] 
+COMMIT;   ??!ERROR
+ROLLBACK;  ??ERROR
+unlock tables; 
+[end]

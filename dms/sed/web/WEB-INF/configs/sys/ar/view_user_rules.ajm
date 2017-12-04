@@ -1,0 +1,141 @@
+sys/ar/view_user_rules.cfg
+
+[comments]
+    descr=A: Список правил пользователя 
+    input=user_person_id
+    parents=sys/ar/set_user_rules.cfg      
+    author=Куняев
+[end]
+
+
+[description]
+   
+[end]
+
+
+[parameters]
+    service=dubna.walt.service.TableServiceSpecial
+    tableCfg=table_no
+    LOG=ON
+[end]
+
+
+[report header]
+$STORE_PARAMETERS
+    $GET_DATA sys/ar/edit_rule_form.cfg[get admin info]     ??!AR_SYS_ADMIN=1
+    $GET_DATA sys/ar/edit_rule_form.cfg[get admin criteria]  ??ADMIN_DIVISION
+
+    $GET_DATA [delete rule]  ??cop=del
+    $GET_DATA sys/ar/save_user_rule.cfg[schedule set_user_permits]   ??cop=del
+
+    $SET_PARAMETERS RULE_SERIAL_NUMBER=1; srn=1; pp=9999; HAS_RULES=;
+
+    $GET_DATA sys/ar/view_user_rules_RO.cfg[check has rules]
+    $GET_DATA sys/ar/view_user_rules_RO.cfg[check full access] ??HAS_RULES
+
+    <input size=5 type=hidden name="user_person_id" value="#user_person_id#"> 
+    <center><table class="trules" border=0 cellspacing=0 cellpadding=5>  
+    $INCLUDE [no spec permits]  ??!HAS_RULES
+[end]
+
+[no spec permits]
+    $CALL_SERVICE c=svs/get_user_info; requested_user_id=#user_person_id#;
+    <tr><td colspan=4>#u_IOF# не имеет дополнительных прав доступа</td></tr> 
+[end]
+
+[item]
+    $SET_PARAMETERS RULE_RW=;
+    $SET_PARAMETERS RULE_RW=Y; ??AR_SYS_ADMIN=1
+    $GET_DATA sys/ar/edit_rule_form.cfg[check rule RW]  ??!AR_SYS_ADMIN=1
+    <tr id="tr_#rule_nr#" class="tr_rule"> 
+    <td class="right">Правило&nbsp;#RULE_SERIAL_NUMBER#:</td>
+    <td 
+        class="pt" onClick='editRule("#rule_nr#");'  ??RULE_RW=Y
+        > 
+        $CALL_SERVICE c=sys/ar/view_user_rule;
+    </td>
+
+    <td>
+        $INCLUDE [controls]  ??RULE_RW=Y
+    </td></tr>
+
+    <tr><td colspan="3" class="right small">#CREATOR#, #CREATED#<hr></td></tr>
+
+    $SET_PARAMETERS FIRST_LINE=; OLD_RULE_NR=#rule_nr#; deleteDisabled=; 
+    $GET_DATA [get new rule sn] 
+[end] 
+
+
+[controls]
+    <div class="controls">
+    <span class="pt bg_white" onClick='editRule("#rule_nr#");'>
+    <i class="fa fa-pencil-square-o" aria-hidden="true"></i> изменить</span>
+    &nbsp;
+
+    <span class="pt bg_white" onClick="removeRule(#rule_nr#, '#rule_text#');">
+    <span class="delcross">X</span>&nbsp;удалить</span> 
+    </div>
+[end]
+
+
+[report footer] 
+    <b>ПОЛНЫЙ ДОСТУП</b> &nbsp; ??FULL_ACCESS
+    $SET_PARAMETERS FULL_ACCESS=;  ??!AR_SYS_ADMIN=1
+    <span class="pt" onClick="removeRule(0, 'Полный доступ');";"><span class="delcross">X</span>&nbsp;убрать&nbsp;полный&nbsp;доступ</span>  ??FULL_ACCESS
+</td></tr>
+</table>
+
+
+<div id="rule_form" style="text-align:right; border:none 1px green;">
+   <input type="button" class="butt1 pt addButton" style="width:150;" 
+    value="Добавить правило" 
+    onClick='AjaxCall("rule_form", "c=sys/ar/edit_rule_form&user_person_id=#user_person_id#");'> 
+</div>
+
+<div class="addButton"> <i class="fa fa-info-circle green big" aria-hidden="true"></i> <i>Права доступа будут обновлены в течение 2-x минут</i></div> ??cop
+
+<script type="text/javascript">
+    document.theForm.submit(); ??cop
+
+var removeRule=function(rule_nr, rule_text){
+    if(confirm('Удалить правило доступа:\n\r' + rule_text + '?')) 
+        AjaxCall('rules_list', 'c=sys/ar/view_user_rules&cop=del&user_person_id=#user_person_id#&rule_nr=' + rule_nr);
+}
+
+var editRule=function(rule_nr){
+    $(".tr_rule").removeClass("sel"); 
+    $("##tr_" + rule_nr).addClass("sel"); 
+    AjaxCall("rule_form", "c=sys/ar/edit_rule_form&user_person_id=#user_person_id#&rule_nr=" + rule_nr);
+}
+</script>
+
+$RESTORE_PARAMETERS
+[end]
+
+
+
+***************************** Шаблоны SQL запросов ***************************
+
+
+[SQL]
+    $INCLUDE [SQL_]   ??!FULL_ACCESS
+[end]
+
+
+[SQL_]
+    select distinct ur.rule_nr
+    from p_user_rule ur
+    where ur.USER_ID=#user_person_id#
+    order by ur.rule_nr
+[end]
+
+
+
+[get new rule sn]   ***** очередной номер правила
+    select #RULE_SERIAL_NUMBER# + 1 as "RULE_SERIAL_NUMBER"
+[end]
+
+
+[delete rule]
+    delete from p_user_rule where user_id=#user_person_id# and rule_nr=#rule_nr#
+[end]

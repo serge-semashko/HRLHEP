@@ -1,0 +1,56 @@
+[parameters]
+lightColor=efefef
+darkColor=666666
+lightGreenColor=eeffee
+lightBlueColor=e0e0ff
+darkBlueColor=224490
+inputColor=eff6ff
+filesColor=whitesmoke
+headerColor=e0f0e8
+anchorColor=darkblue
+anchorHoverColor=blue
+
+LabelTD=</tr><tr><TD class=l nowrap=true>
+DataTD=</td><td class=d>
+
+mark_before=<font color=D00000><b><i>
+mark_after=</i></b></font>
+
+table_tree=tree_nica
+[end]
+
+
+[head]
+<HTML><HEAD><TITLE>#title#</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=windows-1251">
+<link rel="stylesheet" href="#cssPath#adb.css" type="text/css">
+	<style type="text/css">
+  select {border: 10px solid;} 
+	</style>
+
+<SCRIPT language=JavaScript src="#jsPath#lib.js"></SCRIPT>
+<script>
+function img_act(imgName){document[imgName].src="#imgPath#blues2.gif";}
+function img_inact(imgName){document[imgName].src="#imgPath#blues1.gif";}
+</script></HEAD>
+[end]
+
+[report header]
+<HTML><HEAD><TITLE>#title#</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=windows-1251">
+<link rel="stylesheet" href="#cssPath#bp.css" type="text/css">
+<SCRIPT language=JavaScript src="#jsPath#lib.js"></SCRIPT>
+<script>
+function img_act(imgName){document[imgName].src="#imgPath#blues2.gif";}
+function img_inact(imgName){document[imgName].src="#imgPath#blues1.gif";}
+</script></HEAD><body BACKGROUND="#imgPath#B_n.gif">
+[end]
+
+[menu item] param: text; nam; href; frame=CONT;
+<A class=toc href="#href#" onMouseover="top.img_act('#nam#','#frame#')" onMouseout="top.img_inact('#nam#','#frame#')">
+<IMG class=toc1 SRC="#imgPath#blues1.gif" NAME="#nam#"> #text#</A>
+[end]
+
+<div class=toc onClick="#href#" onMouseover="top.img_act('#nam#','#frame#')" onMouseout="top.img_inact('#nam#','#frame#')">
+<IMG class=toc SRC="#imgPath#blues1.gif" NAME="#nam#"> #text#</div>
+

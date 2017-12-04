@@ -1,0 +1,142 @@
+[searchBox]
+<table border=0 bgcolor=whitesmoke><tr><td nowrap=true>
+<FIELDSET><LEGEND>Поиск:</LEGEND>
+<table border=0>
+$INCLUDE info/bc/search.dat[year select]    
+ ??q_yr=#CURR_YR#&!cop|is_select=y
+
+<tr><td nowrap=true align=right>
+&nbsp;Раздел бюджета:</td><td nowrap=true><select name=f_razd onChange="setRazdel();"><option> #RAZDS#</select>&nbsp;&nbsp;
+Направление: <select name=f_dir><option> #DIRS#</select>&nbsp;&nbsp;
+</td></tr>
+<tr><td align=right >
+Лаборатория:</td><td><select class=s1 name=f_lab><option> #LABS#</select>&nbsp;
+<input type=hidden name="notFirst" value='y'> &nbsp; 
+Ответственный: <input class=xp size=20 name="f_resp" value='#f_resp#'>&nbsp;&nbsp;
+</td></tr>
+<tr><td align=right>
+Тема: </td><td><input class=xp size=5 name="f_sbj" value='#f_sbj#'>&nbsp;&nbsp;
+Бюджетный код: <input class=xp size=5 name="f_bc" value='#f_bc#'>&nbsp;&nbsp;
+
+$SET_PARAMETERS f_status=A; ??thisYearOnly=y
+
+Статус: <select name=f_status
+disabled ??thisYearOnly=y
+><option value="A">Активный
+<option value="I">Неактивный
+<option value="D">Удаленный
+<option value="">Все
+</select>
+
+</td></tr>
+<tr><td align=right>
+Приказ: </td><td>
+<input size=5 class=xp name="f_prikaz" value='#f_prikaz#'>&nbsp;&nbsp;
+
+<input type="radio" name="is_prikaz" value="n" onClick="doIt();"
+checked  ??is_prikaz=n|q_yrc=#CURR_YR#
+disabled_ ??q_yrc&!q_yrc=#CURR_YR#&!q_yrc=#NEXT_YR#&!q_yrc=2008
+>Кроме приказов
+<input type="radio" name="is_prikaz" value="y" onClick="doIt();"
+checked  ??is_prikaz=y
+>Только приказы
+<input type="radio" name="is_prikaz" value="v" onClick="doIt();"
+checked  ??is_prikaz=v
+>Внебюджет
+<input type="radio" name="is_prikaz" value="" onClick="doIt();"
+checked  ??!is_prikaz
+>Все коды
+</td></tr>
+<tr><td align=right nowrap=true>
+Искать где-либо текст:</td>
+<td><input class=xp size=40 name="f_search" value='#f_search#'>&nbsp;&nbsp;
+&nbsp;&nbsp;<input type=submit class=but value="Искать">&nbsp;&nbsp;
+onClick="doIt();"  ??
+<br><input type=checkbox name="sort_date"
+checked ??sort_date=on
+> сортировать по дате изменения
+</td></tr></table>
+</FIELDSET></td></tr></table>
+$SET_PARAMETERS f_lab=#A_LABS#  ??A_LABS&!f_lab&!notFirst&!f_bc
+$SET_PARAMETERS A_LABS=  ??uname=usova
+<script>
+selectOptionByVal(frm.f_lab,'#f_lab#')  ??f_lab
+selectOptionByVal(frm.f_lab,'#A_LABS#') ??xxx ??A_LABS&!f_lab&!notFirst
+selectOptionByVal(frm.f_dir,'#f_dir#')  ??f_dir
+selectOptionByVal(frm.f_razd,'#f_razd#')  ??f_razd
+selectOptionByVal(frm.f_status, '#f_status#');  
+ ??f_status
+selectOptionByVal(frm.f_status, '');  ??xxx!f_status
+function setRazdel(){
+alert(getSelectedVal(frm.f_razd)); ??
+if(getSelectedVal(frm.f_razd) == 2) {
+frm.is_prikaz[2].checked=true;
+frm.submit();
+}
+}
+</script>
+[end]
+
+[year select]
+$SET_PARAMETERS is_prikaz=#is_prikaz_#; ??is_prikaz_
+$SET_PARAMETERS f_year=#q_yrc#; ??!f_year
+$SET_PARAMETERS is_prikaz=y ??q_yrc&!q_yrc=#CURR_YR#&!q_yrc=#NEXT_YR#&ZZZZZ
+
+<tr><td nowrap=true align=right>
+<input type=hidden name="thisYearOnly" value='#thisYearOnly#'>
+<input type=hidden name=is_select value="y">
+<input type=hidden name=is_prikaz_ value="">
+
+&nbsp;<b>Год:</b></td><td nowrap=true>
+<select name=f_year onChange="setYear();">
+<option value="18">2018
+<option value="17">2017
+<option value="16">2016
+<option value="15">2015
+<option value="14">2014
+<option value="13">2013
+<option value="12">2012
+<option value="11">2011
+<option value="10">2010
+<option value="09">2009
+<option value="08">2008
+<option value="07">2007
+<option value="06">2006</select>
+<script>
+
+selectOptionByVal(document.theForm.f_year,'#f_year#')  ??f_year
+
+function setYear()
+{ var yr = getSelectedVal(document.theForm.f_year);
+  if (yr != "#CURR_YR#" && yr != "#NEXT_YR#")
+    document.theForm.is_prikaz[1].checked=true;
+  else
+  { 
+    document.theForm.is_prikaz[3].checked=true; ??
+    document.theForm.is_prikaz_.value="n"; ??
+  }
+  setCookie("yrc", yr);
+  doIt(); ??
+}
+</script>
+</td></tr>
+[end]
+
+[search criteria]
+and (upper(b.NAME_SHORT) like upper('%#f_search#%') or upper(b.NAME) like upper('%#f_search#%') ??f_search
+ or upper(s.des) like upper('%#f_search#%') or upper(b.des) like upper('%#f_search#%')  ??f_search
+ or b.SBJ_CODE like '%#f_search#' or upper(p.resp) like upper('%#f_search#%') ??f_search
+  or b.code like '%#f_search#' or l.div like upper('%#f_search#%')) ??f_search
+and upper(p.resp) like upper('%#f_resp#%') ??f_resp
+and b.SBJ_CODE like '%#f_sbj#'  ??f_sbj&!is_prikaz=v
+and b.code like '%#f_bc#'  ??f_bc
+and b.LAB_CODE='#f_lab#'    ??f_lab
+and b.DIR_CODE='#f_dir#'    ??f_dir
+and (b.ROOT_ID=#f_razd# or b.ROOT_ID in (select id from #table_tree# where pid=#f_razd#) )    ??f_razd
+and b.STATUS='#f_status#' 	??f_status
+and b.prikaz_id is not null and z.ISBUDGET=1 ??is_prikaz=y
+and (b.prikaz_id is not null and z.ISBUDGET=0 or b.ROOT_ID=2) ??is_prikaz=v
+and b.prikaz_id is null and  b.ROOT_ID<>2 	??is_prikaz=n
+and z.num=#f_prikaz#  ??f_prikaz
+[end]
+

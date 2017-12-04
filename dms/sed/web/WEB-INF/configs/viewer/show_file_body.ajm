@@ -1,0 +1,159 @@
+viewer/show_file_body.ajm
+
+[comments]
+descr=U: Постраничный просмотр растеризованного файла по его id
+input=file_id - id файла из таблицы doc_files
+output=Отдельное окно простмотра файла 
+parents=files/file_list.cfg
+children=viewer/page_image.cfg
+testURL=?c=viewer/show_file&id=662
+author=Куняев
+[end]
+
+[description]
+Проверяет права доступа, выводит общую структуры страницы вьювера и вызывает модули отдельных блоков:
+<ul>
+<li>viewer/show_page.cfg - отображение активной страницы в середине окна</li>
+<li>viewer/show_thumbnails - отображение thumbnails слева (через AJAX)</li>
+</ul>
+[end]
+
+
+[parameters]
+LOG=ON
+[end]
+
+[report]
+$GET_DATA [get file param]
+
+
+$CALL_SERVICE c=viewer/check_AR; 
+$SET_PARAMETERS ERROR=Файл не найден!; ??!doc_id
+$LOG1 <b>============== view_doc: doc_id=#doc_id#; USER_ID=#USER_ID#; AR_C=#AR_C#; ==================</b><br>
+
+$SET_PARAMETERS ERROR=Нет прав для просмотра файла!; ??!AR_R=Y
+
+$INCLUDE [content] ??!ERROR
+<br><br><center>#ERROR#</center> ??ERROR
+$GET_DATA [register error] ??ERROR
+[end]
+
+[content]
+    $INCLUDE [check file status] ??NUM_PAGES=0&!is_deleted=1
+    $SET_PARAMETERS active_page_id=0;  ??!active_page_id
+
+    $INCLUDE viewer/common_blocks.dat[css small screen] ??q_smallScreen=true
+    $INCLUDE viewer/common_blocks.dat[css big screen] ??!q_smallScreen=true
+
+    $INCLUDE viewer/common_blocks.dat[feedback] *** Кнопка "Обратная связь" 
+    $INCLUDE viewer/common_blocks.dat[toolbar]  *** Тулбар с кнопками добавления замечаний   ??AR_C=Y
+
+    <div id="commonForm">
+    <center> 
+        <table border=0 cellspacing="0" style="margin:-7px 0 0 0;">
+            <input type="hidden" name="file_id" value="#file_id#">
+
+            <tr>
+              <td></td><td colspan=2 > ??!q_smallScreen=true&ZZZ
+              <td colspan=3 >
+               ??q_smallScreen=true
+                  $INCLUDE viewer/common_blocks.dat[file description]
+            NUM_MARKUPS=#NUM_MARKUPS#; ??
+              </td>
+            </tr>  
+
+            <tr><td id="thumbnails"><br>
+            <div id="page_#page_id#" class="thumb"><img src="#imgPath#loading.gif" style="margin:20px 10px 60px 30px; width:32px;""></div>#p_nr#</div>  ??!is_deleted=1
+            </td>
+
+            <td id="page_content">
+                $INCLUDE [FILE DELELED ERROR]  ??is_deleted=1
+                $CALL_SERVICE c=viewer/show_page  ??!PREPARING&!ERROR&!is_deleted=1
+                $INCLUDE [preparing] ??PREPARING
+                $INCLUDE [CONVERT REQUEST ERROR] ??!is_deleted=1&!PREPARING&ERROR|NUM_MARKUPS>0
+            </td>
+
+            <td><div id="page_comments"></div></td>
+
+            </tr>
+        </table>
+
+        $INCLUDE viewer/common_blocks.dat[helper blocks]  *** Скрытые вспомогательные <div> (диалоговое окно, справка)  
+        </center> 
+    </div>
+
+    $INCLUDE viewer/common_blocks.dat[feedback form]  *** Заготовка формы обратной связи
+
+[end]
+
+
+[check file status]
+    $GET_DATA [check file sent]
+    $CALL_SERVICE c=files/sys/sendConvertRequest; verbose=3; ??OLD_REQUEST|!SENT=#doc_id#
+    $SET_PARAMETERS PREPARING=Y;  ??!ERROR
+[end]
+
+[preparing]
+    <div class="big" style="margin:40px;"><b>Подготовка файла...</b></div>
+    страниц:#num_pages#; результат:#responce#; док:#SENT#;
+    <script type="text/javascript">
+        var refr=function(){location.reload(true); }
+        window.setTimeout(refr,5000); 
+    </script>
+[end]
+
+[CONVERT REQUEST ERROR]
+    <div class="big" style="margin:40px;"><b>Системная ошибка подготовки файла.</b>
+    </div>
+[end]
+
+[FILE DELELED ERROR]
+    <div class="big" style="margin:40px;"><b>Файл был удален.</b>
+    </div>
+    $SET_PARAMETERS ERROR=файл удален;
+[end]
+
+================================================================================
+
+[check file sent]
+    select num_pages, responce, doc_id as "SENT", errors as ERROR
+        , case when sent < date_sub(now(), INTERVAL 11 MINUTE) then 'Y' else '' end as "OLD_REQUEST"
+    from doc_file_convert
+    where file_id=#file_id#
+    ;
+    select count(*) as NUM_MARKUPS from doc_data_markups where file_id=#file_id# 
+[end]
+
+     
+
+[get file param]
+    SELECT f.doc_id, f.file_name, f.comment, format_filesize(file_size) as "file_size"
+      , f.uploader_id, date_format(f.upload_date,'%d.%m.%Y  %H:%i') as "upload_date"
+      , u.FIO, f.is_deleted
+      , t.name as "DOC_TYPE", d.number, date_format(d.doc_date,'%d.%m.%y') as doc_date, d.title
+    from doc_files f
+        join d_list d on d.id=f.doc_id
+        join d_types t on t.id=d.type_id
+        left join #table_users_full# u on u.id=f.uploader_id
+    where f.id = #file_id#
+    ;
+    select /* общее кол-во страниц у файла */
+        count(*) as "NUM_PAGES"
+    from doc_file_pages
+    where file_id=#file_id#
+    ;
+    select id as "active_page_id"
+    from doc_file_pages p 
+    where file_id=#file_id#
+    order by page_nr
+    limit 1
+[end]
+
+[register error]
+insert into a_req_log 
+(USER_ID, C, REQUEST_NAME, QUERY, DOC_ID,  ERR
+, DAT, IP, USER_AGENT, REF, SESS_ID, SESS, DID, TIM) 
+values (0#USER_ID#, '#c#', 'Просмотр файла', '#queryString#', 0#doc_id#, '#ERROR#'
+, NOW(), '#ClientIP#', '#h_user-agent#', '#h_referer#', '#SESS_ID#', '#q_JSESSIONID#', '#q_cwldid#', 0)
+[end]
+

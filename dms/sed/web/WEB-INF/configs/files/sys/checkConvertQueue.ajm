@@ -1,0 +1,39 @@
+files/sys/checkConvertQueue.cfg
+
+process_queue.cfg
+
+[comments]
+descr=S: Посылка объектов из очереди всем приемникам
+test_URL=
+author=Куняев
+[end]
+
+[parameters]
+request_name=S:Обработка очереди на конвертирование файлов
+service=jinr.sed.ServiceFile
+LOG=ON
+[end]
+
+[description]
+Обработка очереди (рассылка) process_queue.cfg
+
+1. Модуль стартуется из jinr.sed.tools.ConvertMonitor
+2. Селектит из БД (convert_queue) очередной файл, ожидающий конвертирования
+3. В цикле по получателям вызывается модуль process_client.cfg 
+[end]
+
+
+[report]
+$LOG1 <hr> process_queue.cfg STARTED!<br>
+$GET_DATA [get receivers]
+$LOG2 RECEIVER_IDS=#RECEIVER_IDS#; <br>
+$EXECUTE_LOOP RECEIVER_ID; #RECEIVER_IDS#; [process client] ??RECEIVER_IDS
+$SET_PARAMETERS_GLOBAL checkAgain=true;  ??RECEIVER_IDS
+$SET_PARAMETERS_GLOBAL checkAgain=false;  ??!RECEIVER_IDS
+[end]
+
+
+[process client]
+$LOG2 RECEIVER_ID=#RECEIVER_ID#: <br>
+$CALL_SERVICE c=process_client
+[end]

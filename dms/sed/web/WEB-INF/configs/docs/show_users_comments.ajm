@@ -1,0 +1,108 @@
+docs/show_users_comments.cfg
+
+[comments]
+descr=S: Показать комментарии пользователей к документу
+
+input=doc_id - ID документа
+output=часть HTML-таблички с комментариями пользователей.
+parent=docs/view_doc.cfg
+childs=
+testURL=
+author=Куняев
+[end]
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=U:comments 4 doc.#doc_id#
+tableCfg=table_no
+LOG=OFF
+st=style="border-bottom:solid 1px gray&##59" ??
+st=style="border-bottom:dotted 1px gray;"
+divider=<tr><td colspan=2 class="divider"></td></tr>
+[end]
+
+
+
+[report header]
+$GET_DATA [check users comments] 
+$SET_PARAMETERS mode=view; ??!mode
+$INCLUDE [title_#mode#] ??NUM_USERS_COMMENTS>0
+[end]
+
+[title_view]
+#divider# ??
+<tr><td class="label"><b>Комментарии пользователей:</b></td></tr>
+[end]
+
+[title_edit]
+#divider#
+#divider# ??
+<tr><td class="label">Комментарии пользователей:</td></tr>
+[end]
+
+[item]
+<tr><td class="label" style="padding-right:5px;">#FIO#, <small>#DAT#
+<br>(на этапе согласования)    ??comment_type=0
+<br>(при посылке для ознакомления)    ??comment_type=1
+<br>(инициатор)    ??comment_type=3
+<br>(на этапе утверждения)    ??comment_type=4
+<br>(на этапе завершения)    ??comment_type=5
+</small></td>
+<td class="big bg_white" #st#>
+$GET_DATA [get receivers] ??!receiver_ids=0&!receiver_ids=,,
+<div class="mw800 pre-wrap">#COMMENTS#
+<small><i>(=> #RECEIVERS#)</i></small> ??RECEIVERS
+</td></tr>
+$SET_PARAMETERS DAT=; FIO=; COMMENTS=; RECEIVERS=;
+[end]
+
+[report footer]
+#divider#    ??mode=edit&NUM_USERS_COMMENTS>0
+
+$INCLUDE [comment input form] ??!mode=edit&!mode=print&!mode=ext
+++++ Режим mode=ext введен для режима внешнего просмотра документа ++++++ ??
+
+#ERROR#
+[end]
+
+[comment input form]
+<tr><td class="label" id="u_comment_label"></td><td  class="big" id="user_comment">
+
+<input type="button" id="add_comment_button" class="butt1 pt" style="width:200; margin-left:-5px;" 
+value='Добавить комментарий' onClick="$('##comment_form').show(200); $('##add_comment_button').hide();">
+
+<div id="comment_form" style="display:none; width:600pt; ">
+<textarea name="user_comment" style="width:600pt; height:70pt;" rows="5" ></textarea>
+<div style="text-align:center; margin:5px;">
+<input type="button" class="butt1 pt" style="width:80; margin-right:10px;" 
+value='OK' onClick="$('##u_comment_label').html('<span class=bg_white>#user_IOF#</span>'); AjaxCall('user_comment', 'c=docs/add_comment_for_doc&doc_id=#doc_id#', true, 'user_comment')"
+><input type="button" id="add_comment_button" class="butt1 pt" style="width:80;" 
+value='Отмена' onClick="$('##comment_form').hide(200); $('##add_comment_button').show();">
+</div>
+</div>
+</td></tr> 
+[end]
+
+==============================================================
+==============================================================
+==============================================================
+[check users comments]
+select count(id) as NUM_USERS_COMMENTS from d_comments where doc_id=#doc_id#;
+[end]
+
+[get receivers]
+select group_concat(iof(F,I,O)) as "RECEIVERS" from a_users_jinr where id in(0#receiver_ids#0);
+[end]
+
+[SQL]
+select DATE_FORMAT(c.dat,'#dateTimeFormat#') as DAT
+, c.user_id, iof(u.F, u.I, u.O) as FIO, c.comment_type
+, c.comment as COMMENTS, receiver_ids
+from d_comments c
+left join #table_users_full# u on u.Id = c.user_id
+where c.doc_id=#doc_id#
+and (receiver_ids='0' or receiver_ids=',,' or receiver_ids like('%,#USER_ID#,%') or user_id=#USER_ID#) 
+order by c.dat
+[end]
+
+

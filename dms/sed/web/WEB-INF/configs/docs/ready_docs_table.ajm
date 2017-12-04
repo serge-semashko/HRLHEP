@@ -1,0 +1,156 @@
+ready_docs_table
+[comments]
+descr=U: Модуль вывода списка документов (вывод самой таблицы) Вызывается из tab_myDocs (Submit)
+
+input=
+output=HTML таблица документов
+parents=tab_myDocs
+childs=docs/edit_document
+testURL=?c=docs/ready_docs_table
+author=Яковлев, Куняев
+[end]
+
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=U:Список документов
+LOG=ON 
+tableCfg=table_no
+$INCLUDE dat/common.dat[rowLinks]
+[end]
+
+
+[report header]
+$INCLUDE dat/common.dat[check login]
+$INCLUDE [OK report header]  ??USER_ID>0|USER_ID<0
+[end]
+
+
+[OK report header]
++++++++ сортировка таблицы по умолчанию ++++ ??
+
+$SET_PARAMETERS srt=dh.STATUS; desc=; ??!srt
++++++++ начальная строка и кол-во строк на странице по умолчанию ++++ ??
+$SET_PARAMETERS srn=1; rpp=100000;  ??!srn
+
+<div id="result_table"> ??!ajax
+#c# ??debug=on                   
+user_access_div=#user_access_div#; ??                              	
+<input type=hidden name="srn" value="#srn#"> 
+<input type=hidden name="srt" value="#srt#">
+<input type=hidden name="desc" value="#desc#">
+
+++++++++++++++++++ Шапка таблицы документов +++++++++++++++++++++ ??
+<table class="tlist tgreen" cellspacing=0>
+<tr>
+<th class="srh" sr="dh.ID">
+id ??AR_DEV=1
+</th> 
+<th class="srh" sr="dh.TYPE_ID">Документ</th>
+<th class="srh" sr="dh.TITLE">Содержание</th>
+<th class="srh" sr="dh.DIVS">Подразд.</th>
+<th class="srh" sr="dh.created">Создан</th> 
+<th class="srh" sr="dh.modified">Завершен</th> 
+
+</tr>
+[end]
+
+[item]
+++++++++++++++++++ Строка таблицы - 1 документ +++++++++++++++++++++ ??
+<tr class="pt
+oddRow ??oddRow=1
+" onClick="AjaxCall('c_myDocs', 'c=docs/view_doc&doc_id=#ID#');">
+
+<td style="padding:0;">
+#ID# ??AR_DEV=1
+<img src="#imgPath#info_16.png" width=16 height=16> ??cnt>0&!hist_cnt>0
+</td> 
+<td>#DOC_TYPE#
+№#NUMBER#  ??NUMBER
+от #DOC_DATE#  ??DOC_DATE
+</td> 
+<td>#TITLE#</td>
+<td>#DIVS#</td>
+<td>#CREATED#, #CREATOR#</td> 
+<td>#MODIFIED#, #MODIFIER#</td> 
+</tr>
+[end]
+
+
+[report footer]
+<tr><td colspan=6 class="label last"> </td></tr> ??
+<tr><td colspan=6 class="pager last">
+$INCLUDE dat/common.dat[rpp]  ??!NumTableRows=0
+<input type=hidden name="rpp" value="#rpp#"> ??NumTableRows=0
+</td></tr>
+</table>
+$INCLUDE [return result] ??!ajax
+[end]
+
+[return result]
+</div>  
+<script>
+alert("content_table = " + document.getElementById("result_table").innerHTML); ??
+window.parent.getResult("ready_docs_table", document.getElementById("result_table"));
+alert("DONE!"); ??
+window.parent.setModule("docs/ready_docs_table");
+--------- Отображение сортировки в заголовке таблицы ----- ??
+window.parent.showSrt("#srt#","sup"); ??!desc
+window.parent.showSrt("#srt#","sdown"); ??desc
+</script>
+[end]
+
+***************************** Шаблон SQL запроса ***************************
+
+[count docs]
+select count(dh.ID) as NUM_READY_DOCS
+$INCLUDE docs/ready_docs_table.cfg[access criteria]
+and dh.status in(3)
+[end]
+
+
+[SQL]
+select
+dh.ID, dh.TYPE_ID, dtp.NAME AS DOC_TYPE
+, dh.NUMBER, dh.TITLE, dh.STATUS, dh.DIVS
+, DATE_FORMAT(dh.doc_date,'#dateFormat#') as DOC_DATE 
+, DATE_FORMAT(dh.created,'#dateFormat#') as CREATED 
+, dh.creator_id
+, concat(ucr.F, ' ', left(IFNULL(ucr.I,''),1), '.', left(IFNULL(ucr.O,''),1),'.') as CREATOR
+, DATE_FORMAT(dh.modified,'#dateFormat#') as MODIFIED
+, dh.modifier_id 
+, concat(umr.F, ' ', left(IFNULL(umr.I,''),1), '.', left(IFNULL(umr.O,''),1),'.') as MODIFIER
+, fyi.cnt, wfh.cnt as hist_cnt
+$INCLUDE docs/ready_docs_table.cfg[access criteria]
+and dh.status in(3)
+and dh.NUMBER like '#f_doc_number#%' ??f_doc_number
+and dh.TYPE_ID = #f_doc_type_id# ??f_doc_type_id
+and dh.creator_id=#f_initiator_id# ??f_initiator_id
+and dh.TITLE like '#f_search#%' ??f_search_ZZZ
+and dh.id in(select doc_id from d_index where context like '%#f_search#%') ??f_search
+
+order by #srt# #desc#, dh.modified desc
+[end]
+
+[access criteria]
+from d_list dh
+left join d_types dtp on dtp.Id = dh.type_id
+left join #table_users_full# ucr on ucr.id=dh.creator_id 
+left join #table_users_full# umr on umr.id=dh.modifier_id 
+join d_divs dd on (dd.doc_id=dh.id and dd.div_id=#f_div_id#) ??f_div_id
+left join d_sent_FYI_count fyi on fyi.doc_id=dh.id and fyi.user_id=#USER_ID#
+left join wf_history_count wfh on wfh.doc_id=dh.id and wfh.user_id=#USER_ID#
+where dh.is_deleted=0 
+
+$INCLUDE docs/ready_docs_table[access_filter] ??!FULL_READ_ACCESS=Y
+[end]
+
+[access_filter]
+and (dh.creator_id=#USER_ID#
+    or dh.id in(select doc_id from d_divs where div_id in(#user_access_div#)) ??user_access_div
+    or not wfh.cnt is null
+    or not fyi.cnt is null
+  )
+[end]
+
+    or dh.id in(select distinct doc_id from wf_history where user_id=#USER_ID#) ??

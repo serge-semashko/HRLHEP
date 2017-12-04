@@ -1,0 +1,71 @@
+ready_docs
+[comments]
+descr=U: Вывод списка "Подписанные документы" - вывод фильтров и вызов docs/ready_docs_table.cfg для вывода самой таблицы (AJAX)
+
+input=none
+output=HTML таблица списка подписанных документов
+parents=tab_myDocs.cfg
+childs=docs/ready_docs_table.cfg
+testURL=?c=tab_myDocs
+author=Яковлев, Куняев
+[end]
+
+
+[parameters]
+request_name=U:Список подписанных документов
+KeepLog=false
+debug=off
+[end]
+
+
+[report]
+$INCLUDE dat/common.dat[check login]
+$INCLUDE [report_] ??USER_ID
+[end]
+
+
+[report_]
+$GET_DATA [getFilters]
+<small>#c#</small> ??debug=on
+<input type=hidden name="atab" value="t_myDocs">  ??
+
++++++ Фильтры +++++ ??
+<table border=0 cellpadding=3>
+<tr><td class="nowrap" nowrap>№ документа: <input value="" size="3" name="f_doc_number"></td>
+<td>тип: <select name=f_doc_type_id class=norm onChange="doSubmit('', 'docs/ready_docs_table');">
+<option value="">все</option>#DOC_TYPES_LIST#</select></td>
+<td>Подразделение: <input type=hidden value="" size="5" name="f_div_id">
+<input type=hidden value="" size="5" id="f_div_text" name="f_div_text">
+<div id="f_div" class="info_input pt big bg_white" style="display: inline-block; width:100px; border:solid 1px gray; " info_view="11" info_id="10">все</div>
+
+</td></tr>
+<tr><td class=label colspan=3>
+Инициатор: <select name=f_initiator_id class=norm onChange="doSubmit('', 'docs/ready_docs_table');"><option value="">все</option>#INITIATORS#</select>
+
+Искать текст: <input size=40 name="f_search" value="#f_search#"> &nbsp; 
+
+</td><td><input type="submit" class="butt1 pt" style="width:100;" value="ОК" >
+</td>
+</tr></table>
+
++++++ Контейнер таблицы +++++ ??
+<div id="ready_docs_table">=====</div>
+<script type="text/javascript">doSubmit("", "docs/ready_docs_table");</script>
+[end]
+
+
+[getFilters]
+select concat('<option value=', cast(id as char), '>', name, '</option>') as DOC_TYPES_LIST
+from d_types where is_active = 1 order by name
+;
+select distinct concat('<option value=', cast(h.creator_id as char), '>'
+, u.F, '.', left(u.I,1), '.', left(u.O,1), '</option>') as INITIATORS
+from d_list h
+left join #table_users_full# u on u.id=h.creator_id
+where h.is_deleted=0
+and (h.id in(select distinct doc_id from wf_history where user_id=#USER_ID#)
+ or h.creator_id=#USER_ID#)
+
+order by u.fio
+;
+[end]

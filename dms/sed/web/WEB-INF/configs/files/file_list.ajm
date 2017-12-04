@@ -1,0 +1,185 @@
+files/file_list.cfg
+
+[comments]
+descr=U: Список файлов, загруженных в документ
+author=Устенко, Куняев
+input=doc_id = id документа из таблицы заголовков, [field_id] - поле документа, к которому прикреплен стек файлов, can_control - указание, показывать ли эл-ты управления списком. "y" - показывать
+output=таблица-список с метаданными файлов,сылками на скачку и, опционально, элементами управления списка (удаление и изменения порядка)
+parents=docs/doc_files_list.cfg
+childs=docs/doc_files_oper.cfg
+[end]
+
+[description]
+[end]
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+tableCfg=table_no
+LOG=ON
+[end]
+
+[report header]
+$CALL_SERVICE c=sys/getARUD; ??!AR_R=Y
+
+$SET_PARAMETERS can_control=; bold=; file_list=list; NO_FILE_COMMENT=; info_id=; form_field_type=;
+$GET_DATA [get files count]
+
+<div class="bg_white" >Нет</div> ??NumTableRows=0
+<script>$("###field_id#_new_file_form").show(); </script> ??NumTableRows=0
+
+$INCLUDE [tab start] ??!NumTableRows=0&AR_R=Y
+[end]
+
+[report footer]
+$INCLUDE [tab end] ??!NumTableRows=0
+[end]
+
+
+[tab start]
+$SET_PARAMETERS file_list=single; ??form_field_type=6
+$SET_PARAMETERS file_list=stack; bold=bold; ??form_field_type=9
+$SET_PARAMETERS NO_FILE_COMMENT=Y ??info_id=0
+
+$SET_PARAMETERS can_control=Y;  ??AR_W=Y
+<table class="tlist tgreen" cellspacing=0 style="border-bottom: solid 1px ##909090; ">
+<tr>
+<th><i class="fa fa-arrow-down" aria-hidden="true"></i></th><th><i class="fa fa-arrow-up" aria-hidden="true"></i></th>  ??can_control=Y&file_list=list&NumTableRows>1
+<th>Версия</th> ??field_id&!file_list=single
+<th style="width:200px;">Файл</th><th>Скачать</th><th>Загружен</th>
+<th>Комментарий</th> ??!NO_FILE_COMMENT=Y
+<th>Размер</th><th>просм.</th><th>замеч.</th>
+<th>X</th>  ??can_control=Y
+ ??&file_list=list
+</tr>
+[end]
+
+                                   
+
+
+[item]
+$SET_PARAMETERS can_delete=; 
+$SET_PARAMETERS can_delete=Y; ??downloaded=0&USER_ID=#uploader_id#
+$SET_PARAMETERS can_delete=Y; ??AR_W=Y
+$SET_PARAMETERS can_delete=;  ??!AR_W=Y&bold=gray|mode=print|mode=ext
+
+<tr class="#bold#" id="file_#FILE_ID#">
+$INCLUDE [sort controls] ??can_control=Y&file_list=list&NumTableRows>1
+<td class="bottom_dotted center">#norder#</td> ??file_list=stack
+
+<td class="bottom_dotted pt blue"
+onClick="viewFile(#FILE_ID#);"
+><i class="fa fa-eye" aria-hidden="true"></i>&nbsp;#file_name#</td>
+
+<td class="bottom_dotted center pt" 
+  onClick="download('#FILE_ID#');" style="font-size:12pt;"><i class="fa fa-download" aria-hidden="true"></i>
+</td>
+
+<td class="bottom_dotted">#upload_date_fmtd#, #FIO#</td> 
+
+<td class="bottom_dotted">#file_comment#</td> ??!NO_FILE_COMMENT=Y
+<td class="bottom_dotted right nowrap">#human_bytes#</td>
+<td class="center bottom_dotted">#downloaded#</td> 
+
+<td class="bottom_dotted">
+<i class="fa fa-exclamation-triangle clr-red" aria-hidden="true"></i>&nbsp;#mkp_nr#  ??mkp_nr&mkp_nr>0
+</td> 
+
+<td title = "Удалить файл" class="center pt delcross bottom_dotted" onclick = "fileOper(#FILE_ID#,'delete','#field_id#', '#file_list#');">X</td> ??can_delete=Y
+
+<td class="pt nowrap"><a href="#ServletPath#?c=files/sys/sendConvertRequest&file_id=#FILE_ID#&verbose=3" target=_blank>#FILE_ID#-></a></td> ??USER_ID=2309|USER_ID=95
+<td class="pt nowrap"><a href="#ServletPath#?c=files/sys/convertFile&file_id=#FILE_ID#" target=_blank>#FILE_ID#=></a></td> ??USER_ID=2309|USER_ID=95
+<td class="pt" onClick="sendFile(#FILE_ID#, 137)">-></td> ??USER_ID=2309_ZZZ
+<td class="pt" onClick="convertFile(#FILE_ID#)">#FILE_ID#</td> ??USER_ID=2309_ZZZ
+</tr>
+$SET_PARAMETERS file_comment=; bold=gray; ??file_list=stack
+[end]
+
+<span class="pt delcross"  title = "Удалить файл" onclick = "fileOper(#FILE_ID#,'delete','#field_id#', '');">X</span> ??AR_W=Y|AR_X=Y
+
+
+[sort controls]
+<td class="center bottom_dotted nowrap pt"
+onclick = "fileOper(#FILE_ID#,'movedn', 'doc_files_list');" ??currentRow<#NumTableRows#
+>   
+    <i class="fa fa-arrow-down" aria-hidden="true" style="font-weight:200;"></i> ??currentRow<#NumTableRows#     
+</td><td class="center bottom_dotted nowrap pt"
+onclick = "fileOper(#FILE_ID#,'moveup', 'doc_files_list');"    ??currentRow>1
+>
+    <i class="fa fa-arrow-up pt" aria-hidden="true"></i>    ??currentRow>1   
+</td>                                                         
+[end]
+
+
+[tab end]
+</table>
+
+<script type="text/javascript">
+    $('##file-list-tab tr:even').addClass('oddRow'); ??file_list=list
+
+var download=function(file_id){
+frames["wf"].window.location.href="#ServletPath#?c=files/download_file&id=" + file_id;
+}
+
+var sendFile=function(file_id, ip){
+
+var getFileUrl="#ServerPath##ServletPath#?c=files/download_file&id=" + file_id;  
+var urlOut="#ServerPath##ServletPath#?c=files/sys/getPage";  
+
+var request = "http://159.93.153.102:8083/converter/convert?id=" + file_id 
+    + "&width=2496&type=1574" ??
+    + "&width=900&type=1574"
+    + "&url=" + encodeURIComponent(getFileUrl) + "&urlOut=" + encodeURIComponent(urlOut);  
+
+console.log("Шлем запрос: \n\r" + request);
+if(confirm("Шлем запрос: \n\r" + request))
+  window.open(request, "convert" + file_id); 
+frames["wf"].window.location.href= request; ?? 
+}
+
+var convertFile = function(file_id){
+window.open("#ServletPath#?c=files/sys/convertDocFiles&file_id=" + file_id, "convert_file_" + file_id);  
+}
+
+alert("hide #field_id#_new_file_form");  ??NumTableRows>0&ZZZ
+$("###field_id#_new_file_form").hide(); ??NumTableRows>0
+</script>
+
+[end]
+
+
+[SQL]
+$INCLUDE [SQL_] ??AR_R=Y
+[end]
+
+
+[SQL_]
+    select f.id as "FILE_ID", f.norder, f.file_name, f.file_content_type, f.field_id
+        , f.uploader_id, f.downloaded, f.comment as "file_comment"
+        , date_format(f.upload_date,'%d.%m.%y %H:%i') as upload_date_fmtd, format_filesize(f.file_size) as human_bytes 
+        , iof(u.F,u.I,u.O) as FIO
+        , m.mkp_nr
+    from doc_files f
+        left join #table_users_full# u on u.id = f.uploader_id
+        left join (select file_id, count(id) as mkp_nr from doc_data_markups group by file_id) m on m.file_id=f.id
+    where 
+        f.doc_id = #doc_id#
+        and f.is_deleted=0
+        and f.field_id is null order by f.norder ??!field_id
+        and f.field_id='#field_id#' order by f.upload_date desc ??field_id
+[end]
+
+
+
+[get files count]
+    select count(Id) as "NumTableRows" 
+    from doc_files 
+    where doc_id = #doc_id#
+        and is_deleted=0
+        and field_id is null  ??!field_id
+        and field_id='#field_id#'  ??field_id
+    ;
+    select form_field_type, info_id from d_fields where type_id=#DOC_TYPE_ID# and field_db_name='#field_id#'  ??field_id
+[end]
+
+select type_id from d_list where id = #doc_id# ??
+;

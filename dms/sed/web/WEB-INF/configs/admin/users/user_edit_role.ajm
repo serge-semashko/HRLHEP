@@ -1,0 +1,97 @@
+[comments]
+АДМИН: Редактирование роли пользователя.
+Вывод в форму редактирования пользователя одной роли пользователя для ее редактирования.
+Вызывается из admin/users/user_edit_roles.cfg
+
+input=CURRENT_ROLE_ID - ID роли пользователя в a_user_role
+output=HTML форма редактирования роли
+parents=admin/users/user_edit_roles.cfg
+childs=
+testURL=?c=admin/users/user_edit_role&CURRENT_ROLE_ID=1
+[end]
+
+[parameters]
+request_name=Admin:Редактирование роли пользователя
+tableCfg=table_no
+LOG=ON
+[end]
+
+
+[report]
+    CURRENT_ROLE_ID=#CURRENT_ROLE_ID#; ??
+    $SET_PARAMETERS TARGET_TYPE_ID=; TARGET_CODE=; PRIORITY=; NAME=;
+    $GET_DATA [getRole] ??CURRENT_ROLE_ID>0
+    $INCLUDE [4admin]  ??!A_LAB_CODES
+    $INCLUDE [4lab]  ??A_LAB_CODES
+[end]
+
+[4admin]
+    $GET_DATA [getLists] 
+    <tr id="role_#CURRENT_ROLE_ID#"><td>
+        <select name="role_#CURRENT_ROLE_ID#" onChange="selectTargetType(this, #CURRENT_ROLE_ID#);"><option></option>#ROLES#</select>&nbsp;
+    </td>
+    <td><select name=target_#CURRENT_ROLE_ID# onChange="getTargetCodes(this,#CURRENT_ROLE_ID#, #TARGET_CODE#
+        -1 ??!TARGET_CODE
+        );"><option></option>#TARGETS#</select>
+    </td> 
+
+    <td class=center id="target_code_#CURRENT_ROLE_ID#_container">
+    <input size=6 class="xp center" name=target_code_#CURRENT_ROLE_ID# value=#TARGET_CODE#>&nbsp; ??
+    </td> 
+
+    <td class=center><input size=3 class="xp center" name=priority_#CURRENT_ROLE_ID# value=#PRIORITY#></td> 
+    <td class="pt" onClick="$('##role_#CURRENT_ROLE_ID#').html(' ');"><span class="delcross">X</span>&nbsp;удалить ??CURRENT_ROLE_ID>0
+    <input type=hidden name="roles_list" value="#CURRENT_ROLE_ID#"></td> ??CURRENT_ROLE_ID>0
+    </tr>
+
+    <script type="text/javascript">
+    alert(getSelectedVal(dd) + "/" + target_code); ??
+    AjaxCall('target_code_#CURRENT_ROLE_ID#_container','c=admin/users/get_role_targets&target_type_id=#TARGET_TYPE_ID#&TARGET_CODE=#TARGET_CODE#&CURRENT_ROLE_ID=#CURRENT_ROLE_ID#');
+    </script>
+[end]
+
+[4lab]
+    $GET_DATA [getLists] ??TARGET_TYPE_ID=1
+    <tr id="role_#CURRENT_ROLE_ID#"><td>
+        <select name="role_#CURRENT_ROLE_ID#" onChange="selectTargetType(this, #CURRENT_ROLE_ID#);"><option></option>#ROLES#</select>&nbsp; ??TARGET_TYPE_ID=1
+        <b>#NAME#<b>     ??!TARGET_TYPE_ID=1        
+    </td>
+    <td class="pt" style="padding:0 0 0 7px;" onClick="$('##role_#CURRENT_ROLE_ID#').html(' ');"><span class="delcross">X</span>&nbsp;удалить ??CURRENT_ROLE_ID>0&TARGET_TYPE_ID=1
+    <input type=hidden name="roles_list" value="#CURRENT_ROLE_ID#"></td> ??CURRENT_ROLE_ID>0
+    </tr>
+    <input type=hidden name=target_#CURRENT_ROLE_ID# value=1> 
+    <input type=hidden name=target_code_#CURRENT_ROLE_ID# value=#A_LAB_CODES#>  
+[end]
+
+****************************************************************************
+****************************************************************************
+****************************************************************************
+
+[getRole]
+------ Выборка данных по роли -----??
+select ur.ROLE_ID, t.id as TARGET_TYPE_ID, ur.TARGET_CODE, ur.PRIORITY
+    , r.NAME
+    , r.TARGET_TYPE_ID=1
+from a_user_role ur 
+    join a_roles r on r.id=ur.role_id
+    left join a_target_types t on t.id=ur.target_type_id
+where ur.id=#CURRENT_ROLE_ID#
+;
+[end]
+
+[getLists]
+------ Формируем списки ролей и целей -----??
+    select concat('<option value=', cast(id as char) 
+        , case when id=#ROLE_ID# then ' selected' else '' end ??ROLE_ID
+        ,'>', name, '</option>') as ROLES 
+    from a_roles 
+    where is_deleted=0
+        and target_type_id=1 ??A_LAB_CODES
+    order by sort
+;
+    select concat('<option value=', cast(id as char)
+        , case when id=#TARGET_TYPE_ID# then ' selected' else '' end ??TARGET_TYPE_ID
+        ,'>', type, '</option>') as TARGETS 
+    from a_target_types 
+    order by sort;
+[end]

@@ -1,0 +1,38 @@
+files/sys/convertFile.cfg
+
+[comments]
+descr=S: Посылка файла в сервис растеризации
+author=Куняев
+input=file_id = id файла в таблице doc_files
+parents=docs/doc_files_list.cfg
+[end]
+
+[parameters]
+LOG=ON
+[end]
+
+
+
+[report]
+$SET_PARAMETERS ip=137;  ??!ip
+$SET_PARAMETERS ServerPath=http://159.93.33.203 ??
+$SET_PARAMETERS ServerPath=http://159.93.40.211
+<script type="text/javascript">
+
+var getFileUrl="#ServerPath##ServletPath#?c=files/download_file&id=#file_id#";
+var urlOut="#ServerPath##ServletPath#?c=viewer/getPage";
+var request = "http://159.93.41.#ip#:8080/converter/convert?id=#file_id#" ??
+var request = "http://159.93.153.102:8083/converter/convert?id=#file_id#"
+    + "&width=2496&type=1574" ??
+    + "&width=900&type=1574" 
+    + "&url=" + encodeURIComponent(getFileUrl) + "&urlOut=" + encodeURIComponent(urlOut);  
+
+console.log("Шлем запрос: \n\r" + request);
+alert ("Шлем запрос: \n\r" + request); ??
++ "\n\n url:" + getFileUrl + "\n\r urlOut: " + urlOut);  ??
+
+window.open(request, "convert" + file_id);
+frames["wf"].window.location.href= request; ??
+
+</script>
+[end]

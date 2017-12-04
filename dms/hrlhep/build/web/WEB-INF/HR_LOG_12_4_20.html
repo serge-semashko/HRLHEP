@@ -1,0 +1,191 @@
+<html>
+    <head>
+        <title>HR LHEP Log</title>
+        <META http-equiv=Content-Type content="text/html; charset=utf-8">
+        <style>
+            body{background-color:#eefff4;}
+            xmp {margin:0;} 
+            .pt {cursor:pointer;} 
+            span.req_start {border:solid 1px red; font-weight:bold; background-color:#FFFFA0;}
+            span.req_end {border:solid 1px red; font-weight:bold; background-color:#D0FFB0;}
+            div.req {display:none; border:solid 1px red; padding:4px; background-color:white;}
+
+            span.ss_start {border:solid 1px red; background-color:#D0E8FF;}
+            span.ss_back {border:solid 1px blue; background-color:#D0FFB0;}
+            div.ss {display:none; border:solid 1px green; border-right:none; padding:6px; margin-left:5px;}
+        </style>
+        <script type="text/javascript">
+            var toggleDiv = function (id) {
+                var d = document.getElementById(id);
+                if (d.style.display === "block")
+                    d.style.display = "none";
+                else
+                    d.style.display = "block";
+            };
+        </script>
+    </head><body>
+<b>$INCLUDE </b>[report_]<BR>
+<br> <b>SQL: [[read file] (1) ]:</b><xmp>read file: HR_LOG_12_4_20.html maxLength=500000
+</xmp>------ SQL done, 1ms.<br><BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_26");'> Request_HR_LHEP_26 [04.12 20:58:46] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_26' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=1&Command=PutObject&ObjectType=8&SrcObjectID=0ef3fcdd-a005-11e5-944c-0025907d24fa&GateObjectID=44970&Time=22.11.2016 09:15:05&Object={
+"Код": "0000010396",
+"Наименование": "Легостаева Ксения Сергеевна",
+"Образование": [
+{
+"ВидОбразования": "e4afc5fb-2a6d-4d05-9ddd-8677895f8f42",
+"ВидОбразованияКод": "06",
+"ВидОбразованияНаименование": "Высшее образование - бакалавриат",
+"УчебноеЗаведение": "5ed3b759-1cd2-11e2-ab6e-000e0ce597c9",
+"УчебноеЗаведениеКод": "0.....; log=true; session inactive=min;<br><hr><p style="color:red;"> [log request]  </p>  <br>gateway/receive.cfg: ClientID=1; Command=PutObject; ObjectType=8; ObjectID=; GlobalID=; ClientObjectID=;<br> Наименование=Легостаева Ксения Сергеевна<BR>
+<br><b>*** UNKNOWN ARRAY:</b> Образование;<BR>
+<br><b>*** ARRAY: </b>Образование:<BR>
+ ...* Образование.1.СпециальностьНаименование=Химия, физика и механика материалов<BR>
+ ...* Образование.1.ВидОбразованияНаименование=Высшее образование - бакалавриат<BR>
+ ...* Образование.1.ГодОкончания=<BR>
+ ...* Образование.1.ВидОбразованияКод=06<BR>
+ ...* Образование.1.УчебноеЗаведениеНаименование=МУПОЧ  "ДУБНА"<BR>
+ ...* Образование.1.ВидОбразования=e4afc5fb-2a6d-4d05-9ddd-8677895f8f42<BR>
+ ...* Образование.1.Квалификация=бакалавр<BR>
+ ...* Образование.1.СпециальностьКод=020900<BR>
+ ...* Образование.1.Диплом=<BR>
+ ...* Образование.1.Специальность=9dcfd530-4203-11e3-9401-0025907d24fa<BR>
+ ...* Образование.1.УчебноеЗаведение=5ed3b759-1cd2-11e2-ab6e-000e0ce597c9<BR>
+ ...* Образование.1.УчебноеЗаведениеКод=000000006<BR>
+<b> ...* ARRAY TOTAL: </b>Образование.count=1; Образование.items=1;<br><BR>
+<br><b>*** UNKNOWN ARRAY:</b> ПерсональныеДанные;<BR>
+<br><b>*** ARRAY: </b>ПерсональныеДанные:<BR>
+ ...* ПерсональныеДанные.1.ПаспортаДата=08.10.2016 00:00:00<BR>
+ ...* ПерсональныеДанные.1.ПаспортНомер=356370<BR>
+ ...* ПерсональныеДанные.1.ТипаПенсииКод=000000289<BR>
+ ...* ПерсональныеДанные.1.Гражданство=982d33e2-bee6-453a-992e-11d13fa66fa7<BR>
+ ...* ПерсональныеДанные.1.КоличествоДетей=1<BR>
+ ...* ПерсональныеДанные.1.ДатаРождения=24.06.1993 00:00:00<BR>
+ ...* ПерсональныеДанные.1.Пол=Женский<BR>
+ ...* ПерсональныеДанные.1.СемейногоПоложения=9ba95afb-12dd-11e2-ab6e-000e0ce597c9<BR>
+ ...* ПерсональныеДанные.1.СемейногоПоложенияКод=2<BR>
+ ...* ПерсональныеДанные.1.МестоРождения=0,Дмитров,,Московская область,<BR>
+ ...* ПерсональныеДанные.1.Адрес=<BR>
+ ...* ПерсональныеДанные.1.СемейноеПоложениеНаименование=Состоит в зарегистрированном браке<BR>
+ ...* ПерсональныеДанные.1.ГражданствоНаименование=РОССИЯ<BR>
+ ...* ПерсональныеДанные.1.ПаспортСерия=46 16<BR>
+ ...* ПерсональныеДанные.1.ГражданствоКод=643<BR>
+ ...* ПерсональныеДанные.1.ТипПенсииНаименование=не пенсионер<BR>
+ ...* ПерсональныеДанные.1.ИНН=500711534469<BR>
+ ...* ПерсональныеДанные.1.ИмеетСудимость=<BR>
+ ...* ПерсональныеДанные.1.УчастникВойны=<BR>
+ ...* ПерсональныеДанные.1.СтраховойНомерПФР=151-497-565 84<BR>
+ ...* ПерсональныеДанные.1.ПаспорКемВыдан=МП № 1 ОУФМС России по Московской обл. по Дмитровскому муниципальному району<BR>
+ ...* ПерсональныеДанные.1.АдресПоПрописке=141800, Московская обл, Дмитровский р-н, Дмитров г, Внуковский мкр, дом № 13, кв.51<BR>
+ ...* ПерсональныеДанные.1.ТипаПенсии=b9cec3eb-1f43-11e2-ab6e-000e0ce597c9<BR>
+<b> ...* ARRAY TOTAL: </b>ПерсональныеДанные.count=1; ПерсональныеДанные.items=1;<br><BR>
+ Код=0000010396<BR>
+<br><b>*** UNKNOWN ARRAY:</b> Стажи;<BR>
+<br><b>*** ARRAY: </b>Стажи:<BR>
+ ...* Стажи.1.РазмерДней=<BR>
+ ...* Стажи.1.ДатаОтсчета=22.08.2015 00:00:00<BR>
+ ...* Стажи.1.ВидСтажа=ba17f8b8-7432-49b2-a8d9-af1b2d17cdfa<BR>
+ ...* Стажи.1.ВидСтажаКод=00004<BR>
+ ...* Стажи.1.РазмерМесяцев=<BR>
+ ...* Стажи.1.ВидСтажаНаименование=Страховой стаж для оплаты больничных листов<BR>
+ ...* Стажи.2.РазмерДней=<BR>
+ ...* Стажи.2.ДатаОтсчета=21.12.2015 00:00:00<BR>
+ ...* Стажи.2.ВидСтажа=f4619d6c-5da3-45d4-9dac-3e6e16a4b88e<BR>
+ ...* Стажи.2.ВидСтажаКод=00003<BR>
+ ...* Стажи.2.РазмерМесяцев=<BR>
+ ...* Стажи.2.ВидСтажаНаименование=Стаж на надбавку за выслугу лет<BR>
+<b> ...* ARRAY TOTAL: </b>Стажи.count=2; Стажи.items=1,2;<br><BR>
+* JSON Keys=Наименование, Образование, ПерсональныеДанные, Код, Стажи<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+log <p style="color:red;"> [process receive]  </p>  <br><hr>gateway/receive.cfg[process receive] ObjectType=8<br><br><span class='ss_start pt'  onClick='toggleDiv("gateway/receive_8_fizlitso1512410326450");'> $CALL_SERVICE: <b>gateway/receive.cfg => gateway/receive_8_fizlitso</b> (request:HR_LHEP_26)</span><div id='gateway/receive_8_fizlitso1512410326450' class='ss'><hr><b>===>>> receive_8_fizlitco</b><br><br> <b>SQL: [[check existing record] (1) ]:</b><xmp>select 'Y' as REC_EXISTS, id as REC_ID, is_manual from i_fizlitsa
+where ID=0000010396
+</xmp><xmp>***** 1 record(s) retrieved. Filled 3 parameters: 
+REC_EXISTS=Y
+REC_ID=10396
+is_manual=0</xmp>------ SQL done, 0ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (1) ]:</b><xmp>select SUBSTRING_INDEX('Легостаева Ксения Сергеевна ', ' ', 1) AS F
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+F=Легостаева</xmp>------ SQL done, 11ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (2) ]:</b><xmp>select replace('Легостаева Ксения Сергеевна ', 'Легостаева ','') AS IO
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+IO=Ксения Сергеевна </xmp>------ SQL done, 2ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (3) ]:</b><xmp>select SUBSTRING_INDEX('Ксения Сергеевна ', ' ', 1) AS I
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+I=Ксения</xmp>------ SQL done, 2ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (4) ]:</b><xmp>select replace('Ксения Сергеевна ', 'Ксения ','') AS O
+</xmp><xmp>***** 1 record(s) retrieved. Filled 1 parameters: 
+O=Сергеевна </xmp>------ SQL done, 2ms.<br><BR>
+<br> <b>SQL: [gateway/receive_7_sotrudnik[getFIO] (5) ]:</b><xmp></xmp><b>$INCLUDE </b>[PutObject]<BR>
+<br> <b>SQL: [[update record] (1) ]:</b><xmp>update i_fizlitsa set F='Легостаева', I='Ксения', O='Сергеевна'
+, dr=STR_TO_DATE('24.06.1993 00:00:00', '%d.%m.%Y %H:%i:%s')
+, strana='РОССИЯ', sex=''
+, is_deleted=0, changed=now()
+where ID=0000010396
+</xmp> DONE! 1 record(s) affected------ SQL done, 14ms.<br><BR>
+<br> <b>SQL: [[update record] (2) ]:</b><xmp></xmp></div><span class='ss_back pt'  onClick='toggleDiv("gateway/receive_8_fizlitso1512410326450");'> BACK: <b>gateway/receive_8_fizlitso => gateway/receive.cfg; (47ms.)</b></span><BR>
+<hr>----- gateway/receive.cfg[report]: ERR_CODE=0; ERROR=; <br>+++++<b>$INCLUDE </b>gateway/receive[OK]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_26");'>Request_HR_LHEP_26 (gateway/receive) DONE! (158ms)</span> <BR>
+<b>$INCLUDE </b>[report_]<BR>
+<br> <b>SQL: [[read file] (1) ]:</b><xmp>read file: HR_LOG_12_4_20.html maxLength=500000
+</xmp>------ SQL done, 1ms.<br><BR>
+</div><br><span class='req_start pt' onClick='toggleDiv("Request_HR_LHEP_28");'> Request_HR_LHEP_28 [04.12 20:59:58] : 159.93.33.203 c=gateway/receive</span><div id='Request_HR_LHEP_28' class='req'> queryString:c=gateway/receive&Ver=1&ClientID=11&Command=PutObject&ObjectType=96&SrcObjectID=e2590a9b-b797-11e6-9470-0025907d24fa&GateObjectID=110007&Time=01.02.2017 10:20:43&Object={
+	"Тип": "Кадровое перемещение организаций",
+	"Элемент": "Кадровое перемещение организаций 0000004233 от 25.11.2016 0:00:00",
+	"Элемент_Ref": "e2590a9b-b797-11e6-9470-0025907d24fa",
+	"Организация": "ОИЯИ",
+	"Организация_Ref": "35e7627d-d7be-11e1-bad5-e0cb4eda5b1f",
+	"Комментарий": "Автоматически создан на основании докумен.....; log=true; session inactive=min;<br><hr><p style="color:red;"> [log request]  </p>  <br>gateway/receive.cfg: ClientID=11; Command=PutObject; ObjectType=96; ObjectID=; GlobalID=; ClientObjectID=;<br> КраткийСоставДокумента=Легостаева К.С.<BR>
+ Ответственный=Горохова Н.П.<BR>
+ Разряд=<BR>
+ Ответственный_Ref=a755d141-124a-11e2-9f27-000e0ce597c9<BR>
+ Организация=ОИЯИ<BR>
+<br><b>*** UNKNOWN ARRAY:</b> ФизическиеЛица;<BR>
+<br><b>*** ARRAY: </b>ФизическиеЛица:<BR>
+ ...* ФизическиеЛица.1.ФизическоеЛицо_Ref=0ef3fcdd-a005-11e5-944c-0025907d24fa<BR>
+ ...* ФизическиеЛица.1.ФизическоеЛицо=Легостаева Ксения Сергеевна<BR>
+<b> ...* ARRAY TOTAL: </b>ФизическиеЛица.count=1; ФизическиеЛица.items=1;<br><BR>
+ Элемент_Ref=e2590a9b-b797-11e6-9470-0025907d24fa<BR>
+<br><b>*** UNKNOWN ARRAY:</b> РаботникиОрганизации;<BR>
+<br><b>*** ARRAY: </b>РаботникиОрганизации:<BR>
+ ...* РаботникиОрганизации.1.Сотрудник=Легостаева Ксения Сергеевна<BR>
+ ...* РаботникиОрганизации.1.Сотрудник_Ref=5cb57ef2-a006-11e5-944c-0025907d24fa<BR>
+ ...* РаботникиОрганизации.1.Должность_Ref=6b3c7311-d7c1-11e1-bad5-e0cb4eda5b1f<BR>
+ ...* РаботникиОрганизации.1.ПодразделениеОрганизации_Ref=a299b37e-e2da-11e1-a86a-e0cb4eda5b7d<BR>
+ ...* РаботникиОрганизации.1.ПодразделениеОрганизации=Группа №1 встречных поляризованных пучков<BR>
+ ...* РаботникиОрганизации.1.УдалитьПроизошедшееСобытие=Нет<BR>
+ ...* РаботникиОрганизации.1.Должность=инженер<BR>
+ ...* РаботникиОрганизации.1.ФизЛицо=Легостаева Ксения Сергеевна<BR>
+ ...* РаботникиОрганизации.1.ФизЛицо_Ref=0ef3fcdd-a005-11e5-944c-0025907d24fa<BR>
+ ...* РаботникиОрганизации.1.ГрафикРаботы_Ref=aebaa04b-1c50-11e2-ab6e-000e0ce597c9<BR>
+ ...* РаботникиОрганизации.1.НапомнитьПоЗавершении=Нет<BR>
+ ...* РаботникиОрганизации.1.Сторно=Нет<BR>
+ ...* РаботникиОрганизации.1.ДатаНачала=21.12.2016 0:00:00<BR>
+ ...* РаботникиОрганизации.1.ГрафикРаботы=4 часа (4ч.)<BR>
+ ...* РаботникиОрганизации.1.ЗанимаемыхСтавок=0.5<BR>
+<b> ...* ARRAY TOTAL: </b>РаботникиОрганизации.count=1; РаботникиОрганизации.items=1;<br><BR>
+ Основание=Продление трудового договора<BR>
+ Штат=Основной штат<BR>
+ Комментарий=Автоматически создан на основании документа Продление трудовых договоров 999а05570 от 14.11.2016 14:57:05<BR>
+ Элемент=Кадровое перемещение организаций 0000004233 от 25.11.2016 0:00:00<BR>
+ ДвиженияИсправляемогоДокумента=ХранилищеЗначения<BR>
+ ДанныеПрошлойВерсии=Нет<BR>
+ Подпись=Рузаев Александр Васильевич<BR>
+ ИндексацияЗаработка=Нет<BR>
+ Тип=Кадровое перемещение организаций<BR>
+<br><b>*** UNKNOWN ARRAY:</b> ОсновныеНачисления;<BR>
+<br><b>*** ARRAY: </b>ОсновныеНачисления:<BR>
+ ...* ОсновныеНачисления.1.Сотрудник=Легостаева Ксения Сергеевна<BR>
+ ...* ОсновныеНачисления.1.Сотрудник_Ref=5cb57ef2-a006-11e5-944c-0025907d24fa<BR>
+ ...* ОсновныеНачисления.1.Показатель1=30000<BR>
+ ...* ОсновныеНачисления.1.Сторно=Нет<BR>
+ ...* ОсновныеНачисления.1.ВидРасчета=Оклад по часам<BR>
+ ...* ОсновныеНачисления.1.Валюта1=руб.<BR>
+ ...* ОсновныеНачисления.1.ФизЛицо=Легостаева Ксения Сергеевна<BR>
+ ...* ОсновныеНачисления.1.Валюта1_Ref=f95eef35-d7bd-11e1-bad5-e0cb4eda5b1f<BR>
+ ...* ОсновныеНачисления.1.ФизЛицо_Ref=0ef3fcdd-a005-11e5-944c-0025907d24fa<BR>
+ ...* ОсновныеНачисления.1.Действие=Не изменять<BR>
+<b> ...* ARRAY TOTAL: </b>ОсновныеНачисления.count=1; ОсновныеНачисления.items=1;<br><BR>
+ Организация_Ref=35e7627d-d7be-11e1-bad5-e0cb4eda5b1f<BR>
+* JSON Keys=Источник_комплектования, КраткийСоставДокумента, Ответственный, Разряд, Условия_труда, Ответственный_Ref, Организация, Условие_работы, ФизическиеЛица, Элемент_Ref, РаботникиОрганизации, Основание, Штат, Комментарий, Элемент, ДвиженияИсправляемогоДокумента, ДанныеПрошлойВерсии, В_другие_виды_оплаты, В_примечание, Подпись, ИндексацияЗаработка, Тарифная_сетка, Тип, ОсновныеНачисления, Организация_Ref<BR>
+<hr>----- gateway/receive.cfg[process request] <br>---------- Command=PutObject;<br>+++++<b>$INCLUDE </b>[process receive]<BR>
+log <p style="color:red;"> [process receive]  </p>  <br><hr>gateway/receive.cfg[process receive] ObjectType=96<br><hr>----- gateway/receive.cfg[report]: ERR_CODE=1; ERROR=Неверный тип объекта ObjectType=96, Command=PutObject; <br>+++++<b>$INCLUDE </b>gateway/receive[ERROR]<BR>
+</div><span class='req_end pt' onClick='toggleDiv("Request_HR_LHEP_28");'>Request_HR_LHEP_28 (gateway/receive) DONE! (106ms)</span> <BR>

@@ -1,0 +1,45 @@
+show_wf_templates.cfg
+
+[comments]
+descr=S: Показать все шаблоны workflow для типа документов. 
+Для админов
+input=doc_type_id - ID типа документа
+output=
+parents=
+childs=
+testURL=?c=wf/show_wf_template_adm&wf_template_id=1
+author=Куняев
+[end]
+
+[parameters]
+request_name=A:отображение wf templates
+service=dubna.walt.service.TableServiceSpecial
+tableCfg=table_no
+KeepLog=false
+ClearLog=true
+[end]
+
+
+[report header]
+<b>Шаблоны Workflow для документа #DOC_TYPES_NAME#</b>, 
+<hr>
+[end]
+
+[item]
+$CALL_SERVICE c=wf/show_wf_template_adm
+<hr>
+[end]
+
+[report footer]
+* - автонумерация при старте шага, ** - регистрация на шаге по кнопке, *** - свободный ввод номера (не реализовано)
+[end]
+
+==============================================================
+==============================================================
+==============================================================
+[SQL]
+select id as wf_template_id from wf_templates_list 
+where doc_type_id=#type_id#  
+order by id
+[end]
+

@@ -1,0 +1,124 @@
+
+BODY{ font-family: Times; background-color: slategray; MARGIN: 2px}
+BODY.prn { background-color: white;}
+BODY.svs { background-color: whitesmoke; margin:0;}
+
+.light {background-color: D0E0F0}
+.light_ {background-color: F0F8FF}
+
+A {COLOR: darkblue; FONT: Verdana, Geneva, Arial, Helvetica, sans-serif;}
+A:visited {color: darkblue;}
+A:hover {color: red;}
+
+A.nou {COLOR: black; TEXT-DECORATION: none;}
+A.nou:hover {COLOR: red; TEXT-DECORATION: underline;}
+A.nou:visited  {COLOR: black;}
+
+A.w  {COLOR: darkblue; FONT: bold 10pt Verdana, Geneva, Arial, Helvetica, sans-serif; TEXT-DECORATION: underline;}
+A.w:link { }
+A.w:hover {color: red; TEXT-DECORATION: underline;}
+A.w:visited  { }
+
+
+A.big:link {COLOR: darkblue;  font-size: 10pt; font-weight: bold;}
+A.big:hover {COLOR: red; TEXT-DECORATION: none;}
+A.big:visited  {COLOR: darkblue; FONT: bold 10pt;}
+
+A.atab  {COLOR: darkblue; FONT: bold 10pt Verdana, Geneva, Arial, Helvetica, sans-serif; TEXT-DECORATION: none;}
+A.atab:link  {color: darkblue; display:block; width:80px;}
+A.atab:hover {color: red; TEXT-DECORATION: none; }
+A.atab:visited  {font-size:10pt; display:block; width:80px;}
+
+A.tab  {COLOR: 000060; FONT: bold 10pt Verdana, Geneva, Arial, Helvetica, sans-serif; TEXT-DECORATION: none;}
+A.tab:link {COLOR: 000060; display:block; width:80px;}
+A.tab:visited  {COLOR: 000060; display:block; width:80px;}
+A.tab:hover {color: red; TEXT-DECORATION: none; display:block; width:80px;}
+
+A.tab1  {COLOR: darkblue; display:block; width:130px;	FONT: bold 10pt Verdana, Geneva, Arial, Helvetica, sans-serif; TEXT-DECORATION: none;}
+A.tab1:link {COLOR: darkblue; display:block; width:130px;}
+A.tab1:visited  {COLOR: darkblue; display:block; width:130px;}
+A.tab1:hover {color: red; display:block; width:130px; TEXT-DECORATION: none;}
+
+A.tab2  {COLOR: FFFFB0; display:block; width:130px;
+FONT: bold 10pt Verdana, Geneva, Arial, Helvetica, sans-serif; TEXT-DECORATION: none;}
+A.tab2:link {COLOR: FFFFB0; display:block; width:130px;}
+A.tab2:visited  {COLOR: FFFFB0; display:block; width:130px;}
+A.tab2:hover {color: FFFF00; display:block; width:130px; TEXT-DECORATION: none;}
+
+
+a.abutton  {COLOR: 000060; display:block; width:120px;
+FONT: bold 10pt Verdana, Geneva, Arial, Helvetica, sans-serif; TEXT-DECORATION: none;
+}
+a.abutton:link {COLOR: 000060; display:block; width:120px; TEXT-DECORATION: none;}
+a.abutton:visited {COLOR: 000060; display:block; width:120px; TEXT-DECORATION: none;}
+a.abutton:hover {color: red; display:block; width:120px; TEXT-DECORATION: none;}
+
+a.abut  {COLOR: 000060; display:block; width:80px;
+FONT: bold 10pt Verdana, Geneva, Arial, Helvetica, sans-serif; TEXT-DECORATION: none;
+}
+a.abut:link {COLOR: 000060; display:block; width:80px; TEXT-DECORATION: none;}
+a.abut:visited {COLOR: 000060; display:block; width:80px; TEXT-DECORATION: none;}
+a.abut:hover {color: red; display:block; width:80px; TEXT-DECORATION: none;}
+a.abutdis {COLOR: 808080; display:block; width:80px; TEXT-DECORATION: none;
+	FONT: bold 10pt Verdana, Geneva, Arial, Helvetica, sans-serif;
+}
+
+
+A.r {COLOR: white; FONT: 8pt; TEXT-DECORATION: none;}
+A.r:link  {COLOR: white;  TEXT-DECORATION: none;}
+A.r:visited {COLOR: white;}
+A.r:hover {color: yellow; TEXT-DECORATION: underline;}
+
+blockquote {margin: 5px 20px 5px 20px;}
+
+INPUT {font: Verdana, Geneva, Arial, Helvetica, sans-serif; }
+INPUT.ro {font: bold 10pt Verdana, Geneva, Arial, Helvetica, sans-serif; border-style: none; background-color:whitesmoke; }
+INPUT.ro_small {
+	font: 10pt Verdana, Geneva, Arial, Helvetica, sans-serif;
+	border-style: none;
+	background-color: F0F8FF;
+}
+
+input.but {width:80; border-style: outset; cursor:hand; border-width:2px; background-color:E0E8FF; border-color:B0C0D0;}
+input.button {width:120; border-style: outset; cursor:hand; border-width:2px; background-color:E0E8FF; border-color:B0C0D0;}
+
+
+INPUT.b  {font: bold 10pt Verdana, Geneva, Arial, Helvetica, sans-serif; border-style: none; background-color:AAAAAA; }
+INPUT.a  {font: bold 12pt Verdana, Geneva, Arial, Helvetica, sans-serif; border-style: none; background-color:AAAAAA; }
+
+input.act {COLOR: 000080; background-color: FFF0A8; font-weight: bold;  width: 120; height: 25;}
+input.inact {width: 120; background-color: DADAFF; height: 25;}
+
+.title {font-size:11pt; color: 000080; font-weight: bold; font-style: italic;}
+.title_small {font-size:9pt; color: 000080;}
+.subtitle {COLOR: 000066; font-size: 10pt; font-weight: bold; font-style: italic; background-color: lightsteelblue}
+
+TD{font: 8pt Verdana, Geneva, Arial, Helvetica, sans-serif}
+TD.tab {background-color: D0E0F0;	text-align: center;	font-weight: bold;}
+TD.atab {background-color: whitesmoke}
+
+td.bara {font: 10pt; color: FFFFAA; text-align: center; font-weight: bold; }
+td.bar {cursor: hand;
+	background-color: D0E0F0;
+	text-align: center;
+	COLOR: 000060; FONT: bold 10pt Verdana, Geneva, Arial, Helvetica, sans-serif;
+}
+
+
+.menu:link {display:block;width:110px;
+color:red;text-decoration:none;padding-top:5px;padding-bottom:5px;padding-right:10px;padding-left:5px;margin:0px;font-weight:bold;font-size:12px;font-family:verdana}
+
+.menu:visited {display:block;color:red;text-decoration:none;width:110px;padding-top:5px;padding-bottom:5px;padding-right:10px;padding-left:5px;margin:0px;font-weight:bold;font-size:12px;font-family:verdana}
+
+.menu:hover {display:block;color:red;text-decoration:none;width:110px;padding-top:5px;padding-bottom:5px;padding-right:10px;padding-left:5px;margin:0px;font-weight:bold;background-color:#F2E9DB;font-size:12px;font-family:verdana}
+
+TD.cont {background-color: whitesmoke}
+TD.label{font-size:10pt;}
+TD.data{font-size:10pt; font-weight: bold; }
+
+TH{font: 10pt Arial, Verdana, Helvetica, sans-serif;}
+TH.big{font: 12pt Arial, Verdana, Helvetica, sans-serif; font-weight: bold;}
+
+H2{font-size:14pt; font-family: Times; color: 000066;}
+H3{font-size:11pt; font-family: Times; font-weight: bold}
+H4{font-size:10pt; font-family: Times; font-weight: bold}

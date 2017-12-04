@@ -1,0 +1,137 @@
+sys/ar/edit_rule_form.ajm
+
+[comments]
+    descr=A: Форма редактирование правила
+    input=user_person_id, [rule_nr]
+    parents=sys/ar/view_user_rules.cfg
+    author=Куняев
+[end]
+
+
+[description]
+   
+[end]
+
+
+[parameters]
+    service=dubna.walt.service.TableServiceSpecial
+    tableCfg=table_no
+    LOG=ON
+[end]
+
+
+[report header]
+    $SET_PARAMETERS RULE_RW=;
+    $SET_PARAMETERS RULE_RW=Y;  ??AR_SYS_ADMIN=1
+    $GET_DATA [get admin info]  ??!AR_SYS_ADMIN=1
+    $GET_DATA [get admin criteria]  ??!AR_SYS_ADMIN=1
+    $GET_DATA [check rule RW]   ??!AR_SYS_ADMIN=1&rule_nr
+    $SET_PARAMETERS  RULE_RW=Y ??!rule_nr
+    <input size=5 type=hidden name="rule_nr" value="#rule_nr#"> 
+    <div style="text-align:left; font-weight:bold;">
+        Новое правило:  ??!rule_nr
+        Изменение правила: ??rule_nr
+    </div>
+    $GET_DATA [get cat list]
+    <style>
+    table.t-right-border td {max-width:200px; white-space:wrap; padding:7px 7px 0px 7px;}
+    </style>
+    <table border=0 class="t-right-border" cellspacing=0 cellpadding=0 style="margin-left:45px;"><tr>#headers#</tr>
+[end]
+
+
+[item]
+    $SET_PARAMETERS exclude=;  current_attr_id=; OPTIONS=ж
+    <td>
+        $GET_DATA [get rule item]  ??rule_nr
+        $GET_DATA [get values list]  
+        <select name="attr_#cat_id#" style="max-width:200px;">
+            <option value="">все</option>  ??!admin_div_id|!cat_id=1
+            #OPTIONS#
+        </select>
+    $INCLUDE [except]   ??!admin_div_id|!cat_id=1
+    </td>
+[end]
+
+[except]
+    <br><input type="checkbox" name="exclude_#cat_id#" value="1"
+    checked ??exclude=1
+    >исключить  
+[end]
+
+
+[report footer] 
+    <td style="border:none;">
+    <input type="button" class="butt1 pt" style="width:100px; margin:0 0 10px 6px;" value="#^save#" ??RULE_RW
+        onClick="AjaxCall('save_rule_result','c=sys/ar/save_user_rule', false,'popupForm');"> <br> ??RULE_RW
+    <input type="button" class="butt1 pt" style="width:100px;" value="Отмена" onClick='AjaxCall("rules_list" , "c=sys/ar/view_user_rules&user_person_id=#user_person_id#"); '>
+    </td></tr></table>
+    <div id="save_rule_result"></div>
+[end]
+
+==============================================================================
+==============================================================================
+
+
+
+[get admin info]  ****** проверям, есть ли у админа ограничение по подразд. 
+    select target_code as "ADMIN_DIVISION"
+        from a_user_role ur
+    where ur.user_id=#USER_ID# and role_id=14 and target_type_id=1 and active=1
+    limit 1
+[end]
+
+
+[get admin criteria]  ****** данные условия, которое нужно добавлять, асли лаб.админ
+    select id as admin_div_id, value as admin_div_value, cat_id as admin_div_cat_id
+    from p_attrib 
+    where val_id=#ADMIN_DIVISION# and cat_id=1
+[end]
+
+
+
+[check rule RW]  ******* проверка, может ли лаб.админ изменять правило (присутствует ли в нем его лаб.)
+    select 'Y' as "RULE_RW"
+    from p_user_rule ur left join p_attrib a on a.id=ur.attr_id
+    where ur.USER_ID=#user_person_id# 
+        and rule_nr=#rule_nr#
+        and a.id=#admin_div_id# and a.cat_id=#admin_div_cat_id#
+    limit 1
+[end]
+
+
+[get cat list]  ******* список категорий для заголовков таблицы формы.
+    select concat('<td>', shortName, ':</td>') as headers
+    from p_category order by sort
+[end]
+
+
+[SQL]   ****** цикл по категориям
+    select id as "cat_id"
+    from p_category order by sort
+[end]
+
+
+[get rule item] ****** выборка очередного условия правила
+    select r.attr_id as "current_attr_id", exclude
+    from p_user_rule r 
+    join p_attrib a on a.id=r.attr_id 
+    where r.user_id=#user_person_id#
+        and r.rule_nr=#rule_nr#
+        and a.cat_id=#cat_id#
+[end]
+
+[get values list]  ******* выпадающий список возможных значений атрибута
+    select concat('<option value="', a.id ,'"'
+        , case when a.id=#current_attr_id# then ' selected' else '' end  ??current_attr_id
+        ,'>', a.value,'</option>') as "OPTIONS"
+    from  p_attrib a
+    left join info_10 i on i.id=a.val_id  ??cat_id=1
+    where a.cat_id=#cat_id#
+        and a.id=#admin_div_id#  ??admin_div_id&cat_id=1
+    order by 
+        a.value  ??!cat_id=1
+        i.sort  ??cat_id=1
+[end]
+
+

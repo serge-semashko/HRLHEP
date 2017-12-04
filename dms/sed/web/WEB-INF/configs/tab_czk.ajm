@@ -1,0 +1,43 @@
+tab_czk.cfg
+
+[comments]
+descr=U: Вывод таба "ЦЗК" 
+
+input=none
+output=HTML форма списка документов
+parents=main.cfg
+childs=JINR/reports/czk_docs.cfg
+testURL=?c=tab_czk
+author=Куняев
+[end]
+
+
+[parameters]
+request_name=U:Список заявок ЦЗК
+LOG=ON
+debug=off
+[end]
+
+[report]
+    $SET_PARAMETERS srt=dh.status; desc=; ??!srt
+    <div id="czk_docs"></div>
+
+    <script type="text/javascript">
+        var submitForm=function() {
+        alert(1); ??
+            AjaxCall("czk_docs", "c=JINR/reports/czk_docs", true, "filters_div",true); 
+        }
+
+        var resetSort=function(){
+            document.theForm.srt.value="dh.status"; 
+            document.theForm.desc.value="";
+            document.theForm.srn.value=1; 
+        }
+
+        AjaxCall("czk_docs","c=JINR/reports/czk_docs",true,"",true); 
+
+        setModule("JINR/reports/czk_docs");
+        showPageTop(true);
+
+    </script>
+[end]

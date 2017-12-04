@@ -1,0 +1,504 @@
+free/js_popup.dat
+
+[comments]
+descr=JavaScript для работы с pop-up окнами - диалог, справочник, тултип
+testURL=free/js_popup.dat
+[end]
+
+
+[report]
+
+/*=============================== Просмотр файла ============================*/ ??
+var viewFile=function(file_id){
+    window.open("#ServletPath#?c=viewer/show_file&id=" + file_id, "view" + file_id);
+}
+
+/*=============================== Popup-диалоги ============================*/ ??
+/*=========================================================================*/ ??
+var dialogMinWidth='';
+
+ShowDialog = function(modal, minWidth)
+{ 
+	oldCmd = "."; // сбрасываем запомненную предыдущую команду 
+	$('##overlay').height($(document).height()).show();
+	$("##dialog").show();
+
+	if(minWidth) {
+		log(4, $("##dialog").width()); ??
+		dialogMinWidth = minWidth;
+		if($("##dialog").width() < minWidth)
+			$("##dialog").width(minWidth);
+	}
+	else
+		dialogMinWidth = '';
+	
+	if (modal)
+            $("##overlay").unbind("click");
+	else
+            $("##overlay").click(function (e) {HideDialog(); });
+	$( "##dialog" ).draggable({
+	containment:'parent', ??
+	handle: '.dialog_title'});	
+	$( "##dialog" ).resizable(); ??
+	dialogOn = true;
+	centerDialog(); ??
+}
+
+var HideDialog=function()
+{
+    hideToolTip();	
+    $("##overlay").hide();
+    $("##dialog").fadeOut(300);
+    $("##popupCont").html("");
+    dialogOn = false;
+    $("##overlay").hide();
+} 
+
+var showDoc=function(show, title) {
+    HideDialog();
+if(show) {
+    $('##doc_overlay').show(); 
+    $('##doc_container').show(200); 
+    if(title) $("##doc_window_title").html(title);
+}
+else {
+    $('##doc_overlay').hide(); 
+    $("##doc_content").html("");
+    $('##doc_container').hide(); 
+}
+}
+
+var showMsg = function(selector, msg)
+{
+	var m= (msg)? msg: "<center><h3><br><br><br>Загрузка...<br><br><br><br></h3>"; ??
+	var m= (msg)? msg: $("##loadingMsg").html();
+	$(selector).each(function() {$(this).html(m); });
+	{$(this)[0].innerHTML=m; }); ??
+}
+
+centerDialog = function(){
+	if (!dialogOn) return;
+
+	var h = document.body.offsetHeight-200;
+	if(document.all) h = h - 40; ??
+	if (h<200) h=200;
+	if (h>500) h=500;
+	$('##ptree').height(h); ??
+	
+	if(dialogMinWidth)
+		if($("##dialog").width() < dialogMinWidth)
+			$("##dialog").width(dialogMinWidth);
+			
+//  if(document.all) t = ($("body").innerHeight() - $('.dialog').outerHeight())/2 + $(window).scrollTop(); ??
+//	else t = ($("window").innerHeight() - $('.dialog').outerHeight())/2 + $(window).scrollTop(); ??
+//	t=$(window).scrollTop() + 10;
+	var top = window.document.body.scrollTop + 50 + (h - $('.dialog').outerHeight())/2 ;
+	if (top<10) top=10;
+        var left = ($("body").innerWidth() - $('.dialog').outerWidth())/2;
+        log(4, "centerDialog: body.innerWidth=" + $("body").innerWidth() + "; dialog.outerWidth=" + $('.dialog').outerWidth() + ";"); ??
+        log(4, "centerDialog: top=" + top + "; left=" + left + ";"); 
+	$('.dialog').css({
+		position:'absolute',
+		left: left,
+		left: ($("body").innerWidth() - $('.dialog').outerWidth())/2, ??
+		top: top
+	});
+}
+
+$(window).resize(function(){
+    centerDialog();
+});
+
+
+centerDiv = function(div_id){
+
+	var h = document.body.offsetHeight-200;
+	if (h<200) h=200;
+	if (h>500) h=500;
+			
+	var top = window.document.body.scrollTop + 50 + (h - $("##" + div_id).outerHeight())/2 ;
+	if (top<10) top=10;
+        var left = ( $("body").innerWidth() - $("##" + div_id).outerWidth() )/2;
+log(4, "centerDiv: body.innerWidth=" + $("body").innerWidth() + "; dialog.outerWidth=" + $('##' + div_id)).outerWidth() + ";");  ??
+log(4, "centerDiv: top=" + top + "; left=" + left + ";"); ??
+	$("##" + div_id).css({
+		position:'absolute',
+		left: left,
+		top: top
+	});
+}
+
+
+//------------- pop-up справочник ---------------??
+/*
+ *	Вызов окна справочника по событию. 
+ */
+var showSprav = function(ev) {
+    var requesterId = $(ev.target).attr("id");  //input field id
+    var obj = $('##' + requesterId); 
+    log(4, "showSprav: ID=" + requesterId);
+    var info_id = $(ev.target).attr("info_id");  //id справочника, кот.надо вызвать
+    var info_view = $(ev.target).attr("info_view");  //представление справочника	
+    var searchFor = $(ev.target).attr("searchFor");  //Строка поиска из атрибута инпута
+    var callback = $(ev.target).attr("callback");  //Замена стандартного обработчика клика на записи (pasteInfoResult)
+    if(typeof callback == "undefined") callback="";
+//	if(typeof searchFor == "undefined") searchFor=obj.val(); //строка поиска из значения инпута
+    if(searchFor == "") searchFor=obj.html(); //строка поиска из HTML элемента
+
+    if(info_view == 11) { //drop-down справочник (получить их коды и вставить сюда)
+        showSpravDD(requesterId); 
+        AjaxCall("dd_info", "c=svs/info_show_dd&info_id=" + info_id + "&info_view=" + info_view
+                + "&requesterId=" + requesterId 
+        + "&callback=" + callback 
+        , true);
+    }
+    else {
+    //    var top = obj.offset().top + obj.height() + 15; //Y-координата вызывающего элемента ??
+    //    var top = 100; // Фиксируем Y-координату. Не знаю, что лучше. ??
+        var top = window.document.body.scrollTop + 100 ;
+        if (top<10) top=10; ??
+        var left = obj.offset().left - 50;
+        $('##d_sprav_window').css({'top': top, 'left': left}); //ставим координаты pop-up окна
+
+        AjaxCall("d_spravCont", "c=svs/info_show&info_id=" + info_id + "&info_view=" + info_view
+                + "&requesterId=" + requesterId + "&searchFor=" + searchFor + "&irpp=10", true);
+	$('##sprav_overlay').height($(document).height()).show();
+    }
+    return false;
+
+}
+
+/*
+ *	Показать окно drop-down справочника по событию. 
+ *	Координаты берутся из атрибутов вызывающего элемента
+ */
+var showSpravDD = function(requesterId, callback) {
+  //  var requesterId = $(ev.target).attr("id");  //input field name
+    var obj = $('##' + requesterId); 
+  //  var callback = $(ev.target).attr("callback");  //представление справочника	
+
+    var top = obj.offset().top + obj.height() + 1; //Y-координата вызывающего элемента 
+    if (top<10) top=10; 
+    var left = obj.offset().left;
+log(4, "showSpravDD: " + requesterId + "; width:" + obj.width());
+alert("top="+ top + "; left=" + left + "; obj.width=" + obj.width()); ??
+    $('##dd_info').css({'top': top, 'left': left, 'width': obj.width() + 24 }); //ставим координаты pop-up окна
+
+    $('##dd_info').show(200); //показываем Tooltip окно
+
+}
+
+/*
+ *	Показать окно POP-UP справочника. 
+ *	
+ */
+var doShowSprav = function()
+{	
+
+	var top = window.document.body.scrollTop + 70;
+	if (top<10) top=10; ??
+log(4, "body.scrollTop=" + window.document.body.scrollTop + "; top=" + top); ??
+	$('##d_sprav_window').css({
+		position:'absolute',
+		left: ($("body").innerWidth() - $('##d_sprav_window').outerWidth())/2,
+		top: top
+	});
+
+//	$('##d_spravCont').html("ЗАГРУЗКА"); ??
+//		$('##d_spravCont').html($('##loadingCont').html());
+	$('##sprav_overlay').height($(document).height()).show();
+	$('##d_sprav_window').show();
+	$( "##d_sprav_window" ).draggable({ handle: '.dialog_title'});	
+	$( "##d_sprav_window" ).resizable(); ??
+	infoOn = true;
+	centerInfo(); ??
+}
+
+/*
+ *	Убрать окно POP-UP справочника. 
+ */
+var hideSprav = function()
+{	
+  $('##d_spravCont').html("");
+	$('##d_sprav_window').hide();
+	if(!dialogOn) ??
+		$('##sprav_overlay').hide();
+	infoOn = false;
+  document.theForm.request_param.value="";
+  hideToolTip();
+}
+
+/*
+ * Поставить заголовок справочника. 
+ * Дергается конкретным справочником при отображении контента
+ */
+var setInfoName = function(name){
+$('##sprav_title').html('Справочник "' + name + '"');
+}
+
+/*
+ * Возврат значения, выбранного из справочника
+ * Пытается вставить id в элемент document.theForm.requesterId_id или в $("##requesterId_id")
+ * text в элементы с именем или ID: 
+ * requesterId, requesterId + "_txt", requesterId + "_text"
+ * затем убирает drop-down
+ */
+var pasteInfoResult = function(requesterId, id, text) {
+log(4, "pasteInfoResult: requesterId=" + requesterId + "; id=" + id + "; text=" + text); 
+  pasteText(requesterId + "_id", id); 
+  pasteText(requesterId, text);
+  pasteText(requesterId + "_txt", text);
+  pasteText(requesterId + "_text", text);
+  //hideSprav();
+  $('##dd_info').hide(); //убираем drop-down окно 
+  $('##d_tooltip').hide(); //убираем tooltip окно 
+}
+
+/*
+ * Вставка текста в элемент.
+ * Для input пытаемся вставить текст в document.theForm.id.value,
+ * если не получилось - то в input.val() по его ID,
+ * для других элементов - в html элемента по его ID,
+ */
+var pasteText = function(id, txt){
+log(4, "pasteText: id=" + id + "; txt=" + txt); 
+    try {
+        eval("document.theForm." + id + ".value='" + txt + "';");
+    } catch(e){ 
+        if ($('##' + id).is("input")) 
+            $('##' + id).val(txt); //пытаемся вставить текст в значение инпута
+        else ??
+    }
+    $('##' + id).html(txt); //вставляем текст в элемент по ID
+}
+
+/*
+ * Обработка ввода в поле поиска.
+ * Для не спец.символов запускает поиск по справочнику
+ * с задержкой после клика
+ */
+var searchKeyPressed = function(obj, ev) {
+	caretPosition = obj.selectionStart;
+	if(
+	 ev.which != 16  // <shift> 
+	&& ev.which != 32 //space ??
+	&& ev.which != 8  // <del> ??
+	&& ev.which != 13  // <enter> ??
+	&& ev.which != 17  // <ctrl> 
+	&& ev.which != 18  // <alt> 
+	&& ev.which != 27 // <esc>
+	&& ev.which != 37 // <-
+	&& ev.which != 38 // <-
+	&& ev.which != 39 // UP
+	&& ev.which != 40 // DOWN
+	&& ev.which != 190  // .
+	) {
+		log(4, "key:" + ev.which); ??
+		document.infoForm.START_REC.value = 1;
+		scheduleSearch(); 
+	}
+	else if(ev.which == 27) // <esc>
+		hideSprav();
+}
+
+/*
+ *
+ */
+
+var scheduleSearch = function(){
+	  if (timeout_id) clearTimeout(timeout_id);  //таймаут поиска по справочнику. 
+		log(4, "scheduleSearch"); ??
+		timeout_id = window.setTimeout(doSearch, 700);
+}
+
+
+/**
+ * Восстановление списка "мультивыбранных" значений плоского справочника
+ * с крестиками для удаления элементов
+ * infoFieldId - корневой ID поля справочника
+ */
+var restoreInfoList=function(infoFieldId) {
+      var textfieldid = infoFieldId+"_text"; //id поля для текстов выборки
+      var idfieldid = infoFieldId+"_id"; //id поля для id-шников выборки
+      var listid = infoFieldId+"_list"; //id элемента-контейнера для удаления элементов выборки
+log(4,  $("##"+textfieldid).val() + " / " + $("##"+idfieldid).val() ); ??
+log(4,  "/" + $("##"+listid).length ); ??
+      if(
+        $("##"+textfieldid).val().length>0 //если поле текстов не пусто
+            && $("##"+idfieldid).val().length>0 //и поле id не пусто
+            && $("##"+listid).length > 0 ){ //и есть контейнер
+        var selids = $("##"+idfieldid).val().split(",");
+        var seltexts = $("##"+textfieldid).val().split(","); ??
+        var seltexts = $("##"+textfieldid).val().split(STRING_VALUES_SEPARATOR);
+
+        if(selids.length==seltexts.length){
+            //составляем html строку для списка
+            var s="";
+            for(i = 0 ; i < selids.length;i++){
+                s+="<li class='nobull'>"+seltexts[i]+"&nbsp;<a delfrom = '"+idfieldid+"' delval='"+selids[i]+"' delfromtext='"+textfieldid+"'  onclick = 'delSelectedInfoItemFromChoice(this)' class='delcross' title='Удалить'>X</a></li>";
+            }
+            if(s.length>0){
+                s = "<ul class='p0'>"+s+"</ul>";
+                $("##"+listid).html(s);
+            }
+        }
+      }
+}
+
+
+/*
+ * Центрирование окна справочника на экране
+ */
+var centerInfo = function(){
+	if (!infoOn) return;
+	var h = document.body.clientHeight-200;
+	if (h<200) h=200;
+	if (h>1200) h=1200;
+	var top = window.document.body.scrollTop + 50 + (h - $('##d_sprav_window').outerHeight())/2 ;
+// log(4, "top=" + top + ". h=" + h + ". d_h=" + $('##d_sprav_window').outerHeight());
+	if (top<10) top=10;
+	var left =  ($("body").innerWidth() - $('##d_sprav_window').outerWidth()) / 2;
+	$('##d_sprav_window').css({
+		position:'absolute',
+		left: left
+		top: top ??по вертикали - ставим по вызвавшему эл-ту в showSprav()
+	});
+}
+
+/*
+ * Переход на соседнюю страницу данных справочника
+ * если shift > 0 - на следующую, shift < 0 - на предыдущую, 
+ * shift = 0 - переход на первую страницу. 
+ */
+var showNext  = function(shift){
+	var start_rec = Number(document.infoForm.START_REC.value);
+	var irpp = Number(document.infoForm.irpp.value);
+        if(!irpp) irpp=20;
+	
+	if(shift > 0)
+		start_rec = start_rec + irpp;
+	else if(shift < 0)
+		start_rec = start_rec - irpp;
+	else
+		start_rec = 1;
+	if(start_rec < 1) start_rec = 1;
+	
+	document.infoForm.START_REC.value = start_rec;
+	doSearch();
+}
+
+
+//------------- pop-up ToolTip ---------------??
+var toolTipParam = "";
+/*
+ * Загрузить в окно tooltip-a произвольный контент и показать tooltop с задержкой
+ */
+var showToolTip = function(ev, obj) {
+  if (timeout_id) 
+    clearTimeout(timeout_id);  //таймаут открытия окна tooltip-a.
+
+  try{
+    if(!obj) {
+      obj=$(ev.target);
+    }
+    
+    var tt_text = obj.attr("tt_text");  //хардкодед текст тултипа
+    var tt_cfg = obj.attr("tt_cfg");  //модуль вывода содержания тултипа
+    if(!tt_text && !tt_cfg) {
+      obj = obj.parent();
+      tt_text = obj.attr("tt_text"); 
+      tt_cfg = obj.attr("tt_cfg");  
+    }
+    if(!tt_text && !tt_cfg) return;  // нет параметров - ничего не показываем
+
+    var left = obj.offset().left; // X - от источника
+    var top = obj.offset().top + obj.height() + 5; //Y - от источника 
+
+//log(4, "obj.width()=" + obj.width() + "; css:" + obj.css("max-width") + "; " + parseInt(obj.css("max-width")));
+    var child = obj.children().first();
+    var maxWidth = parseInt(child.css("max-width"));
+    if( maxWidth ) {
+//log(4, "obj.width()=" + child.width() + "; css:" + child.css("max-width") + "; " + parseInt(child.css("max-width")));
+      if(child.width() < maxWidth) return;  // все видно в элементе - тултип не выводим
+    }
+
+    timeout_id = window.setTimeout(doShowTooltip, 500);
+
+    var tt_width = obj.attr("tt_width");  //макс.ширина окна тултипа 
+    if(!tt_width) tt_width=obj.width() - 30; //если ширина не указана - берем от источника 
+
+    if(tt_text) {
+  //    left = mouseX - 100; // X окна тултипа - от мыши 
+  //    top = mouseY + 25; // Y - от мыши 
+      toolTipParam="";
+      $('##d_tooltip').html(tt_text);
+    }
+    else {
+      var tt_id = obj.attr("tt_id");  //id содержания тултипа
+      toolTipParam = "c=" + tt_cfg + "&tt_id=" + tt_id;
+    }   
+
+    var shiftX = obj.attr("shiftX");  //сдвиг окна тултипа по Х
+    if(shiftX) 
+      left = Number(left) + Number(shiftX);
+    $('##d_tooltip').css({'top': top, 'left': left, 'max-width': tt_width}); //ставим координаты и ширину Tooltip окна
+  log(4, " coord : " + top + ":" + left + "; shiftX=" + shiftX);  ??
+  log(4,  "showInfoToolTip: " + toolTipParam + "; tt_text=" + tt_text);   ??
+    } catch (e) {alert(e);}
+}
+
+/*
+ * Показать окно tooltip-a
+ */
+var doShowTooltip=function() {
+log(4, "doShowTooltip.toolTipParam=" + toolTipParam); ??
+	if (timeout_id) clearTimeout(timeout_id);  //на всякий случай сбрасываем таймаут открытия окна tooltip-a.
+	if(toolTipParam) {
+    $('##d_tooltip').html("ЗАГРУЗКА...");
+    AjaxCall("d_tooltip", toolTipParam, true); //загружаем tooltip контент
+  }
+  $('##d_tooltip').show(); //показываем Tooltip окно
+}
+
+/*
+ * Убрать окно tooltip-a
+ */
+var hideToolTip = function(){
+log(4,  "hideToolTip..."); ??
+    if (timeout_id) clearTimeout(timeout_id);  //сбрасываем таймаут открытия окна tooltip-a.
+    $('##d_tooltip').hide(); //убираем Tooltip окно
+    $('##d_tooltip').html("");
+}
+
+/*
+ * Загрузить в окно tooltip-a контент из указанного справочника и показать tooltop с задержкой
+ */
+var showInfoToolTip = function(ev, obj) {
+  try{
+    var left = obj.offset().left + 30; // X - от источника
+    var top = obj.offset().top + obj.height() + 5; //Y - от источника 
+    var left = mouseX - 100; // X окна тултипа - от мыши ??
+    var top = mouseY + 25; // Y - от мыши ??
+
+    var width = obj.width() - 30; //макс.ширина - от источника 
+    $('##d_tooltip').css({'top': top, 'left': left, 'max-width': width}); //ставим координаты и ширину Tooltip окна
+  log(4, " coord : " + top + ":" + left);  ??
+
+    var info_id = obj.attr("info_id");  //id справочника 
+    var view = obj.attr("view");  				//представление справочника
+    var recordId = obj.attr("recordId");  //id записи, кот нужно отобразить
+    toolTipParam = "c=svs/showInfoTooltip&info_id=" + info_id + "&view=" + view + "&recordId=" + recordId;
+  log(4,  "showInfoToolTip: " + toolTipParam + ";");  ??
+    if (timeout_id) clearTimeout(timeout_id);  //таймаут открытия окна tooltip-a.
+              timeout_id = window.setTimeout(doShowTooltip, 500);
+	} catch (e) {alert(e);}
+}
+
+var showPageTop = function(show){
+  var top = -92; //На сколько сдвинуть окно вверх
+  var t = 100;
+  if(show) { top = 0; t = 500; }
+  $( "##tabs" ).animate({ top: top }, t, function() { });
+}
+
+[end]

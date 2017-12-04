@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app>
+
+    <session-config>
+      <session-timeout>300</session-timeout>
+    </session-config>
+
+    <display-name>ADB</display-name>
+    <description>ADB application.</description>
+
+    <servlet>
+        <servlet-name>ADB</servlet-name>
+        <servlet-class>jinr.adb.Adb</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ADB</servlet-name>
+        <url-pattern>/adb</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>HW</servlet-name>
+        <servlet-class>jinr.adb.HelloWorld</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>HW</servlet-name>
+        <url-pattern>/hw</url-pattern>
+    </servlet-mapping>
+
+
+    <servlet>
+        <servlet-name>TEST</servlet-name>
+        <servlet-class>dubna.walt.TestServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>TEST</servlet-name>
+        <url-pattern>/test</url-pattern>
+    </servlet-mapping>
+
+
+<!--security-constraint>
+	<web-resource-collection>
+		<web-resource-name>Entire Application</web-resource-name>
+		<url-pattern>/*</url-pattern>
+	</web-resource-collection>
+	<user-data-constraint>
+		<transport-guarantee>CONFIDENTIAL</transport-guarantee>
+	</user-data-constraint>
+</security-constraint-->
+    
+</web-app>

@@ -1,0 +1,125 @@
+[comments]
+descr=А: Редактирование атрибутов пользователя и его ролей. АВТОНОМНЫЙ - без использования справочника персонала
+input=id - ID выбранного пользователя
+output=HTML форма редактирования данных пользователя, 
+parents=admin/users/users_list_table.cfg
+childs=admin/users/user_set_roles
+test_URL=?c=admin/users/user_edit_stanalone&id=1
+author=Куняев
+[end]
+
+[parameters]
+request_name=A:редактир. юзера
+KeepLog=false
+[end]
+
+
+[report]
+<html><body>
+$SET_PARAMETERS RWACC=Y; RACC=Y;
+$INCLUDE [form] ??!cop&RACC=Y
+$INCLUDE [pasteBackScript] ??!cop
+$INCLUDE [process] ??cop&RWACC=Y
+</body></html>
+[end]
+
+
+[form]
+$GET_DATA [getUsqrSQL]
+<div id="result">
+<small>#c#</small> ??debug=on
+<center>
+person: <input name="person__id" size=5 value="">
+<input class="info_input" size=25 name="person_" info_id="11" searchFor='#F# #I# #O#' info_view="2" value="">
+
+<table border=0 cellpadding=3 style="background-color:whitesmoke; width_:100%;">
+<tr><th colspan=2><h3>Пользователь </h3></th></tr> ??
+<input type=hidden name=id value="#id#">
+<td class=label>Фамилия:</td><td><input class="xp" size=15 name=f value="#F#"></td>
+<td class=label>Имя:</td><td><input class="xp" size=15 name=i value="#I#">
+Отчество: <input class="xp" size=15 name=o value="#O#"></td></tr>
+
+<tr><td class=label>Подразделение:</td><td><input class="xp" size=15 name=div_code value="#DIV_CODE#"></td>
+<td class=label>Должность:</td><td colspan=3><input class="xp" size=30 name=post value="#POST#"></td></tr>
+
+<tr><td class=label>Логин:</td><td><input class="xp" size=15 name=login_name value="#LOGIN#"></td> 
+<td class=label>Пароль:</td><td><input class="xp" size=10 name=pw1 value="*****">
+подтверждение: <input class="xp" size=10 name=pw2 value="*****"></td></tr>
+	
+<tr><td class=label>email:</td><td><input class="xp" size=15 name=email value="#EMAIL#"></td>
+<td class=label>Телефон:</td><td><input class="xp" size=15 name=phone value="#PHONE#"></td></tr>
+
+<tr><td class=label>&nbsp;<br>Роли:</td><td colspan=3>
+$CALL_SERVICE c=admin/users/user_edit_roles; ID=#id#;
+</td></tr>
+
+
+<tr><td class=label>Изменено:</td><td class=small colspan=5>#MODIFIED#, #MODIFIER#</td></tr>
+
+<tr><td class="center" colspan=4>
+<input type="button" class="butt1 pt" style="width:120;" value="#^save#" onClick="doSubmit('save', 'admin/users/user_edit', true);">  ??RWACC
+<input type="button" class="butt1 pt" style="width:120;" value="#^cancel#" onClick="HideDialog();">  ??RACC
+
+</td></tr>
+
+</table>
+</center>
+</div>
+[end]
+
+[pasteBackScript]
+<script type="text/javascript">
+window.parent.showMsg("##popupCont");
+window.parent.showMsg("##dialog_title", "Редактирование пользователя #id#");
+window.parent.getResult("popupCont", document.getElementById("result"));
+window.parent.ShowDialog(true, "800");
+window.parent.centerDialog(); 
+</script>
+[end]
+
+
+[getUsqrSQL]
+select  au.PERSON_ID,  au.F,  au.I,  au.O,  au.DIV_CODE,  au.EMAIL,  
+au.PHONE,  au.POST,  au.LOGIN
+,  au.changed,  au.modifier_id  ??
+, DATE_FORMAT(au.changed,'#dateTimeFormat#') as MODIFIED 
+, concat(uu.F, ' ', left(IFNULL(uu.I,''),1), '.', left(IFNULL(uu.O,''),1),'.') as MODIFIER
+from table_users_base au
+left join a_users uu on uu.id=au.modifier_id 
+where au.Id=#id#
+[end]
+
+
+================== Занесение данных в базу (cop=save) ====================
+[process]
+
+$GET_DATA [updateUserSQL]  ??cop=save
+$CALL_SERVICE c=admin/users/user_set_roles; CURR_USER_ID=#id#;
+============= SCRIPT ================
+#ERROR#
+<script type="text/javascript">
+alert("#ERROR#); ??ERROR
+alert("Не реализовано.");    ??cop=new
+setTimeout(function(){window.parent.doSubmit('', 'admin/users/users_list_table');}, 100); 	??cop=save&!ERROR
+</script>
+============= DONE ================
+[end]
+
+refreshParent=function() {
+
+window.parent.doSubmit('', 'admin/users/users_list_table');   
+	??cop=save&!ERROR
+}
+setTimeout(refreshParent, 1000);
+
+
+[updateUserSQL]
+update a_users set
+F='#f#', I='#i#', O='#o#'
+,DIV_CODE=#div_code# ??div_code
+,DIV_CODE=null ??!div_code
+,  EMAIL='#email#'
+,PHONE='#phone#',  POST='#post#',  LOGIN='#login_name#'
+,changed=now(),  modifier_id=#USER_ID#
+where id=#id#
+[end]

@@ -1,0 +1,112 @@
+JINR/reports/czk_docs.cfg
+
+
+[comments]
+descr=U: Модуль выбора модуля вывода списка заявод для ЦЗК
+input=
+output=HTML таблица документов
+parents=tab_czk.cfg
+childs=JINR/reports/czk_docs_table
+author=Куняев
+[end]
+
+
+[parameters]
+request_name=U:документы ЦЗК
+NumTableCols=7
+LOG=ON 
+[end]
+
+
+[report]
+    $INCLUDE dat/common.dat[check login]
+    $INCLUDE [report_] ??USER_ID
+[end]
+
+[report_]
+    $SET_PARAMETERS srt=dat.summa_usd; desc=desc; ??!srt
+    $SET_PARAMETERS ZK=czk;
+    $INCLUDE JINR/reports/czk_docs  [filters] 
+    </form>
+
+    <fieldset><legend class="pt" onClick="toggleDiv('currDocs', 0);"> Заявки в работе</span>: </legend>
+        <div id="currDocs" style="padding:0 0 0 20px; ">
+            $CALL_SERVICE c=JINR/reports/czk_docs_table;
+        </div>
+    </fieldset>
+
+    <fieldset><legend class="pt" onClick="toggleDiv('Protokols', 0); AjaxCall('Protokols','c=JINR/reports/zk_protokols',true,'',true); " > Протоколы в работе</span>: </legend>
+        <div id="Protokols" style="padding:0 0 0 20px; display:none;">
+        </div>
+    </fieldset>
+
+    <form name="oldDataForm" id="oldDataForm" method="POST" enctype="multipart/form-data" onSubmit="return getOldData();">
+
+    <fieldset><legend class="pt" onClick="toggleDiv('oldDocs', 0);" > Завершенные заявки</span>: </legend>
+        <div id="oldDocs" style="padding:0 0 0 20px; display:none;">
+        </div>
+
+        <input type="hidden" name="srn">
+        <input type="submit" class="butt1 pt" style="width:100; display:none;" value="ОК">
+    </fieldset>
+
+    $INCLUDE JINR/reports/czk_docs[script]
+[end]
+
+
+
+[filters] +++++ Фильтры документов ЗК (заявки в работе) +++++ 
+    <div id="filters_div">
+        <input type=hidden name="srn" value="#srn#"> 
+        <input type=hidden name="srt" value="#srt#">
+        <input type=hidden name="desc" value="#desc#">
+
+        <table border=0 cellpadding=5 style="margin:20px 0 20px 100px; border:solid 1px white;">
+            <tr><td class="nowrap label" nowrap>
+            Подразделение:</td><td>
+            <input type=hidden value="#f_div_id#" size="5" name="f_div_id">
+            <input type=hidden value="#f_div#" name="f_div">
+            <div id="f_div" class="info_input pt big bg_white" style="display: inline-block; width:100px; height:20px; border:solid 1px gray; " info_view="11" info_id="10"> ??!NUM_DIVS=1
+            все ??!f_div
+            #f_div#
+            </div>  ??!NUM_DIVS=1
+            </td></tr>
+
+            <tr><td class="nowrap label" nowrap>
+            № заявки:</td><td><input size="7" name="f_doc_number" value="#f_doc_number#">
+            ID: <input size="7" name="f_doc_id" value="#f_doc_id#"> ??USER_ID=2309_ЯЯЯ
+            </td></tr>
+
+
+            ++++++++++++++++++ кнопка +++++++++++++++++++++ ??
+            <tr><td class="label">
+                Искать текст:</td><td><input size=40 name="f_search" value="#f_search#"> &nbsp; 
+                <input type="submit" class="butt1 pt" style="width:100;" value="ОК" 
+            </td></tr>
+        </table>
+    </div>
+[end]
+
+[script]
+<script>
+    var getOldData=function(keepSrn){
+        if(!keepSrn)
+            document.oldDataForm.srn.value="";  
+        AjaxCall('oldDocs', 'c=JINR/reports/#ZK#_all_docs_table&f_div_id=#f_div_id#', true, 'oldDataForm');
+        return false;
+    }
+
+    var goToRowA=function(srn){
+        document.oldDataForm.srn.value=srn;  
+        log(2, srn); ??
+        getOldData(true);
+    }
+
+    var filterByDiv=function(requesterId, id, text){
+        pasteInfoResult(requesterId, id, text);
+        getOldData(); 
+    }
+
+    getOldData();
+</script>
+[end]

@@ -1,0 +1,58 @@
+[comments]
+descr=JavaScript для работы с табами
+testURL=free/js_tabs.dat
+[end]
+
+[report]
+/*=============================== TABs ====================================*/ ??
+/*=========================================================================*/ ??
+
+var t_monitor = function() {AjaxCall("c_monitor", "c=admin/tab_monitor",true,"",true); }
+var t_myDocs = function () {AjaxCall("c_myDocs", "c=tab_myDocs",true,"",true); } // Клик на табе "Мои документы" 
+var t_czk = function () {AjaxCall("c_czk", "c=tab_czk",true,"",true); } // Клик на табе "ЦЗК" 
+var t_lzk = function () {AjaxCall("c_lzk", "c=tab_lzk",true,"",true); } // Клик на табе "ЛЗК" 
+var t_smts = function () {AjaxCall("c_smts", "c=tab_smts",true,"",true); } // Клик на табе "СМТС" 
+var t_allDocs = function () {AjaxCall("c_allDocs", "c=tab_allDocs",true,"",true); } // Клик на табе "Все документы" 
+var t_settings = function() {AjaxCall("c_settings", "c=tab_settings",true,"",true);} 
+var t_users = function() {AjaxCall("c_users", "c=admin/tab_users",true,"",true);};
+//log(4, "start loading");
+
+var setTabsClicks=function(tabDivId, act)
+{
+    var a = 0;
+    if (act) a = act;
+    $( "##" + tabDivId ).tabs({
+	active: a,
+	beforeActivate: function( ev, ui ) 
+	{
+            var old_cont = atab.replace("t_", "c_");
+            log(4, old_cont + " / " + atab + " => " + ui.newTab[0]["id"]); 
+            if(tabDivId !== "info_tabs") 
+              $(".cont").html(""); //очистить все табы, если работаем не с под-табами (справочник)
+            try { document.theForm.srt.value=""; } catch (e) {;}
+			atab=ui.newTab[0]["id"];
+			eval(atab + "();");
+	}
+    });
+};
+
+//log(4, "Loaded");
+var clickTab=function(id)
+{
+	log(4, id); ??
+showProps($("##" + id + " a"));  ??
+	$("##" + id + " a").click();
+};
+
+var setLang=function(lang){
+  frm.target="";
+  frm.lang_.value=lang;
+  frm.c.value='#c#';
+  frm.submit();
+}
+
+[end]
+
+var openTabById=function(id){
+$('##tabs').tabs( "option", "active", $('##ltabs li').index($('##'+id)) );
+}

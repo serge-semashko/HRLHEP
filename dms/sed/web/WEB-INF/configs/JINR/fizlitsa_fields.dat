@@ -1,0 +1,67 @@
+JINR/fizlitsa_fields.dat
+
+
+[field_view]
+^#FIELD_DB_NAME#
+[end]
+
+
+[field_write]
+    $SET_PARAMETERS item_id_param=#FIELD_DB_NAME#_id
+    <div class="info_input" id="#FIELD_DB_NAME#" style="width:100px;"
+    info_id="#INFO_ID#" info_view="#INFO_VIEW#" info_type="#INFO_TYPE#" searchFor='none'
+    >выбрать</div> 
+
+    <input type=hidden id="#FIELD_DB_NAME#_id" name="#FIELD_DB_NAME#_id" size=4 value="^#item_id_param#">
+    <input type=hidden id="#FIELD_DB_NAME#_text" name="#FIELD_DB_NAME#" size=45 value="^#FIELD_DB_NAME#"> 
+
+    <div id="JINR_FIZLITSO">
+    $CALL_SERVICE c=JINR/field_Fizlitso;
+    </div>
+
+    <script type="text/javascript">
+    var customSelectInfoRow= function(el, text)
+    {
+        if($(el).attr("info_id") == 12 ) {
+            AjaxCall("JINR_FIZLITSO", "c=JINR/field_Fizlitso&FIELD_DB_NAME=#FIELD_DB_NAME#&info_id=#INFO_ID#&record_id=" + $(el).attr("returnId")  , true);
+            hideSprav();
+        }
+    }
+
+    AjaxCall("JINR_FIZLITSO", "c=JINR/field_Fizlitso&FIELD_DB_NAME=#FIELD_DB_NAME#&DOC_TYPE_ID=#DOC_TYPE_ID#&doc_id=#doc_id#" , true); ??
+    </script>
+[end]
+
+
+[save]
+    $GET_DATA JINR/fizlitsa_fields.dat[updateFizlitso]
+    $SET_PARAMETERS #CUSTOM_FIELD_DB_NAME#=#JINR_FIZLITSO_F# #JINR_FIZLITSO_I# #JINR_FIZLITSO_O#;
+[end]
+
+
+[updateFizlitso]
+    UPDATE d_data_#DOC_TYPE_ID# SET 
+        #CUSTOM_FIELD_DB_NAME# = '#JINR_FIZLITSO_F# #JINR_FIZLITSO_I# #JINR_FIZLITSO_O#'
+      , #CUSTOM_FIELD_DB_NAME#_F = '#JINR_FIZLITSO_F#'
+      , #CUSTOM_FIELD_DB_NAME#_I = '#JINR_FIZLITSO_I#'
+      , #CUSTOM_FIELD_DB_NAME#_O = '#JINR_FIZLITSO_O#'
+      , #CUSTOM_FIELD_DB_NAME#_dr = STR_TO_DATE("#JINR_FIZLITSO_dr#",'#dateFormat#') ??JINR_FIZLITSO_dr
+      , #CUSTOM_FIELD_DB_NAME#_dr = null ??!JINR_FIZLITSO_dr
+      , #CUSTOM_FIELD_DB_NAME#_inn = '#JINR_FIZLITSO_inn#'
+      , #CUSTOM_FIELD_DB_NAME#_pfr = '#JINR_FIZLITSO_pfr#'
+      , #CUSTOM_FIELD_DB_NAME#_strana = '#JINR_FIZLITSO_strana#'
+      , #CUSTOM_FIELD_DB_NAME#_vid_doc = '#JINR_FIZLITSO_vid_doc#' ??
+      , #CUSTOM_FIELD_DB_NAME#_seria = '#JINR_FIZLITSO_seria#'
+      , #CUSTOM_FIELD_DB_NAME#_nomer = '#JINR_FIZLITSO_nomer#'
+      , #CUSTOM_FIELD_DB_NAME#_vidan = '#JINR_FIZLITSO_vidan#'
+      , #CUSTOM_FIELD_DB_NAME#_kod_podrazd = '#JINR_FIZLITSO_kod_podrazd#' ??
+      , #CUSTOM_FIELD_DB_NAME#_dat_vid = STR_TO_DATE("#JINR_FIZLITSO_dat_vid#",'#dateFormat#') ??JINR_FIZLITSO_dat_vid
+      , #CUSTOM_FIELD_DB_NAME#_dat_vid = null         ??!JINR_FIZLITSO_dat_vid
+      , #CUSTOM_FIELD_DB_NAME#_dat_reg = STR_TO_DATE("#JINR_FIZLITSO_dat_reg#",'#dateFormat#') ??
+      , #CUSTOM_FIELD_DB_NAME#_dat_reg = null         ??
+      , #CUSTOM_FIELD_DB_NAME#_address = '#JINR_FIZLITSO_address#'
+      , #CUSTOM_FIELD_DB_NAME#_phon = '#JINR_FIZLITSO_phon#'
+     WHERE doc_id = #doc_id#
+    ;
+[end]
+

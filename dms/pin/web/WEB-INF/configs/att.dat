@@ -1,0 +1,47 @@
+[parameters]
+[end]
+
+
+[yrs] 
+YR_N=#YR_N#; YR_BEG=#YEAR_NOW#; YR_END=#YEAR_NOW# ??
+<div>
+Отобрать данные за период:<br>
+<span id=yra_1 onClick="setYRSa(1,#YEAR_NOW#,#YEAR_NOW#);"
+class=yr_act ??YR_N=1
+class=yr_i ??!YR_N=1
+>#YEAR_NOW# г.</span><span id=yra_3 onClick="setYRSa(3,#YEAR_3#,#YEAR_NOW#);"
+class=yr_act ??YR_N=3
+class=yr_i ??!YR_N=3
+>3 года</span><span id=yra_5 onClick="setYRSa(5,#YEAR_5#,#YEAR_NOW#);"
+class=yr_act ??YR_N=5
+class=yr_i ??!YR_N=5
+>5 лет</span><span id=yra_0 onClick="setYRSa(0,'-','-');"
+class=yr_act ??YR_N=0
+class=yr_i ??!YR_N=0
+>всё время</span> &nbsp;
+
+с  
+<input name="YR_BEG_a" value='#YR_BEG#' class=xpc size=4> 
+по 
+<input name="YR_END_a" value='#YR_END#' class=xpc size=4> 
+</div>
+
+<script>
+function setYRSa(n,beg,end)
+{ // setYRS(n,beg,end);
+	var n0=document.theForm.YR_N.value;
+	alert (n0); ??
+	document.getElementById("yr_" + n0).className="yr_i"; 
+	document.getElementById("yra_" + n0).className="yr_i"; 
+	document.theForm.YR_N.value=n;
+	document.theForm.YR_BEG.value=beg; 
+	document.theForm.YR_END.value=end; 
+	document.theForm.YR_BEG_a.value=beg; 
+	document.theForm.YR_END_a.value=end;  
+	document.getElementById("yr_" + n).className="yr_act"; 
+	document.getElementById("yra_" + n).className="yr_act"; 
+}
+</script>
+
+[end]
+

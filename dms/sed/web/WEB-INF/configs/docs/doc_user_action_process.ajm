@@ -1,0 +1,160 @@
+docs/doc_user_action_process.ajm
+
+[comments]
+descr=U: выполнение действия с документом.
+
+input=данные из docs/doc_user_action.cfg (параметры и данные формы)
+output=Выполнение действия, выставление ошибки при неудаче
+parents=docs/doc_user_action.cfg
+childs=wf/add_extra_steps.cfg, wf/start_wf.cfg, wf/user_action.cfg, wf/terminate.cfg, wf/set_next_user.cfg, wf/set_next_users.cfg, wf/start_wf_step.cfg, gateway/post_doc.cfg
+[end]
+
+
+[description]
+    Диспетчер обработки действия юзера над документом (стартовать, отклонить, согласовать, делегировать, переслать с возвратом).<br>
+
+    <ul>
+        <li>Проверяет право на выполнение операции и корректность данных</li>
+        <li>Вызывает необходимые модули:<br>wf/add_extra_steps.cfg, wf/start_wf.cfg, wf/user_action.cfg, wf/terminate.cfg, wf/set_next_user.cfg, wf/set_next_users.cfg
+        </li>
+        <li>Выводит юзеру сообщение о результате операции</li>
+        <li>Запускает старт след.шага (AJAX: wf/start_wf_step) </li>
+        <li>Запускает пересылку в шлюз, если необходимо (AJAX: gateway/post_doc) </li>
+        <li>Запускает возврат с задержкой в список документов (мой документы или монитор) при нормальном завершении операции</li>
+    </ul>
+[end]
+
+[parameters]
+request_name=U:действие с документом
+LOG=ON
+[end]
+
+[report]  ***** проверка прав на выполнение операции
+    $CALL_SERVICE c=sys/getARUD;   ??!AR_T=Y&!AR_A=Y&!AR_S=Y&!AR_E=Y&!AR_X=Y
+    $SET_PARAMETERS AR_T=Y;  ??AR_A=Y&WF_ID
+
+    $INCLUDE [OK report]  ??AR_T=Y|AR_A=Y|AR_S=Y|AR_E=Y|AR_X=Y
+    $CALL_SERVICE c=sys/log_doc_access; access_type=4; rejected=1;   ??!AR_T=Y&!AR_A=Y&!AR_S=Y&!AR_E=Y&!AR_X=Y&USER_ID
+[end]
+
+
+[OK report] ****** проверка корректности данных
+    ----- Проверка ввода данных пользователем ------??
+    $SET_PARAMETERS INPUT_ERROR=;
+    $LOG3 <br><b>======docs/doc_user_action_process.ajm: step_id=#step_id#; CURR_STEP_ID=#CURR_STEP_ID#;</b><br>
+
+    $SET_PARAMETERS step_id=#CURR_STEP_ID#  ??!step_id|step_id=0
+    $GET_DATA [check user input]
+    $SET_PARAMETERS PW_OK=Y; ??playMode=on
+    $SET_PARAMETERS extra_users_id=#CREATOR_ID#; result_code=#~doc_action_forward#; rejected=y; FORWARD_USER_OK=Y; ??result_code=#~doc_action_reject#
+    $SET_PARAMETERS FORWARD_USER_OK=Y; ??extra_role_id
+
+    ----- Подготовка к "Вернуть в СМТС" -  ставим параметры ---??
+    $SET_PARAMETERS result_code=#~doc_action_forward#; rejected=y;  ??result_code=#~doc_action_reject_2SMTS#
+
+    ----- Проверка введенных данных и выставление ошибок ---??
+    $LOG3 FORWARD_<hr>docs/doc_user_action_process.cfg: FORWARD_USER_OK=#FORWARD_USER_OK#; UDEFINED_USERS=#UDEFINED_USERS#; result_code=#result_code#; ?result_code=#~doc_action_delegate#|result_code=#~doc_action_forward#|result_code=#~doc_action_inform#|result_code=#~doc_action_prepare#;<br>
+    $SET_PARAMETERS INPUT_ERROR=Пользователь не выбран; ??!FORWARD_USER_OK&UDEFINED_USERS
+    $SET_PARAMETERS INPUT_ERROR=Пользователь не выбран; ??!FORWARD_USER_OK&result_code=#~doc_action_delegate#|result_code=#~doc_action_forward#|result_code=#~doc_action_inform#|result_code=#~doc_action_prepare#
+
+    $SET_PARAMETERS COMMENT_OK=Y; ??user_comment
+    $SET_PARAMETERS INPUT_ERROR=Введите комментарий; COMMENT_OK=; ??!user_comment&!cop=#~doc_action_sign#&!cop=#~doc_action_terminate#&!cop=#~doc_action_startWF#|result_code=#~doc_action_reject_2SMTS#
+    $SET_PARAMETERS INPUT_ERROR=Неверный пароль; ??!PW_OK
+
+    $INCLUDE [really process] ??!ERROR&!INPUT_ERROR
+
+    $INCLUDE [confirm msg]  ??!ERROR&!INPUT_ERROR
+[end]
+
+[really process]   ****** Выполнение команды, если все ОК 
+    $LOG3 step_id=#step_id#; NUM_EXTRA_USERS=#NUM_EXTRA_USERS#; NEXT_USER_OK=#NEXT_USER_OK#; result_code=#result_code#; cop=#cop#; extra_users_id=#extra_users_id#; extra_role_id=#extra_role_id#;<br>
+
+    $CALL_SERVICE c=wf/set_next_user;  ??NEXT_USER_OK&result_code=#~doc_action_sign#
+    $CALL_SERVICE c=wf/set_next_users; ??NUM_EXTRA_USERS>1&result_code=#~doc_action_sign#
+
+    $CALL_SERVICE c=wf/add_extra_steps; action_code=#result_code#; ??result_code>#~doc_action_sign#&FORWARD_USER_OK
+
+    $SET_PARAMETERS result_code=#~doc_action_reject#; ??rejected=y
+
+    $GET_DATA [activate wf]     ??cop=#~doc_action_startWF#
+    $CALL_SERVICE c=wf/user_action  ??!cop=#~doc_action_terminate#&!cop=#~doc_action_startWF#
+    $CALL_SERVICE c=wf/terminate    ??cop=#~doc_action_terminate#
+
+    $GET_DATA [update wf step result]  ??EXTRA_USERS
+    $GET_DATA [update step user]
+
+    <script type="text/javascript">window.parent.jAlert('#ERROR#','ОШИБКА!');</script> ??ERROR&!INPUT_ERROR
+[end]
+
+
+
+[confirm msg] ***** Оповещение, AJAX-вызов старта след. шага и возврат с задержкой в список документов при нормальном завершении операции
+    <script type="text/javascript">
+        alert("cop=#cop#; result_code=#result_code#"); ??
+        window.parent.jAlert("Документ отправлен на согласование.","ОК");  ??cop=#~doc_action_startWF#
+        window.parent.jAlert("Документ согласован и отправлен далее.","ОК");  ??cop=#~doc_action_sign#
+        window.parent.jAlert("Документ возвращен инициатору.","ОК");  ??cop=#~doc_action_reject#
+        window.parent.jAlert("Документ возвращен в СМТС.","ОК");  ??cop=#~doc_action_reject_2SMTS#
+        window.parent.jAlert("Документ переслан.","ОК");  ??cop=forward
+        window.parent.jAlert("Документ отозван.","ОК");  ??cop=#~doc_action_terminate#
+
+        window.parent.showDoc(false);
+        window.parent.AjaxCall("popupCont", "c=wf/start_wf_step&doc_id=#doc_id#&cop=#cop#", true); 
+        window.parent.AjaxCall("c_settings", "c=gateway/post_doc&doc_id=#doc_id#", true); ??POST_DOC_AT_STEP=1
+
+        var go2docsTable = function(){
+        alert("module=" + window.parent.module + "; cop=#cop#; result_code=#result_code#; AR_ADMIN=#AR_ADMIN#"); ??
+        if(window.parent.module==="tab_myDocs") window.parent.AjaxCall("c_myDocs", "c=tab_myDocs");   
+        else window.parent.AjaxCall("c_monitor", "c=admin/tab_monitor");  
+        }
+        window.setTimeout(go2docsTable, 1500);
+    </script> 
+[end]
+
+
+
+==============================================================================
+***************************** Шаблоны SQL запросов ***************************
+==============================================================================
+[check user input] ****** SQLs проверки ввода пользователя
+    $INCLUDE docs/doc_user_action_process.cfg[check user PW] ??authPW
+    select 'Y' as FORWARD_USER_OK, count(id) as NUM_EXTRA_USERS from #table_users_full# where id in(#extra_users_id#) ??extra_users_id
+    ;
+    select 'Y' as NEXT_USER_OK from #table_users_full# where id=#extra_users_id# ??NUM_EXTRA_USERS=1&next_step_id&SET_NEXT_USER=Y
+    ;
+[end]
+
+[check user PW] ****** SQL проверки пароля для подписи
+    select if (password_hash = md5('#authPW#'),'Y' ,'')  as PW_OK 
+    from a_user_pass where user_id = #USER_ID#
+    ;
+[end]
+
+
+
+[update wf step result]  SQL: Пометка в WF при пересылках дополнительным юзерам
+    update wf set result=
+        'Делегировано -> #EXTRA_USERS#' ??cop=#~doc_action_delegate#
+        'Переслано с возвратом -> #EXTRA_USERS#' ??cop=#~doc_action_forward#
+        'Отправлено -> #EXTRA_USERS#' ??!cop=#~doc_action_forward#&!cop=#~doc_action_delegate#
+     , modifier_id=#USER_ID#, modified=now()
+    where id=#step_id#
+[end]
+
+[update step user] SQL: Отметка, кто реально выполнил шаг
+    try: update wf set modifier_id=#USER_ID# where id=#step_id#  ??step_id
+    ;
+    try: commit;
+[end]
+
+
+[activate wf]  SQL: Запуск на согласование
+    select id as "WF_ID" from wf_list where doc_id=#doc_id#
+    ;
+    update wf_list set is_active=1 where doc_id=#doc_id#
+    ;
+    update d_list set status=1 where id=#doc_id#
+    ;
+    update wf set finished=now(), result_code=1, result='Документ отправлен на согласование', modified=now(), modifier_id=#USER_ID#
+    where wf_id=#WF_ID# and step=0
+[end]

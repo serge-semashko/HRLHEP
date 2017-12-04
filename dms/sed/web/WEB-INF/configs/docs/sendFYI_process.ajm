@@ -1,0 +1,74 @@
+sendFYI_process.cfg
+
+[comments]
+descr=U: рассылка документа FYI.
+
+input=doc_id - ID документа, extra_users_id - ID, кому послать, [user_comment] - комментарий пользователя
+output=
+parents=docs/doc_user_action.cfg
+childs=
+testURL=?c=wf/sendFYI&step_id=28&extra_users_id=2309&user_comment=Users_comment
+author=Куняев
+[end]
+
+
+[parameters]
+request_name=U:рассылка док.#doc_id#
+LOG=ON
+[end]
+
+
+[report]
+$GET_DATA [check user input] ??extra_users_id
+$SET_PARAMETERS ERROR=Выберите, кому нужно отправить документ; ??!FORWARD_USERS_OK
+
+$EXECUTE_LOOP next_user_id; #extra_users_id#; [send to one user]  ??!ERROR
+
+$CALL_SERVICE c=docs/add_comment_for_doc; doc_id=#doc_id#; comment_type=1;  ??!ERROR&user_comment
+$INCLUDE [confirm msg]  ??!ERROR
+#ERROR#
+$CALL_SERVICE c=sys/log_doc_access; doc_id=#doc_id#; access_type=5;  ??!ERROR
+
+$CALL_SERVICE c=wf/process_events; ??!ERROR
+[end]
+
+
+[send to one user]
+$CALL_SERVICE c=wf/create_event; NOTIFY_USER_ID=#next_user_id#; EVENT_TYPE=#result_code#; 
+
+$GET_DATA [register sent_FYI] ??!ERROR
+[end]
+
+[confirm msg]
+<script>
+window.parent.jAlert("Документ послан для ознакомления.","ОК"); ??result_code=#~doc_action_inform#
+window.parent.jAlert("Документ послан для подготовки.","ОК"); ??result_code=#~doc_action_prepare#
+window.parent.HideDialog(); 
+window.parent.AjaxCall("c_myDocs", "c=tab_myDocs"); ??ZZZ
+</script> 
+[end]
+
+
+==============================================================
+==============================================================
+==============================================================
+
+[check user input]
+select 'Y' as FORWARD_USERS_OK from #table_users_full# where id in(#extra_users_id#);
+[end]
+
+
+[register sent_FYI]
+insert into d_sent_FYI(doc_id, result_code, user_id, from_id, dat, comments, comment_opened)
+values(#doc_id#
+, #result_code# ??result_code
+, #~wf_step_information#  ??!result_code
+, #next_user_id#, #USER_ID#, now(), '#user_comment#'
+, 1 ??comment_opened
+, 0 ??!comment_opened
+)
+;
+replace into p_permits (user_id, doc_id, rule_nr, created)
+values (#USER_ID#, #doc_id#, null, now())
+[end]
+

@@ -1,0 +1,73 @@
+copy2db/c1_get_sources.dat
+
+
+[getSources]
+$LOG3 <b>+++++++ Источников:  src_type_id.count=#src_type_id.count#; </b><br>
+$LOG3 1.BC:#src_type_id.1.bc#;<br>
+$INCLUDE copy2db/c1_get_sources.dat[setSource] ??src_type_id.count=1
+$INCLUDE copy2db/c1_get_sources.dat[setSources] ??src_type_id.count>1
+$LOG3 <b>+++++++ Источник: </b> SOURCES=#SOURCES#;<br>
+[end]
+
+
+++++++++ В случае одного источника ++++++++
+[setSource]
+$SET_PARAMETERS child_nr=1;
+$INCLUDE copy2db/c1_get_sources.dat[Set Next Source]
+[end]
+
+++++++++ В случае нескольких источников ++++++++
+
+[setSources]
+$LOG <b>c1_set_sources.dat[set sources]:</b> src_type_id.count=#src_type_id.count#; src_type_id.items=#src_type_id.items#;<br>
+$EXECUTE_LOOP child_nr; #src_type_id.items#; copy2db/c1_get_sources.dat[Set Next Source]
+[end]
+
+
+[Set Next Source]
+$SET_PARAMETERS bc=src_type_id.#child_nr#.bc; project_item=src_type_id.#child_nr#.project_item; statia=src_type_id.#child_nr#.statia; src_comment=src_type_id.#child_nr#.comment; 
+$SET_PARAMETERS PROJECT_ITEM=^#project_item#; STATIA=^#statia#; SRC_COMMENT=^#src_comment#;
+
+$SET_PARAMETERS summa=src_type_id.#child_nr#.summa; summa_curr=src_type_id.#child_nr#.summa_curr; summa_rub=src_type_id.#child_nr#.summa_rub; summa_usd=src_type_id.#child_nr#.summa_usd; 
+$SET_PARAMETERS SUMMA=^#summa#; SUMMA_CURR=^#summa_curr#; SUMMA_RUB=^#summa_rub#; SUMMA_USD=^#summa_usd#; 
+
+$SET_PARAMETERS SOURCES=^#bc#;
+$SET_PARAMETERS SOURCES=#SOURCES#, #PROJECT_ITEM#; ??PROJECT_ITEM
+$SET_PARAMETERS SOURCES=#SOURCES#, #STATIA#; ??STATIA
+$SET_PARAMETERS SOURCES=#SOURCES#, #src_type_id.1.summa# #src_type_id.1.summa_curr#; ??src_type_id.1.summa
+$SET_PARAMETERS SOURCES=#SOURCES#, (#src_type_id.1.summa_rub#руб.); ??!src_type_id.1.summa_curr=руб.
+$SET_PARAMETERS SOURCES=#SOURCES#, (#src_type_id.1.summa_usd# USD); ??src_type_id.1.summa_curr=руб.
+$SET_PARAMETERS SOURCES=#SOURCES#, #SRC_COMMENT#; ??SRC_COMMENT
+
+$LOG3 <b>+++++++ SOURCE.#child_nr#=#SOURCES#;</b> <br>
+[end]
+
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+
+$SET_PARAMETERS SOURCES=#src_type_id.1.bc#;
+$SET_PARAMETERS SOURCES=#SOURCES#, #src_type_id.1.project_item#; ??src_type_id.1.project_item
+$SET_PARAMETERS SOURCES=#SOURCES#, #src_type_id.1.statia#; ??src_type_id.1.statia
+$SET_PARAMETERS SOURCES=#SOURCES#, #src_type_id.1.summa# #src_type_id.1.summa_curr#; ??src_type_id.1.summa
+$SET_PARAMETERS SOURCES=#SOURCES#, (#src_type_id.1.summa_rub#руб.); ??!src_type_id.1.summa_curr=руб.
+$SET_PARAMETERS SOURCES=#SOURCES#, (#src_type_id.1.summa_usd# USD); ??src_type_id.1.summa_curr=руб.
+
+[end]
+
+..* src_type_id.1.bc=ЛФВЭ, т.1065 (Кекелидзе, Сорин)
+...* src_type_id.1.statia=06. Оборудование
+...* src_type_id.1.MODIFIER=Скодорова Наталья Тихоновна
+...* src_type_id.1.project_item=NICA:7.3.2.1
+...* src_type_id.1.statia_id=6
+...* src_type_id.1.summa_curr=руб.
+...* src_type_id.1.bc_id=571
+...* src_type_id.1.DOC_TYPE_ID=7
+...* src_type_id.1.summa_rub=700430.00
+...* src_type_id.1.summa_eur=11381.39
+...* src_type_id.1.DOC_TYPE=Источник финансирования
+...* src_type_id.1.CREATED=02.03.2017 12:25:43
+...* src_type_id.1.summa=700430.00
+...* src_type_id.1.summa_usd=11998.27
+...* src_type_id.1.CREATOR=Войтишина Аурика Николаевна
+...* src_type_id.1.project_item_id=23037
+...* src_type_id.1.DOC_TYPE_VERSION=1
+...* src_type_id.1.MODIFIED=02.03.2017 12:53:20

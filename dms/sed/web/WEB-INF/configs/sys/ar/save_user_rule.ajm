@@ -1,0 +1,98 @@
+sys/ar/save_user_rule.cfg
+
+
+[comments]
+    descr=A: Сохранение одного правила
+    input=user_person_id, [rule_nr], 
+    parents=sys/ar/edit_rule_form.cfg
+    author=Куняев
+[end]
+
+
+[description]
+   
+[end]
+
+
+[parameters]
+    service=dubna.walt.service.TableServiceSpecial
+    tableCfg=table_no
+    LOG=ON
+[end]
+
+
+[report header]
+    $GET_DATA [delete rule]  ??rule_nr
+    $GET_DATA [get new rule nr]  ??!rule_nr
+
+    $SET_PARAMETERS creator_div_id=null;  ??!creator_div_id
+    $SET_PARAMETERS HAS_CRITERIA=;
+[end]
+
+
+[item]
+    $SET_PARAMETERS attr_param_name=attr_#cat_id#; exc_param_name=exclude_#cat_id#; attr_id=; value=;  exclude=;
+    $SET_PARAMETERS attr_id=^#attr_param_name#; exclude=^#exc_param_name#;
+    $SET_PARAMETERS exclude=0;  ??!exclude
+
+    <br>cat_id=#cat_id#: attr_param_name=#attr_param_name#; attr_id=#attr_id#; exclude=#exclude#;  ??
+
+    $GET_DATA [add rule item]  ??attr_id
+    $SET_PARAMETERS HAS_CRITERIA=Y; ??attr_id
+    value=#value#; ??
+[end]
+
+
+
+[report footer] 
+    $GET_DATA [add full access] ??!HAS_CRITERIA
+    <br>ПОЛНЫЙ ДОСТУП  ??!HAS_CRITERIA
+    $GET_DATA [schedule set_user_permits]
+
+    <br>
+    Правило добавлено
+    <script type="text/javascript"> 
+            AjaxCall("rules_list", "c=sys/ar/view_user_rules&user_person_id=#user_person_id#&cop=u", false, "", true);
+    </script>
+[end]
+
+
+[delete rule]
+    delete from p_user_rule 
+    where user_id=#user_person_id# and rule_nr=#rule_nr#
+[end]
+
+[get new rule nr]
+    select ifnull(max(rule_nr),9)+1 as rule_nr 
+    from p_user_rule 
+    where user_id=#user_person_id# and rule_nr>-1
+[end]
+
+
+[SQL]
+    select id as "cat_id"
+    from p_category
+    order by sort
+[end]
+
+
+
+[add rule item]
+    select value from p_attrib where id=#attr_id#
+    ;
+    insert into p_user_rule (rule_nr, user_id, attr_id, exclude, value, creator_id, creator_div_id)
+            values (#rule_nr#, #user_person_id#, #attr_id#, #exclude#, '#value#', #USER_ID#, #creator_div_id#)
+[end]
+
+
+[add full access]
+    insert into p_user_rule (rule_nr, user_id, attr_id, exclude, value, creator_id, creator_div_id)
+        values (0, #user_person_id#, 0, 0, 'ПОЛНЫЙ ДОСТУП', #USER_ID#, #creator_div_id#)
+[end]
+
+[schedule set_user_permits]  ****** Занесение задания на обновление разрешений (p_permits)
+    update schedule set active=0 where module='sys/ar/set_user_permits.cfg' and param='user_id=#user_person_id#' and active=1
+;
+    insert into schedule (module, param, nextCall, comment) 
+    values ('sys/ar/set_user_permits.cfg','user_id=#user_person_id#', DATE_ADD(now(),INTERVAL 1 MINUTE), 'Обновление прав #user_person_id#')
+[end]

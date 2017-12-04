@@ -1,0 +1,208 @@
+docs_in_progress_table.cfg
+[comments]
+descr=U: Модуль вывода списка документов (вывод самой таблицы) Вызывается из tab_myDocs (AJAX)
+
+input=
+output=HTML таблица документов
+parents=tab_myDocs
+childs=docs/edit_document
+testURL=?c=docs/docs_in_progress_table
+author=Яковлев, Куняев
+[end]
+
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=U:Список документов
+LOG=ON
+tableCfg=table_no
+$INCLUDE dat/common.dat[rowLinks]
+[end]
+
+
+[report header]
+$INCLUDE dat/common.dat[check login]
+$INCLUDE [OK report header]  ??USER_ID>0|USER_ID<0
+[end]
+
+
+[OK report header]
++++++++ начальная строка и кол-во строк на странице по умолчанию ++++ ??
+$SET_PARAMETERS srn=1; rpp=100000; 
+
+$GET_DATA [get doctypes]                                             	
+
+<table class="tlist tblue" cellspacing=0>
+    <tr><th></th> 
+        <th>Документ</th>
+        <th>Содержание</th>
+        <th>Подразделение</th>
+        <th>Создан</th> 
+        <th class="sdown">Ожидает</th> 
+        <th>Согласование</th>
+    </tr>
+    <tr style="background-color:##efefef">
+        <td> </td> 
+        <td>тип: <select name="f_prog_doctype" style="max-width:200px;" onChange="getProgData();"><option value=""></option>#DOC_TYPES_LIST#
+        </select> №
+        <input name="f_prog_req_nr" value="#f_prog_req_nr#" style="width:70px;"></td>
+        <td><input name="f_prog_title" value="#f_prog_title#" style="width:100%; max-width:500px;"></td>
+        <td>
+            <input type=hidden name="f_prog_div_id"  id="f_prog_div_id" value="#f_prog_div_id#">
+            <input type=hidden name="f_prog_div_txt" id="f_prog_div_txt"  value="#f_prog_div_txt#">
+            <div class="info_input pt big bg_white" id="f_prog_div" info_id="10" info_view="11"  callback="filterByDiv" 
+                style="display: inline-block; width:70px; border:solid 1px gray;">#f_prog_div_txt#&nbsp;</div>
+        </td>
+        <td></td><td></td><td></td>
+    </tr>
+[end]
+
+
+[item]
+$INCLUDE [subtitle] ??!subtitle_shown&status=2
+    $INCLUDE tab_myDocs.cfg[linkedMark]
+
+    <td>
+        $INCLUDE reports/all_docs_table.cfg[mark]  ??MARKED
+        #DOC_TYPE#
+        №#NUMBER#  ??NUMBER
+        от #DOC_DATE#  ??DOC_DATE
+    </td>
+    <td><div class="ellipsis"
+    style="white-space: nowrap; max-width:400px; overflow: hidden; text-overflow: ellipsis;" ??
+    >#TITLE#</div></td>
+    <td>#DIVS#</td> 
+    <td>#CREATOR#</td> 
+    <td>#MODIFIED#, #MODIFIER#</td> ??
+    <td> ??
+    $CALL_SERVICE c=wf/show_wf_status; doc_id=#ID#; show_persons=Y; 
+    </td> ??
+    </tr>
+    $INCLUDE tab_myDocs.cfg[linkedData] ??!img=none
+[end]
+
+[subtitle]
+<tr style="background-color:##efefef">
+    <td colspan=7 class="big last">
+<fieldset style="margin:0px 0px -15px -30px;">
+<legend class="pt" style="display:inline-block;"> 
+            На этапе завершения: 
+        </legend>
+    </fieldset>
+На этапе завершения: ??
+
+</td></tr>
+$SET_PARAMETERS subtitle_shown=Y;
+[end]
+
+<td>
+#ID#  ??USER_ID=2309
+<img src="#imgPath#info_16.png" width=16 height=16> ??cnt>0&!hist_cnt>0
+</td>
+
+
+[report footer]
+    <tr><td colspan=7 class="label last" align=right>
+    $INCLUDE [wf_legend] 
+    </td></tr></table>
+    <script type="text/javascript">$("##num_docs_in_progress").html("#NumTableRows#");</script> ??
+[end]
+
+
+[wf_legend]
+    <table cellspacing="0" cellpadding="0"  style="float:right; border:none;">
+        <tr><td><div class="wf_status step_signed"></div>-согласован</td>
+        <td><div class="wf_status step_rejected"></div>-возвращён</td>
+        <td><div class="wf_status step_forwarded"></div>-переслан</td>
+        <td><div class="wf_status step_waiting"></div>-ожидает</td>
+        <td><div class="wf_status"></div>-не рассмотрен</td></tr>
+    </table>
+[end]
+
+
+*****************************  ***************************
+[get doctypes]
+    select distinct concat('<option value=', cast(dtp.id as char) 
+        , case when dtp.id=#f_prog_doctype# then ' selected' else '' end  ??f_prog_doctype
+        , '>', dtp.short_name, '</option>') as DOC_TYPES_LIST
+        , dtp.sort
+    from d_types dtp
+        join doc_groups dg on (dg.id=dtp.group_id and dg.has_wf=1)
+    where dtp.is_active = 1 and dtp.group_id<98
+        and dtp.id in
+           (select distinct dh.TYPE_ID
+            from d_list dh
+                join wf_history_count wfh on wfh.doc_id=dh.id and wfh.user_id=#USER_ID#
+            where dh.is_deleted=0
+                and dh.status in(1,2)
+           )
+    order by dtp.sort
+[end]
+
+[SQL]
+    select
+        dh.ID, dh.TYPE_ID, dtp.NAME AS DOC_TYPE
+        , dh.NUMBER, dh.TITLE, dh.DIVS
+        , DATE_FORMAT(dh.doc_date,'#dateFormat#') as DOC_DATE 
+        , DATE_FORMAT(dh.created,'#dateTimeFormat#') as CREATED 
+        , dh.creator_id
+        , concat(ucr.F, ' ', left(IFNULL(ucr.I,''),1), '.', left(IFNULL(ucr.O,''),1),'.') as CREATOR
+        , DATE_FORMAT(dh.modified,'#dateTimeFormat#') as MODIFIED
+        , dh.modifier_id 
+        , concat(umr.F, ' ', left(IFNULL(umr.I,''),1), '.', left(IFNULL(umr.O,''),1),'.') as MODIFIER
+        , fyi.cnt, wfh.cnt as hist_cnt
+        , dh.pid, dh.num_children
+        , dm.doc_id as "MARKED"
+        , a.user_id as "VIEWED" 
+        ,dh.status
+        , concat(FORMAT(TIMESTAMPDIFF(day, dh.modified, now()), 0), 'д'
+        , FORMAT(TIMESTAMPDIFF(hour, dh.modified, now())-TIMESTAMPDIFF(day, dh.modified, now())*24,0)) AS WAITING
+        , case when TIMESTAMPDIFF(day, dh.modified, now()) > 1 then 'LONG'
+        else 'SHORT'
+        end
+        AS WAITING_LEVEL
+
+    $INCLUDE docs/docs_in_progress_table[access criteria]
+        and dh.status in(1,2)
+
+        and dh.TYPE_ID=#f_prog_doctype# ??f_prog_doctype
+        and (dh.NUMBER like '%-#f_prog_req_nr#' or dh.NUMBER like '#f_prog_req_nr#') ??f_prog_req_nr
+        and dh.TITLE like '%#f_prog_title#%' ??f_prog_title
+
+    order by dh.status, dh.modified desc
+[end]
+
+[count docs]
+    select count(dh.ID) as NUM_DOCS_IN_PROGRESS
+    $INCLUDE docs/docs_in_progress_table.cfg[access criteria]
+    and dh.status in(1,2)
+[end]
+
+
+[access criteria]
+from d_list dh
+    left join d_types dtp on dtp.Id = dh.type_id
+    left join #table_users_full# ucr on ucr.id=dh.creator_id 
+    left join #table_users_full# umr on umr.id=dh.modifier_id 
+    join d_divs dd on (dd.doc_id=dh.id and dd.div_id=#f_div_id#) ??f_div_id
+    left join d_sent_FYI_count fyi on fyi.doc_id=dh.id and fyi.user_id=#USER_ID#
+    left join wf_history_count wfh on wfh.doc_id=dh.id and wfh.user_id=#USER_ID# 
+    left join d_marked dm on (dm.doc_id=dh.id and dm.user_id=#USER_ID#)
+    left join d_access a on(a.doc_id=dh.id and a.doc_version=dh.version and a.user_id=#USER_ID#) 
+
+    join d_divs dd on (dd.doc_id=dh.id and dd.div_id=#f_prog_div_id#) ??f_prog_div_id
+    join d_divs dd on (dd.doc_id=dh.id and dd.div_id=#f_proc_div_id#) ??f_proc_div_id
+where dh.is_deleted=0 
+$INCLUDE tab_myDocs[access_filter] ??
+        and dh.id in
+           (select distinct dh.id
+            from d_list dh
+                join wf_history_count wfh on wfh.doc_id=dh.id and wfh.user_id=#USER_ID#
+            where dh.is_deleted=0
+           )
+
+    and dh.id not in (select wl.doc_id from wf_list wl join wf on wf.wf_id=wl.id 
+    where wf.user_id=#USER_ID# and not wf.started is null and wf.finished is null) 
+[end]
+
+$INCLUDE reports/all_docs.cfg[access_filter] ??!FULL_READ_ACCESS=Y

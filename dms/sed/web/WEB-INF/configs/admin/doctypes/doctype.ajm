@@ -1,0 +1,220 @@
+admin/doctypes/doctype.ajm
+
+[comments]
+descr=A: Основная форма для различных операций с типом документа.
+
+input=type_id - ID типа документа (из таблицы d_types)
+output=HTML форма просмотра документа, 
+parents=admin/doctypes/doctypes_table.cfg
+childs=admin/doctypes/doctype_form_editor.cfg, admin/doctypes/template_files_list.cfg, admin/wf/wf_template_editor.cfg
+author=Яковлев, Куняев, Устенко
+[end]
+
+
+[description]
+Основная форма для различных операций с типом документа.<br>
+Выводит основную информацию о типе документа.<br>
+
+<ul><li>Предоставляет возможность загрузить шаблоны печатных форм.</li>
+<li>Предоставляет возможность сменить свойство "Рабочий/Не рабочий".</li>
+<li>Предоставляет возможность вызвать редактор формы документа.</li>
+<li>В случае, если установлено свойство "Не рабочий", предоставляет возможность<br>
+редактировать свойства типа документа.</li>
+
+<li>Открывает редактор шаблонов WorkFlow для данного типа документа.</li>
+</ul>
+[end]
+
+
+[parameters]
+request_name=A: Тип документа
+service=dubna.walt.service.TableServiceSpecial ??
+tableCfg=table_no
+KeepLog=false
+ClearLog=true
+divider=<tr><td colspan=2 class="bg_white" style="height:10px; border-top:solid 1px gray;"></td></tr>
+[end]
+
+
+[report]
+$INCLUDE [OK report]  ??RACC
+[end]
+
+[OK report]
+
+    <input type=hidden name=type_id value='#type_id#'> 
+<br>
+
+    ++++++++++++++++++ Информация о типе документа +++++++++++++++++++++ ??
+    <table border=0 class_="tlist" cellpadding=3 cellspacing=0 style="background-color:whitesmoke; margin-left:100px;">
+
+    <tr><td class="label bottom_dotted" nowrap>Группа и название:</td> 
+    <td class="big bg_white bottom_dotted">
+    <select name="GROUP_ID" style="width:120px;">#GROUPS#</select>
+    <input name="TYPE_NAME" size=45 value="#TYPE_NAME#">
+    <input name="TYPE_SHORT_NAME" size=20 value="#TYPE_SHORT_NAME#">
+    <span id="is_act" class=
+        "bg_green"> ??IS_ACTIVE=1
+        "bg_red"> ??!IS_ACTIVE=1
+        <input type=checkbox name="IS_ACTIVE" value="1" onClick="if(this.checked) {$('##is_act').removeClass('bg_red').addClass('bg_green'); } else {$('##is_act').removeClass('bg_green').addClass('bg_red'); }"
+        checked ??IS_ACTIVE=1
+    > рабочий </span></td></tr>
+
+    <tr><td class="label bottom_dotted" nowrap>Шаблоны маршрутов:</td> 
+    <td class="big bg_white bottom_dotted">#WF_NAME#</td></tr>
+
+
+    $INCLUDE [file]
+
+    <tr><td class="label bottom_dotted" nowrap>Хранилище данных (таблица) :</td>
+    $GET_DATA [check data table] 
+    <td><span class=
+    "bg_green">Существует: d_data_#type_id#  ??!ERROR
+    "bg_red">Не создано   ??ERROR 
+    </span></td></tr>
+
+    </table>
+
+    <div id="doc_wf">
+        $CALL_SERVICE c=admin/wf/wf_template_editor; ??
+    </div>
+
+[end]
+
+[file] ******* Секция загрузки файлов-приложений к документу
+<tr><td class="label">Шаблоны печатных форм документа:</td>
+    <td><div id = "doc_files_list" style="float:left; min-width:100px;"></div>
+
+    <div style="float:left; margin-left:20px;"> 
+    Загрузить шаблон в формате Word (<strong>*.docx</strong>):<br>
+    <input type = "file" name = "file-select" id = "file-select" 
+    accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document"/> 
+    <button id = "upload-button" type="button" class="butt1 pt" style="width:100px;font-size:9pt;" >Загрузить</button>
+    </div>
+
+    <div style="clear:both;"></div>
+    </td>
+</tr>
+
+================ Скрипты загрузки файлов-приложений к документу ================= ??
+<script>
+
+var resetFileInputs=function(){
+    $('##file-select').val("");
+    $('##upload-button').show().delay(3000).show().html("Загрузить");
+}
+
+var refreshFileList=function(){
+    AjaxCall("doc_files_list","c=admin/doctypes/template_files_list&type_id=#type_id#");
+}
+
+        refreshFileList();
+        var form = document.getElementById('theForm');
+        var fileSelect = document.getElementById('file-select');
+        var uploadButton = document.getElementById('upload-button');
+
+        uploadButton.onclick = 
+        function(event) {
+            if (fileSelect.value.length==0){ 
+                return;
+            }
+            event.preventDefault();
+            uploadButton.innerHTML = 'Загрузка...';
+            var files = fileSelect.files;
+            var formData = new FormData();
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                formData.append('new_file', file, file.name);
+                formData.append('c','admin/doctypes/template_files_upld');    
+                formData.append('type_id', '#type_id#');
+            }
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '?c=admin/doctypes/template_files_upld', true); 
+            xhr.setRequestHeader("X-Requested-With","XMLHttpRequest");
+            xhr.onload = function () {
+            if (xhr.status === 200) {
+                if(xhr.responseText.trim()!='Файл загружен'){
+                    alert(xhr.responseText);
+                    resetFileInputs();  
+                }else{
+                    uploadButton.innerHTML = xhr.responseText;
+                    resetFileInputs();  
+                }
+                refreshFileList(); 
+            } else {
+                alert('Ошибка соединения!');
+            }
+            };
+            xhr.send(formData);
+        }
+
+</script>
+
+[end]
+
+
+***************************** Шаблоны SQL запросов ***************************
+[preSQLs]
+select dtp.ID, dtp.GROUP_ID
+    , dtp.name as TYPE_NAME, dtp.short_name as "TYPE_SHORT_NAME", dtp.IS_ACTIVE
+
+from d_types dtp
+where dtp.Id = #type_id#
+;
+select concat(wf_name, '; <br>') as WF_NAME
+    from wf_templates_list
+    where wf_templates_list.is_active = 1
+    and wf_templates_list.doc_type_id = #type_id#
+;
+select concat('<option value="', id, '" '
+    , case when id=#GROUP_ID# then 'selected' else '' end
+    , '>', GROUP_NAME, '</option>') as GROUPS 
+from doc_groups
+order by sort
+[end]
+
+
+[check data table]
+    select * from d_data_#type_id# limit 0,1
+[end]
+
+
+ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
+[change buttons] ******* Секция кнопок с разными операциями с типом документа
+<input type="button" class="butt1 pt" style="width:230;" value="Редактировать форму документа" onClick="AjaxCall('c_doctypes', 'c=admin/doctypes/doctype_form_editor&type_id=#type_id#');">
+$INCLUDE [edit doctype property]  ??IS_ACTIVE=0
+[end]
+
+[edit doctype property]
+<input type="button" class="butt1 pt" style="width:170;" value="Свойства документа" 
+onClick="ShowDialog(true); AjaxCall('popupCont', 'c=admin/doctypes/doctype_property&type_id=#type_id#');"
+>
+[end]
+
+
+
+        , dgr.GROUP_NAME
+        , ifnull(DATE_FORMAT(dtp.start_date,'#dateFormat#'),'') as START_DATE
+        , u.FIO as CREATOR
+        , uu.FIO as MODIFIER 
+        , ifnull(DATE_FORMAT(dtp.created,'#dateTimeFormat#'),'') as CREATED
+        , ifnull(DATE_FORMAT(dtp.changed,'#dateTimeFormat#'),'') as MODIFIED
+
+        left join doc_groups dgr on dtp.group_id = dgr.Id
+        left join #table_users_full# u on u.Id = dtp.creator_id
+        left join #table_users_full# uu on uu.Id = dtp.modifier_id
+
+
+    <tr><td class="center  bg_white" colspan=2 style="padding:15px 0 15px 0;">
+
+    $INCLUDE [change buttons]  ??RWACC
+    </td></tr>
+    #divider#
+
+
+<tr><td class="label">Загрузить шаблон в <br> формате Word (<strong>*.docx</strong>) :</td>
+<td class="bg_white"><input type = "file" name = "file-select" id = "file-select" 
+accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document"/> 
+<button id = "upload-button" type="button" class="butt1 pt" style="width:120px;font-size:9pt;" >Загрузить</button>
+</td></tr>

@@ -1,0 +1,46 @@
+svs/showInfoTooltip.ajm
+
+[comments]
+descr=
+output=
+parents=
+childs=
+author=Куняев
+[end]
+
+[parameters]
+request_name=U:tooltip
+service=jinr.sed.ServiceShowInfoRecord 
+LOG=OFF
+CRITERIA=where id=#recordId#
+SYS_FIELDS=id
+[end]
+
+
+
+[report header]
+    <center>
+    <table class=tooltip border=0 cellpadding=0 cellspacing=0>
+[end]
+
+[item]
+    #record#
+[end]
+
+[record]  **** заносится сервисом в параметр "record"
+    <td 
+    class='right' ??field_type=int
+    >#val#</td>
+[end]
+
+[report footer]
+    </table></center>
+    <b>ОШИБКА:</b> #ERROR# ??ERROR
+[end]
+
+
+[preSQLs]
+    $INCLUDE admin/infos/info_data.cfg[getInfoSQL]
+    ;
+    $INCLUDE svs/info_show_plain_data.cfg[preSQLs]
+[end]

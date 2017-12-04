@@ -1,0 +1,140 @@
+[comments]
+descr=Общий JavaScript для работы с формой, динамической подгрузки
+testURL=free/js_forms.dat
+
+[end]
+
+[report]
+/**
+ * Сохранение одного объекта коллекции объектов документа
+ *
+ */
+var saveObject = function(container){
+    alert(object_id); ??
+    AjaxCall(container, 'c=obj/edit_object&cop=save', true, container);
+    $('##' + container).hide(200);
+}
+
+
+/**
+ * Сохранение всех объектов коллекций объектов документа,
+ * для которых открыта форма редактирования объекта
+ */
+var saveAllObjects = function() {
+    $('td.object_edit_form').each(function(i,elem) {
+        var container = $(this).attr("id");
+        if( $('##' + container).is(':visible') ) {
+            log(4, "saveAllObjects: i=" + i + "; container=" +  container); ??
+            saveObject(container);
+        }
+    });
+}
+
+/**
+ *
+ *
+ */
+var setJinrDivFilter=function(requesterId, id, text) {
+  pasteInfoResult(requesterId, id, text);
+  doIt();
+}
+
+/*=========================================================================*/ ??
+/*=============================== Работа с формой ============================*/ ??
+
+var formChanged=false;
+
+
+var checkChanged=function()
+{
+	if(formChanged)
+	{	if (confirm('При переходе изменения данных будут потеряны!\n\r\n\rНажмите "OK" для подтверждения перехода,\n\r"Отмена" для сохранения данных'))
+			formChanged = false;
+		else
+			return false;
+	}	
+	return true;
+}
+
+var setChanged=function(){	formChanged=true;}
+
+var setFilter = function(ev) {
+	var filter = $(this).attr("f");
+	var val =  $(this).attr("val");
+	if(filter && val) {
+		eval("document.theForm." + filter + ".value='" + val + "'");
+		document.theForm.submit(); ??
+                submitForm(true);
+		doSubmit("", ""); ??
+	}
+	return false;
+}
+
+/*  НЕ ИСПОЛЬЗУЕТСЯ! Была в docs/doc_final_action.cfg
+ * Проверка корректности ввода данных пользователем при утверждении документа 
+ * Заглушка. Переопределяется в спец. модулях:
+ *  dat/jinr_zajavka_fields.dat[final_decision]
+ * 
+ */
+
+var checkFinalActionUserInput=function() {
+return true;
+}
+
+/*
+ * Спец. проверка корректности ввода данных пользователем.
+ * Вызывается из checkInput()
+ * Заглушка. Переопределяется в спец. модулях:
+ * ---- пока нигде ----
+ */
+var checkInputCustom = function() {
+    return true;
+}
+
+/*
+ * Проверка корректности ввода данных пользователем.
+ * На данный момент проверяет только наличие каких-либо данных в полях, отобранных по селектору sel
+ * Например, sel = $("[mand]") - все поля с атрибутом "mand"
+ * Вызывается из docs/edit_doc по кнопке "Сохранить",
+ * а также из doSubmit() при cop=u|save (устарело)
+ */
+var checkInput=function(sel)
+{
+    if(!checkInputCustom()) return false;
+    var msg="";
+    sel.each( function(ind)
+    {
+        var des_id=$(this).attr("name") + "_descr";
+        if($(this)[0].type == "radio")
+        { 
+            if(!$('input[name=' + $(this)[0].name + ']:checked').val())
+            {
+                log(4, $(this)[0].type + ":" + $(this)[0].name); 
+                if(msg.indexOf($(this).attr("mand"))<0)
+                msg += ', "' + $(this).attr("mand") + '"'; 
+            }
+        }	
+        else if ($(this).val()=='' && $(this).attr("mand")) 
+        {   msg += ', "' + $(this).attr("mand") + '"'; 
+            $("##" + des_id).addClass("MANDATORY");
+        }
+        else
+          $("##" + des_id).removeClass("MANDATORY");
+    }	
+    );
+
+    if (msg)
+    {   alert("Заполните обязательные поля: " + msg); 
+        return false;
+    }
+    return true;
+}
+
+
+
+$(function(){
+    $(window).on('resize',resizeAll); 
+}
+)
+
+[end]

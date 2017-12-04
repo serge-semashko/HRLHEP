@@ -1,0 +1,126 @@
+[comments]
+descr=A: Редактор шаблона workflow для типа документов. 
+
+input=wf_template_id - ID шаблона workflow  (из таблицы wf_templates_list);
+output=HTML форма редактирования шаблона workflow, 
+parents=admin/wf/wf_template_editor.cfg
+childs=admin/wf/edit_wf_template.cfg, admin/wf/wf_template_step_table.cfg, admin/wf/wf_template_step_editor
+test_URL=?c=/admin/wf/show_wf_template&wf_template_id=1
+author=Яковлев, Куняев
+[end]
+
+[description]
+Редактор одного шаблона workflow для типа документов.<br>
+<ul><li>Выводит текущие свойства данного шаблона.</li>
+<li>Предоставляет возможность редактировать свойства шаблона WorkFlow<br>
+(вызывает модуль admin/wf/edit_wf_template.cfg).</li>
+<li>Выводит подробную информацию для каждого шага данного шаблона WorkFlow<br>
+(вызывает модуль admin/wf/wf_template_step_table.cfg)</li>
+<li>Предоставляет возможность редактировать шаги шаблона WorkFlow<br>
+(вызывает модуль admin/wf/wf_template_step_editor.cfg)</li>
+<li>В зависимости от текущего состояния меняет внешний вид и свойства кнопок.</li>
+</ul>
+[end]
+
+
+[parameters]
+request_name=A: Редактирование шаблона workflow для типа документа
+service=dubna.walt.service.TableServiceSpecial ??
+tableCfg=table_no
+KeepLog=false
+ClearLog=true
+divider=<tr><td colspan=2 class="bg_white" style="height:10px; border-top:solid 1px gray;"></td></tr>
+[end]
+
+
+[report]
+<small>#c#</small> ??debug=on
+<input type=hidden name=type_id value='#type_id#'>
+
+<table>
+<tr><td>ID Шаблона:</td><td><b>#wf_template_id#</b></td></tr>
+<tr><td>Название :</td><td><b>#wf_name#</b></td></tr>
+<tr><td>Коды подразделений :</td><td><b>#div_ids#</b></td></tr>
+<tr><td>Описание :</td><td><b>#wf_description#</b></td></tr>
+<tr><td>Активность :</td><td>
+<b>Рабочий</b>  ??is_active=1
+<b>Не рабочий</b>  ??is_active=0
+</td></tr>
+</table>
+
+<table>
+<tr><td >
++++++ Контейнер таблицы +++++ ??
+<div id="wf_template_step_table_#wf_template_id#" >
+</td></tr>
+</table>
+
+$INCLUDE [edit buttons]
+
+$SET_PARAMETERS wf_name=; wf_description=; div_ids=;
+
++++++ Скрипт возврата результатов в вызывавшую страницу ++++ ??
+<script>
+AjaxCall("wf_template_step_table_#wf_template_id#","c=/admin/wf/wf_template_step_table&wf_template_id=#wf_template_id#");
+</script>
+[end]
+
+
+[edit buttons] ******* Задает свойства кнопок в зависимости от текущего состояния 
+
+<script type="text/javascript">
+function pressWorkFlowStepEditButton(wf_tmpl_id) {
+    var curr_wf_tmpl_step_edit_mode = ($('#wf_template_step_edit_mode_'+wf_tmpl_id).val());
+    var curr_div_id = "wf_template_step_table_"+wf_tmpl_id;
+    var curr_wf_property_but_id = "wf_property_button_"+wf_tmpl_id;
+
+    if (curr_wf_tmpl_step_edit_mode == 0) {
+      ($('#wf_template_step_edit_mode_'+wf_tmpl_id).val(1));
+      var curr_com_line = "c=admin/wf/wf_template_step_editor&wf_template_id="+wf_tmpl_id;
+      ($('#wf_step_button_'+wf_tmpl_id).val("Закрыть редактор"));
+      document.getElementById(curr_wf_property_but_id).style.visibility='hidden';
+      AjaxCall(curr_div_id, curr_com_line);
+
+    } else if (curr_wf_tmpl_step_edit_mode == 1) {
+      ($('#wf_template_step_edit_mode_'+wf_tmpl_id).val(0));
+      var curr_com_line = "c=/admin/wf/wf_template_step_table&wf_template_id="+wf_tmpl_id;
+      ($('#wf_step_button_'+wf_tmpl_id).val("Изменить шаги WorkFlow"));      
+      document.getElementById(curr_wf_property_but_id).style.visibility='visible';
+      AjaxCall(curr_div_id, curr_com_line);
+    }
+}
+</script>
+
+<table style="background-color:whitesmoke; ">
+<tr><td>
+<input type="button" id="wf_property_button_#wf_template_id#" class="butt1 pt" style="width:220;" value="Изменить свойства WorkFlow" 
+onClick="ShowDialog(true); AjaxCall('popupCont', 'c=admin/wf/edit_wf_template&mode=edit&wf_template_id=#wf_template_id#');">
+</td>
+<td>
+<input type=hidden id="wf_template_step_edit_mode_#wf_template_id#" name="wf_template_step_edit_mode_#wf_template_id#" value="0">
+<input type="button" id="wf_step_button_#wf_template_id#" class="butt1 pt" style="width:220;" value="Изменить шаги WorkFlow" 
+onClick="pressWorkFlowStepEditButton(#wf_template_id#);"> 
+</td></tr>
+
+</table>
+
+[end]
+
+
+***************************** Шаблоны SQL запросов ***************************
+[preSQLs]
+select id as wf_template_id
+, doc_type_id
+, wf_name
+, div_ids
+, wf_description
+, is_active 
+from wf_templates_list 
+where id = #wf_template_id#
+order by id
+;
+
+[end]
+
+
+

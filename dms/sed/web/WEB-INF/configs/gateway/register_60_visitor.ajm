@@ -1,0 +1,22 @@
+gateway/register_60_visitor.cfg
+
+
+[report]
+$SET_PARAMETERS ERR_CODE=0; ERROR=; 
+$GET_DATA [register visitor]  ??SrcObjectID&ReceiverObjectID&ReceiverID=2
+$SET_PARAMETERS REC_EXISTS=Y; ??NUM_DOCS=1
+$SET_PARAMETERS ERROR=Документ #SrcObjectID# не найден; ResultCode=2; ??NUM_DOCS=0
+$SET_PARAMETERS ERROR=Отсутствует параметр SrcObjectID; ResultCode=1; ??!SrcObjectID
+$SET_PARAMETERS ERROR=Отсутствует параметр ReceiverObjectID; ResultCode=1; ??!ReceiverObjectID
+$SET_PARAMETERS ERROR=Неверный источник ReceiverID=#ReceiverID#; ResultCode=1; ??!ReceiverID=2
+[end]
+
+
+
+[register visitor]
+select count(*) as NUM_DOCS from d_data_15 where doc_id=#SrcObjectID#
+;
+update d_data_15
+set OMS_ID=#ReceiverObjectID#
+where doc_id=#SrcObjectID#
+[end]

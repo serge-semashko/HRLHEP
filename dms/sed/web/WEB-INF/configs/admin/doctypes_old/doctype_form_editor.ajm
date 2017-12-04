@@ -1,0 +1,151 @@
+[comments]
+descr=A: Редактор полей формы документа из списка типов документа
+
+input=type_id - ID типа документа (из таблицы d_types)
+output=HTML форма редактирования формы документа, 
+parents=admin/doctypes/doctype_panel.cfg
+childs=admin/doctypes/doctype_field_property.cfg, admin/doctypes/doctype_form.cfg
+test_URL=?c=admin/doctypes/doctype_form_editor&type_id=1
+author=Яковлев, Куняев
+[end]
+
+
+[parameters]
+request_name=A: Редактирование полей формы документа (Тип документа)
+tableCfg=table_no
+KeepLog=false
+ClearLog=true
+divider=<tr><td colspan=2 class="bg_white" style="height:10px; border-top:solid 1px gray;"></td></tr>
+[end]
+
+
+[report]
+<small>#c#</small> ??debug=on
+<input type=hidden name=type_id value='#type_id#'>
+
+<table width="100%" style="background-color:whitesmoke; ">
+<tr><td style="width:130;">
+<input type="button" class="butt1 pt" style="width:120;" value="Закрыть" onClick="AjaxCall('c_doctypes','c=admin/tab_doctypes');"> 
+</td>
+
+<td><h4> &nbsp; Тип Документа : #DOC_TYPES_NAME# </h4></td>
+
+$SET_PARAMETERS f_mode=#f_mode#;
+<td style="width:150;">
+
+<script type="text/javascript">
+function setDocFieldMode() {
+    var f_db_name = $("##f_new_field_db_name").val(); ??
+
+    AjaxCall('rename_field_db_name_panel', 'c=admin/doctypes/doctype_rename_field_db_name&type_field_id=#type_field_id#&new_field_db_name=' + f_db_name); ??
+
+    AjaxCall('doctype_form_panel', 'c=admin/doctypes/doctype_form&type_id=#type_id#&form_mode=doc_field_mode');
+    AjaxCall('toolbar_panel','c=admin/doctypes/doctype_toolbar&type_id=#type_id#');
+}
+
+function setDbFieldMode() {
+    var f_db_name = $("##f_new_field_db_name").val(); ??
+    AjaxCall('rename_field_db_name_panel', 'c=admin/doctypes/doctype_rename_field_db_name&type_field_id=#type_field_id#&new_field_db_name=' + f_db_name); ??
+
+    AjaxCall('doctype_form_panel', 'c=admin/doctypes/doctype_form&type_id=#type_id#&form_mode=db_field_mode');
+    AjaxCall('toolbar_panel','c=admin/doctypes/doctype_toolbar&type_id=#type_id#'); ??
+}
+
+</script>
+
+
+
+<input type=radio name=f_mode value="-2" 
+checked ??f_mode=-2|!f_mode
+onClick="setDocFieldMode();">поля документа
+<br>
+
+<input type=radio name=f_mode value="1" 
+checked ??f_mode=1
+onClick="setDbFieldMode();">поля таблицы БД
+
+</td></tr>
+</table>
+
+<center><br>
+
+<table border=0 width=100%>
+
+$INCLUDE [editor header] ??IS_ACTIVE=1
+
+<tr><td style="width:20%; text-align:center;">
+<table border=0>
+<tr><td><div id="field_property_panel">Панель свойств...</div>
+</td></tr>
+
+$INCLUDE [toolbar] ??IS_ACTIVE=0
+</table>
+
+<td>
+<div id="doctype_form_panel">Панель формы...</div>
+</td></tr>
+
+#divider#
+
+++++++++++++ Конец формы редактирования записи ++++++++++ ??
+<tr><td class="center  bg_white" colspan=2 style="padding:15px 0 15px 0;">
+<input type="button" class="butt1 pt" style="width:120; margin-right:40px;" value="Закрыть" onClick="AjaxCall('c_doctypes','c=admin/tab_doctypes');"> 
+$INCLUDE [modity button] ??IS_ACTIVE=0
+</td></tr></table>
+
+</div>
+
++++++ Скрипт возврата результатов в вызывавшую страницу ++++ ??
+<script>
+AjaxCall('doctype_form_panel', 'c=admin/doctypes/doctype_form&type_id=#type_id#');
+AjaxCall('toolbar_panel','c=admin/doctypes/doctype_toolbar&type_id=#type_id#'); ??IS_ACTIVE=0
+window.parent.getResult("c_doctypes", document.getElementById("result")); ??
+window.parent.loadFrame('c=admin/doctypes/doctype_form&type_id=#type_id#','wf');    ??
+</script>
+[end]
+
+[editor header]
+<tr><th class="bg_red" colspan=2>
+Документ <b>Рабочий</b>. Возможно только изменение названий и порядка полей Документа
+</th></tr>
+[end]
+
+[toolbar]
+<tr><td>
+<div id="toolbar_panel">Панель инструментов...</div>
+</td></tr>
+[end]
+
+[modity button]
+<input type="button" class="butt1 pt" style="width:220;" value="!! Изменить таблицу!!" 
+onClick="AjaxCall('c_doctypes', 'c=admin/doctypes/doctype_operations&cop=create&type_id=#type_id#')"
+>
+[end]
+
+
+***************************** Шаблоны SQL запросов ***************************
+[preSQLs]
+select dtp.ID
+, dtp.name as DOC_TYPES_NAME 
+, dtp.IS_ACTIVE
+, dgr.GROUP_NAME
+, ifnull(DATE_FORMAT(dtp.start_date,'#dateFormat#'),'') as START_DATE
+, u.FIO as CREATOR
+, uu.FIO as MODIFIER 
+, ifnull(DATE_FORMAT(dtp.created,'#dateTimeFormat#'),'') as CREATED
+, ifnull(DATE_FORMAT(dtp.changed,'#dateTimeFormat#'),'') as MODIFIED
+from d_types dtp
+left join doc_groups dgr on dtp.group_id = dgr.Id
+left join #table_users_full# u on u.Id = dtp.creator_id
+left join #table_users_full# uu on uu.Id = dtp.modifier_id
+where dtp.Id = #type_id#
+;
+select dtf.ID as FIRST_FIELD_TYPE_ID 
+from d_fields dtf
+where dtf.type_id = #type_id#
+order by dtf.nr
+group by dtf.nr ??
+limit 1
+;
+[end]
+

@@ -1,0 +1,77 @@
+sys/audit/mail_send_errors.cfg
+
+
+[comments]
+Ошибки при рассылке мэйлов
+[end]
+
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+LOG=ON
+tableCfg=table_no
+$INCLUDE dat/common.dat[rowLinks]
+[end]
+
+
+[report header]
+$SET_PARAMETERS RWACC=Y;  
+    
+$INCLUDE [OK report header]
+    ??RWACC
+[end]
+
+
+[OK report header]
+$SET_PARAMETERS srn=1; rpp=50;
+
+<div id=cont style="margin:40px;">
+<b>Ошибки рассылки уведомлений:</b>
+<table class="tlist tblue" style="border:solid 1px ##004060;" cellspacing=0>
+<tr>
+<th>последнее<br>событие</th>
+<th>user id</th>
+<th>email</th>
+<th>последний&nbsp;раз</th>
+<th>кол-во<br>ошибок</th>
+<th>Ошибка</th>
+</tr>
+[end]
+
+
+[item]
+<tr>
+<td>#last_event#</td>
+<td>#event_user_id#</td>
+<td>#notif_address#</td>
+<td>#last_time#</td>
+<td>#NUM_ERRS#</td>
+<td><div style="max-width:1000px;">#err_msg#</div></td>
+</tr>
+$SET_PARAMETERS DID=; doc_id=; file_id=; file_name=; file_comment=;
+[end]
+
+[report footer]
+<tr><td colspan=5>Нет ошибок</td></tr>   ??NumTableRows=0
+</TABLE>  
+</div>
+[end]
+
+
+****************************************************************************
+****************************************************************************
+****************************************************************************
+
+
+[SQL]
+select count(id) as "NUM_ERRS", max(event_id) as "last_event", event_user_id, notif_address
+, DATE_FORMAT(max(e.processed),'#dateTimeFormat#') as last_time
+, err_msg
+
+from wf_events_notifications e
+where not err_msg is null and err_msg<>''
+group by event_user_id, notif_address, err_msg
+
+order by max(e.processed) desc
+[end]
+

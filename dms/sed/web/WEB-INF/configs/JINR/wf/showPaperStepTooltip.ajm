@@ -1,0 +1,41 @@
+JINR/wf/showPaperStepTooltip.cfg
+
+[comments]
+descr=Модуль статуса "бумажного" шага WF
+input=tt_id - ID шага workflow
+output=Tooltip окно 
+parents=wf/show_wf_status
+testURL=?c=JINR/wf/showPaperStepTooltip&tt_id=346
+author=Куняев
+[end]
+
+[parameters]
+request_name=U:tooltip
+LOG=ON
+[end]
+
+$GET_DATA [get doc opened] ??WF_USER_ID
+
+[report]
+<div id="result"> ??
+<b>#STAGE#: #ACTION#</b><br>
+комментарий: #COMMENT# ??COMMENT
+
+<br>Бумажная стадия:
+<small>#IOF#,#PROCESSED#</small>
+
+</div> ??
+[end]
+
+[preSQLs]
+select DATE_FORMAT(p.processed,'#dateTimeFormat#') as "PROCESSED", p.COMMENTS, p.STAGE
+, iof(u.F,u.I, u.O) as "IOF"
+from doc_paper_processing p 
+left join #table_users_full# u on u.id=p.user_id
+where p.id=#tt_id#
+;
+select comment as "ACTION"
+from sys_const
+where alias like '~stage_#STAGE#_%' and value='#STAGE#'
+[end]
+

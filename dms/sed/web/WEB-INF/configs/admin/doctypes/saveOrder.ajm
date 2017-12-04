@@ -1,0 +1,41 @@
+saveOrder.ajm
+
+
+[report]
+#type_id#
+
+order=#order#:
+$GET_DATA [start transaction]
+$EXECUTE_LOOP field; #order#; [process field]
+#ERROR# ??ERROR
+$GET_DATA [commit]
+<script type="text/javascript">setMode(mode);</script>   ??!ERROR
+[end]
+
+[process field]
+$GET_DATA [set field]
+<br>field=#field#; POS=#POS#; ID=#ID#; NEW_NR=#NEW_NR#;
+$SET_PARAMETERS POS=; ID=; NEW_NR=;
+[end]
+
+[set field]
+SELECT INSTR('#field#', '-') as "POS";
+SELECT LEFT('#field#', #POS#-1) as "ID";
+SELECT SUBSTR('#field#', #POS#+1) as "NEW_NR"
+;
+update d_fields set NR=#NEW_NR# where id=#ID# ??!ERROR&ID&NEW_NR
+[end]
+
+[start transaction]
+lock tables d_fields write;
+START TRANSACTION;
+[end]
+
+[commit]
+COMMIT;   ??!ERROR
+ROLLBACK;  ??ERROR
+unlock tables;
+[end]
+
+9775686482
+RZA0yYQL

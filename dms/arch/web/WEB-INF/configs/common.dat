@@ -1,0 +1,78 @@
+[parameters]
+fs8=7pt; ??q_smallFonts=y
+fs9=8pt; ??q_smallFonts=y
+fs10=8pt; ??q_smallFonts=y
+fs11=10pt; ??q_smallFonts=y
+fs12=11pt; ??q_smallFonts=y
+fs14=12pt; ??q_smallFonts=y
+fs16=14pt; ??q_smallFonts=y
+
+fs8=8pt; 
+fs9=9pt; 
+fs10=10pt;
+fs11=11pt;
+fs12=12pt;
+fs14=14pt;
+fs16=16pt;
+
+table_tree=tree
+table_docs=arch_doc
+[end]
+
+
+[butt] param: label; onClick; width; ancId; img;
+<span class=button><span><A class=butt href='javascript:#onClick#' 
+style="width:#width#px;" ??width
+id=#ancId# ??ancId
+>
+<img src="#imgPath##img#" border=0 width=12 height=12> ??img
+#label#</A></span></span>
+[end]
+
+[head]
+<HTML><HEAD><TITLE>#title#</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=windows-1251">
+<link rel='stylesheet' href='#ServletPath#?c=css/arch' type='text/css'> 	??debug=on
+<link rel='stylesheet' href='#cssPath#arch.css' type='text/css'> 				??!q_smallFonts=y&!debug=on
+<link rel='stylesheet' href='#cssPath#adb_small.css' type='text/css'> 	??q_smallFonts=y&!debug=on
+
+<style type="text/css">  select {border: 10px solid;} 	</style> ??ЗАЧЕМ??
+
+<SCRIPT language=JavaScript src="#jsPath#cal2.js"></SCRIPT>
+<SCRIPT language=JavaScript src="#jsPath#lib.js"></SCRIPT>
+<script type="text/javascript" src="#jsPath#jquery-1.9.1.min.js"></script>
+
+<script>
+function img_act(imgName){document[imgName].src="#imgPath#blues2.gif";}
+function img_inact(imgName){document[imgName].src="#imgPath#blues1.gif";}
+</script>
+[end]
+
+
+[dat] param: fd_name; fd_val; class=xp; yr1=-1; yr2=0; onChange; fd_id;
+<input size=8 name='#fd_name#' value='#fd_val#'
+id=#fd_id# ??fd_id
+class=#class# ??class
+onChange="#onChange#" ??onChange
+><a href="javascript:show_calendar(document.theForm.#fd_name#, #yr1#, #yr2#);"><img align=absmiddle src="#imgPath#show-calendar.gif" width=24 height=22 border=0 alt="Выбор даты из календаря"></a>
+<input type=hidden name='f_#fd_name#' value=''>  
+[end]
+
+
+[dat between] param: fd_name1; fd_val1; fd_name2; fd_val2; class=xp; yr1=-1; yr2=0; onChange;
+<input size=8 name='#fd_name1#' value='#fd_val1#'
+class=#class# ??class
+onChange="#onChange#" ??onChange
+><a href="javascript:show_calendar(document.theForm.#fd_name1#, #yr1#, #yr2#);">
+<img align=absbottom src="#imgPath#show-calendar.gif" width=24 height=22 border=0 alt="Выбор даты из календаря"></a>
+<input type=hidden name='f_#fd_name1#' value=''>  
+[по
+<input size=8 name='#fd_name2#' value='#fd_val2#'
+class=#class# ??class
+onChange="#onChange#" ??onChange
+><a href="javascript:show_calendar(document.theForm.#fd_name2#, #yr1#, #yr2#);">
+<img align=absbottom src="#imgPath#show-calendar.gif" width=24 height=22 border=0 alt="Выбор даты из календаря"></a> 
+]
+<input type=hidden name='f_#fd_name2#' value=''>  
+[end]
+

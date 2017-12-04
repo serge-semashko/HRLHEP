@@ -1,0 +1,245 @@
+[head]
+<link rel="stylesheet" href="/adb/js/adb.css" type="text/css"> 
+
+<link rel="stylesheet" href="/adb/js/jquery.treeview.css" />
+<link rel="stylesheet" href="/adb/js/jquery-ui-1.10.1.css" />
+<link rel="stylesheet" href="/adb/js/font-awesome-4.7.0/css/font-awesome.min.css">
+
+<script type="text/javascript" src="/adb/js/lib.js"></script>
+<script type="text/javascript" src="/adb/js/docEdit.js"></script>
+<script type="text/javascript" src="/adb/js/jquery-1.9.1.min.js"></script>
+<script src="/adb/js/jquery.cookie.js" type="text/javascript"></script>
+<script src="/adb/js/jquery.treeview.min.js" type="text/javascript"></script>
+<script src="/adb/js/jquery-ui-1.10.1.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="/adb/js/jquery-migrate-1.1.1.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="/adb/js/jquery.datepick.css"> 
+<script type="text/javascript" src="/adb/js/jquery.datepick.min.js"></script> 
+<script type="text/javascript" src="/adb/js/jquery.datepick.js"></script> ??
+<script type="text/javascript" src="/adb/js/jquery.datepick-ru_.js"></script>
+<script type="text/javascript" src="/adb/js/canvasjs.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="/adb/js/jsgantt.css"/>
+<script language="javascript" src="/adb/js/jsgantt.js"></script>
+
+<style type="text/css">
+.moreDistr {display:none;} ??
+
+body {background-color: ##F4FFF4; margin:0;}
+form {margin:0; padding:0;}
+
+----------------- Êíîïêè ------------ ??
+.bok {padding:0 5px 0 20px; background: url(/adb/images/ok_16.png) no-repeat 6px center ; }
+.bdel {padding:0 5px 0 22px; background: url(/adb/images/del_16.png) no-repeat 6px center ; }
+.badd {padding:0 5px 0 22px; background: url(/adb/images/add_16.gif) no-repeat 6px center ; }
+.bwu {padding:0 5px 0 22px; background: url(/adb/images/task1_16.gif) no-repeat 6px center ; }
+.bwbs {padding:0 5px 0 22px; background: url(/adb/images/list1_16_.gif) no-repeat 7px center;}
+.bview {padding:0 5px 0 22px; background: url(/adb/images/view_16_.gif) no-repeat 7px center;}
+.bedit {padding:0 5px 0 24px; background: url(/adb/images/edit_16.gif) no-repeat 7px center;}
+.bcancel {padding:0 5px 0 24px; background: url(/adb/images/cancel_16.gif) no-repeat 7px center;}
+.brefresh {padding:0 5px 0 22px; background: url(/adb/images/refresh_16.gif) no-repeat 7px center;}
+.bprint {padding:0 5px 0 30px; background: url(/adb/images/printer.gif) no-repeat 7px center;}
+button {background-color: ##e0e0e0;}
+.b_nica {background-color: ##e0e0e0; color:##000080; margin-left:6px; border:outset 1px ##aaaaaa; height:22px; cursor:pointer; border-radius: 12px;}
+.b_nica.short {width:110px;}
+.b_nica.long {width:155px;}
+.b_nica.long2 {width:190px;}
+
+.btn {cursor:pointer; margin:0; vertical-align:top;}
+.b_nica ??
+.b_nica ??
+.ba {background-color:##ffffff; }
+
+.aa, table.tlist th.aa {background-color:##FFFFa0; }
+.aaa {background-color:##FFFFb0; }
+
+----------------- Îò÷åòû ------------ ??
+table.tlist {background-color: ##ffffff; border:solid 1px gray; margin:10px 0 10px 0;}
+table.tlist th, table.tlist td {border-right:solid 1px ##b0b0b0; border-bottom:solid 1px ##b0b0b0; padding:3px;} 
+table.tlist td.l {text-align:left; background-color: ##ffffff;} 
+table.tlist td.nowrap {white-space:nowrap;}
+table.tlist th {padding-left:6px; padding-right:12px; background-color:##F0F0FF;
+	FONT-SIZE: 11px; font-weight: bold; color: ##000080;}
+table.tlist a {color:##0000a0;} 
+
+td {vertical-align:top;}
+td.tdl, table.tlist td.tdl {text-align:left;}
+th.sup {background: ##F0F8FF url(/adb/images/sortUp.gif) no-repeat right bottom ; }
+th.sdown {background: ##F0F8FF url(/adb/images/sortDown.gif) no-repeat right bottom ; }
+
+table.tlist th.srh, th.sra {cursor:pointer;} 
+table.tfiltr {display:none; border:solid 1px gray; border-top:none; margin:0 0 0px 0; background-color:white;
+border-bottom-right-radius: 4px; border-bottom-left-radius: 4px;} 
+table.tfiltr_wrapper {border:none 1px gray; box-shadow: 3px 3px 4px 0 rgba(0, 0, 0, 0.3);}
+
+td.align-right, table.tlist td.align-right{text-align:right;} 
+
+##docs_table table, ##totalTable table {border:solid 1px ##808080; background-color:white;}
+##docs_table td {font-size:11px; border-right:solid 1px ##a0a0a0; border-bottom:solid 1px ##a0a0a0;}
+##totalTable td ??
+##totalTable td, ##totalTable th {font-size:13px; border:none; padding:2px 2px 2px 2px;}
+
+.PAST {background-color: ##e0e0e0;}
+.CURRENT {background-color: ##b0FFb0;}
+.FUTURE  {background-color: ##c0e0FF;}
+
+img.up {width:9px; height:16px; margin-bottom:5px; }
+img.down {width:9px; height:16px; margin-top:5px; }
+--------------- TREE & NAV ------------------------??
+ul {text-align: left;}
+
+.child {background-color:##FFFFFF; color: ##000080; cursor:pointer;}
+
+fieldset {border:solid 1px ##AAAAAA; background-color:white; color: ##000080; 
+float:left; ??!MSIE=YES
+FONT-SIZE: 10pt; FONT-FAMILY: Verdana, Arial, sans-serif; border-radius: 4px;}
+legend {background-color:white; border:solid 1px red; font-style:italic;}
+
+.pcmd { cursor:pointer;  color: ##000080; FONT-SIZE: 12px; FONT-FAMILY: Verdana, Arial, sans-serif; }
+.ppath { cursor:pointer;  color: ##000080; FONT-SIZE: 12px; FONT-FAMILY: Verdana, Arial, sans-serif; }
+.pp0 {display:inline;}
+.pp1 {margin:0 0 0 10px;}
+.pp2 {margin:0 0 0 30px;}
+.pp3 {margin:0 0 0 50px;}
+.pp4 {margin:0 0 0 70px;}
+
+--------------- UI - TABS ------------------------??
+
+.cont {background-color: whitesmoke; 
+border:solid 1px ##AAAAAA; margin:0 0 0 2px; padding:5px;
+border-top:solid 1px gray; border-top-right-radius: 6px;  border-bottom-right-radius: 6px; border-bottom-left-radius: 6px;
+} 
+	
+.ui-state-default, .ui-state-active,
+.ui-widget-content .ui-state-default,
+.ui-widget-header .ui-state-default {
+border: 1px solid ##b0b0b0; border-right: 1px solid ##808080; color: ##000000;} 
+
+.ui-tabs .ui-tabs-nav li a, /* first selector in group seems obsolete, but required to overcome bug in Opera applying cursor: text overall if defined elsewhere... */
+.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-active a {FONT-SIZE:14px;	padding:3px 10px 3px 10px; }
+.ui-tabs .ui-tabs-panel { padding:0;}
+
+.ui-widget-content .ui-state-active,
+.ui-widget-header .ui-state-active { background: whitesmoke;	font-weight: normal;	color: #212121;}
+
+.ui-state-hover,
+.ui-widget-content .ui-state-hover,
+.ui-widget-header .ui-state-hover{
+	border: 1px solid #999999;
+background: ##ffffff url(/adb/js/images/ui-bg_glass_65_ffffff_1x400.png) 50% 50% repeat-x;
+	background: #dadada url(/adb/js/images/ui-bg_glass_75_dadada_1x400.png) 50% 50% repeat-x; ?? 
+	font-weight: normal; ??
+	color: ##212121; ??
+}
+.ui-helper-reset {line-height: 1;}
+
+##tabs {background: none; border:none; margin:-6px 4px 0 0px;}
+##ltabs {background: none; border:none; margin:0;}
+
+
+--------------- UI - Datepick ------------------------??
+.datepick-ctrl {background-color: ##444444;}
+.datepick-month td .datepick-highlight {background-color: ##ffffff;} ??
+.datepick a {font-size:14px;} 
+.datepick-cmd {	font-size:10px;} ??
+a.datepick-cmd {	font-size: 11px;}
+.datepick-month-header select, .datepick-month-header input {
+	font-size: 12px;
+}
+
+
+================== POP-UP DIALOG =====================?? 
+.dialog_overlay {position: absolute; top: 0; right: 0; bottom: 0; left: 0;
+		height: 100%; width: 100%;
+		margin: 0; padding: 0; background: ##000000;
+		opacity: .35; filter: alpha(opacity=35);
+    -moz-opacity: .35; z-index: 101;
+		display: none;
+}
+
+.dialog table {width: 99.5%; background-color_:whitesmoke; margin-left:2px;} ??
+.dialog table {width: 100%;}
+
+.dialog {display: none; position: absolute; width: 60%; height_: 200px;
+top: 30%; left: 20%; padding: 1px;
+background-color: ##ffffff; ??
+background-color:whitesmoke;
+border: 1px solid #336699; 
+border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;
+z-index: 102; font-family: Verdana; font-size: 10pt;
+}
+
+.dialog_title { border-bottom: solid 2px ##336699; 
+background: ##336699 url(/adb/images/head_bg.png) repeat-y right top ; 
+padding: 2px 2px 0px 8px; color: white; font-weight:bold;
+}
+.dialog_title a {color: white; text-decoration: none;} ??
+
+table.brothers {width: 100%; border:solid 1px ##336699; margin:0 0 10px 0;}
+table.brothers td {vertical-align:top; border-top:solid 1px ##a0a0a0; padding:0 5px 0 5px;}
+table.brothers th {background-color: ##ffffff;}
+
+--------------------- INLINE DIALOG -----------------------??
+td.title {padding:2px; font-weight:bold; color:white; cursor:pointer;
+border:solid 1px gray;
+background: ##F0F8FF url(/adb/images/head_bg.png) repeat-y right top ; }
+
+--------------- GENERAL ------------------------??
+.ttc { display: none; position: absolute; 
+  padding: 6px; border: 1px solid gray; border-radius: 6px;
+  background-color: white;	box-shadow: 2px 2px 4px 0 rgba(0, 0, 0, 0.3);
+}
+
+.align_right {text-align: right;}
+.align_center {text-align: center;}
+.align_left, table.tlist td.align_left  {text-align: left;}
+.hid {display:none;}
+.dlg {text-align:center; font-size:13px; font-weight:bold;}
+.ui-dialog-buttonpane button {color:##000080; border-radius: 12px;}
+.ui-button-text-only .ui-button-text {padding: 0.2m 1em;}
+
+.fl {float:left;}
+.fr {float:right;}
+.clr {clear:both;}
+
+.border {border:solid 1px grey;}
+.bg_white {background-color: white;}
+
+.mand_label {font-weight:bold; background: url(/adb/images/red_star_14.gif) no-repeat 10px top ; }
+
+.v_bot {vertical-align:bottom;}
+.b {font-weight:bold;} 
+.f12 {font-size:12px;}
+.pt {cursor:pointer; padding:3px;}
+.b_all {border:solid 1px ##AAAAAA;}
+.tb {border-top:solid 1px ##AAAAAA;}
+.nb {border-left:none; border-right:none; border-top:none; border-bottom:none;}
+.sm {font-size:10px;}
+##sm {font-size:10px;}
+.wu {color: ##000080; cursor:pointer;}
+.wt {background-color:white;}
+.black {color: black;}
+.green {color: green;}
+.red {color: red;}
+
+.pri_0{background-color:##ffffff;}
+.pri_1{background-color:##a0D0ff;}
+.pri_2{background-color:##D0FFe0;}
+.pri_3{background-color:##ffffa0;}
+.pri_4{background-color:##ffd0a0;}
+.deleted {background-color:##e0e0e0;}
+
+.pink {background-color:##FFe0d0;}
+.yellow {background-color:##FFF0d0;}
+
+.src_mega {color:##009000; font-weight:bold;}
+.src_ext {color:##A00000; font-weight:bold;}
+
+.msg {background-color: ##ffffff; border:solid 1px gray; margin:5px; padding:10px; font-size:12px;
+	box-shadow: 2px 2px 4px 0 rgba(0, 0, 0, 0.3);
+	border-radius: 6px;}
+	
+input.readonly{background-color: ##e8e8e8; border:soid 1px gray;}
+</style>
+		
+[end]

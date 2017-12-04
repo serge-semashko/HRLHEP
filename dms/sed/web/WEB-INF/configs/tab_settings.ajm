@@ -1,0 +1,92 @@
+[parameters]
+LOG=ON
+spacer=<div style="margin:15px;"></div>
+
+[end]
+
+[report]
+$INCLUDE dat/common.dat[check login]
+$INCLUDE [report_]  ??USER_ID>0
+[end]
+
+[report_]
+<div id=result>
+#c#  ??debug=on
+<div style="margin:20px 0 100px 150px;">
+<div class="big"><b>Настройки пользователя:</b></div>
+<br>
+$INCLUDE [change pwd]  ??!chspwd=1
+
+$INCLUDE [change spwd]  ??!chpwd=1
+
+#spacer#
+$INCLUDE [delegate] ??HAS_ROLES&!chspwd=1
+
+<br>
+
+Пока не реализовано:
+<ul>
+<li>Настройка "Избранного" справочников.</li>
+<li>Настройка уведомлений по email и SMS.</li>
+<li>Настройка интерфейса.</li>
+
+</ul>
+
+$INCLUDE [gw debug] ??USER_ID=2309
+</div>
+
+</div>
+
+<script type="text/javascript">
+window.parent.setModule("tab_settings");
+window.parent.getResult("c_settings", document.getElementById("result"));
+window.parent.AjaxCall('delegate', 'c=user/delegate_table', true);  ??!chspwd=1
+</script>
+[end]
+
+[gw debug]
+<span class="pt"><a href="#ServletPath#?c=gateway/get_new_object" target=_blank>GetNewObject</a></span> 
+<span class="pt"><a href="#ServletPath#?c=gateway/get_new_object" target=_blank>GetNewObject</a></span> ??
+[end]
+
+[change pwd]
+<table><tr><td>
+<div id="chpwd" style="background-color:white; border:solid 1px gray; padding:10px; margin:10px;">
+Смена пароля для входа в СЭД, ADB2, База документов:
+<input type="button" class="butt1" value="Сменить пароль" 
+onClick="AjaxCall('chpwd','c=user/change_pwd&chpwd=Y');"> &nbsp; 
+</div>
+</td></tr></table>
+[end]
+
+[change spwd]
+<br>
+<table><tr><td>
+<div style="background-color:white; border:solid 1px gray; padding:10px; margin:10px;">
+Если Вы забыли свой пароль для подписи документов, сделайте запрос на его смену: ??!chspwd=1
+$CALL_SERVICE c=user/change_sign_pswd_settings; 
+</div>
+</td></tr></table>
+[end]
+
+[delegate]
+<fieldset><legend
+class="selector pt" 
+onClick="AjaxCall('delegate', 'c=user/delegate_table', toggleDiv('delegate', 200));" 
+>
+<span class="selector pt" onClick="AjaxCall('delegate', 'c=user/delegate_table', toggleDiv('delegate', 200));"  ??
+> ??
+&nbsp; Делегирование права согласования документов: &nbsp;
+</span> ??
+</legend>
+<div id="delegate" style="padding:0 0 0 20px; 
+display:block;  ??!chspwd=1
+display:none;  ??chspwd=1
+">
+
+</div></fieldset>
+[end]
+
+[preSQLs]
+select 'Y' as "HAS_ROLES" from a_user_role where user_id=#USER_ID# and active=1 ??USER_ID
+[end]

@@ -1,0 +1,166 @@
+docs/doc_action_undone.cfg
+
+[comments]
+descr=U: откат отметки о завершении документа.
+
+input=doc_id - ID документа
+
+output=Pop-up окно с формой
+parents=docs/view_doc.cfg
+childs=docs/doc_user_action_process.cfg
+test_URL=?c=docs/doc_action_done&doc_id=1
+[end]
+
+[parameters]
+request_name=U:завершение документа
+KeepLog=false
+ClearLog=true
+[end]
+
+
+[report]
+    $CALL_SERVICE c=sys/getARUD;   ??!AR_X=Y
+    $SET_PARAMETERS AR_X=Y;
+    $INCLUDE [OK report]  ??AR_X=Y
+
+    $CALL_SERVICE c=sys/log_doc_access; access_type=4; rejected=1;   ??!AR_X=Y
+[end]
+
+$INCLUDE [do undone SQL]
+$INCLUDE 
+
+[OK report]
+    $SET_PARAMETERS result_code=#~doc_action_processed#; comment_opened=1;
+    $GET_DATA [get wf_id]  ??
+    $GET_DATA docs/doc_user_action.cfg[get active wf step id] ??
+
+    $INCLUDE [process doc undone]   ??doIt=Y
+    $INCLUDE [form] ??!doIt=Y|ERROR|INPUT_ERROR
+[end]
+
+[form]
+    <form id="popupForm" name="popupForm" method="POST" enctype="multipart/form-data" target="wf" autocomplete="off"> 
+    <input type=hidden name="c" value="docs/doc_action_undone"> ??
+    <input type=hidden name="cop" value="#~doc_action_processed#"> ??
+    <input type=hidden name="doIt" value="Y"> ??
+    <input type=hidden name=doc_id value='#doc_id#'> ??
+
+    <table border=0 cellpadding=5 cellspacing=0>
+        <tr><td colspan=2 class="big center">
+            Уважаемый ??!user_sex=Ж
+            Уважаемая ??user_sex=Ж
+            #user_I# #user_O#,</td>
+        </tr>
+        <tr><td colspan=2 class=big>для <b>снятия</b> отметки о <b>ЗАВЕРШЕНИИ</b> документа</td></tr>
+
+        <tr><td class="label big">* Введите причину отмены операции:</td>
+            <td><textarea name=user_comment rows=3 cols=50>#user_comment#</textarea></td>
+        </tr>
+
+        $INCLUDE dat/common.dat[pw2]
+        $INCLUDE [msg box] 
+
+        <tr><td colspan=2 class=center>
+            <input type="button" class="butt1" style="width:120;" value="Отмена" onClick="HideDialog();">&nbsp; &nbsp;
+            <input type="button" class="butt1" style="width:120;" value="НЕ ЗАВЕРШЕНО"
+                onClick="AjaxCall('popupCont', 'c=docs/doc_action_undone&doc_id=#doc_id#&cop=#~doc_action_processed#&doIt=Y', true,'popupForm');"> 
+                onClick="document.popupForm.submit();" ??
+        </td></tr>
+    </table>
+    </form> 
+
+    <script type="text/javascript">
+    showMsg("##dialog_title", "Отмена завершения обработки документа");
+    ShowDialog(true);
+    centerDialog(); 
+    </script>
+[end]
+
+
+[process doc undone]
+    ----- Проверка ввода данных пользователем ------??
+    $SET_PARAMETERS INPUT_ERROR=;
+    $GET_DATA docs/doc_user_action_process.cfg[check user input]
+    $SET_PARAMETERS INPUT_ERROR=Введите причину; COMMENT_OK=; ??!user_comment
+    $SET_PARAMETERS PW_OK=Y; ??playMode=on
+    $SET_PARAMETERS INPUT_ERROR=Неверный пароль<br>#INPUT_ERROR#; ??!PW_OK
+
+    $INCLUDE [really process] ??!ERROR&!INPUT_ERROR
+[end]
+
+
+[really process]
+    ----- Выполнение команды, если все ОК ------??
+    $LOG ======= начало транзакции для всего этого запроса ======
+
+    $GET_DATA docs/doc_user_action_process.cfg[start transaction] 
+    
+    $GET_DATA [get last done step]
+    $GET_DATA [do undone SQL] 
+    $GET_DATA docs/doc_user_action_process.cfg[commit]
+
+    <script type="text/javascript">jAlert('#ERROR#','ОШИБКА!');</script> ??ERROR
+    $INCLUDE [confirm msg]  ??!ERROR
+[end]
+
+[confirm msg]
+    ------ Оповещение и возврат в список документов при нормальном завершении операции -------??
+    $CALL_SERVICE c=wf/process_events;  ??!ERROR&ZZZ
+
+    <script type="text/javascript">
+    window.parent.jAlert("cop=#cop#; result_code=#result_code#", "DEBUG");  ??
+
+    window.parent.jAlert("Документ возвращен на этап завершения.","ОК"); 
+
+    var go2docsTable = function(){ 
+        window.parent.AjaxCall("all_docs", "c=reports/all_docs", true, "filters_div");
+        window.parent.showDoc(false);
+    } 
+    window.setTimeout(go2docsTable, 1000); 
+    </script> 
+[end]
+
+
+[msg box]
+    <tr><td colspan=2 class="center bg_white gray_border" nowrap>
+        После нажатия Вами кнопки  "НЕ ЗАВЕРШЕНО"<br>
+        документ будет возвращен на этап завершения обработки.
+        Инициатор документа будет уведомлен об этом. ??
+        <div style="margin:10px;" class=
+        "small" ??!INPUT_ERROR
+        "error" ??INPUT_ERROR
+        >
+        <b>#INPUT_ERROR#</b><br> ??INPUT_ERROR
+        <i>поля, отмеченные (*), обязательны для заполнения!</i>
+        </div>
+        Ошибка выполнения операции. ??ERROR
+        <br><small>#ERROR#</small> ??ERROR
+    </td></tr>
+[end]
+
+
+[get wf_id]
+    select id as WF_ID from wf_list where doc_id=#doc_id#
+[end]
+
+[get last done step]
+    select step as "DONE_STEP"
+    from wf 
+    where wf_id=#WF_ID_INACT# 
+        and step_type=#~wf_step_process#
+        and not result_code is null
+    order by step desc
+    limit 1
+[end]
+
+[do undone SQL]
+    update wf set result_code=null, result=null, comment='Документ возвращен на завершение.', finished=null, modified=now(), modifier_id=#USER_ID#
+    where wf_id=#WF_ID_INACT# 
+        and step=#DONE_STEP#
+        and step_type=#~wf_step_process#  ??
+    ;
+    update wf_list set is_active=1 where id=#WF_ID_INACT#;
+    update d_list set status=#~doc_status_signed# where id=#doc_id#;
+    insert into d_comments (doc_id, user_id, dat, comment_type, comment)
+    values (#doc_id#, #USER_ID#, now(), 9, 'Возврат документа: #user_comment#')
+[end]

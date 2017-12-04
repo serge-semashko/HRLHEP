@@ -1,0 +1,135 @@
+reports/jinr_report_detailed.cfg
+
+
+[comments]
+descr=U: Модуль выбора модуля вывода списка документов с детализацией
+
+input=
+output=HTML таблица документов
+parents=tab_allDocs
+childs=reports/all_docs_table
+testURL=?c=reports/jinr_report_detailed
+author=Куняев
+[end]
+
+
+[parameters]
+request_name=U:Таблица документов
+NumTableCols=7
+LOG=ON 
+[end]
+
+
+[report]
++++++++ сортировка таблицы по умолчанию ++++ ??
+$SET_PARAMETERS srt=dh.status; desc=; ??!srt
+$SET_PARAMETERS srn=1; rpp=9999; 
+
+<div id="result"> ??!ajax
+$SET_PARAMETERS modul_table=reports/jinr_zajavka_detailed;
+$CALL_SERVICE c=#modul_table#;
+
+<tr><td colspan=#NumTableCols# class="pager last">
+</td></tr>
+</table>
+</div> ??!ajax
+
+<script type="text/javascript">
+--------- Отображение сортировки в заголовке таблицы ----- ??
+window.parent.showSrt("#srt#","sup"); ??!desc&!ajax
+window.parent.showSrt("#srt#","sdown"); ??desc&!ajax
+showSrt("#srt#","sup"); ??ajax
+
+</script>
+[end]
+
+
+[filters table start]
++++++ Фильтры +++++ ??
+<div id="filters_div">
+<input type=hidden name="srn" value="#srn#"> 
+<input type=hidden name="srt" value="#srt#">
+<input type=hidden name="desc" value="#desc#">
+
+<table border=0 cellpadding=5 style="margin:20px 0 20px 100px; border:solid 1px white;">
+<tr><td></td><td class="nowrap label" nowrap  colspan=2>
+<span class="pt bg_white" onClick='AjaxCall("all_docs", "c=reports/all_docs", true);' style="border:solid 1px gray;">Вернуться в общий список >></span>
+</td></tr>
+
+<tr><td colspan=2 class="center"><b>Детализация по списку заявок</b></td></tr> 
+<tr><td class="label">№№ заявок:</td><td><input size=60 name="f_doc_list" value="#f_doc_list#"> &nbsp; </td></tr> 
+<tr><td class="label"></td><td>
+<input type=radio name="f_status" value="" onClick='AjaxCall("all_docs", "c=reports/jinr_report_detailed", true, "filters_div");'
+checked ??!f_status
+> Все
+<input type=radio name="f_status" value="notfinished" onClick='AjaxCall("all_docs", "c=reports/jinr_report_detailed", true, "filters_div");'
+checked ??f_status=notfinished
+> НЕ завершенные
+<input type=radio name="f_status" value="finished" onClick='AjaxCall("all_docs", "c=reports/jinr_report_detailed", true, "filters_div");'
+checked ??f_status=finished
+> Завершеные
+</td></tr> 
+
+<tr><td class="label"></td><td><input type=checkbox name="report_det" onClick='AjaxCall("all_docs", "c=reports/jinr_report_detailed", true, "filters_div");'
+checked ??report_det
+> детальный отчет
+</td></tr> 
+[end]
+
+
+
+[filters table end]
+
+++++++++++++++++++ кнопка +++++++++++++++++++++ ??
+<tr><td class="label" colspan=2>
+<input type="button" class="butt1 pt" style="width:100;" value="ОК" onClick='AjaxCall("all_docs", "c=reports/jinr_report_detailed", true, "filters_div");'>
+<input type=hidden name="done" value="Y">
+</td></tr>
+<tr><td class="label" colspan=2><a href="#ServletPath#?c=reports/jinr_zajavka_detailed_xl&cop=XL&f_doc_list=#f_doc_list#&report_det=#report_det#&f_status=#f_status#" target=_blank><img src="#imgPath#XL.png"></a></td></tr>   ??f_doc_list&!cop=XL
+
+<tr><td class="center bg_white" colspan=2><b>Введите список номеров документов! </b> </td></tr>??!f_doc_list
+
+</table>
+<div style="clear:both;"></div>
+</div>
+[end]
+
+
+
+
+[preSQLs]
+select modul_table from d_types where id=#f_doc_type_id#  ??f_doc_type_id
+[end]
+
+
+[criteria]
+left join d_types dtp on dtp.Id = dh.type_id
+left join #table_users_full# ucr on ucr.id=dh.creator_id 
+left join #table_users_full# umr on umr.id=dh.modifier_id 
+join d_divs dd on (dd.doc_id=dh.id and dd.div_id=#f_div_id#) ??f_div_id
+left join d_sent_FYI_count fyi on fyi.doc_id=dh.id and fyi.user_id=#USER_ID#
+left join wf_history_count wfh on wfh.doc_id=dh.id and wfh.user_id=#USER_ID# 
+    ??убрано из-за БАГА, когда валится рассылка в wf_history заносятся левые записи
+where 
+    dtp.group_id<98
+and dh.is_deleted=0  ??!f_doc_id&!f_doc_number
+    
+and dh.status in(#f_stat#) ??f_stat&!f_stat=-2
+and dh.status in(1,2,3) ??!f_doc_id&!f_stat|f_stat=-2
+and dh.NUMBER like '#f_doc_number#%' ??f_doc_number
+and dh.TYPE_ID = #f_doc_type_id# ??f_doc_type_id
+and dh.creator_id=#f_initiator_id# ??f_initiator_id
+and dh.id in(select doc_id from d_index where context like '%#f_search#%') ??f_search
+and dh.id=#f_doc_id# ??f_doc_id
+
+$INCLUDE reports/all_docs.cfg[access_filter] ??!FULL_READ_ACCESS=Y&!AR_SYS_ADMIN=1
+[end]
+
+[access_filter]
+and (dh.creator_id=#USER_ID#
+    or dh.id in(select doc_id from d_divs where div_id in(#user_access_div#)) ??user_access_div
+    or not wfh.cnt is null 
+   ??убрано из-за БАГА, когда валится рассылка в wf_history заносятся левые записи
+    or not fyi.cnt is null
+  )
+[end]

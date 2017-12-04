@@ -1,0 +1,114 @@
+
+[search block]
+$INCLUDE common.dat[portlet top]
+
+<table border=0 id=TABLEsearch width=100% class=portlet cellpadding="5" cellspacing="0">
+	<TR><TD align=right nowrap=true>Фамилия:</b></TD>
+		<TD><INPUT class=xp type=text name=f_name size=32 value='#f_name#'> </TD>
+	</TR>
+
+	<TR><TD align=right nowrap=true>Имя:</b></TD>
+		<TD><INPUT class=xp type=text name=f_name1 size=32 value='#f_name1#'> </TD>
+	</TR>
+  
+  <TR><TD align=right>Отчество: </B></TD>
+		<TD ><INPUT class=xp type=text name="f_name2" size=32 value='#f_name2#'> </TD>
+	</TR>
+
+  <TR><TD align=right>Телефон: </B></TD>
+		<TD ><INPUT class=xp type=text name="f_phone" size=8 value='#f_phone#'> </TD>
+	</TR>
+
+$GET_DATA persons/list_#DB#.dat[tip_dejat]  ??!TIP_DEJAT_LIST
+	<TR><TD align=right>Вид деятельности: </B></TD><TD >
+		<select name=f_tip_dejat><option value="">Любой #TIP_DEJAT_LIST#
+		</select>
+		</TD></TR>
+
+	<TR><TD align=right>Условия работы: </B></TD><TD >
+		<select name=f_usl_rab><option value="">Любые 
+		<option value='352,353,354,360,363'>кроме совместительства
+		<option value='356,357'>по совместительству
+		<option value='6'>по совместительству (ОИЯИ)  ??
+		<option value='3,7'>по совместительству (сторонние)  ??
+		</select>
+		</TD></TR>
+
+$INCLUDE  persons/search.dat[searchWhere] ??NAME
+ ??!object_id=1001
+
+<TR>
+$INCLUDE  persons/search.dat[folders filter]
+</TR>
+
+<TR>
+<td></td><td>
+<br>
+
+$INCLUDE common.dat[butt] param: label=Искать; onClick=doSearch();   width=60; 
+&nbsp;&nbsp;
+$INCLUDE common.dat[butt] param: label=Сбросить; onClick=resetForm();   width=60; 
+<br><br>
+</td></TR></TABLE>
+</div>
+$INCLUDE common.dat[portlet bottom]
+
+
+<script>    
+var frm = document.theForm;
+
+selectOptionByVal(document.theForm.f_tip_dejat, "#f_tip_dejat#"); ??f_tip_dejat
+selectOptionByVal(document.theForm.f_usl_rab, "#f_usl_rab#"); ??f_usl_rab
+
+function resetForm()
+{ for (var i=0; i < frm.elements.length; i++)
+  { if (frm.elements[i].name.indexOf("f_") == 0)
+//    alert (frm.elements[i].type);
+    { if (frm.elements[i].type == "text")
+      {
+        frm.elements[i].value="";
+      }
+      if (frm.elements[i].type == "radio")
+      { eval ("frm." + frm.elements[i].name + "[0].checked=true;");
+      }
+      if (frm.elements[i].type == "select-one")
+      { frm.elements[i].options[0].selected=true;
+      }     
+    }
+  }
+}
+</script>    
+[end]
+
+[searchWhere]
+<tr><td colspan=3 align=center nowrap=true>
+Искать:
+<input type=radio name=f_searchArea value="1" 
+checked ??!object_id=1001&!f_searchArea|f_searchArea=1
+style="display:none" ??object_id=1001
+>
+в "#NAME#"&nbsp;  
+ ??!object_id=1001
+
+<input type=radio name=f_searchArea value="2"
+checked ??f_searchArea=2|object_id=1001
+>везде</B></TD></tr>
+[end]
+
+
+[XXX]
+	<TR><TD align=right>Телефон: </B></TD>
+		<TD ><INPUT class=xp type=text name="f_phone" size=32 value='#f_phone#'> </TD>
+	</TR>
+
+	<TR><TD align=right>e-mail: </B></TD>
+		<TD ><INPUT class=xp type=text name="f_mail" size=32 value='#f_mail#'> </TD>
+	</TR>
+
+	<TR><TD align=right>Корпус: </B></TD>
+		<TD> <select name=f_building>
+    <option value=''> Любой
+    #BUILDINGS#
+    </select>
+	</TD></tr>
+[end]

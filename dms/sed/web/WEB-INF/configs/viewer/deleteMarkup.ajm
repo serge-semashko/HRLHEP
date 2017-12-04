@@ -1,0 +1,43 @@
+viewer/deleteMarkup.ajm
+
+[comments]
+descr=U: Удаление маркапа
+input=markup_id - id ...
+childs =
+author=Джавадзаде
+[end]
+
+
+[parameters]
+LOG=ON
+[end]
+
+
+[report]
+$GET_DATA [delete markup]
+
+<script>
+$("##mkp_#markup_id#").html("");
+
+===== Вызов модуля списка маркапов ======= ??
+AjaxCall("page_comments", "c=viewer/show_markup_list", true, "commonForm");
+
+cancelButtonClick();
+
+===== Вызов модуля отрисовки иконок на главной странице и на thmb ======= ??
+showMarkupIcons("#page_id#", "");
+</script>
+[end]
+
+================================================================================
+
+[delete markup] *** Удаление маркапа из БД
+select markup_nr, file_id, page_id
+from doc_data_markups
+where 
+id = #markup_id#
+;
+delete from doc_data_markups
+where 
+id = #markup_id#
+[end]

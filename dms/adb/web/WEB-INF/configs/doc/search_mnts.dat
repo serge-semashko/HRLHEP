@@ -1,0 +1,145 @@
+
+[searchBox]
+
+$SET_PARAMETERS f_doc_type=5;
+<input type=hidden name="f_doc_type" value="5">
+
+<table border=0 cellpadding=0 cellspacing=0>
+<tr><td align=right>
+$INCLUDE doc/search.dat[tabs] param: atype=mnts;
+</td></tr>
+
+<tr><td class=lrb nowrap=true valign=top bgcolor=white>
+<b><i>&nbsp;&nbsp;Отобрать документы:</i></b>
+
+<table border=0 bgcolor=whitesmoke width=100%>
+<tr><td valign=top>
+<b><i>Год регистрации:</i></b> 
+$INCLUDE common.dat[years_select]
+
+<br>
+$INCLUDE doc/search_mnts.dat[svodFiltr] ??
+<br>
+
+$INCLUDE doc/search.dat[payment]
+
+<table border=0 style="margin-top:10px;">
+<tr><td class=l valign=top>
+<tr><td class=l>Рег. №№ документов:</td><td width=280><input size=35 class=xp name="f_regnr" value='#f_regnr#'></td></tr>
+</td></tr>
+
+<tr><td class=l>
+Дата регистрации: </td><td nowrap=true>
+$INCLUDE common.dat[dat] param: fd_name=f_regdat1; fd_val=#f_regdat1#;
+ [по:
+$INCLUDE common.dat[dat] param: fd_name=f_regdat2; fd_val=#f_regdat2#;
+  ]
+</td></tr>
+
+<input type=hidden name="f_doc_statuss" value="#f_doc_statuss#">
+
+$INCLUDE doc/search_mnts.dat[adv filters]
+
+</table>
+
+</td><td valign=top>
+<table border=0>
+
+<tr><td class=l>
+Лаборатория:</td><td><select class=s1 name=f_lab><option> #LABS#
+<option value='null'>не опр.
+</select>
+&nbsp;Тема: <input size=5 class=xp name="f_sbj" value='#f_sbj#'>
+</td></tr>
+
+<tr><td class=l>Сумма:</td><td>
+$INCLUDE filters.dat[f_summa]
+</td></tr>
+
+<tr><td class=l>
+Кому:</td><td><input class=xp size=30 name="f_receiver" value='#f_receiver#'>&nbsp;&nbsp;
+</td></tr>
+
+<tr><td class=l>
+Искать текст:</td><td><input class=xp size=30 name="f_search" value='#f_search#'>&nbsp;&nbsp;
+</td></tr>
+
+<tr><td colspan=2 class=l>
+<input type=checkbox name=full_report onClick="document.theForm.submit();" ??
+checked ??full_report=on_ZZ
+>показать сумму 1С ??
+<br> ??
+
+<input class=button type=button value="Сбросить фильтры" onClick="resetForm();">
+</td><td class=l><br> ??
+&nbsp; &nbsp; &nbsp; 
+<input type=submit class=button value="Выполнить">&nbsp;&nbsp;
+<a href="javascript:getXL();"><img 
+src="#imgPath#XL.png" border=0 width=29 height=31 alt="Загрузить в Excel" 
+style="margin:0 0 0 10px; border:solid 1px ##40aa60;"></a>
+</td></tr></table>
+</td></tr></table>
+</td></tr></table>
+
+$INCLUDE doc/search.dat[script]
+[end]
+
+[svodFiltr]
+<table border=0><tr>
+<td bgcolor=#doc_del#>
+<input type="radio" name="top" value="" onClick="doIt();"
+checked ??!top
+>Только головные</td>
+<td bgcolor=#doc_new#>
+<input type="radio" name="top" value="a" onClick="doIt();"
+checked ??top=a
+>Все&nbsp; &nbsp; &nbsp;
+</td></tr></table>
+[end]
+
+[adv filters]
+<tr><td colspan=2><br>
+<FIELDSET><LEGEND>
+
+<a id="a_adv_fil" href="javascript:showAdvFilters();">
+Доп. фильтры >>> ??!advfiltered
+Скрыть доп. фильтры &lt;&lt;&lt; ??advfiltered
+</a>
+</LEGEND>
+
+<div id="adv_filters" 
+style="display:none" ??!advfiltered
+style="display:block" ??advfiltered
+>
+<table border=0><tr><td class=l>
+Бюджетный код:</td><td><input class=xp size=5 name="f_bc" value='#f_bc#'>
+</td></tr>
+
+<tr><td class=l>  
+Статья бюджета:</td><td><select name=aggr><option value=""> </option>
+<option value="null">пусто</option>
+<option value="05,06,10">5,6,10 - материалы и оборуд.</option>
+<option value="07,08,14,17">7,8,14,17 - содержание</option>
+#AGGRS#</select>
+<input type=checkbox name=aggr_excl
+checked  ??aggr_excl=on
+>искл.
+</td></tr>
+
+<tr><td class=l>  
+Статус:</td><td><select name=f_doc_status><option></option>#DOC_STATUSES#
+<option value='2,3'>неотлож.+подписанные</option> ??
+</select></td></tr>
+
+<tr><td class=l>  
+Оператор:</td><td nowrap=true><select name=f_modif><option></option>#MODIFIERS#
+</select>
+
+</td></tr>
+
+</table>
+</div>
+</FIELDSET>
+</td></tr>
+
+[end]

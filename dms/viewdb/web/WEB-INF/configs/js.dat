@@ -1,0 +1,139 @@
+[encoding]
+function encodeIt(src)
+{
+  var s = src_;
+//  s = escape(s);
+  s = replaceAll(s, "%", "~^")
+  s = replaceAll(s, "\x2B", "%2B"); // escape plus
+  s = replaceAll(s, "\x26", "%26"); // escape ampersand
+  return s;
+}
+
+function replaceAll(src, what, byWhat)
+{
+  var s = src;
+  while (s.indexOf(what) >= 0)
+    s = s.replace(what, byWhat);
+  return s;
+}
+[end]
+
+
+[dropdowns]
+function getSelectedVal(dd){ return dd.options[dd.selectedIndex].value;}
+function getSelectedText(dd){ return dd.options[dd.selectedIndex].text;}
+
+function selectOptionByVal(dd,val)
+{ if (val == "None" || val.length == 0) return;
+  if (typeof dd != "object") return;
+	var opt=dd.options;
+	if (typeof opt != "object") return;
+  
+  var re = new RegExp("~" + val.replace(/\W/g,"") + "~","i");  
+//    alert ("***** '" + val.replace(/\W/g,"") + "' : '" + re + "'");
+  for (i=0; i < opt.length; i++)
+	{ var v = opt[i].text.replace(/\W/g,"");
+		if (re.test("~" + opt[i].value.replace(/\W/g,"") + "~") ||
+				re.test("~" + opt[i].text.replace(/\W/g,"") + "~"))
+		{	opt[i].selected=true;
+//     alert (val + ":" + opt[i].value.replace(/\W/g,""));
+	  	return;
+		}
+	}
+}
+[end]
+
+[window]
+function openWindow(param, w, h, name)
+{
+var tm = (new Date()).getTime();
+
+var s=window.location.href;
+var i = s.indexOf("?");
+if (i > 0)
+  s = s.substring(0,s.indexOf("?") + 1);
+else
+  s = s + "?";
+s = s + param + "&tm=" + tm;
+alert (name + "\n\r" + s); ??
+var win= window.open( s, name,
+"toolbar=no,location=yes,status=yes,menubar=no"+  ??debug=on
+"toolbar=no,location=no,status=no,menubar=no"+      ??!debug=on
+",directories=no,scrollbars=yes,resizable=yes,copyhistory=no," +
+"width="+w+",height="+h);
+}
+
+function setWindow(mt, maxWidth)
+{ try
+  { var h = mt.offsetHeight+90;
+    if (h > maxWidth) h = maxWidth;
+    window.resizeTo(mt.offsetWidth+50,h);
+    window.moveTo(20,20);
+    mt.width="100%";
+  } catch (e) {}
+}
+
+[end]
+
+[cookies]
+function setLongCookie(name,value,hours)
+{ if (getCookie(name) != value)
+  { var exp=new Date();
+    exp.setHours(exp.getHours()+hours);
+    document.cookie=name+"="+escape(value)+"; path=; expires="+exp.toGMTString()+";"
+  }
+}
+
+function setCookie(name, value)
+{ if (getCookie(name) != value)
+	  document.cookie = name + "=" + escape(value) + "; path=/;";
+}
+
+function setDomainCookie(name, value, domain)
+{ if (getCookie(name) != value)
+	  document.cookie = name + "=" + escape(value) + "; domain=" + domain + "; path=/;";
+}
+
+
+function getCookie(name)
+{ var search = name+"="
+//alert ("Cookies:"+document.cookie);
+  if (document.cookie.length > 0)  // if there are any cookies
+  { offset = document.cookie.indexOf( search)
+    if (offset != -1)         // if cookie exists
+    { offset += search.length
+      end = document.cookie.indexOf(";", offset)
+      if (end == -1) end = document.cookie.length
+      return unescape( document.cookie.substring( offset, end))
+    }
+  }
+  return null;
+}
+[end]
+
+[help]
+function popuphelp(topic)
+{
+  var s="http://kpi.cern.ch:7777/kpi/help?c=kpi/help"      ??XXX!local
+  var s="help?c=kpi/help"      ??!local
+  var s="http://PCASSAS07:/kpi/help"      ??XXX!local
+  var s="http://PCASSAS07:/servlet/help?c=dbtools/kpi/help"  ??local
+    +"&s=" + topic + "&tm=" + (new Date()).getTime();
+  window.open( s, "PopUpHelpWindow", "toolbar=no,location=no,directories=no,"
+    + "status=no,menubar=no,scrollbars=yes,resizable=yes,copyhistory=no,"
+    + "width=450,height=450");
+}
+[end]
+
+function clock()
+{   var now = new Date()
+  var hours = now.getHours()
+  var minutes = now.getMinutes()
+  var seconds = now.getSeconds()
+  var timeValue =  hours
+  timeValue += ((minutes < 10) ? ":0" : ":") + minutes
+  timeValue += ((seconds < 10) ? ":0" : ":") + seconds
+  document.theForm.clock.value = timeValue
+  timerID = setTimeout("showtime()",1000)
+  timerRunning = true
+}

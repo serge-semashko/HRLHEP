@@ -1,0 +1,165 @@
+jinr_zajavka_table.cfg
+
+[comments]
+descr=U: Модуль выбора модуля вывода списка  заявок ОИЯИ во вкладке Мониторинг (вывод самой таблицы) Вызывается из tab_monitor (Submit)
+
+input=
+output=HTML таблица документов
+parents=admin/monitor/all_docs
+childs=admin/monitor/view_doc
+testURL=?c=admin/monitor/jinr_zajavka_table
+author=Куняев, Яковлев
+[end]
+
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=U:Таблица всех документов
+LOG=ON 
+tableCfg=table_no
+$INCLUDE dat/common.dat[rowLinks]
+[end]
+
+
+[report header]
+$SET_PARAMETERS_SESSION f_mon_status=#f_mon_status#;
+$GET_DATA main.cfg[checkAdmin]
+$INCLUDE [OK report header]  ??AR_ADMIN=1|AR_LAB_SECR=1
+$CALL_SERVICE c=sys/log_doc_access; doc_id=0; access_type=10; rejected=1;   ??!AR_ADMIN=1&!AR_LAB_SECR=1
+[end]
+
+
+[OK report header]
+$INCLUDE admin/monitor/all_docs[filters table start]
+
+++++++++++++++++++ Дополнительные фильтры для заявок +++++++++++++++++++++ ??
+
+<tr><td class= "right nowrap" >Содержание: </td><td><input size="30" name="f_content" value="#f_content#"></td></tr>
+<tr><td class= "right nowrap" >Инициатор закупки: </td><td><input size="30" name="f_initiator" value="#f_initiator#"></td></tr>
+<tr><td class= "right nowrap" >Производитель&nbsp;продукции:</td><td><input size="30" name="f_postav" value="#f_postav#">
+</td></tr>
+
+$INCLUDE admin/monitor/all_docs[filters table end]
+
+++++++++++++++++++ Шапка таблицы документов +++++++++++++++++++++ ??
+<table class="tlist tblue" cellspacing=0>
+<tr>
+
+<th class="srh" sr="dh.ID">
+id ??USER_ID=2309
+</th> 
+<th class="srh" sr="ifnull(dh.doc_date, dh.created)">Заявка</th>
+
+
+<th class="srh" sr="dh.TITLE">Содержание</th>
+<th class="srh" sr="dh.DIVS">Подразд.</th>
+
+<th class="srh" sr="POSTAV">Производитель&nbsp;продукции</th>
+<th class="srh" sr="INITIATOR">Инициатор закупки</th> 
+
+
+<th class="srh pl" sr="dh.created">Создан</th>
+<th class="srh pl" sr="dh.modified">Изменён</th>
+<th class="srh" sr="-dh.modified">Ожидает</th>
+<th >Визирование</th>
+<th >ст.</th> ??
+</tr>
+[end]
+
+[item]
+++++++++++++++++++ Строка таблицы - 1 документ +++++++++++++++++++++ ??
+<tr class="pt
+oddRow ??oddRow=1
+bg_red ??is_deleted=1
+" 
+onClick="AjaxCall('doc_content', 'c=docs/view_doc&doc_id=#ID#&mode=popup', true);"
+nClick="$('##doc_overlay').show(); AjaxCall('doc_content', 'c=admin/monitor/view_doc&doc_id=#ID#&mode=popup');" ??
+>
+
+<td style="padding:0;">
+#ID# ??USER_ID=2309
+<img src="#imgPath#info_16.png" width=16 height=16> ??cnt>0&!hist_cnt>0
+</td><td>
+№#NUMBER#  ??NUMBER
+от #DOC_DATE#  ??DOC_DATE
+</td> 
+
+<td class="tt" tt_text='#TITLE#'><div class="ellipsis">#TITLE#</div></td>
+<td>#DIVS#</td>
+
+<td class="tt" tt_text='#POSTAV#' ><div class="ellipsis">#POSTAV#</div></td>
+<td>#INITIATOR#</td>
+
+<td>#CREATED#, #CREATOR#</td>
+<td class="pl">#MODIFIED#, #MODIFIER#</td>
+<td class="nowrap pl
+bg_red ??WAITING_LEVEL=LONG
+">#WAITING#ч,
+
+$CALL_SERVICE c=wf/show_wf_status; doc_id=#ID#; show_persons=Y;
+</td> 
+<td>#DOC_STATUS#</td> ??
+</tr>
+
+
+
+[end]
+
+
+[report footer]
+$SET_PARAMETERS NumTableCols=7;
+[end]
+
+
+***************************** Шаблон SQL запроса ***************************
+[SQL]
+$INCLUDE [SQL_] ??AR_ADMIN=1|AR_LAB_SECR=1
+[end]
+
+
+[SQL_]
+select distinct
+dh.ID, dh.TYPE_ID, dtp.NAME AS DOC_TYPE, dh.DIVS, dh.is_deleted
+, dh.NUMBER, dh.TITLE
+, DATE_FORMAT(dh.doc_date,'#dateFormat#') as DOC_DATE 
+, DATE_FORMAT(dh.created,'#dateTimeFormat#') as CREATED 
+, DATE_FORMAT(dh.MODIFIED,'#dateTimeFormat#') as MODIFIED
+, dh.creator_id
+, fio(ucr.F, ucr.I, ucr.O) as CREATOR
+, fio(um.F, um.I, um.O) as MODIFIER
+, TIMESTAMPDIFF(hour, dh.modified, now()) AS WAITING ??
+, concat(FORMAT(TIMESTAMPDIFF(day, dh.modified, now()), 0), 'д'
+   , FORMAT(TIMESTAMPDIFF(hour, dh.modified, now())-TIMESTAMPDIFF(day, dh.modified, now())*24,0)) AS WAITING 
+, case when TIMESTAMPDIFF(day, dh.modified, now()) > 1 then 'LONG'
+else 'SHORT'
+end
+AS WAITING_LEVEL 
+
+, dat.manufacturer as "POSTAV"
+, format(dat.summa,2) as "PRICE" ??
+, dat.summa_curr as "VAL"
+, replace(format(dat.summa_usd,2),',',' ') as "PRICE_USD"
+, dat.final_decision as "DECISION"
+, dat.dealinitiator as "INITIATOR" ??
+, FIO(uin.F, uin.I, uin.O) as "INITIATOR"
+, dh.status AS "STATUS"
+
+, dh.created, dh.modified
+
+from d_list dh
+left join d_data_1 dat on dat.doc_id=dh.id
+left join #table_users_full# uin on uin.id=dat.dealinitiator_id 
+
+$INCLUDE admin/monitor/all_docs[criteria]
+
+and dh.TITLE like '%#f_content#%'  ??f_content
+and dat.dealinitiator like '#f_initiator#%' ??f_initiator
+and dat.manufacturer like '%#f_postav#%' ??f_postav 
+
+
+order by #srt# #desc#
+[end]
+
+
+
+

@@ -1,0 +1,1031 @@
+JINR/doc_13_fields.dat
+
+[comments]
+descr=S: Поля для протокола закупочной комиссии (doc_type=13)
+input=поля протокола закупочной комиссии
+output=
+parents=docs/edit_doc.cfg
+childs=
+author=Куняев, Яковлев
+[end]
+
+=================== Общие скрипты и модули для различных полей для протокола закупочной комиссии =======================
+
+[local script] ****** Копия скриптов из svs/info_show_plain_script.dat[script] (оттуда не всегда срабатывает)
+<script type="text/javascript">
+var STRING_VALUES_SEPARATOR='<BR/>';
+
+/**
+  * мультивыбор из плоских справочников: удаление элемента
+  */
+var delSelectedInfoItemFromChoice = function(el){
+    where = $(el).attr("delfrom");  //id элемента с id-шниками
+    what = $(el).attr("delval");   //значение id-шника, который удаляем
+    wheretext = $(el).attr("delfromtext"); //хидден с текстами в том же порядке, что и id-шники. (если надо)
+    if(where.length>0 && what.length>0){
+        val = $('#'+where).val();
+        tval = $('#'+wheretext).val();
+        aval = val.split(',');
+        atval = tval.split(STRING_VALUES_SEPARATOR);
+        i = aval.indexOf(what);
+        aval.splice(i,1);
+        atval.splice(i,1);
+        $('#'+where).val(aval.join());
+        $('#'+wheretext).val(atval.join(STRING_VALUES_SEPARATOR));
+        $(el).parent().remove();
+    }
+    
+}
+/**
+ * Восстановление списка "мультивыбранных" значений плоского справочника
+ * с крестиками для удаления элементов
+ * infoFieldId - корневой ID поля справочника
+ */
+var restoreInfoList=function(infoFieldId) {
+      var textfieldid = infoFieldId+"_text"; //id поля для текстов выборки
+      var idfieldid = infoFieldId+"_id"; //id поля для id-шников выборки
+      var listid = infoFieldId+"_list"; //id элемента-контейнера для удаления элементов выборки
+console.log( $("##"+textfieldid).val() + " / " + $("##"+idfieldid).val() ); ??
+console.log( "/" + $("##"+listid).length ); ??
+      if(
+        $("##"+textfieldid).val().length>0 //если поле текстов не пусто
+            && $("##"+idfieldid).val().length>0 //и поле id не пусто
+            && $("##"+listid).length > 0 ){ //и есть контейнер
+        var selids = $("##"+idfieldid).val().split(",");
+        var seltexts = $("##"+textfieldid).val().split(","); ??
+        var seltexts = $("##"+textfieldid).val().split(STRING_VALUES_SEPARATOR);
+
+        if(selids.length==seltexts.length){
+            //составляем html строку для списка
+            var s="";
+            for(i = 0 ; i < selids.length;i++){
+                s+="<li class='nobull'>"+seltexts[i]+"&nbsp;<a delfrom = '"+idfieldid+"' delval='"+selids[i]+"' delfromtext='"+textfieldid+"'  onclick = 'delSelectedInfoItemFromChoice(this)' class='delcross' title='Удалить'>X</a></li>";
+            }
+            if(s.length>0){
+                s = "<ul class='p0'>"+s+"</ul>";
+                $("##"+listid).html(s);
+            }
+        }
+      }
+}
+
+</script>  
+
+[end]
+
+[init ZK data] ****** Обнуляет значения подполей поля ZK для последующего заполнения
+$SET_PARAMETERS J_ZK_DATA_ID =; J_ZK_DATA_name =; J_ZK_DATA_header =; J_ZK_DATA_titulature =; J_ZK_DATA_present =;
+[end]
+
+[init ZK members] ****** Обнуляет значения (ZK_chef, ZK_vice_chef, ZK_members, ZK_secretary) для последующего заполнения
+$SET_PARAMETERS ZK_CHEF_ID =; ZK_CHEF_NAME =; ZK_CHEF_RANK =; ZK_CHEF_PRESENCE =; ZK_CHEF_VOTES =;
+$SET_PARAMETERS ZK_VICE_CHEF_ID =; ZK_VICE_CHEF_NAME =; ZK_VICE_CHEF_RANK =; ZK_VICE_CHEF_PRESENCE =; ZK_VICE_CHEF_VOTES =;
+$SET_PARAMETERS ZK_MEMBERS_ID =; ZK_MEMBERS_NAME =; ZK_MEMBERS_RANK =; ZK_MEMBERS_PRESENCE =; ZK_MEMBERS_VOTES =;
+$SET_PARAMETERS ZK_SECRETARY_ID =; ZK_SECRETARY_NAME =; ZK_SECRETARY_RANK =; ZK_SECRETARY_PRESENCE =; ZK_SECRETARY_VOTES =;
+
+[end]
+
+[getLZKSettings]
+$GET_DATA JINR/doc_13_fields.dat[getLZKdataSQL]
+$GET_DATA JINR/doc_13_fields.dat[getLZKMembersSQL]
+[end]
+
+[getCZKSettings]
+$GET_DATA JINR/doc_13_fields.dat[getCZKdataSQL]
+$GET_DATA JINR/doc_13_fields.dat[getCZKMembersSQL]
+[end]
+
+[getLZKdataSQL] ****** Возвращает из справочника данные соответствующей локальной закупочной комиссии
+SELECT 
+  id as "J_ZK_DATA_ID"
+, name as "J_ZK_DATA_name"
+, header as "J_ZK_DATA_header"
+, titulature as "J_ZK_DATA_titulature"
+, present as "J_ZK_DATA_present"
+, div_code as "ZK_DATA_div_code"
+from i_jinr_zk
+where zk_type = 2 and div_code in (select div_id from d_divs where doc_id = #PARENT_DOC_ID#)
+;
+[end]
+
+[getCZKdataSQL] ****** Возвращает из справочника данные центральной закупочной комиссии
+SELECT 
+  id as "J_ZK_DATA_ID"
+, name as "J_ZK_DATA_name"
+, header as "J_ZK_DATA_header"
+, titulature as "J_ZK_DATA_titulature"
+, present as "J_ZK_DATA_present"
+from i_jinr_zk
+where zk_type = 3
+;
+[end]
+
+
+[getLZKMembersSQL] ****** Составляет список членов локальной закупочной комиссии
+select concat(u.ID, ',') AS "ZK_CHEF_ID"
+, concat( u.F, ' ', ifnull(u.I,''), ' ', ifnull(u.O,''), '<BR/>') as ZK_CHEF_NAME
+, concat('1', ',') AS "ZK_CHEF_RANK"
+, concat('1', ',') AS "ZK_CHEF_PRESENCE" 
+, concat('0', ',') AS "ZK_CHEF_VOTES" 
+from #table_users_full# u 
+where
+u.id in (select user_id from a_user_role where role_id=37 and active=1) 
+and u.id in 
+ (select user_id from a_user_role where target_type_id=1 and target_code = #ZK_DATA_div_code#
+   and active=1) 
+ order by u.F , u.F
+;
+
+select concat(u.ID, ',') AS "ZK_VICE_CHEF_ID"
+, concat( u.F, ' ', ifnull(u.I,''), ' ', ifnull(u.O,''), '<BR/>') as ZK_VICE_CHEF_NAME
+, concat('2', ',') AS "ZK_VICE_CHEF_RANK"
+, concat('1', ',') AS "ZK_VICE_CHEF_PRESENCE" 
+, concat('0', ',') AS "ZK_VICE_CHEF_VOTES" 
+from #table_users_full# u 
+where
+u.id in (select user_id from a_user_role where role_id=38 and active=1) 
+and u.id in 
+ (select user_id from a_user_role where target_type_id=1 and target_code = #ZK_DATA_div_code#
+   and active=1) 
+ order by u.F , u.F
+;
+
+select concat(u.ID, ',') AS "ZK_MEMBERS_ID"
+, concat( u.F, ' ', ifnull(u.I,''), ' ', ifnull(u.O,''), '<BR/>') as ZK_MEMBERS_NAME
+, concat('3', ',') AS "ZK_MEMBERS_RANK"
+, concat('1', ',') AS "ZK_MEMBERS_PRESENCE" 
+, concat('0', ',') AS "ZK_MEMBERS_VOTES" 
+from #table_users_full# u 
+where
+u.id in (select user_id from a_user_role where role_id=18 and active=1) 
+and u.id in 
+ (select user_id from a_user_role where target_type_id=1 and target_code = #ZK_DATA_div_code#
+   and active=1) 
+ order by u.F , u.F
+;
+
+select concat(u.ID, ',') AS "ZK_SECRETARY_ID"
+, concat( u.F, ' ', ifnull(u.I,''), ' ', ifnull(u.O,''), '<BR/>') as ZK_SECRETARY_NAME
+, concat('4', ',') AS "ZK_SECRETARY_RANK"
+, concat('1', ',') AS "ZK_SECRETARY_PRESENCE" 
+, concat('0', ',') AS "ZK_SECRETARY_VOTES"
+from #table_users_full# u 
+where
+u.id in (select user_id from a_user_role where role_id=39 and active=1) 
+and u.id in 
+ (select user_id from a_user_role where target_type_id=1 and target_code = #ZK_DATA_div_code#
+   and active=1) 
+ order by u.F , u.F
+;
+
+[end]
+
+[getCZKMembersSQL] ****** Составляет список членов центральной закупочной комиссии
+select concat(u.ID, ',') AS "ZK_CHEF_ID"
+, concat( u.F, ' ', ifnull(u.I,''), ' ', ifnull(u.O,''), '<BR/>') as ZK_CHEF_NAME
+, concat('1', ',') AS "ZK_CHEF_RANK"
+, concat('1', ',') AS "ZK_CHEF_PRESENCE" 
+, concat('0', ',') AS "ZK_CHEF_VOTES" 
+from #table_users_full# u 
+where 
+u.id in (select user_id from a_user_role where role_id=34 and active=1) 
+order by u.F , u.F
+;
+
+select concat(u.ID, ',') AS "ZK_VICE_CHEF_ID"
+, concat( u.F, ' ', ifnull(u.I,''), ' ', ifnull(u.O,''), '<BR/>') as ZK_VICE_CHEF_NAME
+, concat('2', ',') AS "ZK_VICE_CHEF_RANK"
+, concat('1', ',') AS "ZK_VICE_CHEF_PRESENCE" 
+, concat('0', ',') AS "ZK_VICE_CHEF_VOTES" 
+from #table_users_full# u 
+where
+u.id in (select user_id from a_user_role where role_id=35 and active=1) 
+order by u.F , u.F
+;
+
+select concat(u.ID, ',') AS "ZK_MEMBERS_ID"
+, concat( u.F, ' ', ifnull(u.I,''), ' ', ifnull(u.O,''), '<BR/>') as ZK_MEMBERS_NAME
+, concat('3', ',') AS "ZK_MEMBERS_RANK"
+, concat('1', ',') AS "ZK_MEMBERS_PRESENCE" 
+, concat('0', ',') AS "ZK_MEMBERS_VOTES" 
+from #table_users_full# u 
+where 
+u.id in (select user_id from a_user_role where role_id=19 and active=1) 
+order by u.F , u.F
+;
+
+select concat(u.ID, ',') AS "ZK_SECRETARY_ID"
+, concat( u.F, ' ', ifnull(u.I,''), ' ', ifnull(u.O,''), '<BR/>') as ZK_SECRETARY_NAME
+, concat('4', ',') AS "ZK_SECRETARY_RANK"
+, concat('1', ',') AS "ZK_SECRETARY_PRESENCE" 
+, concat('0', ',') AS "ZK_SECRETARY_VOTES"
+from #table_users_full# u 
+where 
+u.id in (select user_id from a_user_role where role_id=36 and active=1) 
+order by u.F , u.F
+;
+
+[end]
+
+
+
+[feel ZK data script] ****** Заполняет данными все подполя в поле "Закупочная комиссия" (ZK)
+
+<script type="text/javascript">
+
+    $('##'+'ZK_id').val('#J_ZK_DATA_ID#');    
+    $('##'+'ZK_text').val('#J_ZK_DATA_name#');
+
+    $('##'+'JINR_ZK_DATA_header').val(`#J_ZK_DATA_header#`);
+    $('##'+'JINR_ZK_DATA_titulature').val(`#J_ZK_DATA_titulature#`);
+    $('##'+'JINR_ZK_DATA_present').val(`#J_ZK_DATA_present#`);
+
+    $("##" + 'ZK').html('#J_ZK_DATA_name#');    
+</script>
+
+[end]
+
+
+
+[feel ZK members script] ****** Заполняет соответствующие (commission_members, voting_protocol) поля формы
+
+$INCLUDE JINR/doc_13_fields.dat[ZK_commission_members settings]
+$INCLUDE JINR/doc_13_fields.dat[ZK_commission_members script]
+$INCLUDE JINR/doc_13_fields.dat[ZK_voting_protocol settings]
+$INCLUDE JINR/doc_13_fields.dat[ZK_voting_protocol script]
+
+<script type="text/javascript">
+
+    var full_ZK_com_mem_id_str='#ZK_CHEF_ID#' + '#ZK_VICE_CHEF_ID#' + '#ZK_MEMBERS_ID#' + '#ZK_SECRETARY_ID#';
+    var full_ZK_com_mem_name_str='#ZK_CHEF_NAME#' + '#ZK_VICE_CHEF_NAME#' + '#ZK_MEMBERS_NAME#' + '#ZK_SECRETARY_NAME#';
+
+    var full_ZK_rank_str='#ZK_CHEF_RANK#' + '#ZK_VICE_CHEF_RANK#' + '#ZK_MEMBERS_RANK#' + '#ZK_SECRETARY_RANK#';
+    var full_ZK_presence_str='#ZK_CHEF_PRESENCE#' + '#ZK_VICE_CHEF_PRESENCE#' + '#ZK_MEMBERS_PRESENCE#' + '#ZK_SECRETARY_PRESENCE#';
+
+    var full_ZK_votes_id_str='#ZK_CHEF_ID#' + '#ZK_VICE_CHEF_ID#' + '#ZK_MEMBERS_ID#';
+    var full_ZK_votes_name_str='#ZK_CHEF_NAME#' + '#ZK_VICE_CHEF_NAME#' + '#ZK_MEMBERS_NAME#';
+    var full_ZK_votes_str='#ZK_CHEF_VOTES#' + '#ZK_VICE_CHEF_VOTES#' + '#ZK_MEMBERS_VOTES#';
+
+    $("##" + "commission_members").val(full_ZK_com_mem_name_str.substring(0, full_ZK_com_mem_name_str.length-5));
+    $("##" + "commission_members_id").val(full_ZK_com_mem_id_str.substring(0, full_ZK_com_mem_id_str.length-1));        
+    $("##" + "commission_members_rank").val(full_ZK_rank_str.substring(0, full_ZK_rank_str.length-1));
+    $("##" + "commission_members_presence").val(full_ZK_presence_str.substring(0, full_ZK_presence_str.length-1));
+
+    $("##" + "voting_protocol").val(full_ZK_votes_name_str.substring(0, full_ZK_votes_name_str.length-5));
+    $("##" + "voting_protocol_members_id").val(full_ZK_votes_id_str.substring(0, full_ZK_votes_id_str.length-1));        
+    $("##" + "voting_protocol_votes").val(full_ZK_votes_str.substring(0, full_ZK_votes_str.length-1));
+
+    restoreCommissionMembersWrite("commission_members");
+    restoreVotingProtocolWrite("voting_protocol");
+
+</script>
+
+[end]
+
+
+
+=================== 1012 - Список рассылки =======================
+[field_1012_write]
+
+$INCLUDE dat/doc_fields_info.dat[set chosens]
+
+$SET_PARAMETERS item_id_param=#FIELD_DB_NAME#_id
+$SET_PARAMETERS text_val=^#FIELD_DB_NAME#; val_id=^#item_id_param#;
+
+$GET_DATA [get info type]
+
+<input type=hidden id="#FIELD_DB_NAME#_id" name="#FIELD_DB_NAME#_id" size=4 value="#val_id#" >
+<input type=hidden value="#text_val#" ??!editable=1
+<textarea style="width:#LX#pt; height:#LY#pt;" ??editable=1
+id="#FIELD_DB_NAME#_text" name="#FIELD_DB_NAME#">
+#text_val# </textarea>  ??editable=1
+
+<span id="#FIELD_DB_NAME#_list"
+style="display:none;" ??editable=1
+>
+$INCLUDE svs/info_show_plain_script.dat[script]
+$INCLUDE JINR/doc_13_fields.dat[local script]  ??
+
+
+<script type="text/javascript">restoreInfoList("#FIELD_DB_NAME#");</script>  ??val_id&text_val
+
+</span>
+
+<span class="info_input big" id="#FIELD_DB_NAME#" style="width:100px; height:22px;"
+info_id="#INFO_ID#" info_view="#INFO_VIEW#"
+searchFor='none' ??!text_val&ZZZ
+searchFor='#text_val#'  ??text_val_ZZZ
+searchFor='none' ??!val_id
+searchFor='#val_id#'  ??val_id
+>выбрать </span> 
+
+[end]
+
+
+[get info type]
+select view, MULTI, editable  from infos_views where id=#INFO_VIEW#
+[end]
+
+
+
+[field_1012_read]
+^#FIELD_DB_NAME#
+
+[end]
+
+
+[get person info]
+select posts as "person_posts" from info_11 where person_id=#f_id_value#
+;
+select email as "person_email", phone as "person_phone" from a_users_jinr_v where id=#f_id_value#
+[end]
+
+
+=================== 1017 - Закупочные комиссии =======================
+
+[ZK_data_read]
+^#FIELD_DB_NAME#
+[end]
+
+
+[ZK_data_write]
+
+$SET_PARAMETERS item_id_param=#FIELD_DB_NAME#_id
+<div class="info_input" id="#FIELD_DB_NAME#" style="width:100px;"
+info_id="#INFO_ID#" info_view="#INFO_VIEW#" info_type="#INFO_TYPE#" searchFor='none'>
+
+^#FIELD_DB_NAME# ??#FIELD_DB_NAME#
+выбрать  ??!#FIELD_DB_NAME#
+
+</div> 
+
+<input type=hidden id="#FIELD_DB_NAME#_id" name="#FIELD_DB_NAME#_id" size=4 value="^#item_id_param#">
+<input type=hidden id="#FIELD_DB_NAME#_text" name="#FIELD_DB_NAME#" size=45 value="^#FIELD_DB_NAME#"> 
+
+<div id="JINR_ZK_DATA">
+$CALL_SERVICE c=JINR/doc_13_ZK_data_field.cfg
+</div>
+
+<script type="text/javascript">
+var customSelectInfoRow= function(el, text)
+{
+    if($(el).attr("info_id") == 1012 ) {
+        AjaxCall("JINR_ZK_DATA", "c=JINR/doc_13_ZK_data_field&FIELD_DB_NAME=#FIELD_DB_NAME#&info_id=#INFO_ID#&record_id=" + $(el).attr("returnId")  , true);
+        hideSprav();
+    }
+}
+
+</script>
+
+[end]
+
+
+[ZK_data_save]
+$GET_DATA JINR/doc_13_fields.dat[updateZK_data]
+$SET_PARAMETERS #CUSTOM_FIELD_DB_NAME#=#JINR_FIZLITSO_F# #JINR_FIZLITSO_I# #JINR_FIZLITSO_O#; ??
+[end]
+
+
+[updateZK_data]
+UPDATE d_data_#DOC_TYPE_ID# SET 
+  #CUSTOM_FIELD_DB_NAME# = '#JINR_FIZLITSO_F# #JINR_FIZLITSO_I# #JINR_FIZLITSO_O#' ??
+ #CUSTOM_FIELD_DB_NAME#_header = '#JINR_ZK_DATA_header#'
+, #CUSTOM_FIELD_DB_NAME#_titulature = '#JINR_ZK_DATA_titulature#'
+, #CUSTOM_FIELD_DB_NAME#_present = '#JINR_ZK_DATA_present#'
+ WHERE doc_id = #doc_id#
+;
+[end]
+
+
+
+
+
+=================== 1018 - Протокол голосования закупочной комисии =======================
+[ZK_voting_protocol settings]
+$SET_PARAMETERS VOTES_VALUE_FOR=За; VOTES_VALUE_AGAINST=Против; VOTES_VALUE_ABSTANED=Воздержался; 
+[end]
+
+[ZK_voting_protocol head]
+$INCLUDE JINR/doc_13_fields.dat[ZK_voting_protocol settings]
+$SET_PARAMETERS JINR_VP_text =; JINR_VP_members_id =; JINR_VP_votes =;
+
+$GET_DATA JINR/doc_13_fields.dat[getVotingProtocolInfo]
+
+<input type=hidden id="#FIELD_DB_NAME#" name="#FIELD_DB_NAME#" value="#JINR_VP_text#" >
+<input type=hidden id="#FIELD_DB_NAME#_members_id" name="#FIELD_DB_NAME#_members_id" value="#JINR_VP_members_id#" >
+<input type=hidden id="#FIELD_DB_NAME#_votes" name="#FIELD_DB_NAME#_votes" value="#JINR_VP_votes#" >
+[end]
+
+
+[ZK_voting_protocol script]
+<style>
+    table.doc tr td {padding:3px;}
+</style>
+
+<script type="text/javascript">
+var STRING_VALUES_SEPARATOR='<BR/>';
+
+
+/**
+  * установка значений при голосовании
+  */
+var voteForProtocol = function(el){
+      var infoFieldId = $(el).attr("votedatafield");
+      var index_Id = $(el).attr("voteindex");  //
+      var vote_value = $(el).attr("value");  //
+      var text_field_ID = infoFieldId; //id поля для текстов выборки
+      var votes_values_ID = infoFieldId + "_votes"; //id поля для голосов выборки
+
+      if(
+        $("##" + text_field_ID).val().length > 0 //если поле текстов не пусто
+            && $("##" + votes_values_ID).val().length > 0 ){ //и есть контейнер
+        var sel_votes = $("##" + votes_values_ID).val().split(",");
+        var sel_texts = $("##" + text_field_ID).val().split(STRING_VALUES_SEPARATOR);
+
+        sel_votes[index_Id] = vote_value;
+
+        var vote_result_srt = "";
+        for(i = 0 ; i < sel_votes.length; i++){
+            vote_result_srt += sel_votes[i] + ",";
+        }
+
+        $("##" + votes_values_ID).val(vote_result_srt.substring(0, vote_result_srt.length-1));
+
+        var div_class = ""; 
+        if(vote_value==1){div_class = "bg_light_green";}
+        if(vote_value==2){div_class = "bg_light_red";}
+        if(vote_value==3){div_class = "bg_light_blue";}
+        var div_str = "<div class = '" + div_class + "'>" + sel_texts[index_Id] + "</div>";
+
+        $("##" + infoFieldId + "_div_" + index_Id).html(div_str);
+      }
+}
+
+
+/**
+ * Построение списка ЗК с результатами голосования
+ * в режиме просмотра (section_r)
+ * infoFieldId - ID поля
+ */
+var restoreVotingProtocolRead=function(infoFieldId) {
+      var text_field_ID = infoFieldId; //id поля для текстов выборки
+      var votes_values_ID = infoFieldId + "_votes"; //id поля для голосов выборки
+      var list_ID = infoFieldId + "_list"; //id элемента-контейнера
+
+      if(
+        $("##" + text_field_ID).val().length > 0 //если поле текстов не пусто
+            && $("##" + votes_values_ID).val().length > 0 ){ //и есть контейнер
+        var sel_votes = $("##" + votes_values_ID).val().split(",");
+        var sel_texts = $("##" + text_field_ID).val().split(STRING_VALUES_SEPARATOR);
+
+        if(sel_votes.length==sel_texts.length){
+            //составляем html строку для списка
+            var s = "";
+            for(i = 0 ; i < sel_votes.length; i++){
+                tr_class = ""; votes_str = "";
+
+                if(sel_votes[i]==1){
+                    tr_class = " class='bg_light_green'";
+                    votes_str = "#VOTES_VALUE_FOR#";
+                }
+                if(sel_votes[i]==2){
+                    tr_class = " class='bg_light_red'";
+                    votes_str = "#VOTES_VALUE_AGAINST#";
+                }
+                if(sel_votes[i]==3){
+                    tr_class = " class='bg_light_blue'";
+                    votes_str = "#VOTES_VALUE_ABSTANED#";
+                }
+
+                s += "<tr" + tr_class + "><td>" + sel_texts[i] + "</td><td>" + votes_str + "</td></tr>";
+            }
+
+            if(s.length>0){
+                s = "<table>" + s + "</table>";
+                $("##" + list_ID).html(s);
+            }
+        }
+      }
+}
+
+
+/**
+ * Построение списка ЗК с механизмом голосования и текущими результатами голосования
+ * в режиме редактирования (section_w)
+ * infoFieldId - ID поля
+ */
+var restoreVotingProtocolWrite=function(infoFieldId) {
+      var text_field_ID = infoFieldId; //id поля для текстов выборки
+      var members_id_ID = infoFieldId + "_members_id"; //id поля для id-шников выборки
+      var votes_values_ID = infoFieldId + "_votes"; //id поля для голосов выборки
+      var list_ID = infoFieldId + "_list"; //id элемента-контейнера
+
+      var header_str = "<tr><th></th><th class=' pt' onClick='$(\".rb_FOR\").click();'>#VOTES_VALUE_FOR#</th><th>#VOTES_VALUE_AGAINST#</th></tr>";
+
+            <th>#VOTES_VALUE_ABSTANED#</th></tr>";  ?? Убран заголовок пункта "воздержался"
+
+      if(
+        $("##" + text_field_ID).val().length > 0 //если поле текстов не пусто
+            && $("##" + members_id_ID).val().length > 0 //и поле id не пусто
+            && $("##" + votes_values_ID).val().length > 0 ){ //и есть контейнер
+        var sel_mem_ids = $("##" + members_id_ID).val().split(",");
+        var sel_votes = $("##" + votes_values_ID).val().split(",");
+        var sel_texts = $("##" + text_field_ID).val().split(STRING_VALUES_SEPARATOR);
+
+        if(sel_votes.length==sel_texts.length){
+            //составляем html строку для списка
+            var s = "";
+            for(i = 0 ; i < sel_votes.length; i++){
+                div_class = ""; onclick_str = ""; votes_str = "";
+                var rb_name = infoFieldId + "_rb_" + i;
+                var div_id = infoFieldId + "_div_" + i;
+                var rb_checked_1 = ""; var rb_checked_2 = "";  var rb_checked_3 = "";
+
+                if(sel_votes[i]==1){
+                    div_class = "bg_light_green";
+                    rb_checked_1 = "checked";
+                }
+
+                if(sel_votes[i]==2){
+                    div_class = "bg_light_red";
+                    rb_checked_2 = "checked";
+                }
+
+                if(sel_votes[i]==3){
+                    div_class = "bg_light_blue";
+                    rb_checked_3 = "checked";
+                }
+
+                onclick_str = " votedatafield = '" + infoFieldId + "' voteindex = '" + i + "'  onclick = 'voteForProtocol(this);'";
+                votes_str = "<td><input type=radio class='rb_FOR' name='" + rb_name + "' value='1'" + rb_checked_1 + onclick_str + "></td><td><input type=radio name='" + rb_name + "' value='2'" + rb_checked_2 + onclick_str + "></td>";
+
+                    <td><input type=radio name='" + rb_name + "' value='3'" + rb_checked_3 + onclick_str + "></td>";  ?? Убран пункт "воздержался"
+
+                s += "<tr><td> <div id= '" + div_id + "'><div class = '" + div_class + "'>" + sel_texts[i] + "</div></div></td>" + votes_str + "</tr>";
+            }
+
+            if(s.length>0){
+                s = "<table border = '0'>" + header_str + s + "</table>";
+                $("##" + list_ID).html(s);
+            }
+        }
+      }
+}
+
+</script>  
+
+[end]
+
+[ZK_voting_protocol_read]
+$INCLUDE JINR/doc_13_fields.dat[ZK_voting_protocol head]
+$INCLUDE JINR/doc_13_fields.dat[ZK_voting_protocol script]
+
+<div id="#FIELD_DB_NAME#_list">
+<script type="text/javascript">restoreVotingProtocolRead("#FIELD_DB_NAME#");</script>
+</div>
+
+[end]
+
+
+[ZK_voting_protocol_write]
+$INCLUDE JINR/doc_13_fields.dat[ZK_voting_protocol head]
+$INCLUDE JINR/doc_13_fields.dat[ZK_voting_protocol script]
+
+<div id="#FIELD_DB_NAME#_list">
+<script type="text/javascript">restoreVotingProtocolWrite("#FIELD_DB_NAME#");</script>
+</div>
+
+[end]
+
+
+[ZK_voting_protocol_save]
+$SET_PARAMETERS save_MEMBERS_ID = #CUSTOM_FIELD_DB_NAME#_members_id;
+$SET_PARAMETERS save_VOTES = #CUSTOM_FIELD_DB_NAME#_votes;
+$GET_DATA JINR/doc_13_fields.dat[updateZKVotingProtocol]
+    $SET_PARAMETERS errMsg=номер протокола;  ??!number&doc_date
+    $SET_PARAMETERS errMsg=дату протокола;  ??number&!doc_date
+    $SET_PARAMETERS errMsg=номер и дату протокола;  ??!number&!doc_date
+    $SET_PARAMETERS errMsg=;  ??!VOTES_ADDED
+    <script type="text/javascript" language="javascript">
+        alert("НАПОМИНАНИЕ: Необходимо ввести #errMsg#");   ??errMsg
+    </script>
+[end]
+
+
+[getVotingProtocolInfo]
+SELECT 
+  #FIELD_DB_NAME# as "JINR_VP_text"
+, #FIELD_DB_NAME#_members_id as "JINR_VP_members_id"
+, #FIELD_DB_NAME#_votes as "JINR_VP_votes"
+from d_data_#DOC_TYPE_ID# 
+where doc_id = #doc_id#
+[end]
+
+[updateZKVotingProtocol]
+UPDATE d_data_#DOC_TYPE_ID# SET 
+ #CUSTOM_FIELD_DB_NAME#_members_id ='^#save_MEMBERS_ID#'
+, #CUSTOM_FIELD_DB_NAME#_votes = '^#save_VOTES#'
+ WHERE doc_id = #doc_id#
+;
+select case when '#voting_protocol_votes#' like '%1%' then 'Y'
+       when '#voting_protocol_votes#' like '%2%' then 'Y' 
+       else ''
+       end as "VOTES_ADDED" 
+;
+update d_list set status=1 where id=#doc_id#;  ??VOTES_ADDED
+[end]
+
+
+
+
+=================== 1019 - Состав закупочной комисии =======================
+[ZK_commission_members settings]
+$SET_PARAMETERS VOTES_VALUE_FOR=За; VOTES_VALUE_AGAINST=Против; VOTES_VALUE_ABSTANED=Воздержался; 
+
+$SET_PARAMETERS CHEF_TITLE=Председатель; VICE_CHEF_TITLE=Зам. председателя;
+$SET_PARAMETERS MEMBERS_TITLE=Члены комиссии; SECRETARY_TITLE=Секретарь комиссии;
+$SET_PARAMETERS MEMBER_PRESENT=; MEMBER_ABSENT=Отсутствует; HEADER_TITLE=Присутствие;
+[end]
+
+[ZK_commission_members head]
+$INCLUDE JINR/doc_13_fields.dat[ZK_commission_members settings]
+$SET_PARAMETERS ZK_members_text =; ZK_members_id =; ZK_members_rank =; ZK_members_presence =;
+$GET_DATA JINR/doc_13_fields.dat[getCommissionMembersInfo]
+
+<input type=hidden id="#FIELD_DB_NAME#" name="#FIELD_DB_NAME#" value="#ZK_members_text#" >
+<input type=hidden id="#FIELD_DB_NAME#_id" name="#FIELD_DB_NAME#_id" value="#ZK_members_id#" >
+<input type=hidden id="#FIELD_DB_NAME#_rank" name="#FIELD_DB_NAME#_rank" value="#ZK_members_rank#" >
+<input type=hidden id="#FIELD_DB_NAME#_presence" name="#FIELD_DB_NAME#_presence" value="#ZK_members_presence#" >
+[end]
+
+
+[ZK_commission_members script]
+<script type="text/javascript">
+var STRING_VALUES_SEPARATOR='<BR/>';
+
+
+/**
+  * установка присутствия/отсутствия
+  */
+var setPresentAbsent = function(el){
+      var infoFieldId = $(el).attr("presencedatafield");
+      var index_Id = $(el).attr("presenceindex");  //
+      var text_field_ID = infoFieldId; //id поля для текстов выборки
+
+      var members_id_ID = infoFieldId + "_id"; //id поля для id-шников выборки
+      var ranks_ID = infoFieldId + "_rank"; //id поля для должностей
+      var presence_values_ID = infoFieldId + "_presence"; //id поля для присутствия/отсутствия
+
+      if(
+        $("##" + text_field_ID).val().length > 0 //если поле текстов не пусто
+            && $("##" + members_id_ID).val().length > 0 //и поле id не пусто
+            && $("##" + ranks_ID).val().length > 0 //и есть контейнер
+            && $("##" + presence_values_ID).val().length > 0 ){ //и есть контейнер
+
+        var sel_mem_ids = $("##" + members_id_ID).val().split(",");
+        var sel_ranks = $("##" + ranks_ID).val().split(",");
+        var sel_presence = $("##" + presence_values_ID).val().split(",");
+        var sel_texts = $("##" + text_field_ID).val().split(STRING_VALUES_SEPARATOR);
+
+        var div_class = ""; 
+
+        if ($(el).prop('checked')) {
+            sel_presence[index_Id] = 1;
+        }
+        else {
+            sel_presence[index_Id] = 0;
+            div_class = "bg_light_red";
+        }
+
+        var div_str = "<div class = '" + div_class + "'>" + sel_texts[index_Id] + "</div>";
+        $("##" + infoFieldId + "_div_" + index_Id).html(div_str);
+
+        var presence_result_srt = "";
+        for(i = 0 ; i < sel_presence.length; i++){
+            presence_result_srt += sel_presence[i] + ",";
+        }
+
+        $("##" + presence_values_ID).val(presence_result_srt.substring(0, presence_result_srt.length-1));
+
+        // этот код меняет список участников протокола голосования (поле voting_protocol)
+        // в соответствии с текущим составом присутствующих членов ЗК
+        // предыдущие результаты голосования сбрасываются в ноль
+
+        var v_pr_srt = ""; 
+        var v_pr_members_id_srt = ""; 
+        var v_pr_votes_srt = "";
+        for(i = 0 ; i < sel_presence.length; i++){
+            if((sel_presence[i]==1) && (sel_ranks[i]<4)){
+                v_pr_srt += sel_texts[i] + STRING_VALUES_SEPARATOR;
+                v_pr_members_id_srt += sel_mem_ids[i] + ",";
+                v_pr_votes_srt += "0" + ",";
+            }
+        }
+        
+        $("##" + "voting_protocol").val(v_pr_srt.substring(0, v_pr_srt.length-5));
+        $("##" + "voting_protocol_members_id").val(v_pr_members_id_srt.substring(0, v_pr_members_id_srt.length-1));        
+        $("##" + "voting_protocol_votes").val(v_pr_votes_srt.substring(0, v_pr_votes_srt.length-1));
+        
+        restoreVotingProtocolWrite("voting_protocol");
+
+        // конец вмешательства в поле voting_protocol
+
+      }
+}
+
+
+/**
+ * Построение списка членов ЗК с данными о присутствии/отсутствии
+ * в режиме просмотра (section_r)
+ * infoFieldId - ID поля
+ */
+var restoreCommissionMembersRead=function(infoFieldId) {
+      var text_field_ID = infoFieldId; //id поля для текстов выборки
+      var members_id_ID = infoFieldId + "_id"; //id поля для id-шников выборки
+      var ranks_ID = infoFieldId + "_rank"; //id поля для должностей
+      var presence_values_ID = infoFieldId + "_presence"; //id поля для присутствия/отсутствия
+      var list_ID = infoFieldId + "_list"; //id элемента-контейнера
+
+      if(
+        $("##" + text_field_ID).val().length > 0 //если поле текстов не пусто
+            && $("##" + members_id_ID).val().length > 0 //и поле id не пусто
+            && $("##" + ranks_ID).val().length > 0 //и есть контейнер
+            && $("##" + presence_values_ID).val().length > 0 ){ //и есть контейнер
+
+        var sel_mem_ids = $("##" + members_id_ID).val().split(",");
+        var sel_ranks = $("##" + ranks_ID).val().split(",");
+        var sel_presence = $("##" + presence_values_ID).val().split(",");
+        var sel_texts = $("##" + text_field_ID).val().split(STRING_VALUES_SEPARATOR);
+
+        if(sel_texts.length==sel_ranks.length && sel_texts.length==sel_presence.length){
+            //составляем html строку для списка
+            var s_res = ""; 
+            var s_chef = ""; var s_vice_chef = ""; var s_members = ""; var s_secretary = "";
+            for(i = 0 ; i < sel_texts.length; i++){
+                tr_class = ""; presence_str = "---";
+
+                if(sel_presence[i]==0){
+                    tr_class = " class='bg_light_red'";
+                    presence_str = "#MEMBER_ABSENT#";
+                }
+
+                if(sel_presence[i]==1){
+                    tr_class = "";
+                    presence_str = "#MEMBER_PRESENT#";
+                }
+
+                if(sel_ranks[i]==1){
+                    s_chef += "<tr" + tr_class + "><td>" + sel_texts[i] + "</td><td>" + presence_str + "</td></tr>";
+                }
+
+                if(sel_ranks[i]==2){
+                    s_vice_chef += "<tr" + tr_class + "><td>" + sel_texts[i] + "</td><td>" + presence_str + "</td></tr>";
+                }
+
+                if(sel_ranks[i]==3){
+                    s_members += "<tr" + tr_class + "><td>" + sel_texts[i] + "</td><td>" + presence_str + "</td></tr>";
+                }
+
+                if(sel_ranks[i]==4){
+                    s_secretary += "<tr" + tr_class + "><td>" + sel_texts[i] + "</td><td>" + presence_str + "</td></tr>";
+                }
+
+            }
+
+            if(s_chef.length>0){
+                s_chef = "<table>" + s_chef + "</table>";
+                s_res = s_res + "<tr><td class='label'>#CHEF_TITLE#:</td><td>" + s_chef + "</td></tr>"
+            }
+
+            if(s_vice_chef.length>0){
+                s_vice_chef = "<table>" + s_vice_chef + "</table>";
+                s_res = s_res + "<tr><td class='label'>#VICE_CHEF_TITLE#:</td><td>" + s_vice_chef + "</td></tr>"
+            }
+
+            if(s_members.length>0){
+                s_members = "<table>" + s_members + "</table>";
+                s_res = s_res + "<tr><td class='label'>#MEMBERS_TITLE#:</td><td>" + s_members + "</td></tr>"
+            }
+
+            if(s_secretary.length>0){
+                s_secretary = "<table>" + s_secretary + "</table>";
+                s_res = s_res + "<tr><td class='label'>#SECRETARY_TITLE#:</td><td>" + s_secretary + "</td></tr>"
+            }
+
+            if(s_res.length>0){
+                s_res = "<table>" + s_res + "</table>";
+                $("##" + list_ID).html(s_res);
+            }
+        }
+      }
+}
+
+
+/**
+ * Построение списка членов ЗК с механизмом редактирования присутствия/отсутствия
+ * и текущим состоянием
+ * в режиме редактирования (section_w)
+ * infoFieldId - ID поля
+ */
+var restoreCommissionMembersWrite=function(infoFieldId) {
+      var text_field_ID = infoFieldId; //id поля для текстов выборки
+      var members_id_ID = infoFieldId + "_id"; //id поля для id-шников выборки
+      var ranks_ID = infoFieldId + "_rank"; //id поля для должностей
+      var presence_values_ID = infoFieldId + "_presence"; //id поля для присутствия/отсутствия
+      var list_ID = infoFieldId + "_list"; //id элемента-контейнера
+
+      if(
+        $("##" + text_field_ID).val().length > 0 //если поле текстов не пусто
+            && $("##" + members_id_ID).val().length > 0 //и поле id не пусто
+            && $("##" + ranks_ID).val().length > 0 //и есть контейнер
+            && $("##" + presence_values_ID).val().length > 0 ){ //и есть контейнер
+
+        var sel_mem_ids = $("##" + members_id_ID).val().split(",");
+        var sel_ranks = $("##" + ranks_ID).val().split(",");
+        var sel_presence = $("##" + presence_values_ID).val().split(",");
+        var sel_texts = $("##" + text_field_ID).val().split(STRING_VALUES_SEPARATOR);
+
+        if(sel_texts.length==sel_ranks.length && sel_texts.length==sel_presence.length){
+            //составляем html строку для списка
+            var s_res = ""; 
+            var s_chef = ""; var s_vice_chef = ""; var s_members = ""; var s_secretary = "";
+            for(i = 0 ; i < sel_texts.length; i++){
+                div_class = ""; onclick_str = ""; presence_str = "";
+
+                var chbx_name = infoFieldId + "_chbx_" + i;
+                var div_id = infoFieldId + "_div_" + i;
+                var div_blc_str = "";
+                var chbx_checked = "";
+
+
+                if(sel_presence[i]==0){
+                    div_class = "bg_light_red";
+                    presence_str = "#MEMBER_ABSENT#";
+                }
+
+                if(sel_presence[i]==1){
+                    chbx_checked = "checked";
+                    presence_str = "#MEMBER_PRESENT#";
+                }
+
+                onclick_str = " presencedatafield = '" + infoFieldId + "' presenceindex = '" + i + "'  onclick = 'setPresentAbsent(this);'";
+                presence_str = "<td><input type=checkbox name='" + chbx_name + "'" + chbx_checked + onclick_str + "></td>";
+                div_blc_str = "<div id= '" + div_id + "'><div class = '" + div_class + "'>" + sel_texts[i] + "</div></div>";
+
+
+                if(sel_ranks[i]==1){
+                    s_chef += "<tr><td width='250'><b>" + div_blc_str + "</b></td>" + presence_str + "</tr>";
+                }
+
+                if(sel_ranks[i]==2){
+                    s_vice_chef += "<tr><td width='250'><b>" + div_blc_str + "</b></td>" + presence_str + "</tr>";
+                }
+
+                if(sel_ranks[i]==3){
+                    s_members += "<tr><td width='250'><b>" + div_blc_str + "</b></td>" + presence_str + "</tr>";
+                }
+
+                if(sel_ranks[i]==4){
+                    s_secretary += "<tr><td width='250'><b>" + div_blc_str + "</b></td>" + presence_str + "</tr>";
+                }
+
+            }
+
+            if(s_chef.length>0){
+                s_chef = "<table>" + s_chef + "</table>";
+                s_res = s_res + "<tr><td>#CHEF_TITLE#:</td><td>" + s_chef + "</td></tr>"
+            }
+
+            if(s_vice_chef.length>0){
+                s_vice_chef = "<table>" + s_vice_chef + "</table>";
+                s_res = s_res + "<tr><td>#VICE_CHEF_TITLE#:</td><td>" + s_vice_chef + "</td></tr>"
+            }
+
+            if(s_members.length>0){
+                s_members = "<table>" + s_members + "</table>";
+                s_res = s_res + "<tr><td>#MEMBERS_TITLE#:</td><td>" + s_members + "</td></tr>"
+            }
+
+            if(s_secretary.length>0){
+                s_secretary = "<table>" + s_secretary + "</table>";
+                s_res = s_res + "<tr><td>#SECRETARY_TITLE#:</td><td>" + s_secretary + "</td></tr>"
+            }
+
+            if(s_res.length>0){
+                s_res = "<table>" + s_res + "</table>";
+                $("##" + list_ID).html(s_res);
+            }
+        }
+      }
+}
+
+</script>  
+
+[end]
+
+[ZK_commission_members_read]
+$INCLUDE JINR/doc_13_fields.dat[ZK_commission_members head]
+$INCLUDE JINR/doc_13_fields.dat[ZK_commission_members script]
+
+<div id="#FIELD_DB_NAME#_list">
+<script type="text/javascript">restoreCommissionMembersRead("#FIELD_DB_NAME#");</script>
+</div>
+
+[end]
+
+
+[ZK_commission_members_write]
+$INCLUDE JINR/doc_13_fields.dat[ZK_commission_members head]
+$INCLUDE JINR/doc_13_fields.dat[ZK_commission_members script]
+
+<div id="#FIELD_DB_NAME#_list">
+<script type="text/javascript">restoreCommissionMembersWrite("#FIELD_DB_NAME#");</script>
+</div>
+
+[end]
+
+
+[ZK_commission_members_save]
+$SET_PARAMETERS save_ID = #CUSTOM_FIELD_DB_NAME#_id;
+$SET_PARAMETERS save_RANK = #CUSTOM_FIELD_DB_NAME#_rank;
+$SET_PARAMETERS save_PRESENCE = #CUSTOM_FIELD_DB_NAME#_presence;
+$GET_DATA JINR/doc_13_fields.dat[updateZKCommissionMembers]
+[end]
+
+
+[getCommissionMembersInfo]
+SELECT 
+  #FIELD_DB_NAME# as "ZK_members_text"
+, #FIELD_DB_NAME#_id as "ZK_members_id"
+, #FIELD_DB_NAME#_rank as "ZK_members_rank"
+, #FIELD_DB_NAME#_presence as "ZK_members_presence"
+from d_data_#DOC_TYPE_ID# 
+where doc_id = #doc_id#
+[end]
+
+[updateZKCommissionMembers]
+UPDATE d_data_#DOC_TYPE_ID# SET 
+ #CUSTOM_FIELD_DB_NAME#_id ='^#save_ID#'
+, #CUSTOM_FIELD_DB_NAME#_rank = '^#save_RANK#'
+, #CUSTOM_FIELD_DB_NAME#_presence = '^#save_PRESENCE#'
+ WHERE doc_id = #doc_id#
+;
+[end]
+
+
+=================== 1014 - Список участников конкурса закупочной комиссии (объект 14) =======================
+[tender_participant_list_read]  ****** 1014 - Список участников конкурса закупочной комиссии
+$STORE_PARAMETERS
+$SET_PARAMETERS INITIATOR_COMMENT=;
+$LOG3 Tender collection: FIELD_DB_NAME=#FIELD_DB_NAME#;
+
+css_modificator=#css_modificator#; ??
+</td></tr><tr><td colspan=2 class="bottom_dotted"><center>
+<div id="collection_#doc_id#_#TYPE#" class="embedded_object" 
+style="#css_modificator#"  ??css_modificator
+>
+$CALL_SERVICE c=obj/show_collection;
+</div></center>
+$RESTORE_PARAMETERS
+[end]
+
+
+[tender_participant_list_write]
+$SET_PARAMETERS editable=Y;
+$INCLUDE JINR/doc_13_fields.dat[tender_participant_list_read]
+$INCLUDE JINR/doc_13_fields.dat[add first tender] ??!MODIFIER&DOC_TYPE_ID=13
+[end]
+
+[add first tender]
+<script type="text/javascript" language="JavaScript">
+src_type_id ??
+var add_src=function() {$("##add_#FIELD_DB_NAME#").click();}
+window.setTimeout(add_src, 500);
+</script>
+[end]
+
+
+[mnts total row]  ****** Список источников финансирования - строка "Всего:"
+$GET_DATA dat/doc_fields_sums.dat[get parent data record] ??PARENT_DOC_ID>0
+$GET_DATA JINR/common_fields.dat[get parent summs] ??PARENT_DOC_DATA_RECORD_ID
+$GET_DATA JINR/common_fields.dat[get doc currency settings] ??PARENT_DOC_TYPE_ID
+<tr class="total_row"><td colspan=3 class="right">Итого:</td>
+<td>#RUB#</td> ??has_rub=Y
+<td>#USD#</td> ??has_usd=Y_ZZZ
+<td>#EUR#</td> ??has_eur=Y_ZZZ
+<td style="border-right:none;"></td>
+</tr>
+[end]
+
+[get parent summs]
+select replace(FORMAT(summa_rub,2),',',' ') as "RUB"
+    , replace(FORMAT(summa_usd,2),',',' ') as "USD"
+    , replace(FORMAT(summa_eur,2),',',' ') as "EUR"
+from #PARENT_TABLE_NAME# 
+where id=#PARENT_DOC_DATA_RECORD_ID#
+[end]
+
+
+[tender_participant_list_save]
+$LOG ========= [tender_participant_list_save] WORKS! =========<br>
+[end]

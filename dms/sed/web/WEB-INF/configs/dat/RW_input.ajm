@@ -1,0 +1,122 @@
+dat/RW_input.cfg
+
+----------------- 20: Текстовое поле с возможностью изменения в режиме просмотра --------------------
+----------------- поле редактируемо при просмотре для участников маршрута для не завершенных документов
+----------------- Для изменения значения необходимо нажать кнопку
+
+[RW_input_W]
+$INCLUDE dat/doc_fields.dat[input field]
+<span style="font-size:8pt; font-style:italic;">заносится, когда будет известно</span>
+[end]
+
+
+[RW_input_R]
+$SET_PARAMETERS val=^#FIELD_DB_NAME#;
+$SET_PARAMETERS field_RW=Y;  ??DOC_STATUS<3&CREATOR_ID=#USER_ID#
+
+$GET_DATA dat/RW_input.cfg[checkWFmember] ??WF_ID&!field_RW=Y
+$GET_DATA dat/RW_input.cfg[get field] ??DOC_DATA_RECORD_ID_ZZZ
+
+$SET_PARAMETERS field_RW=;  ??mode=print|mode=ext
+$INCLUDE dat/doc_fields.dat[static text] ??!field_RW
+
+$INCLUDE dat/RW_input.cfg[report]  ??field_RW
+[end]
+
+[common form fields]
+<input type=hidden name=#FIELD_DB_NAME# value="#val#"> #val# ??!cop=editField&!ERROR
+<input type=hidden name=TYPE value="#TYPE#">
+<input type=hidden name=SIZE value="#SIZE#">
+<input type=hidden name=DOC_TYPE_ID value="#DOC_TYPE_ID#">
+<input type=hidden name=DOC_DATA_RECORD_ID value="#DOC_DATA_RECORD_ID#">
+<input type=hidden name=FIELD_DB_NAME value="#FIELD_DB_NAME#">
+<input type=hidden name=LX value="#LX#">
+[end]
+
+
+[report]
+$SET_PARAMETERS val=^#FIELD_DB_NAME#; 
+$GET_DATA dat/RW_input.cfg[update doc data] ??cop=saveField
+
+<div id="#FIELD_DB_NAME#_cont">
+$INCLUDE dat/RW_input.cfg[common form fields]
+
+$INCLUDE dat/doc_fields.dat[input field] ??cop=editField|ERROR
+
+<input type="button" class="butt1 pt" 
+    value='Ввести' style="margin-left:20px;"   ??!cop=editField&!val
+    value='Изменить' style="margin-left:20px;"   ??!cop=editField&val
+    value='Сохранить'                             ??cop=editField
+    onClick="AjaxCall('#FIELD_DB_NAME#_cont'
+    , 'c=dat/RW_input&cop=editField' ??!cop=editField
+    , 'c=dat/RW_input&cop=saveField' ??cop=editField
+    , true, '#FIELD_DB_NAME#_cont');" >  
+
+</div>
+
+#ERROR# ??ERROR
+[end]
+
+
+----------------- Запросы для получения и сохранения поля 18 -------
+[checkWFmember]
+select 'Y' as field_RW from wf where wf_id=#WF_ID# and user_id=#USER_ID#
+[end]
+
+
+[update doc data]
+update d_data_#DOC_TYPE_ID# set #FIELD_DB_NAME#='#val#' where id=#DOC_DATA_RECORD_ID#
+[end]
+
+
+[ZZZget field]
+try: select nr_1c, nr_adb from d_data_#DOC_TYPE_ID# where id=#DOC_DATA_RECORD_ID#
+[end]
+
+============= ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
+=================== 1007 - Редактируемое при просмотре текстовое поле =======================
+Поле редактируемо в просмотре для участников маршрута для не завершенных документов
+В отличие от 20, поле всегда RW - не нужно жать кнопку "Изменить"
+
+[RW_input_W]
+$INCLUDE dat/doc_fields.dat[input field]
+[end]
+
+
+[RW_input_R]
+$SET_PARAMETERS val=^#FIELD_DB_NAME#;
+$SET_PARAMETERS field_RW=Y; cop=editField; ??DOC_STATUS<3&CREATOR_ID=#USER_ID#
+$GET_DATA dat/RW_input.cfg[checkWFmember] ??WF_ID&!field_RW=Y
+$INCLUDE dat/doc_fields.dat[static text] ??!field_RW=Y
+$SET_PARAMETERS cop=edit; ??!val
+$INCLUDE dat/RW_input.cfg[report]  ??field_RW=Y
+[end]
+
+$INCLUDE dat/RW_input.cfg[text field] ??field_RW=Y&val
+
+[text field]
+[end]
+
+[input field]
+[end]
+
+<input type="button" class="butt1 pt" value='Изменить' onClick="AjaxCall('#FIELD_DB_NAME#_cont'
+    , 'c=dat/RW_input&DOC_TYPE_ID=#DOC_TYPE_ID#&DOC_DATA_RECORD_ID=#DOC_DATA_RECORD_ID#&FIELD_DB_NAME=#FIELD_DB_NAME#'
+    , true, '#FIELD_DB_NAME#_cont');" >  
+
+
+
+$INCLUDE dat/RW_input.cfg[input field] ??field_RW=Y
+
+
+
+[checkWFmember]
+select 'Y' as field_RW from wf where wf_id=#WF_ID# and user_id=#USER_ID#
+[end]
+
+
+[update doc data]
+update d_data_#DOC_TYPE_ID#
+set #FIELD_DB_NAME#='#val#'
+where id=#DOC_DATA_RECORD_ID#
+[end]

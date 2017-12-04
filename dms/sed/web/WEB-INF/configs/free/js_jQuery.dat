@@ -1,0 +1,87 @@
+free/js_jQuery.dat
+
+[comments]
+descr=JavaScript - jQuery - установка обработчиков и стандартные обработчики
+testURL=free/js_jQuery.dat
+[end]
+
+[report]
+/*========================= Общее JQuery ============================*/ ??
+/*===================================================================*/ ??
+
+/*------------------ Установка обработчиков -------------------- */ ??
+var setStandardEvents = function()
+{	$('.srh, .filter, .spr_item, .pt, .info_input, .fe, .tt').unbind();
+	$('.srh, td.filter, td.spr_item, .pt, .info_input').mouseover(sel); 
+	$('.srh, td.filter, td.spr_item, .pt, .info_input').mouseout(sel);
+	$('.tt').mouseover(showToolTip); 
+	$('.tt').mouseout(hideToolTip);
+
+	$('.srh').click(setSrt);
+	$('.filter').click(setFilter);
+
+	$('.fe').change(setChanged); ??будем использовать на формах, чтобы отмечать, что данные изменены
+
+	$(".resize").resizable();
+	$('.info_input').click(showSprav);  // события на тестовых полях для справочников	
+log(5,"...setStandardEvents..."); 
+}
+
+/*------------------ клики-эффекты -------------------- */ ??
+
+var sel = function(ev) {
+$("##firstRow").removeClass("sel");
+	if(ev.type == "mouseover") $(this).addClass("sel");
+	else if(ev.type == "mouseout")	$(this).removeClass("sel");
+	return true;
+}
+
+//----- для кнопок -----??
+var sel_b = function(ev) {
+	if(ev.type == "mouseover") $(ev.target).addClass("ba");
+	else if(ev.type == "mouseout") $(ev.target).removeClass("ba");
+	return false;
+}
+
+============== Сортировка таблиц ================== ??
+
+var setSrt = function(ev) {
+    try {
+        var s_new = $(this).attr("sr");
+        var s_old = document.theForm.srt.value;
+    log(4,"free/js_jQuery.dat.setSrt(): " + s_old + "=>"  + s_new);
+        if (s_new == s_old)
+        { if(document.theForm.desc.value == 'desc') document.theForm.desc.value = '';
+            else document.theForm.desc.value = 'desc';
+        }
+        else
+            document.theForm.srt.value = s_new;
+        submitForm(true);
+    }                
+    catch(e) {
+        log(1,"free/js_jQuery.dat.setSrt() EXCEPTION: " + e);
+        document.theForm.submit(); ??
+    }
+	return false;
+}
+
+var showSrt = function(srt, cl) {
+    log(5,"showSrt: srt=" + srt + "; cl=" + cl + ";");
+    $("th[sr='" + srt + "']").addClass(cl); 
+}
+
+
+function goToRow(nr)
+{ 
+    log(2,"free/js_jQuery.dat.goToRow(" + nr + ")...");
+    try {
+      document.theForm.srn.value=nr;  
+    //      document.theForm.submit();
+      submitForm(false);
+    }
+    catch (e) {
+        alert(e);
+    }
+}
+
+[end]

@@ -1,0 +1,161 @@
+viewer/show_markup_list.ajm
+
+[comments]
+descr=U: Вывод списка маркапов 
+input=active_page_id - ID текущей страницы
+parents=viewer/show_page.cfg
+childs=viewer/markup_form.cfg
+author=Джавадзаде
+[end]
+
+[description]
+<ul>
+    <li>Отображение списка маркапов </li>
+    <li>Вызов viewer/markup_form.cfg - показывает данные маркапа при клике на иконку маркапа</li>
+</ul>
+[end]
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+tableCfg=table_no
+LOG=OFF
+[end]
+
+
+[report header]
+
+$GET_DATA [get file info]
+$SET_PARAMETERS srt_field=y_coordinate; ??!srt_field
+
+<div id="filters_menu" 
+style="display:none" ??NUM_MARKUPS=0
+>
+<span class="big"><b>Замечания:</b></span>
+
+   <div class="menu"> 
+        <ul class="shadow">
+            <li class="control" style="width:120px;"> 
+              <div class="fright">
+                <i id="toggle_#markup_nr#"  class="fa fa-caret-down fa-5" aria-hidden="true" style="font-size:1.5em; color:##808080" ></i> 
+              </div>Автор<div class="clr"></div>
+              <ul class="shadow">
+                  <div><li class="control pt dd" onClick="filter_author('')" >Все
+                    <i class="fa fa-check" aria-hidden="true"></i> ??!author_id
+                    </li>
+                  </div>
+                  <div>#AUTHORS#</div>
+              </ul>  
+         </li><li class="control" style="width:120px;">
+              <div class="fright">
+                <i class="fa fa-caret-down fa-5" aria-hidden="true" style="font-size:1.5em; color:##808080"></i> 
+              </div>Сортировка<div class="clr"></div>
+
+                <ul class="shadow">
+                    <div><li class="control pt dd" onClick="sortMarkupList('y_coordinate');">По месту на странице
+                      <i class="fa fa-check" aria-hidden="true"></i> ??srt_field=y_coordinate
+                    </li></div>
+                   <div><li class="control pt dd" onClick="sortMarkupList('markup_nr');">Хронологически
+                        <i class="fa fa-check" aria-hidden="true"></i> ??!srt_field=y_coordinate
+                    </li></div>
+                 </ul>  
+            </li>
+        </ul>
+    </div>
+
+<div style="margin:5px 0 10px 0; white-space:nowrap;
+  display:none; ??NUM_PAGES=1
+">        <input type="radio" name="activePageOnly" value="" 
+            checked ??!activePageOnly
+            onClick='AjaxCall("page_comments", "c=viewer/show_markup_list", true, "commonForm"); '>Все замечания
+        <input type="radio" name="activePageOnly" value="Y" 
+            checked ??activePageOnly
+            onClick='AjaxCall("page_comments", "c=viewer/show_markup_list", true, "commonForm"); '>Только к выбранной странице
+        <input type="hidden" id="##author_id" name="author_id" value="#author_id#">
+</div> 
+    
+<b>#AUTHOR#&nbsp;</b>
+[end]
+
+
+
+[item]
+<div class="elem_list" style="border-top:solid 1px gray; padding:8px 8px 8px 0;">
+
+    <span class="fa-stack pt"  onClick="showMarkupForm(#markup_id#, #x_coordinate#, #y_coordinate#, #page_id#);">
+        <i class="fa fa-comment-o fa-stack-2x"></i> 
+        <strong class="fa-stack-1x fa-stack-text fa-inverse blue">#markup_nr#</strong>
+    </span>
+    Стр.#page_nr# 
+    
+    <div class="fright">
+        <strong>#IOF#</strong>          
+        <i id="toggle_#markup_nr#"  class="fa fa-caret-down fa-5 blue pt" 
+        style="font-size:2em;" onClick="toggleTextMarkup(#markup_nr#);"></i> 
+    </div>
+
+    <div id="textMarkup_#markup_nr#" class="bg_white pt" style="padding:9px; width:98%; overflow:auto;" 
+      onClick="showMarkupForm(#markup_id#, #x_coordinate#, #y_coordinate#, #page_id#);">
+        #comments#         
+    </div>
+
+    <div class="right" style="padding-top: 4px; font-size:8pt;">
+        #Dat#       
+    </div>
+</div>
+[end]
+
+
+[report footer]
+[end]
+
+
+================================================================================
+============================= шаблоны запросов в БД ============================
+================================================================================
+
+[get file info]
+select file_id from doc_file_pages where id=#active_page_id#
+;
+select count(*) as "NUM_PAGES" from doc_file_pages where file_id=#file_id#
+;
+select count(*)  as "NUM_MARKUPS" from doc_data_markups where file_id=#file_id#
+;
+select concat('<li class="control pt dd" onClick="filter_author(', cast(m.user_id as char), ')">'
+  , iof(u.f, u.i, u.o)
+  , case when m.user_id=#author_id# then '&nbsp;<i class="fa fa-check" aria-hidden="true"></i>' else '' end  ??author_id
+  , '</li>') as "AUTHORS"
+ from doc_data_markups m
+ left join a_users_jinr u on u.id=m.user_id
+where m.file_id=#file_id#
+GROUP BY(m.user_id)
+order by u.f, u.i, u.o
+;
+$INCLUDE [get author]  ??author_id
+[end]
+
+
+[get author]
+select  iof(u.f, u.i, u.o) as "AUTHOR" from a_users_jinr u where id=#author_id#
+[end]
+
+
+[SQL]
+SELECT m.id as "markup_id", m.page_id, m.markup_nr
+, replace(m.comments,'\n','<br>') as "comments"
+, m.x_coordinate
+, m.y_coordinate
+, DATE_FORMAT(m.dat, '%d.%m.%Y  %H:%i') as "Dat", iof(u.f, u.i, u.o) as "IOF"
+, p.page_nr
+ from doc_data_markups m
+left join doc_file_pages p on p.id=m.page_id
+ left join a_users_jinr u on u.id=m.user_id
+where 
+m.file_id=#file_id#  
+and m.page_id = #active_page_id# ??activePageOnly=Y
+and m.user_id = #author_id#  ??author_id
+order by 
+m.markup_nr ??srt_field=markup_nr
+p.page_nr, m.y_coordinate  ??!srt_field=markup_nr
+[end]
+
+m.y_coordinate, ??!srt_field=y_coordinate

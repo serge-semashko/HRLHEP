@@ -1,0 +1,83 @@
+wf/show_wf_history.ajm
+
+[comments]
+descr=S: Показать историю workflow для документа (для отладки и админов). 
+
+input=doc_id - ID документа, [wf_id] - ID workflow
+output=Показывает историю workflow документа (создание, удаление WF и действия пользователей).
+parents=
+childs=
+author=Куняев
+[end]
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=A:WF history для док.#doc_id#
+tableCfg=table_no
+KeepLog=false
+ClearLog=true
+[end]
+
+
+[report header]
+    <hr>
+    <b>Workflow history:</b> Документ #doc_id#
+        , Workflow #wf_id# ??wf_id
+    <table border=0 class=tlist>
+        <tr><th>WF</th><th>шаг</th><th>дата</th><th>роль:&nbsp;цель&nbsp;(код&nbsp;цели)</th><th>пользователь</th>
+            <th>роли пользователя</th><th>результат</th><th>комментарий</th>
+        </tr>
+[end]
+
+
+[item]
+<tr>
+    <td>#WF_ID# (id:#wf_history_id#)</td>
+    <td>#step# 
+        (id:#step_id#) ??step_id
+    </td>
+    <td>#DAT#</td>
+    <td>#role_id#: #ROLE_NAME#
+        / #role_target_type_id# ??role_target_type_id
+        (#role_target_id#) ??role_target_id
+    </td>
+    <td>#user_id#: #user_fio# 
+        <small>(#user_posts#, #user_email#)</small> ??
+    </td>
+    <td>#user_role#</td>
+    <td>
+        #result_code#: ??result_code
+        #result#</td>
+    <td>#comment#</td>
+</tr>
+$CALL_SERVICE c=wf/show_step_events
+[end]
+
+
+$SET_PARAMETERS INFO_ID=; role_target_id=;
+
+[report footer]
+    </table>
+    #ERROR#
+[end]
+
+==============================================================
+==============================================================
+==============================================================
+
+
+[SQL]
+select wh.id as "wf_history_id"
+    , if(wh.dat is null, '-', DATE_FORMAT(wh.dat,'#dateTimeSecFormat#')) as "DAT"
+    , wh.wf_id as "WF_ID"
+    , wh.step_id, wh.step, wh.role_id, r.name as "ROLE_NAME"
+    , wh.role_target_type_id, wh.role_target_id
+    , wh.user_id, wh.user_fio, wh.user_posts, wh.user_role, wh.user_email
+    , wh.result, wh.comment
+from wf_history wh
+    left join a_roles r on r.id=wh.role_id
+where wh.doc_id=#doc_id#
+    and wh.wf_id=#wf_id# ??wf_id
+order by wh.dat 
+[end]
+

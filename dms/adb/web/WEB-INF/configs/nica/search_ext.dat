@@ -1,0 +1,261 @@
+[searchBox]
+<table border=1 cellpadding=0 cellspacing=0>
+<tr><td align=right>
+$INCLUDE nica/search.dat[tabs] param: atype=ext;
+</td></tr>
+
+<tr><td class=lrb nowrap=true valign=top bgcolor=white>
+<FIELDSET><LEGEND> ??
+<b><i>&nbsp;&nbsp;Отобрать документы:</i></b>
+</LEGEND> ??
+
+<table border=1 bgcolor=whitesmoke width=100%>
+<tr><td width=200 align=center>
+<b><i>Год регистрации:</i> #f_year#</b> 
+<select name=f_year><option>2006<option>2005<option>2004</select> ??
+<p>&nbsp;<p>&nbsp; ??
+</td><td width=150 align=center>
+<input type=checkbox name=full_report onClick="document.theForm.submit();"
+checked ??full_report=on
+>показать все колонки
+
+</td><td width=450 nowrap=true align=right>
+&nbsp;&nbsp;<a id="showFilters" class=info href="javascript:showFilters();">
+Показать фильтры >>> 	??!filtered
+Скрыть фильтры <<< &nbsp; 	??filtered
+</a>&nbsp;&nbsp;&nbsp;<input type=submit class=but value="Выполнить">
+</td></tr>
+
+<tr><td colspan=2 valign=top>
+$INCLUDE doc/search.dat[payment]
+</td></tr>
+
+</table>
+
+ <input type="checkbox" name="is_problem" onClick="docChanged();"
+ checked  ??is_problem=on
+>Только требующие уточнения
+
+
+</td><td nowrap>
+$INCLUDE nica/search.dat[block project]
+</td></tr></table>
+
+<div id=searchBox 
+style="display:none" ??!filtered
+>
+
+<table border=0 bgcolor=whitesmoke width=100%>
+
+<tr><td valign=top>
+<table border=0>
+
+
+<tr><td class=l>
+Рег. № документа:</td><td width=280><input size=5 class=xp name="f_regnr" value='#f_regnr#'>
+</td></tr>
+
+<tr><td class=l>
+Дата регистрации: </td><td nowrap=true>
+$INCLUDE common.dat[dat] param: fd_name=f_regdat1; fd_val=#f_regdat1#;
+ [по:
+$INCLUDE common.dat[dat] param: fd_name=f_regdat2; fd_val=#f_regdat2#;
+  ]
+</td></tr>
+
+<tr><td class=l nowrap=true>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Внешний № документа:</td><td><input class=xp size=35 name="f_docNr" value='#f_docNr#'>
+</td></tr>
+
+<tr><td class=l>
+Дата документа: </td><td>
+$INCLUDE common.dat[dat] param: fd_name=f_docdat1; fd_val=#f_docdat1#;
+ [по: 
+$INCLUDE common.dat[dat] param: fd_name=f_docdat2; fd_val=#f_docdat2#;
+ ]
+</td></tr>
+
+<input type=hidden name="f_doc_types" value="#f_doc_types#"> ??
+<input type=hidden name="f_doc_statuss" value="#f_doc_statuss#">
+
+$INCLUDE nica/search.dat[adv filters]
+
+</table>
+
+</td><td valign=top>
+<table border=0>
+
+<tr><td class=l nowrap=true>  
+Тип документа:</td><td><select name=f_doc_type> ??
+<option value='0'>ВСЕ</option> ??
+ #DOC_TYPES# ??
+ </select> ??
+</td></tr>
+
+<tr><td class=l></td></tr>
+
+<tr><td class=l>Сумма:</td><td>
+$INCLUDE filters.dat[f_summa]
+</td></tr>
+
+<tr><td class=l>
+Контрагент:</td><td><input class=xp size=30 name="f_receiver" value='#f_receiver#'>&nbsp;&nbsp;
+</td></tr>
+
+<tr><td class=l>ИНН:</td><td><input class=xp size=20 name="f_receiver_inn" value='#f_receiver_inn#'></td></tr> ??f_receiver_inn
+<tr><td class=l>Код:</td><td><input class=xp size=10 name="f_receiver_c" value='#f_receiver_c#'></td></tr>  ??f_receiver_c
+
+<tr><td class=l>
+Искать текст:</td><td><input class=xp size=30 name="f_search" value='#f_search#'>&nbsp;&nbsp;
+</td></tr>
+
+<tr><td colspan=2 class=l>
+<br>
+<input class=button type=button value="Сбросить фильтры" onClick="resetForm();">
+</td><td class=l><br> ??
+&nbsp; &nbsp; &nbsp; 
+<input type=submit class=button value="Выполнить">&nbsp;&nbsp;
+
+</td></tr></table>
+</td></tr></table>
+</div>
+</FIELDSET> ??
+</td></tr></table>
+
+$INCLUDE nica/search.dat[script]
+[end]
+
+
+[adv filters]
+<tr><td colspan=2><br>
+<FIELDSET><LEGEND>
+
+<a id="a_adv_fil" href="javascript:showAdvFilters();">
+Доп. фильтры >>> ??!advfiltered
+Скрыть доп. фильтры &lt;&lt;&lt; ??advfiltered
+</a>
+</LEGEND>
+
+<div id="adv_filters" 
+style="display:none" ??!advfiltered
+style="display:block" ??advfiltered
+>
+<table border=0><tr><td class=l>
+Бюджетный код:</td><td><input class=xp size=5 name="f_bc" value='#f_bc#'>
+</td></tr>
+
+
+<tr><td class=l>  
+Консолидир. статья:</td><td><select name=cons><option value=""></option><option value="null">пусто</option>#CONSS#</select>
+</td></tr><tr><td class=l>  
+Статья бюджета:</td><td><select name=aggr><option value=""> </option>
+<option value="null">пусто</option>
+<option value="05,06,10">5,6,10 - материалы и оборуд.</option>
+#AGGRS#</select>
+<input type=checkbox name=aggr_excl
+checked  ??aggr_excl=on
+>искл.
+</td></tr>
+
+<tr><td class=l>  
+Статус:</td><td><select name=f_doc_status><option></option>#DOC_STATUSES#
+<option value='2,3'>неотлож.+подписанные</option>
+</select>
+
+</td></tr><tr><td class=l>  
+Финальная подпись:</td><td nowrap=true><select name=f_approval><option></option>
+<option>Кадышевский<option>Сисакян<option>Вылов<option>Катрасев</select>&nbsp; &nbsp;
+
+</td></tr><tr><td class=l>  
+Оператор:</td><td nowrap=true><select name=f_modif><option></option>#MODIFIERS#
+</select>
+
+</td></tr>
+
+</table>
+</div>
+</FIELDSET>
+</td></tr>
+
+[end]
+
+
+[ZZZscript]
+<script>
+var frm=document.theForm;
+
+
+function setDsumm()
+{ if (frm.f_summa_op.options.selectedIndex == 0)
+    document.getElementById("s_dsumm").style.display="inline";
+  else 
+    document.getElementById("s_dsumm").style.display="none";
+}
+
+setDsumm();
+
+
+function resetForm()
+{ 
+  frm.PROJECT_ID.value="1";
+	alert(frm.PROJECT_ID.value);
+	for (i=0; i<frm.elements.length; i++)
+  { try
+    { if (frm.elements[i].type.indexOf("text") >=0 )
+        frm.elements[i].value="";
+    } catch (e){}
+
+	try
+    { if (frm.elements[i].type.indexOf("select") >=0 
+      && frm.elements[i].name != "f_year")
+        frm.elements[i].selectedIndex=0;
+    } catch (e){}
+  }
+  frm.f_doc_types.value=""; ??
+  frm.f_doc_statuss.value="";
+
+}
+
+function showFilters()
+{ d = document.getElementById("searchBox");
+  s = document.getElementById("showFilters");
+  if (d.style.display == "none")
+  { s.innerHTML="Скрыть фильтры <<< &nbsp; ";
+  	d.style.display = "block";
+  }
+  else
+  { s.innerHTML="Показать фильтры >>> ";
+    d.style.display = "none";
+  }
+}
+
+function showAdvFilters()
+{ var d = document.getElementById("adv_filters");
+  var a = document.getElementById("a_adv_fil");
+  if (d.style.display == "block")
+  {	d.style.display = "none";
+  	a.innerHTML = "Доп. фильтры &gt;&gt;&gt;";
+  }
+  else
+  { d.style.display = "block";
+  	a.innerHTML = "Скрыть доп. фильтры &lt;&lt;&lt;";
+  	try { d2.style.display = "block";} catch (e) {}
+  }
+}
+selectOptionByVal(frm.f_lab,'#f_lab#')  ??f_lab
+selectOptionByVal(frm.f_lab,'#A_LABS#')  ??xxxA_LABS&!f_lab
+
+selectOptionByVal(frm.f_doc_status,'#f_doc_status#')  ??f_doc_status
+selectOptionByVal(frm.f_doc_type,'#f_doc_type#')  ??f_doc_type
+selectOptionByVal(frm.f_dir,'#f_dir#')  ??f_dir
+selectOptionByVal(frm.aggr,'#aggr#')    ??aggr
+selectOptionByVal(frm.cons,'#cons#')    ??cons
+selectOptionByVal(frm.f_approval,'#f_approval#')  ??f_approval
+selectOptionByVal(frm.f_year,'#f_year#')  ??f_year
+selectOptionByVal(frm.f_summa_op,'#f_summa_op#')  ??f_summa_op
+selectOptionByVal(frm.f_curr_code,'#f_curr_code#')  ??f_curr_code
+selectOptionByVal(frm.f_razd,'#f_razd#')  ??f_razd
+selectOptionByVal(frm.f_modif,'#f_modif#')  ??f_modif
+
+</script>
+[end]

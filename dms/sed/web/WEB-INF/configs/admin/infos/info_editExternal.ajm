@@ -1,0 +1,107 @@
+[comments]
+descr=А: Редактирование внешнего коннекта для справочника и SQL запроса
+input=info_id - ID выбранного справочника
+output=HTML форма редактирования данных справочника, 
+parents=admin/infos/info_edit.cfg
+childs=admin/infos/info_TestSQL
+test_URL=?c=admin/infos/info_editExternal&info_id=1
+[end]
+
+[parameters]
+request_name=A:редактир. коннекта
+KeepLog=true
+hr=<tr><td colspan=2><hr></td></tr>
+[end]
+
+
+[report]
+$SET_PARAMETERS dis=disabled;  ??USER_ID=9
+$INCLUDE [process] ??cop&RWACC=Y&!dis
+$INCLUDE [input block]
+[end]
+
+
+[input block]
+<tr><td class=label>Коннект:</td><td>
+<select name=conn><option value="CONN_ID">#CONN_NAME#</option></select>
+<i>admin/infos/info_editExternal</i> ??debug=on
+$SET_PARAMETERS DB_TYPE=1; ??!DB_TYPE
+$SET_PARAMETERS PORT=1521; ??!PORT
+<table border=0>
+
+<tr><td class=label>СУБД:</td><td>
+<input type=radio name=db_type value=0  disabled
+checked ??DB_TYPE=0
+> MySQL
+<input type=radio name=db_type value=1
+checked ??DB_TYPE=1
+> Oracle
+<input type=radio name=db_type value=2
+checked ??DB_TYPE=2
+> MS SQL</td></tr>
+
+<tr><td class=label>server:</td><td><input class="xp" size=20 name=server value="#SERVER#">
+port: <input class="xp" size=4 name=port value="#PORT#">
+SID: <input class="xp" size=10 name=param value="#PARAM#">
+</td></tr>
+<tr><td class=label>username:</td><td><input class="xp" size=10 name=conn_usr value="#CONN_USR#">
+password: <input class="xp" size=10 name=conn_pw 
+value="******" ??USER_ID=9
+value="#CONN_PW#" ??!USER_ID=9
+>
+<input type=checkbox class="xp" name=save_pw
+checked ??CONN_PW
+> keep password
+</td></tr>
+<tr><td class=label>schema:</td><td><input class="xp" size=10 name=server value="#DB_SCHEMA#">
+</td></tr>
+</table>
+
+<div class=right style="margin:10px;">
+<input type="button" class="butt1 pt" style="width:160;" value="Test connection" #dis#
+onClick="alert('Not implemented');"
+> 
+<input type="button" class="butt1 pt" style="width:160;" value="Save connection" #dis#
+onClick="alert('Not implemented');"
+> 
+</div>
+</td></tr>
+
+#hr#
+$SET_PARAMETERS REQUEST=select * from #DB_SCHEMA#.tab;  ??!REQUEST&DB_SCHEMA&DB_TYPE=1
+$SET_PARAMETERS REQUEST=select * from [#DB_SCHEMA#].;  ??!REQUEST&DB_SCHEMA&DB_TYPE=2
+$SET_PARAMETERS REQUEST=select * from tab;  ??!REQUEST&!DB_SCHEMA&DB_TYPE=1
+<tr><td class=label>SQL запрос:</td><td colspan=2>
+<textarea name="SQL_TEXT" rows=2 cols=65  spellcheck="false">#REQUEST#</textarea><br>
+<div class=right style="margin:10px;">
+<input type="button" #dis# class="butt1 pt" style="width:160;" value="Test SQL" onClick="doSubmit('test', 'admin/infos/info_TestSQL');"> 
+<input type="button" #dis# class="butt1 pt" style="width:160;" value="Save SQL" onClick="fixSQL_TEXT(true);
+doSubmit('save', 'admin/infos/info_TestSQL'); 
+fixSQL_TEXT(false);
+"> 
+</div></td></tr>
+
+<tr><td colspan=2><div id="test_result" style="width:1000px; overflow: auto; border:solid 1px black;"></div></td></tr>
+
+<tr><td class=label>Изменено:</td><td class=small>#MODIFIED#, #MODIFIER#</td></tr> ??
+[end]
+
+<script>
+</script>
+
+
+================== Занесение данных в базу  ====================
+[process]
+[end]
+
+
+============= SCRIPT ================
+#ERROR#
+
+<script type="text/javascript">
+alert("#ERROR#); ??ERROR
+alert("Не реализовано. cop=" + cop);   ??cop=new
+</script>
+============= DONE ================
+[end]
+

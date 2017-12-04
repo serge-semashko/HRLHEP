@@ -1,0 +1,117 @@
+docs/doc_final_action.ajm
+
+[comments]
+descr=U: форма подготовки финального действия с документом (утверждение и посылка на завершение).
+
+input=doc_id - ID документа
+
+output=Pop-up окно действия
+parents=docs/view_doc.cfg
+childs=docs/doc_final_action_process.cfg
+[end]
+
+[parameters]
+request_name=U:утверждение документа
+KeepLog=false
+ClearLog=true
+[end]
+
+[report]
+    $CALL_SERVICE c=sys/getARUD;   ??!AR_S=Y
+    $INCLUDE [OK report]  ??AR_S=Y
+    $CALL_SERVICE c=sys/log_doc_access; access_type=4; rejected=1;   ??!AR_S=Y
+[end]
+
+
+[OK report]
+    $SET_PARAMETERS result_code=#~doc_action_signed#; 
+    $GET_DATA docs/doc_user_action.cfg[get wf info]
+    $GET_DATA docs/doc_user_action.cfg[get active wf step id] 
+    $CALL_SERVICE c=wf/check_next_step; 
+
+    $INCLUDE [process doc approval]   ??doIt=Y
+    $INCLUDE [form] ??!doIt=Y|ERROR|INPUT_ERROR
+[end]
+
+
+[form]
+    $CALL_SERVICE c=svs/get_user_info; requested_user_id=#NEXT_USER_ID#; ??NEXT_USER_ID
+    $SET_PARAMETERS next_FIO=#u_FIO#; next_IOF=#u_IOF#; next_posts=#u_posts#; next_roles=#u_roles#;  ??NEXT_USER_ID
+    , u_email, u_phone, , u_login,   ??
+
+    <center>
+    =================== Форма ввода данных для завершения документа ==============??
+    <form id="popupForm" name="popupForm" method="POST" enctype="multipart/form-data" target="wf" autocomplete="off"> 
+        <table border=0 cellpadding=5 cellspacing=0>
+            <tr><td colspan=2 class="big center">
+            Уважаемый ??!user_sex=Ж
+            Уважаемая ??user_sex=Ж
+            #user_I# #user_O#,</td></tr>
+            <tr><td colspan=2 class=big>для <b>УТВЕРЖДЕНИЯ</b> документа</td></tr>
+            $INCLUDE [select next user] ??UDEFINED_USERS
+            $INCLUDE docs/custom_settings.cfg[set custom parameters]
+            $INCLUDE #CUSTOM_DECISION#  ??CUSTOM_DECISION
+            <tr><td class="label big"> можете ввести Ваш комментарий:</td><td><textarea name=user_comment rows=2 cols=60>#user_comment#</textarea></td></tr>
+            $INCLUDE dat/common.dat[pw2]
+            $INCLUDE [msg box] 
+
+            <tr><td colspan=2 class=center>
+                <input type="button" class="butt1" style="width:120;" value="Отмена" onClick="HideDialog();">&nbsp; &nbsp;
+                <input type="button" class="butt1" style="width:120;" value="Утвердить" 
+                    onClick="AjaxCall('popupCont', 'c=docs/doc_final_action&doc_id=#doc_id#&cop=#~doc_action_sign#&doIt=Y', true, 'popupForm');"> 
+            </td></tr>
+        </table>
+        
+    </form>  
+
+    $INCLUDE [messages]
+    $INCLUDE dat/common.dat[restore forward users] ??extra_users_id&!ajax
+    </center>
+
+    <script type="text/javascript">
+        showMsg("##dialog_title", "Утверждение документа");
+        ShowDialog(true);
+        centerDialog(); 
+    </script>
+[end]
+
+
+
+[select next user]
+    =============  Выбор пользователей для завершения документа, если они не были определены ======= ??
+    <tr><td colspan=2 class="big">
+    Укажите пользователя, ответственного за завершение обработки документа:
+    </td></tr><tr><td colspan=2 class="big" style="padding:0 0 0 30px;">(роль: #UDEFINED_USERS#)</td></tr>
+
+    <tr><td class="big label
+    error ??INPUT_ERROR&!FORWARD_USER_OK
+    ">(*) Выберите пользователя:</td><td>
+    $INCLUDE dat/common.dat[extra users selector] param: multi=0;
+    <br><input type=hidden name="result_code" value='#~doc_action_sign#'>
+    </td></tr>
+[end]
+
+
+[msg box]
+    <tr><td colspan=2 class="center bg_white gray_border" nowrap>
+        После нажатия Вами кнопки  "Утвердить"<br> документ будет отправлен на завершение обработки.
+        <div style="margin:10px;" class=
+        "small" ??!INPUT_ERROR
+        "error" ??INPUT_ERROR
+        >
+        <b>#INPUT_ERROR#</b><br> ??INPUT_ERROR
+        <i>поля, отмеченные (*), обязательны для заполнения!</i>
+        </div>
+        Ошибка выполнения операции. ??ERROR
+        <br><small>#ERROR#</small> ??ERROR
+    </td></tr>
+[end]
+
+=================== УТВЕРЖДЕНИЕ - обработка ===========
+
+[process doc approval]
+    $INCLUDE docs/custom_settings.cfg[set custom parameters]
+    $INCLUDE #CUSTOM_DECISION_W#  ??CUSTOM_DECISION_W
+    $CALL_SERVICE c=docs/doc_final_action_process.cfg;
+[end]
+

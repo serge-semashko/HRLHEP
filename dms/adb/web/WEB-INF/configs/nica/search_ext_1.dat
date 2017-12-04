@@ -1,0 +1,230 @@
+
+[searchBox]
+<table border=0 cellpadding=0 cellspacing=0>
+<tr><td align=right>
+$INCLUDE nica/search_1.dat[tabs] param: atype=ext;
+</td></tr>
+
+<tr><td class=lrb nowrap=true valign=top bgcolor=white>
+<b><i>&nbsp;&nbsp;Отобрать документы:</i></b>
+
+<table border=0 bgcolor=whitesmoke width=100%>
+<tr><td width=300 align=center>
+<b><i>Год регистрации:</i> #f_year#</b> 
+</td><td width=200 align=center>
+<input type=checkbox name=full_report onClick="document.theForm.submit();"
+checked ??full_report=on
+>показать все колонки
+
+</td><td width=200 nowrap=true class=l>
+
+<input type=submit class=but value="Выполнить" style="margin-left:100px;"> ??
+<a href="javascript:getXL();"><img 
+src="#imgPath#XL.png" border=0 width=29 height=31 alt="Загрузить в Excel" 
+style="margin:0 0 0 30px; border:solid 1px ##40aa60;"></a>
+
+$INCLUDE nica/search_ext_1.dat[EVM_EXP] ??USER_ID={{368|369|1}}&ZZZ
+</td></tr>
+
+<tr><td colspan=4>
+$INCLUDE nica/search.dat[block project]
+</td></tr>
+</table>
+
+<div id=searchBox 
+style="display:none" ??!filtered
+>
+
+<table border=0 bgcolor=whitesmoke width=100%>
+
+<tr><td valign=top>
+<table border=0>
+<tr><td colspan=2 align=center valign=top>
+
+<table border=0><tr><td class=r bgcolor=#doc_payed# nowrap=true>
+<input type="radio" name="payed" value="y" onClick="doIt();"
+checked ??payed=y
+>Оплаченные</td>
+
+<td bgcolor=#doc_buh# nowrap=true>
+<input type="radio" name="payed" value="b" onClick="doIt();"
+checked ??payed=b
+>Выписана заявка</td>
+
+<td bgcolor=#doc_new# nowrap=true>
+<input type="radio" name="payed" value="n" onClick="doIt();"
+checked ??payed=n
+>Ожидают</td><td bgcolor=#doc_new# nowrap=true>
+<input type="radio" name="payed" value="" onClick="doIt();"
+checked ??!payed
+>Все
+</td></tr>
+
+</table>
+
+</td></tr>
+
+$INCLUDE nica/search_ext_1.dat[bank_check]  ??payed=y_ZZZ
+
+
+<tr><td class=l>
+Рег. № документа:</td><td width=280><input size=5 class=xp name="f_regnr" value='#f_regnr#'>
+</td></tr>
+
+<tr><td class=l>
+Дата регистрации: </td><td nowrap=true>
+$INCLUDE common.dat[dat] param: fd_name=f_regdat1; fd_val=#f_regdat1#;
+ [по:
+$INCLUDE common.dat[dat] param: fd_name=f_regdat2; fd_val=#f_regdat2#;
+  ]
+</td></tr>
+
+<input type=hidden name="f_doc_types" value="#f_doc_types#"> ??
+<input type=hidden name="f_doc_statuss" value="#f_doc_statuss#">
+
+</table>
+
+</td><td valign=top>
+<table border=0>
+
+<tr><td class=l nowrap=true>  
+Тип документа:</td><td><select name=f_doc_type> ??
+<option value='0'>ВСЕ</option> ??
+ #DOC_TYPES# ??
+ </select> ??
+</td></tr>
+
+<tr><td class=l>
+Лаборатория:</td><td><select class=s1 name=f_lab><option> #LABS#<option value='null'>не опр.</select>&nbsp;Тема: <input size=5 class=xp name="f_sbj" value='#f_sbj#'> ??
+</td></tr>
+
+<tr><td class=l>Сумма:</td><td>
+$INCLUDE filters.dat[f_summa]
+</td></tr>
+
+<tr><td class=l>
+Контрагент:</td><td><input class=xp size=30 name="f_receiver" value='#f_receiver#'>&nbsp;&nbsp;
+</td></tr>
+
+<tr><td class=l>ИНН:</td><td><input class=xp size=20 name="f_receiver_inn" value='#f_receiver_inn#'></td></tr> ??f_receiver_inn
+<tr><td class=l>Код:</td><td><input class=xp size=10 name="f_receiver_c" value='#f_receiver_c#'></td></tr>  ??f_receiver_c
+
+<tr><td class=l>
+Искать текст:</td><td><input class=xp size=30 name="f_search" value='#f_search#'>&nbsp;&nbsp;
+</td></tr>
+
+<tr><td colspan=2 class=l>
+<input class=button type=button value="Сбросить фильтры" onClick="resetForm();">
+</td><td class=l><br> ??
+&nbsp; &nbsp; &nbsp; 
+<input type=submit class=button value="Выполнить">&nbsp;&nbsp;
+
+</td></tr></table>
+</td></tr><tr><td colspan=2>
+$INCLUDE nica/search_1.dat[adv filters]
+
+
+</td></tr></table>
+</div>
+
+</td></tr></table>
+
+$INCLUDE nica/search_1.dat[script]
+[end]
+
+
+[bank_check]
+$SET_PARAMETERS b_diff=1000  ??!b_diff
+$SET_PARAMETERS_SESSION b_diff=#b_diff#
+<tr><td class=l colspan=2>
+Контроль по банку:
+<input type="radio" name="bank_check" value="" onClick="doIt();"
+checked ??!bank_check
+>Показать все
+<input type="radio" name="bank_check" value="d" onClick="doIt();"
+checked ??bank_check
+>Только с разницей > <input size=4 class=xpc name=b_diff value="#b_diff#"> руб.
+</td></tr>
+[end]
+
+[EVM_EXP]
+<a href="javascript:getXL(true);"><img 
+src="#imgPath#XL-EVM.gif" border=0 width=29 height=31 alt="Экспорт в EVM" 
+style="margin:0 0 0 10px; border:solid 1px ##40aa60;"></a></td><td>
+Дата выгрузки: ??
+$INCLUDE common.dat[dat] param: fd_name=f_expdat; fd_val=#f_expdat#;
+[end]
+
+[ZZZscript]
+<script>
+var frm=document.theForm;
+
+
+function setDsumm()
+{ if (frm.f_summa_op.options.selectedIndex == 0)
+    document.getElementById("s_dsumm").style.display="inline";
+  else 
+    document.getElementById("s_dsumm").style.display="none";
+}
+
+setDsumm();
+
+
+function resetForm()
+{ for (i=0; i<frm.elements.length; i++)
+  { try
+    { if (frm.elements[i].type.indexOf("text") >=0 )
+        frm.elements[i].value="";
+    } catch (e){}
+
+	try
+    { if (frm.elements[i].type.indexOf("select") >=0 
+      && frm.elements[i].name != "f_year")
+        frm.elements[i].selectedIndex=0;
+    } catch (e){}
+  }
+  frm.f_doc_types.value=""; ??
+  frm.f_doc_statuss.value="";
+	try { frm.bank_check[0].checked=true;
+  } catch (e){}
+	 alert(1);
+	try { frm.svod[0].checked=true;
+  } catch (e){
+	 alert(e);
+	}
+	try { frm.curr[2].checked=true;
+  } catch (e){}
+	try { frm.f_prik[0].checked=true;
+  } catch (e){}
+}
+
+function showAdvFilters()
+{ var d = document.getElementById("adv_filters");
+  var a = document.getElementById("a_adv_fil");
+  if (d.style.display == "block")
+  {	d.style.display = "none";
+  	a.innerHTML = "Доп. фильтры &gt;&gt;&gt;";
+  }
+  else
+  { d.style.display = "block";
+  	a.innerHTML = "Скрыть доп. фильтры &lt;&lt;&lt;";
+  	try { d2.style.display = "block";} catch (e) {}
+  }
+}
+selectOptionByVal(frm.f_lab,'#f_lab#')  ??f_lab
+selectOptionByVal(frm.f_lab,'#A_LABS#')  ??xxxA_LABS&!f_lab
+
+selectOptionByVal(frm.f_doc_status,'#f_doc_status#')  ??f_doc_status
+selectOptionByVal(frm.f_doc_type,'#f_doc_type#')  ??f_doc_type
+selectOptionByVal(frm.f_dir,'#f_dir#')  ??f_dir
+selectOptionByVal(frm.aggr,'#aggr#')    ??aggr
+selectOptionByVal(frm.cons,'#cons#')    ??cons
+selectOptionByVal(frm.f_approval,'#f_approval#')  ??f_approval
+selectOptionByVal(frm.f_year,'#f_year#')  ??f_year
+selectOptionByVal(frm.f_summa_op,'#f_summa_op#')  ??f_summa_op
+selectOptionByVal(frm.f_curr_code,'#f_curr_code#')  ??f_curr_code
+selectOptionByVal(frm.f_razd,'#f_razd#')  ??f_razd
+selectOptionByVal(frm.f_modif,'#f_modif#')  ??f_modif
+
+</script>
+[end]

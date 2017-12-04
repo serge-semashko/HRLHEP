@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app>
+
+    <session-config>
+      <session-timeout>600</session-timeout>
+    </session-config>
+
+    <display-name>SED Dubna v1.6.3</display-name>
+    <description>SED Dubna v1.6.3</description>
+
+    <servlet>
+        <servlet-name>SED</servlet-name>
+        <servlet-class>jinr.sed.Servlet</servlet-class>
+    </servlet>
+
+    <!-- servlet>
+        <servlet-name>SED_Redir</servlet-name>
+        <servlet-class>jinr.sed.ServletRedir</servlet-class>
+    </servlet -->
+
+    <servlet-mapping>
+        <servlet-name>SED</servlet-name>
+        <url-pattern>/dubna</url-pattern>
+    </servlet-mapping>
+
+    <!--servlet-mapping>
+        <servlet-name>SED_Redir</servlet-name>
+        <url-pattern>/d</url-pattern>
+    </servlet-mapping -->
+
+    <!-- servlet>
+        <servlet-name>ConvertServlet</servlet-name>
+        <servlet-class>jinr.sed.ConvertServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ConvertServlet</servlet-name>
+        <url-pattern>/convert</url-pattern>
+    </servlet-mapping-->
+
+
+<!-- security-constraint>
+	<web-resource-collection>
+		<web-resource-name>Entire Application</web-resource-name>
+		<url-pattern>/*</url-pattern>
+	</web-resource-collection>
+	<user-data-constraint>
+		<transport-guarantee>CONFIDENTIAL</transport-guarantee>
+	</user-data-constraint>
+</security-constraint -->
+    
+</web-app>

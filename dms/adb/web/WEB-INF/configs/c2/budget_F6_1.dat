@@ -1,0 +1,87 @@
+
+================= SQLs  для I-го раздела ================================
+
+
+[Cross_1]
+$INCLUDE c2/budget_F6_1.dat[Cross_DIR] ??!f_dir
+$INCLUDE c2/budget_F6_1.dat[Cross_SBJ] ??f_dir
+[end]
+
+[Cross_SBJ]
+select 
+distinct '1'||p.sbj as "SBJ" 
+FROM reg#q_yr#_v p 
+left join C2_STATI a on (a.code=p.sst and a.mark is null) 
+left join i_subject_#q_yr# sb on sb.CODE0=p.sbj 
+WHERE 1=1 and p.summa<>0 
+and p.ACC IN('20.01.1','20.01.2','20.02') 
+and p.acc2_code in(select id from c2_sbj connect by prior id=pid start with id='000000255') ??
+and ACC2_TYPE like '%Номенклатурные группы%' 
+and to_number(sb.DDD) IN(#f_dir#) ??!f_dir=null
+and sb.DDD is null ??f_dir=null
+and p.lab=#f_lab# ??f_lab
+and a.aggr=#f_aggr# ??f_aggr
+order by SBJ
+[end]
+
+
+[Cross_DIR]
+select distinct(nvl(sb.DDD,' ')||': '||d.NAME) as DIR
+from reg#q_yr#_v p 
+	left join i_subject_#q_yr# sb on sb.CODE0=p.sbj 
+	left join i_dir d on (d.code=sb.DDD and d.YEAR=20#q_yr#)
+	left join C2_STATI a on (a.code=p.sst and a.mark is null)  ??f_aggr
+where 1=1
+and p.ACC IN('20.01.1','20.01.2','20.02') 
+and p.lab=#f_lab# ??f_lab
+and a.aggr=#f_aggr# ??f_aggr
+order by DIR
+[end]
+
+
+[SQL_1]
+SELECT 
+a.aggr||': '||ag.DES_SHORT as "AGGR" ??!f_aggr&!ssttype=not
+a.DES as SSTD ??f_aggr|ssttype=not
+, nvl(sb.DDD,' ')||': '||NAME as "DIR" ??!f_dir
+, '1'||p.sbj as "SBJ"  ??f_dir
+
+,'<a href="javascript:getDetails('
+||nvl(a.aggr,0)	??!f_aggr&!ssttype=not
+||nvl(p.sst,0) 	??f_aggr|ssttype=not
+||','''||nvl(max(sb.DDD),0)	??!f_dir
+||','''||nvl(max(p.sbj),0)	??f_dir
+||''')">--'||sum(summa) 
+/1000 ??scale=trub
+/(1000*#USD_RUB#)	??scale=tusd
+||'--</a>' as "S" , 1 as "SRT"
+
+FROM reg#q_yr#_v p 
+left join C2_STATI a on (a.code=p.sst and a.mark is null) 
+left join i_aggr ag on ag.code=a.aggr
+left join i_subject_#q_yr# sb on sb.CODE0=p.sbj 
+left join i_dir d on (d.code=sb.DDD and d.YEAR=20#q_yr#)
+WHERE summa<>0
+#tpq#
+and p.ACC IN('20.01.1','20.01.2','20.02') 
+and sb.DDD is not null ??
+and not a.aggr is null ??ssttype=bud
+and a.aggr is null ??ssttype=not
+and a.aggr=#f_aggr# ??f_aggr
+and sb.DDD=#f_dir# ??f_dir&!f_dir=null
+and sb.DDD is null ??f_dir=null_ZZ
+and p.lab=#f_lab# ??f_lab
+
+group by  
+a.aggr 
+  ??!f_aggr&!ssttype=not
+, ag.DES_SHORT ??!f_aggr&!ssttype=not
+, a.DES, p.sst ??f_aggr|ssttype=not
+, nvl(sb.DDD,' ')||': '||NAME  ??!f_dir
+, p.sbj ??f_dir
+order by 
+a.aggr  ??!f_aggr&!ssttype=not
+a.DES ??f_aggr|ssttype=not
+, p.sbj ??f_dir
+, nvl(sb.DDD,' ')||': '||NAME  ??!f_dir
+[end]

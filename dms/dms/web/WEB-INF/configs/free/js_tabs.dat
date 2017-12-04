@@ -1,0 +1,74 @@
+[comments]
+descr=JavaScript для работы с табами
+testURL=free/js_tabs.dat
+[end]
+
+[report]
+/*=============================== TABs ====================================*/ ??
+/*=========================================================================*/ ??
+function tabLoad(m){ 
+console.log("tabLoad:" + m); ??
+	showMsg(".cont");	
+	setElement("popupCont",""); 
+	module=m;	
+	if(module=="admin/admin" || module=="main") {
+		console.log("tabLoad:" + m); ??
+		document.theForm.target="";
+		 doSubmit("", m);
+		document.theForm.target="wf2";
+	}
+	else
+		loadFrame("c=" + module, "wf2"); 
+}
+
+
+function t_myDocs() {tabLoad("docs/my_docs"); } // Клик на табе "Дои документы" 
+function t_archDocs() {tabLoad("docs/arch_docs");}
+function t_settings() {tabLoad("tab_settings");}
+function t_Admin() {atab="t_monitor"; tabLoad("admin/admin"); } ??
+function t_Admin() {atab="t_users"; tabLoad("admin/admin"); }
+
+var t_infos=function() {tabLoad("admin/infos/tab_infos"); } // Клик на табе "А:Справочники"
+
+var t_info_Data=function() {doSubmit("", "admin/infos/info_data"); } // Клик на под-табе "А:Справочник / Данные"
+var t_info_Settings=function() {doSubmit("", "admin/infos/info_edit"); }   // Клик на под-табе "А:Справочник / Настройки"
+
+function t_listDocs() {	showMsg(".cont");	alert("t_listDocs"); 
+}
+
+var t_Admin_users=function() {doSubmit("start", "admin_Users");}
+
+var setTabsClicks=function(tabDivId, act)
+{
+	var a = 0;
+	if (act) a = act;
+	$( "##" + tabDivId ).tabs({
+		active: a,
+		beforeActivate: function( ev, ui ) 
+	{
+		console.log(ui.newTab[0]["id"]); ??
+		if(checkChanged()) ??
+		{
+			atab=ui.newTab[0]["id"];
+			eval(atab + "();");
+		}
+		else 			return false; ??
+	}
+});
+}
+
+var clickTab=function(id)
+{
+	console.log(id); ??
+showProps($("##" + id + " a"));  ??
+	$("##" + id + " a").click();
+}
+
+setLang=function(lang){
+frm.target="";
+frm.lang_.value=lang;
+frm.c.value='#c#';
+frm.submit();
+frm.target="wf";
+}
+[end]

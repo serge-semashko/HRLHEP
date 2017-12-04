@@ -1,0 +1,30 @@
+BODY{FONT-SIZE: 10pt; font-family: Arial, Helvetica; color: white;  margin-left:10; background: #102070;}
+BODY.TREE{background: #405070;}
+BODY.TREE_PARENT{FONT-SIZE: 10pt; background: #004000;}
+TD {FONT-SIZE: 9pt; FONT-FAMILY: Arial, Helvetica, sans-serif}
+
+.toc {FONT-SIZE: 10pt; color: white; text-decoration: none; cursor: hand;}
+A.toc:link {FONT-SIZE: 10pt; color: white; text-decoration: none; cursor: hand;}
+A.toc:visited {FONT-SIZE: 10pt; color: white; text-decoration: none;}
+A.toc:hover   {color: #FFFF77; text-decoration: underline }
+IMG.toc1 {border:0; width: 12px; height: 12px}
+IMG.toc2 {border:0; width: 10px; height: 10px}
+IMG.toc3 {border:0; width: 8px; height: 8px}
+IMG.fi {border:0; height: 1px}
+
+h4 {FONT-SIZE: 11pt; font-weight: normal;  font-family: Verdana, Arial, Helvetica;  }
+
+input.but1 {
+	FONT-SIZE: 9pt;
+	COLOR: #000080;
+	background-color: #FFF0C0;
+	width: 180;
+	height: 25;
+	font-style : normal;
+	font-weight : bold;
+	FONT-FAMILY: Arial, Helvetica, sans-serif;
+}
+
+input.but {width:80; border-style: outset; cursor:hand; border-width:2px; background-color:E0E8FF; border-color:B0C0D0;}
+input.button {width:120; border-style: outset; cursor:hand; border-width:2px; background-color:E0E8FF; border-color:B0C0D0;}
+

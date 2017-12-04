@@ -1,0 +1,172 @@
+viewer/markup_form.cfg
+
+[comments]
+descr=U: Показывает форму с данными о маркапах
+input=markup_id - ID маркапа, [mode] = edit - режим редактирования, save - обновление
+parents= viewer/show_markup_list.cfg
+author=Джавадзаде
+[end]
+
+[description]
+<ul>
+    <li>Показывает данные маркапа при клике на иконку маркапа</li>
+</ul>
+[end]
+
+[parameters]
+service=dubna.walt.service.Service
+tableCfg=table_no
+LOG=ON
+[end]
+
+
+[report]
+$GET_DATA [get markup SQL] ??markup_id
+$CALL_SERVICE c=viewer/check_AR ??markup_id
+
+$SET_PARAMETERS mode=; ??!RW=Y
+$GET_DATA [update markup] ??mode=save
+
+<input type=hidden name="markup_id" size=5 value="#markup_id#"> 
+
+$INCLUDE [new form]  ??!markup_id
+$INCLUDE [view form] ??!mode=edit&markup_id
+$INCLUDE [edit form] ??mode=edit&markup_id
+
+<script>
+$("##dialog").show(300);
+$("##dialog").draggable({handle: "##dialog_handler"}); 
+scrollToView($("##dialog"));
+
+textAreaResize();   ??mode=edit|!markup_id
+setAddCommentMode(false);
+
+filter_author(#user_id#); ??mode=save
+
+$("##mkp_icon_new").show(300); ??!markup_id
+</script>   
+
+[end]
+
+
+[new form]  --- Форма ввода нового замечания ---
+
+<input id="x_position_iconComment" type=hidden name="x_coordinate" value="0">
+<input id="y_position_iconComment" type=hidden name="y_coordinate" value="0">
+    
+Введите Ваше замечание:<br>
+<textarea class="autoresize" name="user_comment" rows=4 cols=40 class="text" style="width:100%;"></textarea>
+
+<div style="padding-top:8px; text-align:center;"> 
+    <input type="button" class="butt1 pt" value="Сохранить" onClick="saveMarkup();">
+    <input type="button" class="butt1 pt" value="Отмена" onClick="cancelButtonClick();">
+</div>
+
+<script type="text/javascript">
+  setMarkupPosition();
+</script>   
+[end]
+
+
+[edit form] ----- Форма редактирования замечания
+&nbsp;<br>
+<input type=hidden name="mode" size=5 value="save">
+
+<div class="elem_list" >
+  <div >
+    <textarea class="autoresize" name="user_comment" rows=4 cols=40 class="text editor" style="width:98%;">
+      #comments#
+    </textarea>        
+  </div> 
+
+  <div style="padding-top:8px; text-align:center;">
+
+    <input class="butt1 pt" id="saveCommentWindow" type="button" value="Сохранить" 
+      onClick="AjaxCall('popupCont', 'c=viewer/markup_form', true, 'popupCont');
+               filter_author(#USER_ID#);
+">  
+
+    <input class="butt1 pt" id="cancelButtonClick" type="button" value="Отмена" 
+      onClick="cancelButtonClick();">
+  </div>     
+</div>
+
+<script type="text/javascript">
+  $("##dialog_title").html("Редактирование замечания");
+</script>   
+
+[end]
+
+
+[view form] ----- Форма просмотра замечания
+<input type=hidden name="mode" size=5 value="edit">
+
+   <div class="elem_list" padding:8px 8px 8px 0;">
+        <div style="text-align:left;">
+            <span class="fa-stack" >
+                <i class="fa fa-comment-o fa-stack-2x" ></i> 
+                <strong class="fa-stack-1x fa-stack-text fa-inverse" style="color:##0000A0">#markup_nr#</strong>
+            </span>
+            Стр.#page_nr# 
+
+            <div class="fright">
+                <strong>#IOF#</strong>
+            </div>
+        </div>
+      
+
+        <div id="markupTextBlock" style="background-color: white; padding:8px; text-align:left; overflow:auto;" >#comments#</div>  
+
+        <div class="right" style="font-size:8pt;">
+            #Dat#       
+        </div>
+
+        <div style="padding-top:5px; text-align:center;">
+          <input class="butt1 pt" type="button" value="Изменить"    ??RW=Y
+            onClick="AjaxCall('popupCont', 'c=viewer/markup_form', true, 'popupCont');">  ??RW=Y
+
+            <input class="butt1 pt" type="button" value="Закрыть"
+                onClick="cancelButtonClick();">
+
+            <input class="butt1 pt" id="cancelButtonClick" type="button" name="delete" value="Удалить"  ??RW=Y
+                onClick='if (confirm("Замечание будет уделено!\n\rПродолжить?")) AjaxCall("work_div", "c=viewer/deleteMarkup&markup_id=#markup_id#");'> ??RW=Y
+        <div id="work_div"></div>
+        </div>
+    </div>
+
+[end]
+   
+
+
+
+================================================================================
+============================= шаблоны запросов в БД ============================
+================================================================================
+
+
+[get markup SQL]
+SELECT m.id as "markup_id", m.file_id, m.page_id, m.markup_nr
+, m.comments
+  ??mode=edit
+, replace(m.comments,'\n','<br>') as "comments"  ??!mode=edit&ZZZ
+, m.x_coordinate, m.y_coordinate
+, DATE_FORMAT(m.dat, '%d.%m.%Y  %H:%i') as "Dat", iof(u.f, u.i, u.o) as "IOF" 
+, p.page_nr
+, case when m.user_id=#USER_ID# then 'Y' else '' end as "IS_AUTHOR"
+, m.is_locked
+ from doc_data_markups m
+left join doc_file_pages p on p.id=m.page_id
+ left join a_users_jinr u on u.id=m.user_id
+where 
+m.id=#markup_id#
+[end]
+
+[update markup]  *** Обновление маркапа в БД
+update doc_data_markups 
+set comments = "#user_comment#"
+where id = #markup_id#
+;
+select '#user_comment#' as comments
+[end]
+
+

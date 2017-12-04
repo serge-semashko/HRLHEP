@@ -1,0 +1,177 @@
+admin/doctypes/wf_template.ajm
+
+[comments]
+descr=A: Редактор шаблона workflow для типа документов. 
+
+input=wf_template_id - ID шаблона workflow  (из таблицы wf_templates_list);
+output=HTML форма редактирования шаблона workflow, 
+parents=admin/wf/wf_template_editor.cfg
+childs=admin/wf/edit_wf_template.cfg, admin/wf/wf_template_step_table.cfg, admin/wf/wf_template_step_editor
+test_URL=?c=/admin/wf/show_wf_template&wf_template_id=1
+author=Куняев
+[end]
+
+[description]
+Редактор одного шаблона workflow для типа документов.<br>
+<ul><li>Выводит текущие свойства данного шаблона.</li>
+<li>Предоставляет возможность редактировать свойства шаблона WorkFlow<br>
+(вызывает модуль admin/wf/edit_wf_template.cfg).</li>
+<li>Выводит подробную информацию для каждого шага данного шаблона WorkFlow<br>
+(вызывает модуль admin/wf/wf_template_step_table.cfg)</li>
+<li>Предоставляет возможность редактировать шаги шаблона WorkFlow<br>
+(вызывает модуль admin/wf/wf_template_step_editor.cfg)</li>
+<li>В зависимости от текущего состояния меняет внешний вид и свойства кнопок.</li>
+</ul>
+[end]
+
+
+[parameters]
+request_name=A: Редактирование шаблона workflow для типа документа
+service=dubna.walt.service.TableServiceSpecial 
+tableCfg=table_no
+LOG=ON
+divider=<tr><td colspan=2 class="bg_white" style="height:10px; border-top:solid 1px gray;"></td></tr>
+[end]
+
+
+[report header]
+<style>
+##tmpl_table_#wf_template_id# td {border-top:solid 1px gray;}  ??mode=RW
+##tmpl_table_#wf_template_id# {border:solid 1px red;}  ??mode=RW
+##tmpl_table_#wf_template_id# {border-bottom:solid 1px grey;}  ??!mode=RW
+</style>
+    <input type=hidden name=type_id value='#type_id#'> ??
+    $SET_PARAMETERS mode=RO;  ??!mode
+    $GET_DATA [get template props]
+
+    <table>
+    <tr><td>ID Шаблона:</td><td><b>#wf_template_id#</b></td></tr>
+    <tr><td>Название :</td><td><b>#wf_name#</b></td></tr>
+    <tr><td>Коды подразделений :</td><td><b>#div_ids#</b></td></tr>
+    <tr><td>Описание :</td><td><b>#wf_description#</b></td></tr>
+
+    <tr><td>Статус:</td><td><b>
+    Рабочий  ??is_active=1
+    Не рабочий  ??is_active=0
+    </b></td><td>
+    $INCLUDE [buttons_#mode#]
+    </td></tr></table>
+
+    <table  id="tmpl_table_#wf_template_id#" class="tlist tgreen" style="margin:0 0 0 100px;" cellspacing=0>
+    <tr><th>шаг</th><th>роль</th><th>цель (справочник)</th><th>пользователь</th><th>Условие</th><th>№</th></tr>
+
+[end]
+
+
+[buttons_RO]
+    <input type="button" id="wf_property_button_#wf_template_id#" class="butt1 pt" style="width:200;" 
+        onClick="ShowDialog(true); AjaxCall('popupCont', 'c=admin/doctypes/wf_edit_template_prop&mode=update&wf_template_id=#wf_template_id#');"
+        value="Изменить свойства шаблона">
+
+    <input type="button" id="wf_step_button_#wf_template_id#" class="butt1 pt" style="width:140;" value="Изменить шаги" 
+        onClick='AjaxCall("wf_template_#wf_template_id#", "c=admin/doctypes/wf_template&wf_template_id=#wf_template_id#&mode=RW");'> 
+[end]
+
+[buttons_RW]
+    <input type="button" id="wf_property_button_#wf_template_id#" class="butt1 pt" style="width:170; margin-left:200px;" value="Закрыть редактор"
+        onClick='AjaxCall("wf_template_#wf_template_id#", "c=admin/doctypes/wf_template&wf_template_id=#wf_template_id#&mode=RO");'>  
+[end]
+
+
+[item]
+    <tr><td>#step#
+        (согласование) ??step_type=#~wf_step_in_progress#
+        (утверждение) ??step_type=#~wf_step_signed#
+        (завершение) ??step_type=#~wf_step_process#
+        (информирование) ??step_type=#~wf_step_information#
+        (подготовка) ??step_type=#~wf_step_preparation#
+    </td>
+
+    <td>#ROLE_NAME# (#ROLE_ID#)
+        (любой) ??criteria=1
+    </td>
+
+    <td>#TARGET_TYPE#
+        (справочник #INFO_ID#: #INFO_NAME#); ??INFO_ID
+    </td>
+
+    <td>
+        #USER_IOF# (#user_id#)  ??user_id>0
+    </td>
+
+    <td>#custom_criteria#</td>
+
+    <td>
+        * ??set_number=1
+        ** ??set_number=2
+        *** ??set_number=3_
+        #set_number# ??set_number>2
+        =>??post_doc=1
+    </td>
+$INCLUDE [controls]  ??mode=RW
+    </tr>
+
+    $SET_PARAMETERS INFO_ID=; TARGET_TYPE=;
+[end]
+
+
+[controls]
+    <td class="middle">
+        <span class="pt bg_white" onClick="ShowDialog(true); AjaxCall('popupCont', 'c=admin/doctypes/wf_edit_template_step&mode=edit&step_id=#step_id#');">
+            <i class="fa fa-pencil-square-o" aria-hidden="true"></i> изменить</span>
+    </td>
+
+    <td class="middle">
+        <span class="pt" onClick="ShowDialog(true); AjaxCall('popupCont', 'c=admin/doctypes/wf_edit_template_step&mode=del&step_id=#step_id#');"> ??num_steps>1
+        <i class="fa fa-times clr-red" aria-hidden="true"></i> удалить</span> ??num_steps>1
+    </td>
+
+    <td class="bottom">
+        <div class="pt bg_white" style="position:relative; top:12px; border:dotted 1px grey; border-radius:11px;" 
+        onClick="ShowDialog(true); AjaxCall('popupCont', 'c=admin/doctypes/wf_edit_template_step&mode=add&wf_template_id=#wf_template_id#&prev_step=#step#');"> 
+        <i class="fa fa-arrow-circle-left clr-green" aria-hidden="true"></i> вставить</div>
+    </td>
+[end]
+
+
+
+[report footer]
+    </table>
+[end]
+
+
+***************************** Шаблоны SQL запросов ***************************
+[get template props]
+    select doc_type_id, wf_name, div_ids, wf_description, is_active 
+    from wf_templates_list 
+    where id = #wf_template_id#
+;
+    select count(id) as "num_steps"
+    from wf_templates
+    where wf_template_id=#wf_template_id#
+[end]
+
+
+
+[SQL]
+select wt.ID AS step_id
+    , wt.step
+    , wt.step_type
+    , wt.set_number
+    , wt.criteria
+    , wt.custom_criteria
+    , wt.role_id as "ROLE_ID"
+    , r.name as "ROLE_NAME"
+    , tt.type as "TARGET_TYPE"
+    , wt.user_id, iof(u.F, u.I, u.O) as "USER_IOF"
+    , i.name as "INFO_NAME"
+    , i.id as "INFO_ID"
+from wf_templates wt
+    left join a_roles r on r.id=wt.role_id
+    left join a_target_types tt on tt.id=wt.role_target_type_id
+    left join #table_users_full# u on u.id=wt.user_id
+    left join i_infos i on i.id = tt.info_id
+where wt.wf_template_id=#wf_template_id#
+order by step
+[end]
+

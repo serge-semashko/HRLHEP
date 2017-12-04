@@ -1,0 +1,458 @@
+[parameters]
+table_tree=tree
+[end]
+
+
+[head]
+    <HTML><HEAD><TITLE>#title#</TITLE>
+    <META http-equiv=Content-Type content="text/html; charset=utf-8">
+
+    <link rel="stylesheet" href="#jsPath#jquery-ui-1.10.1.css" /> 
+    <link rel="stylesheet" href="#jsPath#jquery-ui-1.12.1.min.css" /> ??
+    <link rel="stylesheet" href="#jsPath#default/style.min.css" />
+    <link rel="stylesheet" href="#cssPath#font-awesome-4.7.0/css/font-awesome.min.css">
+
+    <script type="text/javascript" src="#jsPath#jquery-1.11.0.min.js"></script> 
+    <script src="#jsPath#jquery-ui-1.10.1.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="#jsPath#jquery-migrate-1.1.1.min.js"></script>  
+
+    <script type="text/javascript" src="#jsPath#jquery-3.2.1.min.js"></script> ??
+    <script src="#jsPath#jquery-ui-1.12.1.min.js" type="text/javascript"></script>   ??
+
+    <script src="#jsPath#jquery.alerts.js" type="text/javascript"></script> 
+    <link rel="stylesheet" type="text/css" href="#jsPath#jquery.alerts.css" media="screen">  
+
+    <link rel="stylesheet" href="#jsPath#chosen.min.css" />
+    <script type="text/javascript" src="#jsPath#chosen.jquery.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="#jsPath#datepick/jquery.datepick.css"> 
+    <script type="text/javascript" src="#jsPath#datepick/jquery.plugin.min.js"></script> 
+    <script type="text/javascript" src="#jsPath#datepick/jquery.datepick.min.js"></script> 
+    <script type="text/javascript" src="#jsPath#datepick/jquery.datepick.js"></script> ??zzz_full
+    <script type="text/javascript" src="#jsPath#datepick/jquery.datepick-ru_.js"></script> 
+
+    <script src="#jsPath#jstree.min.js" type="text/javascript" async></script>  
+    <SCRIPT language=JavaScript src="#jsPath#lib.js" async></SCRIPT>
+
+    <link rel="stylesheet" href="/sed/css/sed.css" /> ??cache_cfg=true
+    <SCRIPT language=JavaScript src="#jsPath#sed.js"></SCRIPT>  ??cache_cfg=true
+
+    $INCLUDE free/main_css_noDB.cfg[css] ??!cache_cfg=true
+    $INCLUDE free/main_js_noDB.cfg[js] ??!cache_cfg=true
+[end]
+
+
+[form]
+    <form name="theForm" method="POST" enctype="multipart/form-data" 
+    onSubmit="return doIt();"  ??
+    target="wf" id = "theForm"
+    autocomplete="off"
+    >
+    <input type=hidden name="c" value="#c#">
+    <input type=hidden name="cop" value="">
+    <input type=hidden name="lang_" value="">
+    <input type=hidden name="request_param" value="">
+
+    <script type="text/javascript">
+        var doIt=function ()
+        { 
+            alert("doIt - не определено!"); 
+            return false;
+        }
+        var submitForm=function(){
+            alert("submitForm - не определено!"); 
+        }
+    </script>
+[end]
+
+
+[f_year]
+    $SET_PARAMETERS f_year=#CURR_YEAR#; ??!f_year
+    Год: <select name=f_year class=norm onChange="submitForm(true);">
+    <option value="ALL"
+        selected ??f_year=ALL
+    >все</option>
+    <option value="2017"
+        selected ??f_year=2017
+    >2017</option>
+    <option value="2016"
+        selected ??f_year=2016
+    >2016</option>
+    </select>
+[end]
+
+[popup divs] ======= POP-UP DIVs ==========
+    ----------------- Тень под документом --------------- ??
+    <div id="doc_overlay" class="dialog_overlay" style="z-index: 90; height:200%;"></div>   
+
+    ----------------- Контейнер для документа  --------------- ??
+    <div id="doc_container" style="position: absolute; left: 0px; top: 0px; display:none; 
+            margin:40px; 
+            max-width:1200px; ??
+            z-index: 91; background-color:##efefef; border:solid 2px ##606060;">
+        <div id="doc_container_title" class="dialog_title right">
+            <div id="doc_window_title" style="float:left;">Просмотр документа</div>
+            <div class="btn" onClick="$('##doc_overlay, ##doc_container').hide();" style="width:20px; height:15px; float:right;">
+                <img src="#imgPath#close.png" width="16" height="14" border="0" >
+            </div>
+            <div style="clear:both;"></div>
+        </div>
+        <div id="doc_content" style="padding:10px;"></div>
+    </div>
+
+    ----------------- Тень под диалогом --------------- ??
+    <div id="overlay" class="dialog_overlay"></div>   
+    ----------------- POP-UP диалог --------------- ??
+    <div id="dialog" class="dialog">
+        <div class="dialog_title right" >
+            <div id="dialog_title" style="float:left;"></div>
+            <div class="btn" onClick="HideDialog();" style="width:20px; height:15px; float:right;">
+                <img src="#imgPath#close.png" width="16" height="14" border="0" >
+            </div>
+            <div style="clear:both;"></div>
+        </div>
+        <div id="popupCont"></div>
+    </div>
+
+    ----------------- Тень под справочником --------------- ??
+    <div id="sprav_overlay" class="dialog_overlay" style="z-index: 900; background: ##888888; "></div>   
+
+    ----------------- POP-UP справочник ----------------- ??
+    <div id="d_sprav_window" class="dialog" style="min-width:700px; z-index: 905;">
+        <div class="dialog_title right" >
+            <div id="sprav_title" style="float:left;">Загрузка данных справочника</div>
+            <div class="btn" onClick="hideSprav();" style="width:20px; height:15px; float:right;">
+                <img src="#imgPath#close.png" width="16" height="14" border="0" >
+            </div>
+            <div style="clear:both;"></div>
+        </div>
+        <div id="d_spravCont" style="display:block; 
+            height:90%; overflow:auto; ??
+        ">....</div>
+    </div>
+
+    ----------------- DD-справочник ----------------- ??
+    <div id="dd_info"></div>
+
+    ----------------- POP-UP TOOLTIP ----------------- ??
+    <div id="d_tooltip" class="tooltip"></div>
+
+    ----------------- POP-UP PROGRESSBAR ----------------- ??
+    <div id="progressbar_wrapper"><span onClick="showLoading(false);">Загрузка...</span><div id="progressbar"></div></div>
+[end]
+
+
+[pw2] ====== 2-й Пароль для подписи ======= 
+    $GET_DATA dat/common.dat[get if user sign pwd set]
+    <tr><td  class="label big
+        error ??INPUT_ERROR&!PW_OK
+        ">(*) введите Ваш пароль для подписи:<br>
+        <input type=checkbox  onClick="showPW=this.checked; if(showPW) document.popupForm.signPw_.value = pw2; ">показывать вводимые символы
+    </td>
+    <td>
+        <input size=15 id=signPw_ name=authPW_ value='' 
+        onKeyPress="keyPressHandler(event);"
+        onKeyUp="keyUpHandler(event);" 
+        /><br>
+        <input 
+        type=hidden
+           ??!USER_ID=2309
+        size=10 id=signPw name=authPW value='#authPW#'>
+        $INCLUDE dat/common.dat[pw2 not set]       ??PWD_SET=0
+    </td></tr>
+
+    <tr><td COLSPAN=2>
+        <div id="lang_rus" style="display:none; color:red; text-align:right;"> Включен русский язык!</div>
+        <div id="capsLock_on" style="display:none; color:red; text-align:right;"> Caps Lock вКЛЮЧЕН!</div>
+    </td></tr>
+
+    <script type="text/javascript">
+        var pw2 = ""; // рабочий pw
+        var pwv = "";  // отображаемый pw
+        var nextChar="";
+        var showPW = false;
+        var wasKeyPress=false;
+
+        $SET_PARAMETERS CheckCapsLock=Y; ??
+        $INCLUDE dat/common.dat[checkKirillic] ??!CheckCapsLock=Y
+        $INCLUDE dat/common.dat[checkCapsLock] ??CheckCapsLock=Y
+    </script>
+[end]
+
+[checkKirillic]
+var keyPressHandler = function(e){
+    wasKeyPress=true;
+
+    var charCode = (e.charCode ? e.charCode : e.keyCode);
+    nextChar = String.fromCharCode(charCode);
+    console.log("onKeyPress: nextChar=" + nextChar + " / charCode=" + charCode);  
+    if(charCode <21 && charCode != 8) return; 
+if(nextChar=="") {
+    console.log("keyPress: RESET ");  
+        pw2 = ""; 
+}
+    if(charCode == 91) return;
+
+    if (charCode > 31) {
+        nextChar = String.fromCharCode(charCode);
+        pw2 += nextChar;
+        pwv = "*";
+        for (i=0; i<pw2.length-1; i++)
+            pwv += "*";
+    }
+    else {
+        nextChar = "";
+        pw2 = ""; 
+        pwv = "";
+    }
+
+    var lang = (charCode > 127);
+    if(lang) $("##lang_rus").show(); else $("##lang_rus").hide();
+}
+
+var keyUpHandler = function(e){
+  var v = $('##signPw_').val();
+  console.log("keyUp: " + wasKeyPress + ": " + v);  
+  if(!wasKeyPress && v.length == pw2.length) return;
+  wasKeyPress=false;
+  console.log("keyUp: " + pw2);  
+  if(nextChar=="") {
+    console.log("keyUp: RESET ");  
+        pw2 = ""; 
+    pwv="";
+}
+
+   document.popupForm.signPw.value = pw2;
+   if(showPW)
+        document.popupForm.signPw_.value = pw2; 
+    else
+        document.popupForm.signPw_.value = pwv; 
+  nextChar=""; 
+}
+[end]
+
+
+[checkCapsLock]
+var keyUpHandler = function(e){
+    var charCode = (e.charCode ? e.charCode : e.keyCode);
+    console.log("KeyUp: nextChar=" + nextChar + " / charCode=" + charCode);  ??
+    if(charCode <21 && charCode != 8) return;
+if(nextChar=="") {
+    console.log("KeyUp: RESET ");  ??
+        pw2 = ""; 
+}
+    if(charCode == 91) return;
+    if(showPW)
+        document.popupForm.signPw_.value = pw2; 
+    else
+        document.popupForm.signPw_.value = pwv; 
+    document.popupForm.signPw.value = pw2;
+    nextChar="";
+}
+
+
+var keyPressHandler = function(e){
+    console.log("checkCapsLock...");  ??
+    if (!e) return;
+    var charCode = (e.charCode ? e.charCode : e.keyCode);
+    console.log("checkCapsLock: charCode=" + charCode);  ??
+    if (charCode > 31) {
+        nextChar = String.fromCharCode(charCode);
+        pw2 += nextChar;
+        pwv = "";
+        for (i=0; i<pw2.length; i++)
+            pwv += "*";
+    }
+    else {
+        nextChar = "";
+        pw2 = ""; 
+        pwv = "";
+    }
+    if(e.which == 0) {
+        nextChar = "";
+        pw2 = ""; 
+        pwv = "";
+    }
+    console.log("KeyPress:" + charCode + " / " + nextChar + " / " + e.which + " / " + pw2); ??
+    var capsLock = false;
+    var isMac = /Mac/.test(navigator.platform);
+    if (charCode >= 97 && charCode <= 122){
+      capsLock = e.shiftKey;
+    } else if (charCode >= 65 && charCode <= 90 && !(e.shiftKey && isMac)){
+      capsLock = !e.shiftKey;
+    }
+    if(capsLock) $("##capsLock_on").show(); else $("##capsLock_on").hide();
+    var lang = (charCode > 127);
+    if(lang) $("##lang_rus").show(); else $("##lang_rus").hide();
+}
+[end]
+
+[pw2 not set]
+    <button type = "button" id = "changeSignPassword" class="butt1">Завести пароль для подписи</button>
+    <br/><strong class="error">пароль не заведён!</strong>                                              
+
+    <script type="text/javascript">
+        function mail4SignPasswordChange(){
+            $.ajax({
+                method: 'POST',
+                url : '',
+                data: { c: '/user/change_sign_pswd', mode:'ask' }
+            })
+            .done( function(resp){
+                jAlert('На ваш e-mail ['+resp.trim()+'] выслано письмо с инструкцией по заведению пароля на подпись.');
+            })
+        ;
+        }
+        $('##changeSignPassword').click(mail4SignPasswordChange);
+    </script>
+[end]
+
+[extra users selector] param: multi=1;
+    ======= Комбинированное поле для выбора нескольких пользователей =================== ??
+    --- по клику на <span id="extra_users"...> вызывает справочник пользователей с мультивыбором --- ??
+    --- список выбранных ID возвращает в <input name="extra_users_id"... --- ??
+    --- текст списока возвращает в <input name="extra_users_text"... --- ??
+    --- Отображает список выбранных пользователей с возможностью удаления. --- ??
+
+    <div id="extra_users_list" class="big">
+        #extra_users_text#
+    </div>
+    <span class="info_input big" id="extra_users" info_id="5" searchFor='none' 
+    info_view="5" ??multi=1
+    info_view="1" ??!multi=1
+    >
+    выбрать ??!extra_users_id
+    добавить ??extra_users_id
+    пользователя</span>
+    <br>
+    <input type=hidden id="extra_users_id" name="extra_users_id" size=25 value="#extra_users_id#"> 
+    <input type=hidden id="extra_users_text" name="extra_users_text" size=25 value="#extra_users_text#">
+    <script type="text/javascript">restoreInfoList("extra_users");</script>  ??extra_users_id&extra_users_text
+[end]
+
+
+
+[rowLinks]
+    rowLink=|<a class=page href="javascript:#execute#; goToRow(#srn_i#);">#srn_i#-#ern_i#</a> ??!currentPage
+    rowLink=|<span class=actPage>#srn_i#-#ern_i#</span> ??currentPage
+    prevSetLink=<a class=page href="javascript:#execute#; goToRow(#srn_i#);"> <<< предыд. </a> 
+    nextSetLink=| <a class=page href="javascript:#execute#; goToRow(#srn_i#);"> следующие >>> </a>
+[end]
+
+[rpp] param: execute;
+    <font color=white> ??
+    Строк на странице:
+    <SELECT NAME="rpp" class=small onChange="#execute#; goToRow(1);">
+        <OPTION value="20"
+        selected ??rpp=20
+        >20
+        <OPTION value="50"
+        selected ??rpp=50
+        >50 <OPTION value="100"
+        selected ??rpp=100
+        >100<OPTION VALUE="9999"
+        selected ??rpp=9999
+        > не огр.  
+         ??user_group=sys
+    </SELECT> &nbsp; &nbsp; &nbsp; Строки: #rowLinks# |
+[end]
+
+
+[getYr]
+    select year(NOW()) as YEAR_NOW_, year(NOW())+1 as YEAR_NEXT_, year(NOW())-1 as YEAR_LAST_
+    ;
+    $SET_PARAMETERS_GLOBAL YEAR_NOW=#YEAR_NOW_#; YEAR_NEXT=#YEAR_NEXT_#; YEAR_LAST=#YEAR_LAST_#;
+[end]
+
+
+[login]
+    $SET_PARAMETERS param=%3Fsid=#sid#; ??sid
+    $SET_PARAMETERS param=%3Fchspwd=1&key=#key#; ??chspwd=1
+    <br><br><p><center><span style="font-size:13pt;">Вход в СЭД "Дубна" ОИЯИ</span>
+    <br><br>
+    <iframe width=400 height=90 frameBorder=no scrolling=no src="#loginURL#?c=wlogin_dms&amp;back_url=#back_url##param#"></iframe> 
+
+    <div class=big>
+        (для входа используется тот же логин-пароль,<br> что и в системах 
+        <a href="https://adb2.jinr.ru/adb/adb">ADB2</a> и 
+        <a class="pt" href="https://baza.jinr.ru/arch/arch">"База документов ОИЯИ"</a> &nbsp;)
+        <br><br>
+        <small>По вопросу регистрации в системе обращайтесь<br>
+            к администратору СЭД Вашей лаборатории<br>или в секретариат.
+        </small>
+        <br><br>
+        Забыли пароль? 
+        <input type="button" class="butt1 pt" style="width:110;" value='Восстановить' onClick="AjaxCall('login_div', 'c=user/reset_pwd');" >  
+    </div>
+    </center>
+[end]
+
+
+[check login]
+    $SET_PARAMETERS ~q=q_#loginCookieName#;
+    $SET_PARAMETERS ~qv=^#~q#;
+    $LOG1 check login: USER_ID=#USER_ID#; user_FIO=#user_FIO#; login cookie=#~qv#/^#loginCookieName#;<br> 
+    $SET_PARAMETERS_SESSION USER_ID=; AR_ADMIN=; AR_LAB_SECR=; ??!~qv
+      ??USER_ID&!user_FIO
+    <script type="text/javascript">document.cookie = "#loginCookieName#=; domain=.jinr.ru; path=/; expires: -1;"; top.window.location.replace("#ServletPath#?sid=#doc_id#");</script>  ??!USER_ID
+[end]
+
+
+[get if user sign pwd set]
+    SELECT COUNT(USER_ID) as PWD_SET FROM a_user_pass where user_id = #USER_ID#
+    AND password_hash is not null
+    ;
+[end]
+
+
+[old browser message]
+    <style type="text/css">
+    .ui-widget-overlay{
+    position:absolute;
+    top: 0;
+    bottom: 0;
+    }
+    .ui-button-text{
+    color:white;
+    }
+    </style>
+    <div id="oldbrowser" style="display:none;">
+    К сожалению, ваш браузер устарел и не поддерживается системой СЭД.<br/>
+    Для работы с СЭД рекомендуется установить и использовать один из следующих браузеров:
+    <ul>
+    <li><a href="https://www.mozilla.org/ru/firefox/new/">Firefox 12.0+</a></li>
+    <li><a href="http://www.opera.com/ru">Opera 11+</a></li>
+    <li><a href="https://www.google.ru/intl/ru/chrome/browser/">Google Chrome</a></li>
+    <li><a href="http://windows.microsoft.com/ru-ru/internet-explorer/download-ie">Microsoft Internet Explorer версии 9.0 и выше.</a></li>
+    <li><a href="http://www.apple.com/ru/safari/">Safari</a></li>
+    </ul>
+    </div>
+    <script type="text/javascript">
+      $(function() {
+        $( "##oldbrowser" ).dialog({
+          title: "Ваш браузер устарел",
+          position: { my: "center", at: "center", of: $("body"), within: $("body")},
+          modal: true,
+          buttons: {
+            Ok: function() {
+              $( this ).dialog( "close" );
+            }
+          }
+        });
+      });
+    </script>
+[end]
+
+
+[switch lang]
+    <span class="pt
+    bg_yellow ??lang=russian
+    " onClick="setLang('russian');" >
+    <img src="#imgPath#ru.png"> ??
+    Рус.</span>
+    <span class="pt 
+    bg_yellow ??lang=english
+    " onClick="setLang('english');" >
+    <img src="#imgPath#uk.png"> ??
+    Eng</span>
+[end]

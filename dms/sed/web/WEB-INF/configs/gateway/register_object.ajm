@@ -1,0 +1,46 @@
+gateway/register_object.cfg
+
+
+ТЕСТ шлюза. В РАБОТЕ НЕ ИСПОЛЬЗУЕТСЯ!
+[comments]
+descr=S: Регистрация полученного нового объекта в шлюзе (для отладки)
+
+input=
+output=
+parents=
+childs=
+test_URL=
+author=Куняев
+[end]
+
+
+[parameters]
+request_name=S:Регистрация полученного объекта
+service=jinr.sed.gateway.ServiceGetNewObject
+tableCfg=table_no
+LOG=ON
+encoding=utf-8
+[end]
+
+
+[request]
+Command=RegisterObject
+Ver=1
+ClientID=3
+ObjectType=#ObjectType#
+ClientObjectID=#GateObjectID#
+GateObjectID=#GateObjectID#
+[end]
+
+
+[report]
+REQUEST:<xmp>
+$INCLUDE [request]
+</xmp><br>
+
+<hr><br><br>
+RESPONCE:<xmp>
+#responce#</xmp>
+[end]
+
+[end]

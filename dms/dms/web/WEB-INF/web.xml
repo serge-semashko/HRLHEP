@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app>
+
+    <session-config>
+      <session-timeout>300</session-timeout>
+    </session-config>
+
+    <display-name>DMS Dubna v1.0.0</display-name>
+    <description>DMS Dubna v1.0.0</description>
+
+    <servlet>
+        <servlet-name>DMS</servlet-name>
+        <servlet-class>jinr.dms.Servlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>DMS</servlet-name>
+        <url-pattern>/dubna</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>UploadServlet</servlet-name>
+        <servlet-class>jinr.dms.UploadServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>UploadServlet</servlet-name>
+        <url-pattern>/upload</url-pattern>
+    </servlet-mapping>
+
+
+<!-- security-constraint>
+	<web-resource-collection>
+		<web-resource-name>Entire Application</web-resource-name>
+		<url-pattern>/*</url-pattern>
+	</web-resource-collection>
+	<user-data-constraint>
+		<transport-guarantee>CONFIDENTIAL</transport-guarantee>
+	</user-data-constraint>
+</security-constraint -->
+    
+</web-app>

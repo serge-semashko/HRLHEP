@@ -1,0 +1,159 @@
+svs/get_user_info.cfg
+
+[comments]
+descr=S: Получить данные юзера по его ID
+input=requested_user_id - ID пользователя, [role_id_only] - только указанная роль, [refresh=y] - брать обновлённые данные из vieq #table_users_full#_v 
+output=запросы в базу и установка параметров: u_F, u_I, u_O, u_FIO, u_IOF, u_lab_code, u_email, u_phone, u_posts, u_sex, u_login, u_is_deleted, u_roles
+parents=
+childs=
+call=$CALL_SERVICE c=svs/get_user_info; requested_user_id=2309
+author=Куняев
+[end]
+
+[parameters]
+request_name=A:информация о пользователе
+service=dubna.walt.service.TableServiceSpecial
+tableCfg=table_no
+LOG=ON
+[end]
+
+[description]
+    Выполняет запросы в базу, таблица a_users_jinr или view a_users_jinr_v (медленнее), если refresh=y
+    и устанавливает параметры: 
+    <ul>
+        <li>u_F, u_I, u_O - фамилия, имя, отчество</li>
+        <li>u_FIO, u_IOF - ФИО, ИОФ</li>
+        <li>u_lab_code - код подразделения</li>
+        <li>u_posts - список должностей через /</li>
+        <li>u_roles - список ролей через /</li>
+        <li>u_email</li>
+        <li>u_phone</li>
+        <li>u_sex</li>
+        <li>u_login</li>
+        <li>u_is_deleted</li>
+    </ul>
+[end]
+
+
+[report header]
+    $SET_PARAMETERS srn_sav=#srn#; srn=0; u_F=; u_I=; u_O=; u_FIO=;
+    $GET_DATA [get user info]
+    $GET_DATA [get user div]  ??refresh=y
+
+    $EXECUTE_LOOP priv_target_type; #PRIV_TARGET_TYPES#; [set priv access]  ??PRIV_TARGET_TYPES
+    $SET_PARAMETERS u_roles=;
+    $INCLUDE [user_info] ??show=Y
+[end]
+
+[user_info]
+    #user_FIO#
+    $PRINT ===== get_user_info: USER_ID=#USER_ID#; VU=#VU# =====  ??VU_ZZZ
+    $USE_DB default ??VU
+    $INCLUDE dat/debugTools.dat[VU] ??VU&DBUtil
+    <br>#user_email# ??user_email
+    <br><span style="color:##f00000">email не определён.</span> ??!user_email&user_FIO
+    <br><span style="color:##f00000"><b>рассылка уведомлений невозможна!</b></span> ??!user_email&user_FIO
+    USER_ID=#USER_ID#; ??
+    <br>#pause_time# / #sess_fromStart# ??ClientIP=159.93.40.211
+[end]
+
+[set priv access]
+    $LOG === priv_target_type=#priv_target_type#;<br>
+    $GET_DATA [get priv target]
+    $SET_PARAMETERS u_priv_target_#priv_target_type#=#TARGET_CODES#; 
+    $LOG === DIV=#u_priv_target_1#;<br>
+[end]
+
+
+[item]
+    $SET_PARAMETERS u_roles=#u_roles# / #u_ROLE_NAME# (#TARGET#) ??u_roles&TARGET
+    $SET_PARAMETERS u_roles=#u_roles# / #u_ROLE_NAME#  ??u_roles&!TARGET
+    $SET_PARAMETERS u_roles=#u_ROLE_NAME# (#TARGET#) ??!u_roles&TARGET
+    $SET_PARAMETERS u_roles=#u_ROLE_NAME# ??!u_roles&!TARGET
+[end]
+
+[report footer]
+    $LOG u_roles=#u_roles#;<br>
+    $SET_PARAMETERS srn=#srn_sav#;
+[end]
+
+[get priv target]
+    select distinct concat(',', target_code) as TARGET_CODES_ from a_user_role
+     where user_id=#requested_user_id# and target_type_id=#priv_target_type# and active=1
+    ;
+    select substr('#TARGET_CODES_#',2) as TARGET_CODES
+[end]
+
+[get user info]
+    select F as u_F, I as u_I, O as u_O, FIO as u_FIO
+        , concat(LEFT(I,1),'.',LEFT(O,1),'.',F) as "u_IOF"
+        , email ??!playMode=on
+        , 'svk@jinr.ru' ??playMode=on
+         as u_email
+        , posts as u_posts, div_code as u_lab_code, sex as u_sex 
+        , login as u_login, phone as u_phone
+        , is_deleted as u_is_deleted ??
+    from 
+        #table_users_full# ??!refresh=y
+        #table_users_full#_v ??refresh=y
+    where id=#requested_user_id#
+    ;
+    select short_name as USER_DIV_NAME from info_10 where id=#u_lab_code# ??u_lab_code
+    ;
+    select concat(ur.target_type_id,',') as "PRIV_TARGET_TYPES"
+    from a_user_role ur join a_roles r on r.id=ur.role_id
+    where ur.user_id=#requested_user_id# and ur.active=1 and r.full_access=1
+    ;
+[end]
+
+[get user div]
+    select div_code as "USER_DIV" from cwl.users where person_id=#requested_user_id#
+[end]
+
+$GET_DATA [get 1st div]
+$SET_PARAMETERS NEXT_PARENT=#div_code#; USER_DIV=;
+$GET_DATA [get next parent]
+$GET_DATA [get next parent]  ??!USER_DIV
+$GET_DATA [get next parent]  ??!USER_DIV
+$GET_DATA [get next parent]  ??!USER_DIV
+$GET_DATA [get next parent]  ??!USER_DIV
+$GET_DATA [get next parent]  ??!USER_DIV
+$GET_DATA [get next parent]  ??!USER_DIV
+$SET_PARAMETERS  u_lab_code=#USER_DIV#; ??USER_DIV
+[end]
+
+
+[SQL]
+    select /* get user roles */ r.NAME as u_ROLE_NAME
+        , concat(
+        case when ur.target_type_id is null then '' 
+             when ur.target_type_id=1 then d.short_name 
+             else concat(t.type, ': ', cast(ur.target_code as char)) 
+        end 
+        , '/', cast(ur.priority as char ) ??
+        ) as TARGET
+    from a_user_role ur 
+        left join a_roles r on r.id=ur.role_id
+        left join a_target_types t on t.id=ur.target_type_id
+        left join info_10 d on d.id=ur.target_code
+    where
+        ur.user_id=#requested_user_id#
+        and ur.role_id=#role_id_only# ??role_id_only
+        and ur.active=1
+    order by r.sort
+[end]
+
+[ZZZget 1st div]
+select div_code, case when usl_rab like '%совместит%' then 1 else 0 end as SOVM
+from info_11 where person_id=#requested_user_id#
+order by SOVM
+limit 1
+;
+[end]
+
+[ZZZget next parent]
+select case when view2=1 then id when id=0 then 0 else null end as USER_DIV
+, pid as "NEXT_PARENT", short_name as "DIV_NAME"
+from info_10
+where id=#NEXT_PARENT#
+[end]

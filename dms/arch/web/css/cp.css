@@ -1,0 +1,88 @@
+BODY {FONT-SIZE: 10pt; FONT-FAMILY: Arial, Helvetica, sans-serif; MARGIN-LEFT:10px; MARGIN-right: 10px}
+BODY.tree{ font-family: Arial, Helvetica; background-color: #444490; color: white;}
+
+.ff {FONT-SIZE: 10pt; FONT-FAMILY:  Lucida Console, Courier, Arial, Fixedsys, sans-serif}
+.hid {visibility: hidden}
+.xp {font-size:14px;border: 1px solid #000000;}
+.small {font-size:10px;}
+
+A {FONT-SIZE: 11pt; color: #0000B0; FONT-FAMILY: Arial, Helvetica, sans-serif;  text-decoration: none;}
+A:visited {color: #0000B0;  text-decoration: none;}
+A:hover {color: #FF0000; text-decoration: underline}
+
+A.info:link {color: #0000B0; text-decoration: underline; cursor: hand;}
+A.info:visited {color: #0000B0; text-decoration: underline;}
+A.info:hover   { color: #FF0000; text-decoration: underline }
+
+A.toc:link {color: #E7E707; text-decoration: none; cursor: hand;}
+A.toc:visited {color: #E7E7E7; text-decoration: none;}
+A.toc:hover   { color: white; text-decoration: underline }
+
+A.r {FONT-SIZE: 10pt; }
+A.r:link {color: #FFFFFF; text-decoration: none;}
+A.r:visited {color: #FFFFFF; text-decoration: none;}
+A.r:hover   {color: white; text-decoration: underline }
+
+A.s:link {color: #000080; text-decoration: none;}
+A.s:visited {color: #222280; text-decoration: none;}
+A.s:hover   {color: red; text-decoration: underline}
+
+A.big {FONT-SIZE: 12pt; color: #0000B0; FONT-FAMILY: Arial, Helvetica, sans-serif;  text-decoration: none;}
+A.big2 {FONT-SIZE: 14pt; color: #0000B0; FONT-FAMILY: Arial, Helvetica, sans-serif;  text-decoration: none;}
+
+A.sm {FONT-SIZE: 9pt; color: #000080; text-decoration: none; FONT-FAMILY: Verdana, Arial, Helvetica, sans-serif;  }
+A.sm:link {FONT-SIZE: 9pt; color: #000080; text-decoration: none; FONT-FAMILY: Verdana, Arial, Helvetica, sans-serif;  }
+A.sm:visited {FONT-SIZE: 9pt; color: #222280; text-decoration: none;}
+A.sm:hover   {FONT-SIZE: 9pt; color: red; text-decoration: underline}
+
+UL {margin-left: 7; margin-bottom: 1; margin-top: 1;}
+
+STRONG {FONT-SIZE: 11pt; FONT-FAMILY: Arial, Helvetica, sans-serif}
+INPUT {FONT-SIZE: 10pt; FONT-FAMILY: Arial, Helvetica, sans-serif}
+INPUT.ed {FONT-SIZE: 10pt;}
+INPUT.ro {border-style: groove; text-align: center; background-color:F4F4F4; }
+TEXTAREA {FONT-SIZE: 10pt; FONT-FAMILY: Arial, Helvetica, sans-serif}
+TEXTAREA.ro {border-style: groove; background-color:F4F4F4; }
+TEXTAREA.ed {FONT-SIZE: 10pt; }
+SELECT {FONT-SIZE: 10pt; FONT-FAMILY: Arial, Helvetica, sans-serif;}
+
+input.but {width:90; border-style: outset; cursor:hand; border-width:2px; background-color:E0E8FF; border-color:B0C0D0;}
+input.button {width:140; border-style: outset; cursor:hand; border-width:2px; background-color:E0E8FF; border-color:B0C0D0;}
+
+
+IMG.toc {border:0; width: 10px; heigth: 10px}
+input.but1 {COLOR: 000080; background-color: FFF0A8; width: 120; height: 25;}
+
+H2{font-size:22pt; font-family: Times; color: 000066; display:inline}
+H3.old{font-size:18pt; font-weight:normal; font-family: Verdana ,Arial, Helvetica, sans-serif; color: 000069; display:inline}
+H3{font-size:20pt; font-weight:normal;  font-family: Times; color: 000069; display:inline}
+H4{font-size:15pt; font-weight:normal;  font-family: Times; color: 000069; display:inline}
+H4xxx{font-size:15pt;  font-family:normal; color: 000069; display:inline}
+
+p {text-align: justify; padding-left: 1em; padding-right: 1em;}
+DIV.note {text-align: justify; padding-left: 1em; padding-right: 1em; line-height: 140%;}
+DIV.tables {text-align: justify; padding-left: 0em; padding-right: 0em;}
+DIV.h {color: white; FONT-SIZE: 11pt; font-style: italic }
+
+UL {line-height: 130%; text-align: justify; padding-left: 1em; padding-right: 1em;}
+OL {line-height: 130%; text-align: justify; padding-left: 1em; padding-right: 1em;}
+
+
+TH { FONT-SIZE: 10pt;}
+TH.t {background-color: F0F4F4; FONT-SIZE: 10pt; FONT-FAMILY: Arial, Helvetica, sans-serif}
+
+TD {FONT-SIZE: 9pt; FONT-FAMILY: Arial, Helvetica, sans-serif}
+TD.t {vertical-align: top }
+td.small {background-color: white; FONT-SIZE: 8pt; vertical-align: top; }
+td.l {background-color: whitesmoke; text-align: right; vertical-align: top; }
+td.l2 {text-align: right; vertical-align: top; }
+TD.d {background-color: f8feff; vertical-align: top;}
+TD.d_big {FONT-SIZE: 11pt; background-color: fafafa; vertical-align: top;}
+td.hd {FONT-SIZE: 13pt; font-weight:bold; FONT-FAMILY: Arial, Helvetica, sans-serif}
+
+td.left {border-bottom: 2px solid #AAAAAA;border-top: 2px solid #DDDDDD;background-color: #EEEEEE;}
+td.leftActive {border-left: 2px solid #AAAAAA;border-right: 2px solid #AAAAAA;border-top: 2px solid #AAAAAA;border-bottom: 2px solid #FFFFFF;}
+td.mid {border-bottom: 2px solid #AAAAAA;border-top: 2px solid #DDDDDD;border-left: 1px solid #AAAAAA;background-color: #EEEEEE;}
+td.midActive {border-left: 2px solid #AAAAAA;border-right: 2px solid #AAAAAA;border-top: 2px solid #AAAAAA;border-bottom: 2px solid #FFFFFF;}
+td.right {border-bottom: 2px solid #AAAAAA;border-top: 2px solid #DDDDDD;border-left: 1px solid #AAAAAA;background-color: #EEEEEE;}
+td.rightActive {border-left: 2px solid #AAAAAA;border-right: 2px solid #AAAAAA;border-top: 2px solid #AAAAAA;border-bottom: 2px solid #FFFFFF;}

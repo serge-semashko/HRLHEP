@@ -1,0 +1,106 @@
+
+[comments]
+descr=А: Модуль вывода списка пользователей - вывод фильтров и вызов admin/users/users_list_table.cfg для вывода самой таблицы
+input=none
+output=HTML таблица пользователей
+parents=admin/admin_js_noDB.cfg
+childs=admin/users/users_list_table.cfg
+testURL=?c=admin/tab_users
+author=Куняев
+[end]
+
+[parameters]
+request_name=A:Список пользователей
+KeepLog=false
+debug=off
+[end]
+
+[report]
+$INCLUDE dat/common.dat[check login] 
+AR_ADMIN=#AR_ADMIN#; AR_SYS_ADMIN=#AR_SYS_ADMIN#;  ??
+$SET_PARAMETERS RWACC=Y; RACC=Y; ??AR_ADMIN=1|AR_SYS_ADMIN=1
+$INCLUDE [report_]  ??RACC
+[end]
+
+??!AR_SYS_ADMIN=1
+
+[report_]
+    #c# ??debug=on
+    $GET_DATA [get user div] 
+    $GET_DATA [get roles list]
+
+    <center>
+    +++++ Фильтры +++++ ??
+    <div id="filters_div">
+        <table border=0 cellpadding=4 style_="border:solid 1px gray;">
+            <tr><td class=label>Роль:</td><td>
+            <select name=f_role style="font-size:9pt;" onChange="submitForm(true);"><option></option>
+            <option value="Y">&nbsp;+ любая</option>
+            <option value="N">&nbsp;- нет роли</option>
+            #ROLES#</select>
+            </td>
+            <td>
+            <input name="f_rules" type=checkbox onChange="submitForm(true);">только с дополнительными правами
+            </td>
+            </tr>
+
+            <tr><td class=label>Подразделение:</td><td>
+
+            <div class="info_input pt big bg_white" id="f_div" info_id="10" info_view="11" info_type="3" searchFor='none'  ??!f_div_id
+            style="display: inline-block; width:100px; height:20px; border:solid 1px gray; ">выбрать</div> ??!f_div_id
+            #DIV#
+            <input name="f_div_id" size=5 value="#f_div_id#" style="border:none; background-color:##efefef; font-size:9px;">
+            </td></tr>
+
+            <tr><td class=label>Фамилия или логин:</td><td> <input size=20 name="f_nam" value="#f_nam#"> &nbsp; 
+            <input type="submit" class="butt1 pt" style="width:100;" value="Искать">
+
+            </td><td>
+            <input type="button" class="butt1" value="Добавить пользователя" onClick="AjaxCall('popupCont','c=admin/users/user_edit&cop=new')">  
+
+            <span class="pt" onClick="if(confirm('Запустить обновление?')) {jAlert('Обновление таблицы пользователей. Ждите завершения...','Обработка запроса');AjaxCall('popupCont','c=admin/users/refresh_JINR_usrs');}">Обновить</span> ??USER_ID=2309
+
+            <input type=hidden name="atab" value="t_users"> 
+            <input type=hidden name="module" value="admin/users/users_list_table"> 
+            <input type=hidden name="done" value="Y"> 
+            </td>
+            </tr>
+        </table>
+
+        +++++ Контейнер таблицы +++++ ??
+        <div id="content_table" style="width:100%;">
+            $CALL_SERVICE c=admin/users/users_list_table; srt=u.F;
+        =====</div>
+    </div>
+
+    +++++ SCRIPT +++++ ??
+    <script type="text/javascript">
+        setModule("admin/users/users_list_table"); 
+        setModule("admin/tab_users");  ??
+        doSubmit('', 'admin/users/users_list_table', false); ??
+        AjaxCall('content_table','c=admin/users/users_list_table&srt=u.F'); ??
+
+        var submitForm=function(resetSrn) {
+            log(3, "#c#.submitForm() resetSrn=" + resetSrn);
+            if(resetSrn)
+                document.theForm.srn.value='1'; 
+            AjaxCall("content_table", "c=admin/users/users_list_table", true, "filters_div");
+        }
+    </script>
+[end]
+
+[get roles list]
+select concat('<option value=', cast(id as char), '>', initcap(name), '</option>') as ROLES 
+from a_roles where id>0 
+and not target_type_id is null  ??!AR_SYS_ADMIN=1
+and is_deleted=0
+order by sort
+[end]
+
+[get user div]
+select group_concat(target_code) as "f_div_id" 
+from a_user_role
+where role_id=14 and user_id=#USER_ID# and active=1
+;
+select group_concat(short_name) as "DIV" from info_10 where id in(#f_div_id#) ??f_div_id
+[end]

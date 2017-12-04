@@ -1,0 +1,158 @@
+so/common.dat
+
+[style]
+<style>
+body, td {font-size: 10pt; background-color:##efefef;}
+.comment {border:none 1px red; width:90%; padding: 5px 10px 5px 50px;} ??
+
+fieldset {border:dotted 1px gray; font-size: 10pt; margin:5px 0 5px 50px; padding:0 10pt 5pt 5pt; background-color: ##efefef;}
+fieldset legend {border:dotted 1px green; font-style:italic; font-size: 10pt;  background-color: white;}
+
+textarea {overflow: hidden; resize: none; border: 1px solid gray; width:100%; padding: 5px; background-color: white; font-size: 10pt; }
+textarea.e1 {border: 1px solid green;}
+textarea.e2 {border: 1px solid red;}
+
+.vis {display:block;}
+.hid {display:none;}
+.min {height:15pt; width:30%; overflow: hidden;}          
+</style>
+[end]
+
+[script]
+<script type="text/javascript">
+
+var process = function(id, cop){
+    savePageScroll();
+if(cop == "samples")
+    AjaxCall("popupCont", "c=so/edit_samples&cop=" + cop + "&id=" + id);
+else
+    AjaxCall("popupCont", "c=so/edit_tree&cop=" + cop + "&id=" + id);
+
+}
+/**
+* показать / скрыть текст пункта
+*/
+var toggleItem = function(item_id, show) {
+var p = item_id.split('_');
+var lev = p.length;
+if(show) {
+    $("##h_" + item_id).removeClass("hid");
+    $("##s_" + item_id).addClass("hid");
+    $("##div_" + item_id).hide();
+    $("##div_" + item_id).removeClass("min");
+    $("##div_" + item_id).show(300);
+    $("##ctrls_" + item_id).show();
+if(lev == 1)
+    $(".parent_" + item_id + ", .pparent_" + item_id ).show(300);
+else if(lev == 2)
+    $(".parent_" + item_id ).show(300);
+}
+else {
+    $("##h_" + item_id).addClass("hid");
+    $("##s_" + item_id).removeClass("hid");
+    $("##div_" + item_id).addClass("min");
+    $("##ctrls_" + item_id).hide();
+if(lev == 1) 
+    $(".parent_" + item_id + ", .pparent_" + item_id ).hide();
+else if(lev == 2) $(".parent_" + item_id ).hide(); 
+}
+
+}
+
+
+var toggleComment =function(s) {
+$(s).find(':first-child').toggle();  
+$(s).find(':first-child').next().toggle(); 
+var c = $(s).parent();
+var h = c.height();
+if(h > 30) {
+    c.hide(200);
+    c.addClass("min"); 
+    c.show(0);
+}
+else {
+    c.hide();
+    c.removeClass("min"); 
+    c.show(300);
+}
+
+console.log(c.height()); ??
+}
+
+================ SCROLL RESTORE ==============================  ??
+http://browse-tutorials.com/tutorial/get-and-save-jquery-window-scroll-position ??
+
+  var yScroll = getCookie('SoScroll');
+console.log("restore:" + yScroll);
+  if(yScroll && yScroll > 0)
+      window.scroll(0, yScroll);
+  setCookie('SoScroll', 0); ??
+ 
+var savePageScroll = function() {
+console.log("savePageScroll...");
+  var yScroll;
+  if (self.pageYOffset) yScroll = self.pageYOffset;
+  else if (document.documentElement && document.documentElement.scrollTop) yScroll = document.documentElement.scrollTop;
+  else if (document.body) yScroll = document.body.scrollTop;
+  setCookie('SoScroll', yScroll);
+console.log("SoScroll:" + yScroll);
+  return yScroll;
+}
+
+
+</script>
+[end]
+
+================ TEXTAREA RESIZE - старое, для "конструктора", заменено на маркапы и вылесено в lib.js ==============================  ??
+var lastEvent;
+
+var resize=function(ev) {
+    if(!ev) ev = lastEvent;
+    doResize(ev.target);
+}
+
+var doResize = function(elem) {
+    elem.style.height = 'auto';
+    var h = elem.scrollHeight + 3;
+    console.log($(elem).prop("id") + ": " + elem.scrollHeight + " / " + h); ??
+    elem.style.height = h+'px'; 
+}
+
+var delayedResize=function(ev) {lastEvent=ev; window.setTimeout(resize, 0);} /* 0-timeout to get the already changed text */
+
+var resizeAll = function() {
+    $('textarea').each(function(){
+        console.log($(this).prop("id")); ??
+        doResize(this);
+    });
+}
+
+$(function(){
+    $('textarea').keypress(delayedResize);
+    $('textarea').change(resize);
+    resizeAll();
+    $(window).on('resize',resizeAll);
+}
+)
+
+
+
+[count childs]
+select count(id) as NUM_CHILDS from 
+so_data ??!template=Y
+so_tree ??template=Y
+where pid=#id#
+[end]
+
+
+[get list SQL]
+select id
+, tree_id  ??!template=Y
+, num, num+1 as "next_num", level, title, text, editable, version, is_deleted
+, replace(comment, '\n', '<br>') as "comment"
+from 
+so_data ??!template=Y
+so_tree ??template=Y
+where pid=#pid#
+order by num, version desc
+[end]

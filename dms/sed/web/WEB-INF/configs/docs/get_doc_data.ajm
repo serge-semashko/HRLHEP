@@ -1,0 +1,41 @@
+docs/get_doc_data.cfg
+
+[comments]
+descr=S: Получение данных документа без его просмотра
+
+input=doc_id - ID документа (из таблицы d_list)
+output=
+parents=
+author=Куняев
+[end]
+
+[description]
+Используется другими модулями для получения данных документа без его просмотра.
+<ul>
+<li>Получение информации о структуре документа</li>
+<li>Запрос в БД, получение данных дока, установка параметров </li>
+</ul>
+
+[end]
+
+
+[parameters]
+request_name=S: Получение данных документа
+service=jinr.sed.ServiceViewDoc
+LOG=ON
+SYS_FIELDS=DOC_ID, IS_ACTIVE, DATE_FORMAT(modified,'#dateTimeFormat#') as DOC_MODIFIED, VERSION
+SYS_FIELDS_TYPES=int,int,varchar,int
+[end]
+
+[report header]
+$SET_PARAMETERS AR_R=Y; DOC_DATA_RECORD_ID=;
+
+$GET_DATA docs/view_doc.cfg[getDocInfo]
+
+[end]
+
+[report footer]
+[end]
+
+[item]
+[end]

@@ -1,0 +1,83 @@
+JINR/doc_13_ZK_data_field.cfg
+
+[comments]
+descr=Модуль вывода поля "Закупочные комиссии" 
+input=
+output=
+parents=
+childs=
+author=Куняев, Яковлев
+[end]
+
+[parameters]
+request_name=U:Закупочные комиссии
+KeepLog=true
+ClearLog=false
+[end]
+
+
+[report]
+$GET_DATA [getZK_data_DocData] ??!INPUT_ERROR&DOC_TYPE_ID&doc_id
+$INCLUDE [ZK_data_InfoData] ??!INPUT_ERROR&info_id&record_id
+
+<table border=0>
+
+<tr><td class="label">Название <BR> в заголовке:</td><td>
+<textarea id="JINR_ZK_DATA_header" name="JINR_ZK_DATA_header" rows=3 style="width:400pt; height:30pt;" >#JINR_ZK_DATA_header#</textarea>
+</td></tr>
+
+<tr><td class="label">Действует <BR> на основании:</td><td>
+<textarea id="JINR_ZK_DATA_titulature" name="JINR_ZK_DATA_titulature" rows=3 style="width:400pt; height:30pt;" >#JINR_ZK_DATA_titulature#</textarea>
+</td></tr>
+
+<tr><td class="label">Присутствуют:</td><td>
+<textarea id="JINR_ZK_DATA_present" name="JINR_ZK_DATA_present" rows=8 style="width:400pt; height:50pt;" >#JINR_ZK_DATA_present#</textarea>
+</td></tr>
+
+</table>
+
+[end]
+
+[ZK_data_InfoData] ****** Заполняет соответствующие (commission_members, voting_protocol) поля формы в сооответствии с выбором ЗК
+$GET_DATA [getZK_data_InfoData] ??!INPUT_ERROR&info_id&record_id
+
+<script type="text/javascript">
+    $("##" + 'ZK').html('#JINR_ZK_DATA_name#');    
+</script>
+
+
+$INCLUDE JINR/doc_13_fields.dat[init ZK members]
+$GET_DATA JINR/doc_13_fields.dat[getLZKMembersSQL]  ??ZK_DATA_zk_type=2
+$GET_DATA JINR/doc_13_fields.dat[getCZKMembersSQL]  ??ZK_DATA_zk_type=3
+$INCLUDE JINR/doc_13_fields.dat[feel ZK members script]
+
+[end]
+
+
+[getZK_data_DocData]
+SELECT 
+ #FIELD_DB_NAME#_header as "JINR_ZK_DATA_header"
+, #FIELD_DB_NAME#_titulature as "JINR_ZK_DATA_titulature"
+, #FIELD_DB_NAME#_present as "JINR_ZK_DATA_present"
+from d_data_#DOC_TYPE_ID# 
+where doc_id = #doc_id#
+;
+[end]
+
+[getZK_data_InfoData] 
+select table_name as "JINR_ZK_DATA_INFO_TABLE_NAME"
+from i_infos
+where id=#info_id#
+;
+SELECT 
+ zk_type as "ZK_DATA_zk_type"
+, div_code as "ZK_DATA_div_code"
+, header as "JINR_ZK_DATA_header"
+, titulature as "JINR_ZK_DATA_titulature"
+, present as "JINR_ZK_DATA_present"
+, name as "JINR_ZK_DATA_name"
+from #JINR_ZK_DATA_INFO_TABLE_NAME# 
+where id = #record_id#
+;
+[end]
+

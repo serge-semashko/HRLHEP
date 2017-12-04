@@ -1,0 +1,86 @@
+copy_collections.cfg
+
+[comments]
+descr=U:copy collections from one parent to another
+input=pid - старый родитель, doc_id - новый родитель
+output=
+parents=
+childs=
+test_URL=?c=obj/copy_collections&pid=613&doc_id=617
+author=Куняев
+[end]
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=
+tableCfg=table_no
+[end]
+
+
+[report header]
+$GET_DATA [start transaction] ??DATA_TABLES
+[end]
+
+
+[item]
+$GET_DATA [add object] ??DATA_TABLES
+[end]
+
+
+[report footer]
+$GET_DATA [commit] ??DATA_TABLES
+[end]
+
+
+==============================================================
+==============================================================
+==============================================================
+[preSQLs]
+select type_id from d_list where id=#doc_id#
+;
+select concat(', d_data_', type) as DATA_TABLES from d_fields where type_id=#type_id# and form_field_type in(1004, 1006)
+[end]
+
+[start transaction]
+lock tables d_list write #DATA_TABLES# write;
+START TRANSACTION
+;
+[end]
+
+
+=== Селектим все ОБЪЕКТЫ старого документа (потомки с group_id=99),
+    тип которых присутствует в возможных потомках нового родителя 
+    (присутствуют в d_fields для нового типа родителя) ===
+[SQL]
+select dl.id as CHILD_DOC_ID, dl.type_id as CHILD_TYPE_ID, type_version as CHILD_TYPE_VERSION 
+from d_list dl 
+    join d_types dt on dt.id=dl.type_id and dt.group_id=99
+    join d_fields df on df.type=dl.type_id and df.type_id=#type_id#
+where dl.pid=#pid# and dl.is_deleted=0
+[end]
+
+
+[check object type]
+select 'Y' as TYPE_EXISTS from d_fields where type_id=#type_id# and type='#CHILD_TYPE_ID#'
+[end]
+
+
+[add object]
+insert into d_list (pid, type_id, type_version, created, creator_id)
+values (#doc_id#, #CHILD_TYPE_ID#, #CHILD_TYPE_VERSION#, now(), #USER_ID#)
+;
+select LAST_INSERT_ID() as "NEW_CHILD_OBJECT_ID"
+;
+select group_concat(field_db_name) as DATA_FIELDS from d_fields where type_id=7 order by nr
+;
+insert into d_data_7 (doc_id, version, #DATA_FIELDS#, modified, modifier_id)
+(select #NEW_CHILD_OBJECT_ID#, version, #DATA_FIELDS#, now(), #USER_ID# 
+  from d_data_7 where doc_id=#CHILD_DOC_ID#)
+[end]
+
+
+[commit]
+COMMIT;   ??!ERROR
+ROLLBACK;  ??ERROR
+unlock tables; 
+[end]

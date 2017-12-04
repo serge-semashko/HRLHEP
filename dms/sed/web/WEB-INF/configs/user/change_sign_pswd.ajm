@@ -1,0 +1,57 @@
+[comments]
+descr=U: получение данных и вызов сервиса отправки письма на смену пароля подписи/смена пароля подписи. Вызывается ajax-ом
+input=mode: ask - запрос письма на смену пароля, change - смена пароля; pass1,pass2 новый пароль и его повтор
+output=email пользователя/сообшение о смене пароля или ошибке
+parents=user/change_sign_pswd_settings
+childs=user/mail4sign_password_change
+[end]
+
+[parameters]
+debug=ond
+KeepLog=true
+ClearLog=false
+[end]
+
+[report]
+$INCLUDE [change srv]  ??mode=change
+$INCLUDE [ask srv] ??mode=ask
+[end]
+
+
+[ask srv]
+$GET_DATA [ask sql]  
+$CALL_SERVICE c=user/mail4sign_password_change;id=#ID#;
+[end]
+
+#EMAIL# ??ID
+
+
+[change srv]
+$GET_DATA [change sql]
+
+Пароль на подпись успешно изменен. ??!GET_DATA_ERROR&LEN_OK=1&EQL_OK=1&USER_ID&NUM_RECORDS_AFFECTED=1
+Ошибка!        ??GET_DATA_ERROR
+Пользователь не авторизован! ??!USER_ID
+Слишком короткий пароль ??!LEN_OK=1
+Пароли не совпадают ??!EQL_OK=1
+[end]
+
+[change sql]
+SELECT LENGTH('#pass1#')>=6 AS LEN_OK, '#pass1#' LIKE '#pass2#' as EQL_OK
+;
+UPDATE a_user_pass set password_hash = md5('#pass1#'), changed = now(), modifier_id = #USER_ID#, IP = '#ClientIP#' WHERE user_id = #USER_ID# and access_key='#key#' and key_expire>=now() ??LEN_OK=1&EQL_OK=1&USER_ID&key
+; 
+[end]
+
+[ask sql]
+SELECT email as EMAIL from #table_users_full# where id = #USER_ID#
+;
+SELECT Id as ID FROM a_user_pass where user_id = #USER_ID#
+;
+insert into a_user_pass (access_key, user_id, key_expire) values (md5(now()), #USER_ID#, now() + INTERVAL 1 HOUR) ??!ID&USER_ID
+;                                                   
+update a_user_pass set access_key = md5(now()), key_expire= now() + INTERVAL 1 HOUR where Id = #ID# and user_id = #USER_ID# ??ID&USER_ID
+;                                                   
+select last_insert_id() as ID ??!ID&USER_ID
+;
+[end]

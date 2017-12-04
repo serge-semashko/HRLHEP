@@ -1,0 +1,500 @@
+[tabs] param: atype;
+<table border=0 width=100% cellpadding=0 cellspacing=0>
+<tr><td width=80% class=b >&nbsp;</td>
+
+<th 
+class=a   ??atype=ext
+class=i   ??!atype=ext
+nowrap=true onClick="setType('ext')" style="width:70pt;">Счета</th><th 
+class=a2   ??atype=ext
+class=i2   ??!atype=ext
+><img src="#imgPath#filler.gif" width=6 height=1></th>
+
+
+<th 
+class=a   ??atype=nal
+class=i   ??!atype=nal
+nowrap=true onClick="setType('nal')">Наличный&nbsp;платеж</th><th 
+class=a2   ??atype=nal
+class=i2   ??!atype=nal
+><img src="#imgPath#filler.gif" width=6 height=1></th>
+
+<th 
+class=a   ??atype=mnts
+class=i   ??!atype=mnts
+nowrap=true onClick="setType('mnts')" style="width:70pt;">МНТС</th><th 
+class=a2   ??atype=mnts
+class=i2   ??!atype=mnts
+><img src="#imgPath#filler.gif" width=6 height=1></th>
+
+<th 
+class=a   ??atype=other
+class=i   ??!atype=other
+nowrap=true onClick="setType('other')">Прочее</th><th 
+class=a2   ??atype=other
+class=i2   ??!atype=other
+><img src="#imgPath#filler.gif" width=6 height=1></th>
+
+<th 
+class=a ??!atype
+class=i ??atype
+nowrap=true onClick="setType('')">Общий&nbsp;список</th><th 
+class=a2  ??!atype
+class=i2  ??atype
+width=6><img src="#imgPath#filler.gif" width=6 height=1></th> 
+</tr></table>
+<script>
+//window.focus();
+
+
+function setType(type)
+{ // alert (type);
+  if (type=="xp")
+  { var f="";
+    f = "&form=y"; ??!f_mm&!f_contr
+    window.location.href="#ServletPath#?c=#c#&type=xp&svod=g&f_lab=#f_lab#&tt=#tm#" + f; ??!A_LABS
+    window.location.href="#ServletPath#?c=doc/list&type=xp&f_lab=#f_lab#&tt=#tm#" + f; ??A_LABS
+  }
+  else 
+   if (type=="nal") ??
+  { window.location.href="#ServletPath#?c=#c#&type=" + type + "&f_lab=#f_lab#&tt=#tm#";
+  }
+  else if (type=="mnts") ??
+  { window.location.href="#ServletPath#?c=doc/list&type=mnts&f_lab=#f_lab#&tt=#tm#"; ??
+  } ??
+  else ??
+  { frm.type.value=type; ??
+    frm.submit(); ??
+  } ??
+}
+</script>
+[end]
+
+[tabMNTS]
+<th 
+class=a   ??atype=mnts
+class=i   ??!atype=mnts
+nowrap=true onClick="setType('mnts')">МНТС</th><th 
+class=a2   ??atype=mnts
+class=i2   ??!atype=mnts
+><img src="#imgPath#filler.gif" width=6 height=1></th>
+[end]
+
+[tabOTHER]
+<th 
+class=a   ??atype=other
+class=i   ??!atype=other
+nowrap=true onClick="setType('other')">Прочее</th><th 
+class=a2   ??atype=other
+class=i2   ??!atype=other
+><img src="#imgPath#filler.gif" width=6 height=1></th>
+[end]
+
+$INCLUDE doc/search.dat[tabOTHER] ??!USER_GROUP=min
+
+[tabMNTS]
+<th 
+class=a   ??atype=mnts
+class=i   ??!atype=mnts
+nowrap=true onClick="setType('mnts')">МНТС</th><th 
+class=a2   ??atype=mnts
+class=i2   ??!atype=mnts
+><img src="#imgPath#filler.gif" width=6 height=1></th>
+[end]
+
+[tabOTHER]
+<th 
+class=a   ??atype=other
+class=i   ??!atype=other
+nowrap=true onClick="setType('other')">Прочее</th><th 
+class=a2   ??atype=other
+class=i2   ??!atype=other
+><img src="#imgPath#filler.gif" width=6 height=1></th>
+[end]
+
+<th 
+class=a   ??atype=dog
+class=i   ??!atype=dog
+nowrap=true onClick="setType('dog')">Договоры</th><th 
+class=a2   ??atype=dog
+class=i2   ??!atype=dog
+><img src="#imgPath#filler.gif" width=6 height=1></th>
+
+
+
+[searchBox]
+<table border=0 cellpadding=0 cellspacing=0>
+<tr><td align=right>
+$INCLUDE doc/search.dat[tabs] param: atype=;
+</td></tr>
+
+<tr><td class=lrb nowrap=true valign=top bgcolor=white>
+<b><i>&nbsp;&nbsp;Отобрать документы:</i></b>
+
+<table border=0 bgcolor=whitesmoke width=100%>
+<tr><td width=250 align=center>
+<b><i>Год регистрации:</i></b> 
+$INCLUDE common.dat[years_select]
+<p>&nbsp;<p>&nbsp;??
+</td><td width=200 align=center>
+<input type=checkbox name=full_report onClick="document.theForm.submit();" ??
+checked ??full_report=on_ZZ
+>показать все колонки ??
+
+</td><td width=350 nowrap=true>
+&nbsp;&nbsp;<a id="showFilters" class=info href="javascript:showFilters();">
+Показать фильтры >>> 	??!filtered
+Скрыть фильтры <<< &nbsp;  ??filtered
+</a>&nbsp;&nbsp;&nbsp;<input type=submit class=but value="Выполнить">
+<a href="javascript:getXL();"><img 
+src="#imgPath#XL.png" border=0 width=29 height=31 alt="Загрузить в Excel" 
+style="margin:0 0 0 30px; border:solid 1px ##40aa60;"></a>
+
+<a href="javascript:getXL2();"><img 
+src="#imgPath#XL.png" border=0 width=14 height=16 alt="Загрузить в Excel" 
+style="margin:0 0 0 10px; border:solid 1px ##40aa60;"></a>
+
+</td></tr>
+</table>
+
+<div id=searchBox 
+style="display:none" ??!filtered
+><table border=0 bgcolor=whitesmoke width=100%>
+
+<tr><td valign=top>
+$INCLUDE doc/search.dat[payment]
+
+<table border=0 style="margin-top:10px;"><tr><td align=right colspan=2>
+<tr><td class=l>Рег. №№ документов:</td><td width=280><input size=35 class=xp name="f_regnr" value='#f_regnr#'></td></tr>
+
+<tr><td class=l>Дата регистрации: </td><td nowrap=true>
+$INCLUDE common.dat[dat] param: fd_name=f_regdat1; fd_val=#f_regdat1#;
+ [по:
+$INCLUDE common.dat[dat] param: fd_name=f_regdat2; fd_val=#f_regdat2#;
+  ]</td></tr>
+
+<tr><td class=l nowrap=true>
+Внешний № документа:</td><td><input class=xp size=16 name="f_docNr" value='#f_docNr#'>
+</td></tr>
+
+<tr><td class=l>Дата документа: </td><td>
+$INCLUDE common.dat[dat] param: fd_name=f_docdat1; fd_val=#f_docdat1#;
+ [по: 
+$INCLUDE common.dat[dat] param: fd_name=f_docdat2; fd_val=#f_docdat2#;
+ ]</td></tr>
+
+<input type=hidden name="f_doc_types" value="#f_doc_types#"> ??
+<input type=hidden name="f_doc_statuss" value="#f_doc_statuss#">
+</table>
+
+</td><td valign=top>
+
+================== ПРАВЫЕ ФИЛЬТРЫ ============= ??
+<table border=0><tr><td class=l nowrap=true>  
+Тип документа:</td><td><select name=f_doc_type><option value='0'>ВСЕ</option> #DOC_TYPES#
+<option value='3,7'>счета + наличные платежи</option> 
+<option value='1,3,4,6,7,99'>кроме МНТС</option> 
+</select></td></tr>
+
+<tr><td class=l>Лаборатория:</td><td><select class=s1 name=f_lab><option> #LABS#
+<option value='null'>не опр.
+</select>&nbsp;Тема: <input size=5 class=xp name="f_sbj" value='#f_sbj#'>
+</td></tr>
+
+<tr><td class=l>Сумма:</td><td>
+$INCLUDE filters.dat[f_summa]
+</td></tr>
+
+<tr><td class=l>
+Контрагент:</td><td><input class=xp size=30 name="f_receiver" value='#f_receiver#' onChange="selectOptionByVal(document.theForm.f_contr,'');">&nbsp;&nbsp;
+<br><select name=f_contr onChange="document.theForm.f_receiver.value=''">
+		<option value=''> <option value='N'>кроме хозрасчетных <option value='XP'>только хозрасчетные #XP_LIST#</select>
+</td></tr>
+
+<tr><td class=l>ИНН:</td><td><input class=xp size=20 name="f_receiver_inn" value='#f_receiver_inn#'></td></tr> ??f_receiver_inn
+<tr><td class=l>Код:</td><td><input class=xp size=10 name="f_receiver_c" value='#f_receiver_c#'></td></tr>  ??f_receiver_c
+<tr><td class=l>Искать текст:</td><td><input class=xp size=30 name="f_search" value='#f_search#'>&nbsp;&nbsp;</td></tr>
+
+<tr><td colspan=2 class=l>
+<input class=button type=button value="Сбросить фильтры" onClick="resetForm();">
+</td><td class=l><br> ??
+&nbsp; &nbsp; &nbsp; 
+<input type=submit class=button value="Выполнить">&nbsp;&nbsp;
+
+</td></tr></table>
+$INCLUDE doc/search.dat[adv filters]
+
+</td></tr></table></div>
+</td></tr></table>
+
+$INCLUDE doc/search.dat[script]
+[end]
+
+
+<input type="radio" name="payed" value="y" 
+onClick="doIt();" ??
+checked ??payed=y
+>Оплаченные</td>
+
+<td bgcolor=#doc_buh# nowrap=true>
+<input type="radio" name="payed" value="b" 
+checked ??payed=b
+>Выписана заявка</td>
+
+<td bgcolor=#doc_new# nowrap=true>
+<input type="radio" name="payed" value="n" 
+checked ??payed=n
+>Ожидают</td><td bgcolor=#doc_new# nowrap=true>
+<input type="radio" name="payed" value="" 
+checked ??!payed
+>Все
+
+[payment]
+$SET_PARAMETERS payed_y=on; payed_b=on; payed_n=on; ??!payed_y&!payed_b&!payed_n
+<table border=0><tr>
+<td>Отобрать:</td>
+<td bgcolor=#doc_payed# nowrap=true>
+<input type="checkbox" name="payed_y"
+onClick="doIt();" ??
+checked ??payed_y
+>Оплаченные</td>
+
+<td bgcolor=#doc_buh# nowrap=true>
+<input type="checkbox" name="payed_b"
+checked ??payed_b
+>Выписана заявка</td>
+
+<td bgcolor=#doc_new# nowrap=true>
+<input type="checkbox" name="payed_n"
+checked ??payed_n
+>Ожидают</td><td></td></tr>
+
+$SET_PARAMETERS showFact=; ??!payed_y
+$SET_PARAMETERS showFact=on; ??payed_y
+<tr><td>Показать:</td><td colspan=3 nowrap>
+<input type=checkbox name=showFact ??
+checked ??showFact=on_ZZZ
+>Факт&nbsp;1C ??
+<input type=checkbox name=show_usd
+checked ??show_usd=on
+>Суммы&nbsp;в&nbsp;USD&nbsp;<input type=checkbox name=show_eur
+checked ??show_eur=on
+>Суммы&nbsp;в&nbsp;EUR&nbsp;<input type=checkbox name=show_curr
+checked ??show_curr=on
+>Сумма&nbsp;в&nbsp;валюте</td></tr></table>
+[end]
+
+
+$INCLUDE doc/search.dat[CurrCols]
+[end]
+
+[CurrCols]
+
+
+[adv filters]
+<tr><td colspan=2><br><FIELDSET><LEGEND>
+<a id="a_adv_fil" href="javascript:showAdvFilters();">
+Доп. фильтры >>> ??!advfiltered
+Скрыть доп. фильтры &lt;&lt;&lt; ??advfiltered
+</a></LEGEND>
+
+<div id="adv_filters" 
+style="display:none" ??!advfiltered
+style="display:block" ??advfiltered
+><table border=0><tr><td>
+
+<table border=0>
+<tr><td class=l>Бюджетный код:</td><td><input class=xp size=5 name="f_bc" value='#f_bc#'></td></tr>
+<tr><td class=l>Раздел бюджета:</td><td> <select name=f_razd><option><option value="B">Все бюджетные#RAZDS#</select></td></tr>
+<tr><td class=l>Направление:</td><td> <select name=f_dir><option> #DIRS#</select></td></tr>
+<tr><td class=l>Консолидир. статья:</td><td><select name=cons><option value=""></option><option value="null">пусто</option>#CONSS#</select></td></tr>
+<tr><td class=l>Статья бюджета:</td><td><select name=aggr>
+<option value=""></option><option value="null">пусто</option>
+<option value="05,06,10">5,6,10 - материалы и оборуд.</option>
+<option value="07,08,14,17">7,8,14,17 - содержание</option>
+#AGGRS#</select><input type=checkbox name=aggr_excl
+checked  ??aggr_excl=on
+>искл.</td></tr>
+</table>
+
+</td><td valign=top>
+<table border=0><tr><td>
+<input type=radio name=f_prik value=""
+checked ??!f_prik
+>Все&nbsp;
+<input type=radio name=f_prik value="n"
+checked ??f_prik=n
+>Кроме приказов
+<input type=radio name=f_prik value="y"
+checked ??f_prik=y
+>Только приказы
+</td></tr>
+<tr><td>
+$INCLUDE doc/search.dat[curr]
+$INCLUDE doc/search.dat[svod] ??USER_GROUP={{(.*adm.*)|(.*reg.*)|(.*sys.*)}}
+$INCLUDE doc/search.dat[contr] ??USER_GROUP={{(.*adm.*)|(.*sys.*)}}
+
+<div style="width:400px; background-color:white;">
+<input type="checkbox" name="is_problem" onClick="docChanged();"
+ checked  ??is_problem=on
+>Только требующие уточнения</div></td></tr>
+
+<tr><td>
+Статус: <select name=f_doc_status><option></option>#DOC_STATUSES# </select>
+Оператор: <select name=f_modif><option></option>#MODIFIERS#</select></td></tr>
+</table>
+
+</td></tr></table>
+</div>
+</FIELDSET>
+</td></tr>
+
+[end]
+
+[curr]
+<div style="width:400px; background-color:white;">
+<input type="radio" name="curr" value="" onClick="doIt();"
+checked ??!curr
+>Все&nbsp;
+
+<input type="radio" name="curr" value="810" onClick="doIt();"
+checked ??curr=810
+>Рубли&nbsp;
+
+<input type="radio" name="curr" value="y" onClick="doIt();"
+checked ??curr=y
+>Валюта
+
+<input type="radio" name="curr" value="840" onClick="doIt();"
+checked ??curr=840
+>USD&nbsp;
+
+<input type="radio" name="curr" value="978" onClick="doIt();"
+checked ??curr=978
+>EUR&nbsp;
+
+<input type="radio" name="curr" value="756" onClick="doIt();"
+checked ??curr=756
+>CHF&nbsp;
+
+</div>
+[end]
+
+
+[svod]
+<div style="width:400px;">
+<input type="radio" name="svod" value="" onClick="doIt();"
+checked ??!svod
+>Все&nbsp; 
+
+<input type="radio" name="svod" value="d" onClick="doIt();"
+checked ??svod=d
+>Кроме сводных&nbsp;
+
+<input type="radio" name="svod" value="y" onClick="doIt();"
+checked ??svod=y
+>Сводные
+</div>
+[end]
+
+
+[contr]
+<div style="width:400px;">
+<input type="radio" name="contr" value="" onClick="doIt();"
+checked ??!contr
+>Все&nbsp;
+
+<input type="radio" name="contr" value="y" onClick="doIt();"
+checked ??contr=y
+>С кодом контрагента
+
+<input type="radio" name="contr" value="n" onClick="doIt();"
+checked ??contr=n
+>Без кода</div>
+[end]
+
+
+
+[script]
+<script>
+var frm=document.theForm;
+
+
+function setDsumm()
+{ if (frm.f_summa_op.options.selectedIndex == 0)
+    document.getElementById("s_dsumm").style.display="inline";
+  else 
+    document.getElementById("s_dsumm").style.display="none";
+}
+
+setDsumm();
+
+
+function resetForm()
+{ for (i=0; i<frm.elements.length; i++)
+  { try
+    { if (frm.elements[i].type.indexOf("text") >=0 )
+        frm.elements[i].value="";
+    } catch (e){}
+
+	try
+    { if (frm.elements[i].type.indexOf("select") >=0 
+      && frm.elements[i].name != "f_year")
+        frm.elements[i].selectedIndex=0;
+    } catch (e){}
+  }
+  frm.f_doc_types.value=""; ??
+  frm.f_doc_statuss.value="";
+	try { frm.svod[3].checked=true;
+  } catch (e){}
+	try { frm.curr[0].checked=true;
+  } catch (e){}
+	try { frm.f_prik[0].checked=true;
+  } catch (e){}
+}
+
+function showFilters()
+{ d = document.getElementById("searchBox");
+  s = document.getElementById("showFilters");
+  if (d.style.display == "none")
+  { s.innerHTML="Скрыть фильтры <<< &nbsp; ";
+  	d.style.display = "block";
+  }
+  else
+  { s.innerHTML="Показать фильтры >>> ";
+    d.style.display = "none";
+  }
+}
+
+function showAdvFilters()
+{ var d = document.getElementById("adv_filters");
+  var d2 = document.getElementById("adv_filters2");
+  var a = document.getElementById("a_adv_fil");
+  if (d.style.display == "block")
+  {	d.style.display = "none";
+  	a.innerHTML = "Доп. фильтры &gt;&gt;&gt;";
+  	try { d2.style.display = "none";} catch (e) {}
+  }
+  else
+  { d.style.display = "block";
+  	a.innerHTML = "Скрыть доп. фильтры &lt;&lt;&lt;";
+  	try { d2.style.display = "block";} catch (e) {}
+  }
+}
+selectOptionByVal(frm.f_lab,'#f_lab#')  ??f_lab
+selectOptionByVal(frm.f_lab,'#A_LABS#')  ??xxxA_LABS&!f_lab
+
+selectOptionByVal(frm.f_doc_status,'#f_doc_status#')  ??f_doc_status
+selectOptionByVal(frm.f_doc_type,'#f_doc_type#')  ??f_doc_type
+selectOptionByVal(frm.f_dir,'#f_dir#')  ??f_dir
+selectOptionByVal(frm.aggr,'#aggr#')    ??aggr
+selectOptionByVal(frm.cons,'#cons#')    ??cons
+selectOptionByVal(frm.f_approval,'#f_approval#')  ??f_approval
+selectOptionByVal(frm.f_year,'#f_year#')  ??f_year
+selectOptionByVal(frm.f_summa_op,'#f_summa_op#')  ??f_summa_op
+selectOptionByVal(frm.f_curr_code,'#f_curr_code#')  ??f_curr_code
+selectOptionByVal(frm.f_razd,'#f_razd#')  ??f_razd
+selectOptionByVal(frm.f_modif,'#f_modif#')  ??f_modif
+selectOptionByVal(frm.f_contr,'#f_contr#')  ??f_contr
+</script>
+[end]

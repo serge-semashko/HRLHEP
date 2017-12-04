@@ -1,0 +1,237 @@
+docs/view_doc_wf.cfg
+
+[comments]
+descr=U: Просмотр документа
+
+input=doc_id - ID документа (из таблицы d_list)
+output=HTML форма просмотра документа, 
+parents=docs/docs_in_progress_table.cfg
+childs=docs/doc_user_action.cfg, docs/doc_final_action.cfg
+test_URL=?c=docs/view_doc_wf&doc_id=1
+author=Куняев
+[end]
+
+[parameters]
+request_name=U:Просмотр документа
+service=jinr.sed.ServiceViewDoc
+tableCfg=table_no
+LOG=ON
+SYS_FIELDS=DOC_ID, IS_ACTIVE, DATE_FORMAT(modified,'#dateTimeFormat#') as DOC_MODIFIED, VERSION
+SYS_FIELDS_TYPES=int,int,varchar,int
+divider=<tr><td colspan=2 class="divider"></td></tr> 
+but120=input type="button" class="butt1 pt" style="width:120;"
+[end]
+
+
+[report header]
+<script type="text/javascript" language="javascript">
+var updateField=function(field_id) {
+    AjaxCall("field_" + field_id, "c=docs/edit_doc_field&doc_id=#doc_id#&field_id=" + field_id);
+}
+
+var editField=function(field_id) {
+alert("##field_" + field_id + " / c=docs/edit_doc_field&doc_id=#doc_id#&field_id=" + field_id); ??
+AjaxCall("field_" + field_id, "c=docs/edit_doc_field&doc_id=#doc_id#&field_id=" + field_id);
+}
+
+</script>
+[end]
+
+var val = eval("document.theForm." + field_db_name + ".value"); ??
+
+============== Вывод одного поля  ======= ??
+[item]
+    $SET_PARAMETERS FIELD_RW=;
+    $GET_DATA docs/view_doc_wf[check editable]  ??rw_4_roles&CURR_STEP_ROLES
+    <tr id="item_#FIELD_ID#" class="doc_item"><td 
+    class="label 
+        bottom_dotted    ??!FIELD_CATEGORY=3
+        field_inactive  ??IS_ACTIVE=0_ZZ
+    "
+    width="25%" nowrap>
+<div style="float:left; background-color: ##ffe0e0; border:solid 1px red; padding:2px;">помечено на удаление</div> ??IS_ACTIVE=0
+<div style="float:left; background-color: ##ffffc0; border:solid 1px ##c0c000; padding:2px;">новое</div> ??IS_ACTIVE=2
+ #IS_ACTIVE# ??
+#NAME#:
+<div class="clr"></div>  ??!IS_ACTIVE=1
+</td> 
+    <td width="75%" 
+    class="
+    big bg_white  ??!FIELD_CATEGORY=3|!FORM_FIELD_TYPE=9&!FORM_FIELD_TYPE=1004&!FORM_FIELD_TYPE=1006&!FORM_FIELD_TYPE=1016
+    bottom_dotted 
+      ??!FIELD_CATEGORY=3
+    ">
+    <div class="mw1000">
+    #FIELD_SRC_FILE#[#FIELD_SECTION#] / #FIELD_SECTION_RW#; rw_4_roles=#rw_4_roles#; ??
+
+    <div id="field_#FIELD_ID#" style="border:solid 1px red;"> ??FIELD_RW
+    $INCLUDE #FIELD_SRC_FILE#[#FIELD_SECTION#] 
+    <input type="button" class="butt1 pt" style="width:100px; margin-left:10px;" onClick="editField('#FIELD_ID#'); " value='Изменить'></div> ??FIELD_RW
+
+    </div></td>
+    <td class="item_num" style="display:none; width:20px;">#NR#</td> 
+</tr>
+[end]
+
+$INCLUDE #FIELD_SRC_FILE#[#FIELD_SECTION_RW#] ??FIELD_RW
+
+[check editable]
+select case when #CURR_STEP_ROLES# IN (#rw_4_roles#)
+then 'Y' else '' end as "FIELD_RW"
+[end]
+
+[report footer]
+    $INCLUDE [report footer_] ??AR_R=Y
+[end]
+
+
+[report footer_]
+    +++++++ Блок загрузки файлов-приложений и скрипты работы с файлами ++++++++ ??
+    $INCLUDE files/field_file.dat[attached files]
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ ??
+
+    $INCLUDE docs/view_doc.cfg[print forms] ??!mode=print
+
+    #divider#
+    <tr><td class="label">Документ создан:</td>
+    <td class="bg_white nowrap" nowrap><b>#CREATOR#</b>, #CREATED#, 
+    <i class="fa fa-phone" aria-hidden="true" style="margin:0 3px 0 10px;"></i>#CRE_PHONE#  ??CRE_PHONE
+    &nbsp;  <a href="mailto:#CRE_MAIL#?subject=Ваш документ #DOC_TYPE# в СЭД"><i class="fa fa-envelope-o" aria-hidden="true"></i> #CRE_MAIL#</a> ??CRE_MAIL
+    </td></tr>
+
+    <tr><td class="label">Комментарий:</td><td class="big bg_white pre-wrap"><div class="mw800">#INITIATOR_COMMENT#</div></td></tr> ??INITIATOR_COMMENT
+    #divider#
+
+    $CALL_SERVICE c=docs/show_users_comments 
+
+    #divider#     ??DOC_STATUS>#~doc_status_in_progress#
+    $INCLUDE docs/custom_settings.cfg[post processing]
+
+    $INCLUDE [buttons bar] ??!mode=print
+    </table></center>
+
+    <div id="doc_send_div" style="float:right; display:none; margin:0 50px 0 100px; border-bottom:solid 1px gray;"></div>
+    <div id="doc_history_div" style="float:right; display:none; margin:0 50px 0 100px; border-bottom:solid 1px gray;"></div>
+    <div style="clear:both;"></div>
+
+    <center>
+    <div id="graph_doc_wf" class="mw1000" style="text-align:left; margin:10px 5px 15px 50px;">...</div>
+    </center>
+
+    <script type="text/javascript">
+        AjaxCall("graph_doc_wf", "c=wf/graph_show_wf_for_doc&doc_id=#doc_id#&mode=#mode#");  ??WF_ID|WF_ID_INACT
+    </script>
+[end]
+
+
+[buttons bar]
+    #divider#<tr><td class="center bg_white nowrap" colspan=2 style="padding:15px 0 0px 0; border-bottom:solid 1px gray;">
+
+    $INCLUDE [buttons row] ??!mode=ext
+
+    $GET_DATA docs/view_doc.cfg[check sent FYI] 
+    <br>&nbsp; ??!NUM_SENT_FYI>0
+    <div class="pt" onClick="$('##doc_history_div').toggle(); AjaxCall('doc_history_div', 'c=wf/show_doc_history&doc_id=#doc_id#');"  style="border-bottom:solid 1px gray; float:right; margin-top:10pt; padding:2px;"> история документа >></div> 
+      ??AR_A=Y
+    <div class="pt" onClick="$('##doc_send_div').toggle(); AjaxCall('doc_send_div', 'c=docs/show_sent_history&doc_id=#doc_id#');"  style="border-bottom:solid 1px gray; float:right; margin-top:10pt; padding:2px;"> история рассылки для ознакомления >></div> ??NUM_SENT_FYI>0
+    <div style="clear:both;"></div>
+    </td></tr>
+[end]
+
+
+[buttons row]
+    <input type="button" class="butt1 pt" style="width:150px; margin-right:150px;" onClick="showDoc(false); " value='Закрыть документ'> 
+
+    $INCLUDE [admin buttons]  ??WF_ID&AR_A=Y&DOC_STATUS=#~doc_status_in_progress#|DOC_STATUS=#~doc_status_signed#
+
+    $INCLUDE docs/custom_settings.cfg[custom buttons]  
+
+    $INCLUDE [sign buttons]   ??AR_S=Y
+    <#but120# value="Изменить" onClick="AjaxCall('doc_content', 'c=docs/edit_doc&doc_id=#doc_id#', true, '', true);"> ??AR_W=Y|USER_ID=2309
+    <input type="button" #dis# class="butt1 pt" style="width:220;" value="Отправить на согласование" onClick="AjaxCall('popupCont', 'c=docs/doc_user_action&doc_id=#doc_id#&cop=#~doc_action_startWF#');">  ??!DOC_TYPE_ID=13&AR_E=Y|AR_W=Y&CURR_STEP=0
+    <#but120# value="Отозвать" onClick="AjaxCall('popupCont', 'c=docs/doc_user_action&doc_id=#doc_id#&cop=#~doc_action_terminate#');"> ??AR_T=Y
+
+    $INCLUDE [processed button]  ??AR_X=Y
+    $INCLUDE [unprocessed button]  ??DOC_STATUS=#~doc_status_finished#
+
+    <#but120# value="Ознакомить" onClick="AjaxCall('popupCont', 'c=docs/sendFYI&doc_id=#doc_id#');"> 
+
+    <#but120# value="Удалить" onClick="if(confirm('Удалить этот документ?')) AjaxCall('c_myDocs', 'c=docs/delete_doc&doc_id=#doc_id#', true);">    ??AR_W=Y&!is_deleted=1
+[end]
+
+
+
+[sign buttons]
+<input type="button" class="butt1 pt" style="width:180;" value="Отправить на согласование" onClick="AjaxCall('popupCont', 'c=docs/doc_user_action&doc_id=#doc_id#&cop=#~doc_action_sign#');"> ??CURR_STEP_TYPE=#~wf_step_preparation#
+<#but120# value="СОГЛАСОВАТЬ" onClick="AjaxCall('popupCont', 'c=docs/doc_user_action&doc_id=#doc_id#&cop=#~doc_action_sign#');"> ??CURR_STEP_TYPE=#~wf_step_in_progress#
+<#but120# value="УТВЕРДИТЬ" onClick="AjaxCall('popupCont', 'c=docs/doc_final_action&doc_id=#doc_id#&cop=#~doc_action_sign#');"> ??CURR_STEP_TYPE>#~wf_step_in_progress#
+
+$INCLUDE docs/view_doc_wf[redirect button] ??!CURR_STEP_TYPE=-1
+
+$INCLUDE docs/view_doc_wf[reject button] ??!USER_ID=#CREATOR_ID#&!STEP_SMTS=Y
+  ??CURR_STEP_TYPE=#~wf_step_in_progress#
+[end]
+
+
+[redirect button]
+<#but120# value="ПЕРЕСЛАТЬ" onClick="AjaxCall('popupCont', 
+'c=docs/doc_final_forward&doc_id=#doc_id#&cop=forward'); ??CURR_STEP_TYPE=#~wf_step_signed#
+'c=docs/doc_user_action&doc_id=#doc_id#&cop=forward');   ??CURR_STEP_TYPE=#~wf_step_process#
+'c=docs/doc_user_action&doc_id=#doc_id#&cop=forward');   ??CURR_STEP_TYPE=#~wf_step_in_progress#|CURR_STEP_TYPE=#~wf_step_preparation#
+">
+[end]
+
+
+[processed button]
+<#but120# value="ЗАВЕРШЕНО" onClick="AjaxCall('popupCont', 'c=docs/doc_action_done&doc_id=#doc_id#');"
+id="PROCESSED_BUTTON" 
+style="display:none;"   ??DOC_TYPE_ID=8|DOC_TYPE_ID=11
+> &nbsp; 
+
+$INCLUDE [redirect button] ??AR_X=Y
+[end]
+
+[unprocessed button]
+$GET_DATA [was executor]  ??WF_ID_INACT
+<#but120# value="НЕ ЗАВЕРШЕНО" onClick="AjaxCall('popupCont', 'c=docs/doc_action_undone&doc_id=#doc_id#');"> &nbsp; ??WAS_EXECUTOR
+[end]
+
+[was executor]
+select 'Y' as WAS_EXECUTOR
+from wf where wf_id=#WF_ID_INACT# and (step_type=#~wf_step_process# or step=0) and user_id=#USER_ID#
+[end]
+
+
+[reject button]
+<input type="button" class="butt1 pt" style="width:160;" 
+value="Вернуть инициатору" onClick="AjaxCall('popupCont', 'c=docs/doc_user_action&doc_id=#doc_id#&cop=#~doc_action_reject#');"> ??!IS_SMTS
+value="Вернуть в СМТС" onClick="AjaxCall('popupCont', 'c=docs/doc_user_action&doc_id=#doc_id#&cop=#~doc_action_reject_2SMTS#');"> ??IS_SMTS
+[end]
+
+
+[admin buttons]
+<input type="button" class="butt1 pt adm_button" style="width:120;" value="Переслать" ??!AR_S=Y
+onClick="AjaxCall('popupCont', 'c=docs/doc_user_action&doc_id=#doc_id#&cop=forward');">  ??!AR_S=Y
+
+<input type="button" class="butt1 pt adm_button" style="width:120;" value="Отозвать"  ??!AR_T=Y
+onClick="AjaxCall('popupCont', 'c=docs/doc_user_action&doc_id=#doc_id#&cop=#~doc_action_terminate#');">  ??!AR_T=Y
+[end]
+
+
+==============================================================================
+***************************** Шаблоны SQL запросов ***************************
+==============================================================================
+
+[SQL]
+$INCLUDE docs/view_doc.mod[SQL_] ??AR_R=Y
+[end]
+
+
+[set doc number]
+select ifnull(max(CONVERT(ifnull(number,0),UNSIGNED INTEGER))+1,1) as number, DATE_FORMAT(now(), '#dateFormat#') as DOC_DATE
+ ,'Y' as REFRESH_PRINT_FORM
+from d_list where type_id=#DOC_TYPE_ID# and id<>#doc_id# and extract(year from now())=extract(year from doc_date)
+;
+update d_list set number=#number#, doc_date=now() where id=#doc_id#;
+[end]
+

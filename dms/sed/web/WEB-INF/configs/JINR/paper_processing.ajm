@@ -1,0 +1,137 @@
+JINR/paper_processing.cfg
+
+
+[comments]
+descr=U: 
+
+input=
+output=
+parents=
+childs=
+testURL=?c=
+author=Куняев
+[end]
+
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=U:
+tableCfg=table_no
+LOG=ON
+[end]
+
+[report header]
+$CALL_SERVICE c=sys/getARUD  ??!AR_X=Y
+$INCLUDE [process]  ??cop&AR_X=Y
+$SET_PARAMETERS MOD=;
+$SET_PARAMETERS MOD=11;  ??DOC_TYPE_ID=11
+$GET_DATA [get curr stage]
+<table class="tlist" border=0 cellspacing=0>
+<tr><td class="big" style="border:dotted 1px gray;">Этап:</td><td class="big" colspan=2 style="border:dotted 1px gray;">Отметка о прохождении:</td></tr>
+[end]
+
+
+[item]
+$GET_DATA [get stage]
+
+$SET_PARAMETERS dis=; inact=;
+$SET_PARAMETERS dis=dis; ??CURR_DOC_STAGE<1&stage>1
+$SET_PARAMETERS dis=dis; ??CURR_DOC_STAGE<3&stage>3
+$SET_PARAMETERS dis=dis; ??CURR_DOC_STAGE<5&stage>5
+$SET_PARAMETERS dis=dis; ??CURR_DOC_STAGE>#stage#
+$SET_PARAMETERS dis=dis; ??CURR_DOC_STAGE=2|CURR_DOC_STAGE=4
+$SET_PARAMETERS dis=dis; ??STAGE_DATE
+$SET_PARAMETERS inact=inact; ??!STAGE_DATE&CURR_DOC_STAGE>#stage#
+$SET_PARAMETERS inact=inact; ??CURR_DOC_STAGE<#stage#&CURR_DOC_STAGE=2|CURR_DOC_STAGE=4
+
+$SET_PARAMETERS dis=green; ??STAGE_DATE
+$SET_PARAMETERS dis=red; ??STAGE_DATE&stage=2|stage=4
+$SET_PARAMETERS dis=Y; ??!dis&!CURR_STEP_TYPE=2
+
+<tr class="#dis#"><td class="big tb #inact#
+pt  ??!dis
+"
+onClick='AjaxCall("paper_processing", "c=JINR/paper_processing&doc_id=#doc_id#&stage=#stage#&cop=set&CURR_STEP_TYPE=#CURR_STEP_TYPE#");' ??!STAGE_DATE&!dis
+>
+#stage# ??
+<b> ??CURR_DOC_STAGE=#stage#
+#STAGE_DESCR#
+</b> ??CURR_DOC_STAGE=#stage#
+</td>
+<td class="tb">
+#STAGE_DATE#, #STAGE_USER#  ??STAGE_DATE
+</td>
+<td  class="tb"></td>
+<td class="pt" style="border:outset 2px grey;" onClick='AjaxCall("paper_processing", "c=JINR/paper_processing&doc_id=#doc_id#&stage=#stage#&cop=clear&CURR_STEP_TYPE=#CURR_STEP_TYPE#");'>x</td>  ??AR_X=Y&STAGE_DATE&CURR_DOC_STAGE=#stage#
+</tr>
+$SET_PARAMETERS stage_user_id=; STAGE_DATE=; STAGE_USER=;
+[end]
+
+
+[report footer]
+<tr><td  class="tb" colspan=3>
+<span class="pt" onClick='AjaxCall("paper_processing", "c=JINR/paper_processing&doc_id=#doc_id#&cop=clear&CURR_STEP_TYPE=#CURR_STEP_TYPE#");'>очистить</span> ??AR_X=Y&CURR_DOC_STAGE>0
+</td></tr>
+</table>
+#stage# / #CURR_DOC_STAGE#/#CURR_STEP_TYPE#;   ??USER_ID=2309
+
+<script type="text/javascript">
+$("##PROCESSED_BUTTON").show();  ??CURR_DOC_STAGE>5
+$("##PROCESSED_BUTTON").hide();  ??CURR_DOC_STAGE<6|!CURR_DOC_STAGE
+alert("2:CURR_DOC_STAGE=#CURR_DOC_STAGE#"); ??
+</script>
+[end]
+
+
+[process]
+$GET_DATA [mark processed] ??cop=set
+$GET_DATA [unmark processed] ??cop=clear
+[end]
+
+
+[mark processed]
+update d_data_#DOC_TYPE_ID# set stage=#stage# where doc_id=#doc_id#
+;
+delete from doc_paper_processing where doc_id=#doc_id# and stage=#stage#
+;
+insert into doc_paper_processing (doc_id, stage, user_id, processed, comments)
+values (#doc_id#, #stage#, #USER_ID#, now(), '')
+;
+update d_list set status=2, modified=now(), modifier_id=#USER_ID# where id=#doc_id#
+[end]
+
+update d_list set modified=now(), modifier_id=2309 where id=3075
+
+
+[unmark processed]
+delete from doc_paper_processing where doc_id=#doc_id# 
+and stage=#stage# ??stage
+;
+select ifnull(max(stage),0) as max_stage from doc_paper_processing where doc_id=#doc_id# 
+;
+update d_data_#DOC_TYPE_ID# set stage=#max_stage# where doc_id=#doc_id#
+;
+[end]
+
+[get stage]
+select p.user_id as "stage_user_id"
+,  DATE_FORMAT(p.processed, '#shortDateTimeFormat#') as STAGE_DATE
+, iof(u.F, u.I, u.O) as STAGE_USER
+from doc_paper_processing p 
+left join #table_users_full# u on u.id=p.user_id 
+where p.doc_id=#doc_id# and p.stage=#stage#
+[end]
+
+
+
+[SQL]
+select value as "stage", comment as "STAGE_DESCR"
+from sys_const
+where alias like '~stage#MOD#\_%' 
+order by alias
+[end]
+
+
+[get curr stage]
+select stage as "CURR_DOC_STAGE" from d_data_#DOC_TYPE_ID# where doc_id=#doc_id#
+[end]

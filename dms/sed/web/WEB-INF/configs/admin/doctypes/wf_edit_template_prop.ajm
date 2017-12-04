@@ -1,0 +1,183 @@
+admin/doctypes/wf_edit_template_prop.ajm
+
+[comments]
+descr=A: Редактирование свойств шаблона workflow для типа документов. 
+
+input=wf_template_id - ID шаблона workflow (из таблицы wf_templates_list) (для режима "update");
+type_id - ID типа документа (из таблицы d_types) (для режима "add");
+
+mode - режим работы: "add" - создание нового шаблона workflow,
+"update" - редактирование свойств шаблона workflow с ID = wf_template_id;
+
+cop - код операции: "create" - создание нового шаблона workflow, 
+"update" - обновление свойств шаблона workflow с ID = wf_template_id;
+
+output=HTML форма редактирования свойств шаблона workflow, 
+parents=admin/wf/show_wf_template.cfg, admin/wf/admin/wf/wf_template_editor.cfg
+childs=
+test_URL=?c=admin/wf/edit_wf_template&mode=update&wf_template_id=1
+author=Яковлев, Куняев
+[end]
+
+
+[description]
+Редактор свойств шаблона workflow для типа документов.<br>
+<br>
+Режимы работы (mode): <br>
+<ul><li>"add" - вызывается в этом режиме для создания нового шаблона workflow<br>
+В качестве входного параметра в это режиме требует - type_id - ID типа документа (из таблицы d_types)<br>
+для которого будет создан новый шаблон.</li>
+<li>"update" - вызывается в этом режиме для редактирования свойств существующего шаблона workflow<br>
+В качестве входного параметра в это режиме требует - wf_template_id - ID шаблона workflow <br>
+(из таблицы wf_templates_list)</li>
+</ul>
+[end]
+
+
+[parameters]
+request_name=A: Редактирование свойств шаблона workflow для типа документов
+LOG=ON
+[end]
+
+[report]
+$INCLUDE [report_]    ??AR_SYS_ADMIN=1
+[end]
+
+
+[report_]
+    $INCLUDE [process]  ??cop
+    $INCLUDE [form]  ??!cop|ERROR
+[end]
+
+
+[form]
+<center>
+<form name="popupForm">
+
+    $GET_DATA [getWfTemplate]  ??mode=update
+    $SET_PARAMETERS wf_name=Новый шаблон; ??!mode=update
+
+    <input type=hidden name="wf_template_id" value="#ID#">
+    <input type=hidden name="type_id" value="#type_id#">
+    <input type=hidden name="c" value="#c#">
+    <input type=hidden name="cop" value="#mode#">
+
+    <table cellpadding=5>
+
+    <tr><td class=label>Название:</td><td> <input size=30 name="f_wf_name" value="#wf_name#"></td></tr>
+    <tr><td class=label>Коды подразделений:</td><td> <input size=30 name="f_div_ids" value="#div_ids#"></td></tr>
+    <tr><td class=label>Описание:</td><td> <input size=40 name="f_wf_description" value="#wf_description#"></td></tr>
+
+    <tr><td class=label>Активность:</td><td>
+    <input type=radio name=f_is_active value="1" 
+        checked  ??is_active=1|!is_active
+    >Рабочий
+    <input type=radio name=f_is_active value="0" 
+        checked  ??is_active=0
+    >Не рабочий
+    </td></tr>
+    $GET_DATA [get templates list]   ??mode=create
+    $INCLUDE [copy existing template] ??mode=create&TEMPLATES_LIST
+    </table>
+
+    <br>
+    <input type="button" class="butt1 pt" style="width:100;" value="Отмена" onClick="HideDialog();" >
+    <input type="button" class="butt1 pt" style="width:100;" value="Сохранить" onClick="AjaxCall('popupCont', 'c=#c#', true, 'popupCont');"> 
+    $INCLUDE [delete button]  ??!mode=add
+    <br><br>#ERROR#  ??ERROR
+</form>
+
+
+<script>
+    ShowDialog(true); 
+    showMsg("##dialog_title", "Создать новый шаблон workflow"); ??mode=add
+    showMsg("##dialog_title", "Редактирование свойств шаблона #ID#"); ??mode=update
+    centerDialog();  
+</script>
+
+[end]
+
+
+[delete button]
+    <input type="button" class="butt1 pt" style="width:100;" value="Удалить" 
+        onClick="if(confirm('Удалить безвозвратно этот шаблон маршрута?')) AjaxCall('popupCont', 'c=#c#&cop=delete', true, 'popupCont');">
+[end]
+
+[copy existing template]
+    <tr><td class=label>Скопировать шаблон:</td><td>
+        <select name="prototype_template_id"><option value="">не копировать</option>#TEMPLATES_LIST#</select>
+    </td></tr>
+[end]
+
+
+[process]
+$GET_DATA [#cop# template]
+
+<script>
+    AjaxCall("wf_template_#wf_template_id#", "c=admin/doctypes/wf_template&wf_template_id=#wf_template_id#&mode=RO");  HideDialog();  ??!ERROR&!cop=delete
+    $("##wf_template_#wf_template_id#").html("");  HideDialog();  ??!ERROR&cop=delete
+
+    alert(" Ошибка при создании нового шаблона workflow!"); ??ERROR&cop=create
+    alert(" Ошибка при изменении свойств шаблона workflow!"); ??ERROR&cop=update
+</script>
+[end]
+
+
+***************************** Шаблон SQL запроса ***************************
+[getWfTemplate] ******* Запрашивает свойства шаблона
+select ID
+    , doc_type_id
+    , wf_name
+    , div_ids
+    , wf_description
+    , is_active 
+from wf_templates_list
+where id = #wf_template_id#
+[end]
+
+[get templates list]
+    select concat('<option value="',cast(id as char),'">',cast(id as char),': ', wf_name, ', (', wf_description,') ', div_ids, '</option>') as TEMPLATES_LIST
+    from wf_templates_list
+    where doc_type_id=#type_id#
+    order by id
+[end]
+
+[create template] ******* Создает новый шаблон
+    insert wf_templates_list (doc_type_id, wf_name, div_ids, wf_description
+        , is_active, modified, modifier_id) 
+    values ('#type_id#', '#f_wf_name#', '#f_div_ids#', '#f_wf_description#'
+        , '#f_is_active#', now(), #USER_ID#)
+;
+    select last_insert_id() as "wf_template_id"
+;
+    insert into wf_templates (wf_template_id, step, user_id, role_id, role_target_type_id, step_type
+        , criteria, custom_criteria, set_number, post_doc, modifier_id)
+    $INCLUDE [prototype data]       ??prototype_template_id 
+    values (#wf_template_id#, 1, null, null, null, 1, 100, '', 0, 0, #USER_ID#) ??!prototype_template_id
+[end]
+
+[prototype data]
+    (select #wf_template_id#, step, user_id, role_id, role_target_type_id, step_type
+        , criteria, custom_criteria, set_number, post_doc, #USER_ID# from wf_templates where wf_template_id=#prototype_template_id# order by step, id)
+[end]
+
+
+[update template] ******* Обновляет свойства шаблона
+update wf_templates_list set
+    wf_name = '#f_wf_name#'
+  , div_ids = '#f_div_ids#'
+  , wf_description = '#f_wf_description#'
+  , is_active = '#f_is_active#'
+  , modified = now()
+  , modifier_id = #USER_ID#
+  where Id = #wf_template_id#
+[end]
+
+
+[delete template] ******* Удаляет шаблон
+delete from wf_templates_list 
+  where Id = #wf_template_id#
+;
+delete from wf_templates
+  where wf_template_id = #wf_template_id#
+[end]

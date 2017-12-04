@@ -1,0 +1,298 @@
+
+[searchBox]
+<table border=0 cellpadding=0 cellspacing=0>
+
+<tr><td align=right>
+$INCLUDE doc/search.dat[tabs] param: atype=xp;
+
+</td></tr>
+
+<tr><td  class=lrb nowrap=true valign=top bgcolor=white>
+<b><i>&nbsp;&nbsp;Отобрать документы:</i></b>
+
+<table border=0 bgcolor=whitesmoke width=100%>
+<tr><td align=center>
+<b><i>Год :</i></b> <select name=f_year><option>2006<option>2005<option>2004</select> ??
+
+<b><i>&nbsp;&nbsp;месяц: <select name=f_mm><option value="ALL">-- все --
+<option value="01">январь<option value="02">февраль<option value="03">март<option value="04">апрель<option value="05">май<option value="06">июнь
+<option value="07">июль<option value="08">август<option value="09">сентябрь<option value="10">октябрь<option value="11">ноябрь<option value="12">декабрь
+</select>
+<b><i>#f_year#г.</i></b> 
+</td>
+
+<td nowrap=true align=center>
+<b><i>Контрагент: <select name=f_contr onChange="document.theForm.f_regnr.value=''"><option value='ALL'>-- все --#XP_LIST#</select>
+</td>
+
+<td align=center nowrap=true>
+ <input type="checkbox" name="is_problem" onClick="docChanged();"
+ checked  ??is_problem=on
+>Только требующие уточнения
+</td></tr>
+
+<tr><td>&nbsp;</td>
+
+<td colspan=2 align=center valign=top nowrap=true>
+<FIELDSET style="width:100; text-align:left; display:inline; background-color:white; border:solid 1px black;"><LEGEND> 
+<b><i>&nbsp;&nbsp;Вид операции:</i></b>
+</LEGEND> 
+ <input type="checkbox" name="VIDOPER" value="m" onClick="docChanged();"
+ checked  ??VIDOPER={{.*m.*}}
+>Материалы<br>
+
+ <input type="checkbox" name="VIDOPER" value="u" onClick="docChanged();"
+ checked  ??VIDOPER={{.*u.*}}
+>Услуги<br>
+
+ <input type="checkbox" name="VIDOPER" value="e" onClick="docChanged();"
+ checked  ??VIDOPER={{.*e.*}}
+>Взаимозачеты&nbsp;&nbsp;
+<hr width=120>
+ <input type="checkbox" name="VIDOPER" value="r" onClick="docChanged();"
+ checked  ??VIDOPER={{.*r.*}}
+>Заявки<br>
+
+</FIELDSET>
+&nbsp;&nbsp;&nbsp;
+
+<FIELDSET style="width:170; display:inline;  text-align:left; background-color:white;"><LEGEND> 
+<b><i>&nbsp;&nbsp;Отобрать:</i></b>
+</LEGEND> 
+
+<input type="radio" name="svod" value="g"
+checked ??svod=g
+>Только счета-реестры<br>
+
+<input type="radio" name="svod" value=""
+checked ??!svod
+>Все (верхний уровень)<br>
+
+<input type="radio" name="svod" value="n"
+checked ??svod=n
+>Только&nbsp;сводные,&nbsp;не&nbsp;закрытые<br>
+
+<input type="radio" name="svod" value="v"
+checked ??svod=v
+>Только висячие<br>
+
+<input type="radio" name="svod" value="a"
+checked ??svod=a
+>Все
+<br>&nbsp;<br> ??
+</FIELDSET>
+&nbsp;&nbsp;&nbsp;
+
+<FIELDSET style="width:170; display:inline;  text-align:left; "><LEGEND> 
+<b><i>&nbsp;&nbsp;Отобрать:</i></b>
+</LEGEND> 
+
+<input type="radio" name="prov" value=""
+checked ??!prov
+>Все<br>
+
+<input type="radio" name="prov" value="y"
+checked ??prov=y
+>Проведенные<br>
+
+<input type="radio" name="prov" value="n"
+checked ??prov=n
+>Не&nbsp;проведенные
+
+</FIELDSET>
+
+
+</td></tr></table>
+
+<table border=0 bgcolor=whitesmoke width=100%>
+<tr><td valign=top>
+<table border=0>
+
+<tr><td class=l>
+Рег. № документа:</td><td width=280><input size=5 class=xp name="f_regnr" value='#f_regnr#'>
+</td></tr>
+
+<tr><td class=l nowrap=true>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Внешний № документа:</td><td><input class=xp size=16 name="f_docNr" value='#f_docNr#'>
+</td></tr>
+
+<tr><td class=l>
+Дата документа: </td><td>
+$INCLUDE common.dat[dat] param: fd_name=f_docdat1; fd_val=#f_docdat1#;
+ [по: 
+$INCLUDE common.dat[dat] param: fd_name=f_docdat2; fd_val=#f_docdat2#;
+ ]
+</td></tr>
+
+<input type=hidden name="f_doc_types" value="#f_doc_types#"> ??
+<input type=hidden name="f_doc_statuss" value="#f_doc_statuss#">
+
+$INCLUDE doc/search_xp.dat[adv filters]
+
+</table>
+
+</td><td valign=top>
+<table border=0>
+
+
+<tr><td class=l>
+Лаборатория:</td><td><select class=s1 name=f_lab><option> #LABS#
+</select>
+&nbsp;Тема: <input size=5 class=xp name="f_sbj" value='#f_sbj#'>
+</td></tr>
+
+<tr><td class=l>Сумма:</td><td>
+$INCLUDE filters.dat[f_summa]
+</td></tr>
+
+<tr><td class=l>
+Искать текст:</td><td><input class=xp size=30 name="f_search" value='#f_search#'>&nbsp;&nbsp;
+</td></tr>
+
+<tr><td colspan=2 class=l>
+<br>
+<input class=button type=button value="Сбросить фильтры" onClick="resetForm();">
+</td><td class=l><br> ??
+&nbsp; &nbsp; &nbsp; 
+<input type=submit class=button value="Выполнить">&nbsp;&nbsp;
+
+</td></tr></table>
+</td></tr></table>
+</td></tr></table>
+
+$INCLUDE doc/search_xp.dat[script]
+[end]
+
+
+[adv filters]
+<tr><td colspan=2><br>
+<FIELDSET><LEGEND>
+
+<a id="a_adv_fil" href="javascript:showAdvFilters();">
+Доп. фильтры >>> ??!advfiltered
+Скрыть доп. фильтры &lt;&lt;&lt; ??advfiltered
+</a>
+</LEGEND>
+
+<div id="adv_filters" 
+style="display:none" ??!advfiltered
+style="display:block" ??advfiltered
+>
+<table border=0><tr><td class=l>
+Бюджетный код:</td><td><input class=xp size=5 name="f_bc" value='#f_bc#'>
+</td></tr>
+
+<tr><td class=l>  
+Консолидир. статья:</td><td><select name=cons><option value=""></option><option value="null">пусто</option>#CONSS#</select>
+</td></tr><tr><td class=l>  
+Статья бюджета:</td><td><select name=aggr><option value=""> </option>
+<option value="null">пусто</option>
+<option value="05,06,10">5,6,10 - материалы и оборуд.</option>
+<option value="07,08,14,17">7,8,14,17 - содержание</option>
+#AGGRS#</select>
+<input type=checkbox name=aggr_excl
+checked  ??aggr_excl=on
+>искл.
+</td></tr>
+
+<tr><td class=l>  
+Статус:</td><td><select name=f_doc_status><option></option>#DOC_STATUSES#
+<option value='2,3'>неотлож.+подписанные</option>
+</select>
+
+</td></tr>
+
+<tr><td class=l>  
+Оператор:</td><td nowrap=true><select name=f_modif><option></option>#MODIFIERS#
+</select>
+
+</td></tr>
+
+</table>
+</div>
+</FIELDSET>
+</td></tr>
+[end]
+
+
+[script]
+<script>
+var frm=document.theForm;
+
+function setDsumm()
+{ if (frm.f_summa_op.options.selectedIndex == 0)
+    document.getElementById("s_dsumm").style.display="inline";
+  else 
+    document.getElementById("s_dsumm").style.display="none";
+}
+
+setDsumm();
+
+
+function resetForm()
+{ for (i=0; i<frm.elements.length; i++)
+  { try
+    { if (frm.elements[i].type.indexOf("text") >=0 )
+        frm.elements[i].value="";
+    } catch (e){}
+
+	try
+    { if (frm.elements[i].type.indexOf("select") >=0 
+      && frm.elements[i].name != "f_contr"
+      && frm.elements[i].name != "f_year"
+      && frm.elements[i].name != "f_mm")
+        frm.elements[i].selectedIndex=0;
+    } catch (e){}
+  }
+  frm.f_doc_types.value=""; ??
+  frm.f_doc_statuss.value="";
+}
+
+function showFilters()
+{ d = document.getElementById("searchBox");
+  s = document.getElementById("showFilters");
+  if (d.style.display == "none")
+  { s.innerHTML="Скрыть фильтры <<< &nbsp; ";
+  	d.style.display = "block";
+  }
+  else
+  { s.innerHTML="Показать фильтры >>> ";
+    d.style.display = "none";
+  }
+}
+
+function showAdvFilters()
+{ var d = document.getElementById("adv_filters");
+  var d2 = document.getElementById("adv_filters2");
+  var a = document.getElementById("a_adv_fil");
+  if (d.style.display == "block")
+  {	d.style.display = "none";
+  	a.innerHTML = "Доп. фильтры &gt;&gt;&gt;";
+  	try { d2.style.display = "none";} catch (e) {}
+  }
+  else
+  { d.style.display = "block";
+  	a.innerHTML = "Скрыть доп. фильтры &lt;&lt;&lt;";
+  	try { d2.style.display = "block";} catch (e) {}
+  }
+}
+selectOptionByVal(frm.f_mm,'#f_mm#')  ??f_mm
+selectOptionByVal(frm.f_contr,'#f_contr#')  ??f_contr
+
+selectOptionByVal(frm.f_lab,'#f_lab#')  ??f_lab
+selectOptionByVal(frm.f_lab,'#A_LABS#')  ??xxxA_LABS&!f_lab
+
+selectOptionByVal(frm.f_doc_status,'#f_doc_status#')  ??f_doc_status
+selectOptionByVal(frm.f_doc_type,'#f_doc_type#')  ??f_doc_type
+selectOptionByVal(frm.f_dir,'#f_dir#')  ??f_dir
+selectOptionByVal(frm.aggr,'#aggr#')    ??aggr
+selectOptionByVal(frm.cons,'#cons#')    ??cons
+selectOptionByVal(frm.f_approval,'#f_approval#')  ??f_approval
+selectOptionByVal(frm.f_year,'#f_year#')  ??xxxf_year
+selectOptionByVal(frm.f_summa_op,'#f_summa_op#')  ??f_summa_op
+selectOptionByVal(frm.f_curr_code,'#f_curr_code#')  ??f_curr_code
+selectOptionByVal(frm.f_razd,'#f_razd#')  ??f_razd
+selectOptionByVal(frm.f_modif,'#f_modif#')  ??f_modif
+
+</script>
+[end]

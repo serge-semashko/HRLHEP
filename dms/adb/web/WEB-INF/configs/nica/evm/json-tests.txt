@@ -1,0 +1,65 @@
+kuniaev 
+nica_sergei
+
+Wbs 
+
+{
+"id": 0,
+"orderInLevel": 1,
+"code": "ROOT",
+"title": "NICA"
+}
+.
+{
+"id": 2,
+"parentId": 1,
+"orderInLevel": 1,
+"code": "NODE_2",
+"title": "Node_2 - title"
+}
+
+{ "id": 21447, 
+"wbsId ": 182, 
+"orderInLevel": 1,
+ "code": "1.1.1.6",
+ "title": "Manufacturing",
+ "planStart": "2014-01-01",
+ "planFinish": "2014-12-31",
+ "amount": 31437.13,
+ "extraData": "Butenko A.V." 
+} 
+
+Create or Update a workunit node
+
+{ "id": 21447, 
+"wbsId ": 182, 
+"orderInLevel": 1,
+ "code": "1.1.1.6",
+ "title": "Manufacturing",
+ "planStart": "2014-01-01T18:25:43",
+ "planFinish": "2014-12-31T18:25:43",
+ "amount": 31437
+}
+
+Add an progress report to a workunit node
+
+182
+
+{ 
+"id": 111111,
+"wuId": 21447,
+"progressReportDate": "2014-07-03T00:00Z",
+"actualStart": "2014-05-21T00:00Z",
+"actualFinish": "2014-12-31T23:59Z",
+"actualQuantity": 22.2
+}
+
+
+{ 
+"id": 111111,
+"wuId": 21447,
+"progressReportDate": "2014-02-02T00:00Z",
+"actualStart": "2014-01-21T00:00Z",
+"actualFinish": "2014-12-31T23:59Z",
+"actualQuantity": 22.2
+}

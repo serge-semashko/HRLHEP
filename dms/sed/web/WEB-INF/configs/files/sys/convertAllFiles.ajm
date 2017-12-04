@@ -1,0 +1,50 @@
+
+files/sys/convertAllFiles.cfg
+
+http://ak0211.jinr.ru:8084/sed/dubna?c=files/sys/convertAllFiles&did=763
+
+Конвертирование всех файлов, для которых не найдены растрированные страницы
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+tableCfg=table_no
+LOG=ON
+[end]
+
+
+[report header]
+$INCLUDE viewer/common_blocks.dat[head]  *** Блок <head>...</head>
+$SET_PARAMETERS verbose=3;
+<body>
+[end]
+
+[item]
+$SET_PARAMETERS ERROR=;
+<br>
+$CALL_SERVICE c=files/sys/sendConvertRequest;
+[end]
+
+
+[report footer]
+<br>All files.<br>
+======================<br>
+</body></html>
+[end]
+
+
+
+=========================================
+
+[SQL]
+select df.id as "file_id", dh.id as "doc_id" 
+from doc_files df
+join d_list dh on dh.id=df.doc_id
+where dh.is_deleted=0
+and dh.id=#did# ??did
+and dh.id<2780
+and df.id not in
+ (select file_id from doc_data_markups)
+ (select file_id from doc_file_pages) ??
+order by dh.id desc, df.id desc
+limit 1 ??
+[end]

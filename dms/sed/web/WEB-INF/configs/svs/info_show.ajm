@@ -1,0 +1,62 @@
+svs/info_show.ajm
+
+[comments]
+descr=Модуль вывода окна справочника
+
+input=fieldName - имя поля для результата, info_id - ID стравочника; view - № представления. По умолчанию - 1 (все поля по порядку); searchFor - строка поиска.
+output=Pup-up окно с данными справочника с формой поиска и с выбором записи
+parents=free/main_js_noDB.cfg
+childs=svs/info_show_plain,svs/info_show_tree
+author=Куняев
+[end]
+
+
+[description]
+    <b>Корневой модуль вывода окна справочника.</b> Все начинается отсюда! (вывод содержимого справочника во всплывающем окне)<br>
+    <ul>
+        <li>Выбор из БД данных о справочнике и его представлении на основе входных параметров</li>
+        <li>Отображение pop-up окна ##d_sprav_window (js_popup.dat/doShowSprav())</li>
+        <li>Вызов соответствующено модуля:</li>
+        <ul>
+            <li>##CUSTOM_MODULE##, если он задан в i_infos</li>
+            <li>svs/info_show_plain для плоского справочника</li>
+            <li>svs/info_show_tree для дерева</li>
+        </ul>
+    </ul> 
+[end]
+
+[parameters]
+request_name=S:просмотр данных справочника 
+LOG=ON
+SYS_FIELDS=id as "RECORD_ID"
+[end]
+
+
+[report]   ***** Определение, что за справочник вызван, вызов соответствующего модуля
+    $SET_PARAMETERS info_view=1; ??!info_view
+    $GET_DATA [getInfoView]
+    $SET_PARAMETERS IS_TREE=0;
+    $SET_PARAMETERS IS_TREE=1; ??INFO_TYPE=2
+
+    <script>
+        setInfoName("#INFO_NAME#");  doShowSprav();  
+    </script>
+
+    $SET_PARAMETERS irpp=25; ??
+    $CALL_SERVICE c=#CUSTOM_MODULE#;    ??CUSTOM_MODULE
+    $CALL_SERVICE c=svs/info_show_plain;    ??INFO_TYPE=1&!CUSTOM_MODULE
+    $CALL_SERVICE c=svs/info_show_tree;     ??INFO_TYPE=2&!CUSTOM_MODULE
+[end]
+
+
+==============================================================
+==============================================================
+==============================================================
+
+
+[getInfoView]  ***** Полученик данных о справочнике
+    $INCLUDE admin/infos/info_data.cfg[getInfoSQL]
+    ;
+    select view, type as INFO_TYPE, multi, editable
+    from infos_views where id=#info_view#
+[end]

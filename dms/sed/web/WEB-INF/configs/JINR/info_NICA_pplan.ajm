@@ -1,0 +1,206 @@
+JINR/info_NICA_pplan.ajm
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial2
+debug=off
+LOG=ON
+tableCfg=this
+wrapperTable=none 
+table_beg=none
+table_end=none
+wrapperTableEnd=none 
+numDigits=0
+thsnDelimiter=&nbsp;
+
+rowLink=|<span class="pt" onClick="goToRowA(#srn_i#);">#srn_i#-#ern_i#</span> ??!currentPage
+rowLink=|<span class=actPage>#srn_i#-#ern_i#</span> ??currentPage
+prevSetLink=<span class="pt" onClick="goToRowA(#srn_i#);"> << предыд. </a> 
+nextSetLink=| <span class="pt" onClick="goToRowA(#srn_i#);"> следующие >> </a>
+[end]
+
+
+=================  ГРАФИК ПЛАТЕЖЕЙ - ВЫВОД ТАБЛИЦЫ ЗАПЛАНИРОВАННЫХ ПЛАТЕЖЕЙ ===============
+
+[report header]
+    $SET_PARAMETERS VER=12; 
+    curr_id=132;  ??
+    $SET_PARAMETERS srn=1; rpp=10;  ??!srn
+    $SET_PARAMETERS rpp=10; ??!rpp
+
+    $USE_DB ADB
+    $GET_DATA [getFilters]
+    $CALL_SERVICE c=JINR/nica/getSources;   ??!F_NICA_SRCS
+
+    $INCLUDE svs/info_show_plain_script.dat[css]  ??!INFO_CSS_LOADED
+    $INCLUDE svs/info_show_plain_script.dat[script] 
+
+    <form name="filters_form" onSubmit="goToRowA(1); return false;">
+    <div id="popup_info_filters_div">
+    <input type=hidden id="srn" name="srn" value="#srn#"> 
+    <input type=hidden id="requesterId" name="requesterId" value="#requesterId#"> 
+
+    <table border=0 cellpadding=3 cellspacing=3 style="margin:0px 0 0px 100px; border:solid 1px white;">
+    <tr><td class="nowrap right" nowrap>ID платежа (закупки)</td>
+    <td><input size=9 name="f_id" value="#f_id#"></td>
+    </tr>
+
+    <tr><td class="nowrap right" nowrap>№ пункта (работы)</td>
+    <td><input size=9 name="f_item" value="#f_item#"></td>
+    </tr>
+
+    <tr><td class="nowrap right" nowrap>Источник финансирования: </td>
+    <td><select name="f_src" onChange='goToRowA(1);'><option value="">все</option>#F_NICA_SRCS#</select>
+
+    конфигурация: <select name="f_mega" onChange="goToRowA(1);"><option value="">все</option>
+    <option value=0
+    selected ??f_mega=0
+    >базовая</option>
+    <option value="1"
+    selected ??f_mega=1
+    >расширенная</option></select>
+    </td></tr>
+
+    <tr><td class="right">
+    Искать текст:</td><td><input size=35 name="f_search" value="#f_search#"> &nbsp; 
+    ++++++++++++++++++ кнопка поиска +++++++++++++++++++++ ??
+    <div style="float:right;"><input type="submit"  onClick_='doSubmitA();' class="butt1 pt" style="width:90;" value="Искать"><div style="clear:both;"></div></td>
+
+    </tr></table>
+
+<script type="text/javascript">
+selectOptionByVal(document.filters_form.f_src, '#f_src#'); ??f_src
+
+function goToRowA(nr) { 
+console.log("JINR/info_NICA_pplan.ajm.goToRowA( " + nr + " );");
+    try {
+        $("##srn").val(nr);  
+        doSubmitA();
+    }
+    catch (e) {
+    alert(e);
+    }
+}
+
+function doSubmitA() { 
+console.log("JINR/info_NICA_pplan.ajm.doSubmitA();");
+    try {
+        AjaxCall('d_spravCont', 'c=JINR/info_NICA_pplan', true, 'popup_info_filters_div',true);
+    }
+    catch (e) {
+    alert(e);
+    }
+}
+</script>
+
+    <table class="tlist dd_info" border=0 cellspacing=0 cellpadding=0 style="width:100%;">
+    <tr>
+        <th>ID</th> 
+        <th style="width:300px;">Работа</th> 
+        <th style="width:400px;">Назначение&nbsp;платежа</th>
+        <th>Статья</th>
+        <th><center>Сумма<br>(вал.)</center></th>
+        <th><center>Сумма<br>($)</center></th>
+    </tr>
+    $SET_PARAMETERS_SESSION srt_plan=#srt#; desc_plan=#desc#; 
+
+[end]
+
+    $INCLUDE JINR/nica/getSources.cfg[SOURCE] 
+    ,
+    $INCLUDE [block mega]
+    ,
+    $INCLUDE [nature]
+
+[item]
+    $INCLUDE JINR/nica/getSources.cfg[SET_SOURCE] 
+    $INCLUDE [block mega]
+    $INCLUDE [nature]
+
+    <tr class="pt
+    oddRow ??!oddRow=1
+    " returnId="#PLAT_ID#" onClick="selectInfoItem(this,'#CODE#, платеж #PLAT_ID#: #NAZNACH# <small><i>(#SOURCE_DES#, #MEGA_DES#, #NATURE_DES#)</i></small>'); hideSprav();">
+    <td nowrap style="text-align:right; white-space:nowrap;">#PLAT_ID#&nbsp;</td>
+    <td nid='w#WUID#'><div style="width:300px;"><span class="pri_#PRI#">#CODE#:</span> #TITLE# <small>(#RESP#)</small></div></td> 
+
+    <td><div style="width:400px;">#NAZNACH#
+    <div style="text-align:right;">
+    <i>#SOURCE_DES#, #MEGA_DES#, #NATURE_DES#</i></div>
+    </div></td>
+
+    <td class="center">#STATIA#</td>
+    <td class="right">#SUMMA_CURR#&nbsp;р.</td>  ??CURR_CODE=810
+    <td class="right">#SUMMA_CURR#&nbsp;$</td>  ??CURR_CODE=840
+    <td class="right">#SUMMA_CURR#&nbsp;€</td>  ??CURR_CODE=978
+    <td class="right">&nbsp;#SUMMA_USD#</td>
+    </tr>
+[end]
+
+[nature]
+$SET_PARAMETERS NATURE_DES=A1;  ??NATURE=11
+$SET_PARAMETERS NATURE_DES=A2;  ??NATURE=12
+$SET_PARAMETERS NATURE_DES=A3;  ??NATURE=13
+$SET_PARAMETERS NATURE_DES=A4;  ??NATURE=14
+$SET_PARAMETERS NATURE_DES=A5;  ??NATURE=15
+$SET_PARAMETERS NATURE_DES=B;   ??NATURE=2
+$SET_PARAMETERS NATURE_DES=С1;  ??NATURE=31
+$SET_PARAMETERS NATURE_DES=С2;  ??NATURE=32
+$SET_PARAMETERS NATURE_DES=D;   ??NATURE=4
+[end]
+
+[block mega]
+$SET_PARAMETERS MEGA_DES=Базовая конфигурация;  ??MEGA=0
+$SET_PARAMETERS MEGA_DES=Расширенная конфигурация  ??MEGA=1
+$SET_PARAMETERS MEGA_DES=конфигурация не указана  ??!MEGA
+[end]
+
+[report footer]
+    </table>
+    <input type=hidden name="rpp" value="#rpp#"> ??
+    <div class="right" style="margin:5px;"> Строки: #rowLinks# |</div>
+    ++++++++++++++++++ кнопка отмены +++++++++++++++++++++ ??
+    <center><input type="button" class="butt1 pt" style="width:80; margin:5px 0 0 100px;" value="Закрыть" onclick="hideSprav();"></center>
+</div></form>
+
+[end]
+
+
+========================================================
+
+[getFilters]
+select id as "ITEM_ID" from (select * from nica_wbs_wu order by lev) where code like '#f_item#%'  and rownum<2 ??f_item
+[end]
+
+
+[SQL]
+select  
+    l.C_ID||'-'||l.P_NR as PLAT_ID
+    , w.CODE as CODE, nvl(w.TITLE, w.TITLE_E) as "TITLE", w.RESP
+    , p.NAZNACH, p.SOURCE, p.NATURE, p.MEGA
+    , to_char(p.STATIA,'00') as "STATIA"
+
+    , replace(trim(to_char(p.SUMMA_CURR,'999G999G990')),' ','&nbsp;') as SUMMA_CURR
+    , p.CURR_CODE as CURR_CODE
+    , nvl(p.SUMMA_USD,0) as SUMMA_USD
+    , p.SUMMA_RUB 
+
+    , getNicaRights(p.TASK_ID, '#A_NICA#', '#A_NICA_RO#') as "AR" ??ZZZZZ&A_NICA|A_NICA_RO
+    , to_number(replace(replace(w.code ,'.','') ,'X','')) as "SORT"
+
+from nica_pplan_#VER# p 
+ left join nica_wbs_wu w on w.id=p.TASK_ID 
+ left join users u on u.id=p.MODIFIER_ID
+ left join nica_costbook_pplan_#VER# l on l.p_id=p.id
+where 1=1
+    and p.TASK_ID in (select ID from nica_wbs_wu connect by prior id=pid start with id in(#curr_id#))  ??!ITEM_ID&curr_id&ZZZ
+    and p.TASK_ID in(select ID from nica_wbs_wu connect by prior id=pid start with id in(#ITEM_ID#)) ??ITEM_ID
+
+    and l.C_ID||'-'||l.P_NR like '#f_id#%' ??f_id
+    and p.SOURCE=#f_src# ??f_src
+    and p.mega=#f_mega#  ??f_mega
+
+    and (upper(p.NAZNACH) like upper('%#f_search#%') or upper(w.TITLE) like upper('%#f_search#%') or upper(w.TITLE_e) like upper('%#f_search#%') or upper(w.RESP) like upper('%#f_search#%')  ) ??f_search
+
+    and extract(YEAR from p.DAT) = #f_nica_year# ??f_nica_year&!TYP=WU&!f_nica_year={{ALL|past|future}}
+    and p.ID=#P_ID#  ??P_ID
+order by SORT, l.C_ID||'-'||l.P_NR
+[end]

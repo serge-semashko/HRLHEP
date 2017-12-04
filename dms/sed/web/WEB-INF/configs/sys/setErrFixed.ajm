@@ -1,0 +1,47 @@
+sys/setErrFixed.cfg
+
+[comments]
+descr=S: Лог http-запросов - отметка в запросе, вызвавшем ошибку, что ошибка исправлена.
+Вызывается через AJAX из =sys/viewRequest
+
+input=row - ID записи в таблице a_req_log
+output=HTML код с информацией о дате исправления. 
+parents=sys/viewRequest
+childs=
+[end]
+
+[parameters]
+title=***Запрос
+debug=off
+[end]
+
+
+[report]
+$INCLUDE [report_] 
+[end]
+
+[report_]
+$GET_DATA [setFixSQL]
+НЕ  ??!fixed=true
+Исправлено
+#FIX_DAT#
+#ERROR#
+[end]
+
+
+****************************************************************************
+****************************************************************************
+****************************************************************************
+
+[setFixSQL]
+update a_req_log set 
+FIXED=1 	??fixed=true
+FIXED=null ??!fixed=true
+, FIX_DAT=now()
+where ID='#row#'
+;
+select DATE_FORMAT(FIX_DAT,'#dateTimeFormat#') as FIX_DAT
+from a_req_log
+where ID='#row#'
+[end]
+

@@ -1,0 +1,60 @@
+viewer/registerMarkup.ajm
+
+[comments]
+descr=U: Прием информации о данных Markup'ов 
+input=active_page_id - id страницы из таблицы doc_file_pages
+parents=viewer/show_page.cfg
+childs = viewer/show_markup_icons_thmb_page.cfg
+author=Джавадзаде
+[end]
+
+[description]
+
+<ul>
+<li>Отправляет данные о маркапах в БД </li>
+<li>Вызывает viewer/show_markup_icons_thmb_page.cfg - отображает иконки маркапов на thmb </li>
+</ul>
+
+[end]
+
+[parameters]
+LOG=ON
+[end]
+
+
+[report]
+$GET_DATA [register markup]
+
+<script type="text/javascript">
+
+===== Вызов модуля вывода списка маркапов ======= ??
+------ Меняем фильтр по автору на юзера, если список был отфильтрован ------ ??
+if($('input[name="author_id"]').val())
+  filter_author(#USER_ID#);
+else
+  AjaxCall("page_comments", "c=viewer/show_markup_list&active_page_id=#active_page_id#", true, "page_comments"); 
+
+===== Вызов модуля отрисовки иконок на главной странице и на thmb ======= ??
+showMarkupIcons("#active_page_id#", ""); 
+</script>
+[end]
+
+
+================================================================================
+============================= шаблон SQL-запроса в БД ==========================
+================================================================================
+
+[register markup]  *** Занесение сообщения в БД
+select ifnull(max(markup_nr), 0) + 1 as NEXT_NR 
+from doc_data_markups
+where file_id=#file_id#
+;
+insert into doc_data_markups (file_id, page_id, markup_nr
+, comments, X_coordinate, Y_coordinate, user_id, dat)
+values (#file_id#, #active_page_id#, #NEXT_NR#
+, '#user_comment#', #x_coordinate#, #y_coordinate#, #USER_ID# , now())
+;
+select LAST_INSERT_ID() as "markup_id"
+[end]
+
+

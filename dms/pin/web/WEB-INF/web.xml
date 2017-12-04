@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app>
+
+    <session-config>
+      <session-timeout>300</session-timeout>
+    </session-config>
+
+    <display-name>Personal Information v1.0.0</display-name>
+    <description>HR Personal Information Application  v1.0.0</description>
+
+    <servlet>
+        <servlet-name>PIN</servlet-name>
+        <servlet-class>jinr.pin.Servlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>PIN</servlet-name>
+        <url-pattern>/pin</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>UploadServlet</servlet-name>
+        <servlet-class>jinr.pin.UploadServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>UploadServlet</servlet-name>
+        <url-pattern>/upload</url-pattern>
+    </servlet-mapping>
+
+
+<!-- security-constraint>
+	<web-resource-collection>
+		<web-resource-name>Entire Application</web-resource-name>
+		<url-pattern>/*</url-pattern>
+	</web-resource-collection>
+	<user-data-constraint>
+		<transport-guarantee>CONFIDENTIAL</transport-guarantee>
+	</user-data-constraint>
+</security-constraint -->
+    
+</web-app>

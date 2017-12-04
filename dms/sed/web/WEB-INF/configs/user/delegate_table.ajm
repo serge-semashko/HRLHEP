@@ -1,0 +1,226 @@
+user/delegate_table.ajm
+
+[comments]
+descr=U: Модуль вывода списка делегирования прав подписи пользователя и заведения правил делегирования
+
+input=
+output=HTML-таблица делегирования
+parents=tab_settings
+childs=
+author=Куняев
+[end]
+
+
+[parameters]
+service=dubna.walt.service.TableServiceSpecial
+request_name=U:Список делегирования
+LOG=ON
+tableCfg=table_no
+[end]
+
+
+[report header]
+    $INCLUDE dat/common.dat[check login]
+    $INCLUDE [OK report header]  ??USER_ID>0
+[end]
+
+
+[OK report header]
+    $SET_PARAMETERS srn=1; rpp=100000; 
+    $GET_DATA admin/tab_users.cfg[get user div] ??AR_LAB_ADMIN=1
+    $INCLUDE [process add] ??cop=add
+    $GET_DATA [process del] ??cop=del
+
+    <div id="result_table"> ??!ajax
+    <input type=hidden name="srn" value="1"> 
+    <input type=hidden name="rpp" value="100000"> 
+
+    ++++++++++++++++++ Шапка таблицы документов +++++++++++++++++++++ ??
+    <table class="tlist tblue" cellspacing=0>
+        <tr><th>Тип документов</th><th>Кто делегирует</th><th>Кому делегировано право подписи</th><th>Начало-конец делегирования</th><th>Правило создано</th></tr>
+[end]
+
+[item]
+    ++++++++++++++++++ Строка таблицы - 1 правило делегирования +++++++++++++++++++++ ??
+    <tr >
+        <td>#DOC_TYPE#
+        Все документы ??!DOC_TYPE
+        </td> 
+        <td class="nowrap">#WHO#</td> <td class="nowrap">#FIO#
+        <a class="delcross" title="Удалить правило" onClick="if(confirm('Удалить правило делегирования?')) 
+            AjaxCall('delegate','c=user/delegate_table&cop=del&rec_id=#rec_id#');">X</a>
+        </td> <td>#START_DATE# - #END_DATE#
+        до отмены ??!END_DATE
+        </td><td>#MODIFIED#, #MODIFIER#</td> 
+    </tr>
+[end]
+
+
+[new item]
+    $GET_DATA [getDocTypes]
+    <style>
+    ul.p0 li {font-weight:normal;}
+    </style>
+
+    <tr><td colspan=5 class="last"><b>Создание нового правила делегирования права согласования документов:</b></td></tr>
+    <tr>
+        <td><select name="new_doc_type"><option value="">Все документы</option>#DOC_TYPES#</select></td> 
+        <td>
+            <input type=hidden name=src_user_id value="#USER_ID#">#user_FIO# ??!AR_LAB_ADMIN=1&!AR_ADMIN=1
+            $INCLUDE [src user]  ??AR_LAB_ADMIN=1|AR_ADMIN
+        </td> 
+        <td>
+            <div id = "new_user_list" style="height:20pt;">#NEW_FIO#</div>
+            <input type=hidden id="new_user_id" name="new_user_id" size=3 value="#new_user_id#">
+            <input type=hidden id="new_user_text" name="VUSER_text" size=20 value="">
+            <span class="info_input" id="new_user" info_id="5" searchFor='none' info_view="1">выбрать</span> 
+        </td> 
+        <td colspan=2>с:<input id="new_start_date"  type="text" size=8 name="new_start_date" value=""> 
+            по:<input id="new_end_date"  type="text" size=8 name="new_end_date" value=""> 
+        </td>
+    </tr>
+
+    <script type="text/javascript">
+        $("##new_start_date").datepick({yearRange: 'c-0:c+2', showSpeed: 'fast'});
+        $("##new_end_date").datepick({yearRange: 'c-0:c+2', showSpeed: 'fast'});
+
+       selectOptionByVal(document.theForm.new_doc_type, "#new_doc_type#"); ??new_doc_type>0
+
+       var customSelectInfoRow = function(el, text){
+           hideSprav();
+       }
+    </script>
+
+[end]
+
+[src user]
+    <div id="src_user_list" style="height:20pt;" >#user_FIO#</div>
+    <input type=hidden id="src_user_id" name="src_user_id" size=5 value="#USER_ID#">
+    <input type=hidden id="src_user_text" name="src_user_text" size=20 value=""> 
+    <span class="info_input" id="src_user" info_id="5" searchFor='none' info_view="1">выбрать</span> 
+[end]
+
+
+
+[report footer]
+    <tr><td colspan=5 style="border:solid 1px gray; padding:10px;">Правил делегирования нет.</td></tr>    ??NumTableRows=0
+
+    $INCLUDE [new item] ??cop=new
+
+    <tr><td colspan=5 class="last" ></td></tr> ??
+    <tr><td colspan=5 class="center" style="padding:15px;">
+    <input type="button" class="butt1 pt" value="Сохранить" onClick="AjaxCall('delegate','c=user/delegate_table&cop=add', true, 'delegate');"> &nbsp;  ??cop=new
+    <input type="button" class="butt1 pt" value="Отмена" onClick="AjaxCall('delegate','c=user/delegate_table')">  ??cop=new
+    <input type="button" class="butt1 pt" value="Создать правило делегирования" onClick="AjaxCall('delegate','c=user/delegate_table&cop=new')">  ??!cop=new
+    </td></tr>
+
+    <tr><td colspan=5 class="last">
+            В СЭД есть возможность делегирования своего права согласования документов другому сотруднику.<br>
+            Делегировать можно право согласования или только определенного типа документов или всех поступающих к Вам документов,
+            или на определенный промежуток времени или постоянно (до отмены делегирования).<br><br>
+            Делегирование касается ТОЛЬКО автоматически созданного маршрута документа. 
+            Если кто-то из пользователей перешлет Вам документ в "ручном" режиме, то правила делегирования применяться не будут и Вы получите этот документ.<br><br>
+    </td></tr>
+</table>
+[end]
+
+
+[process add]
+    $GET_DATA [check user input] ??new_user_id
+    $GET_DATA [check src user]  ??SRC_FIO
+
+    $INCLUDE [err add]  ??!NEW_FIO|RULE_EXISTS|!CAN_ADD
+
+    $GET_DATA [add rule] ??NEW_FIO&!RULE_EXISTS&CAN_ADD
+[end]
+
+[err add]
+    <script type="text/javascript">
+        alert("Нельзя установить делегирование для пользователя #SRC_FIO#" ); ??!CAN_ADD&NEW_FIO
+        alert("Выберите, кто делегирует право согласования документов" ); ??!SRC_FIO
+        alert("Выберите, кому делегировать право согласования документов" ); ??!NEW_FIO
+        alert("Такое правило уже есть" ); ??RULE_EXISTS&NEW_FIO&SRC_FIO
+    </script> 
+
+    $SET_PARAMETERS cop=new
+[end]
+
+***************************** Шаблон SQL запроса ***************************
+
+[SQL]
+    select dlg.id as rec_id, dt.name as "DOC_TYPE", ud.FIO as WHO, u.FIO
+        , DATE_FORMAT(dlg.start_date,'#dateFormat#') as START_DATE
+        , DATE_FORMAT(dlg.end_date,'#dateFormat#') as END_DATE
+        , DATE_FORMAT(dlg.modified,'#dateTimeFormat#') as MODIFIED, um.FIO as "MODIFIER"
+    from wf_delegate dlg 
+        left join d_types dt on dt.id=dlg.doc_type_id
+        left join #table_users_full# ud on ud.id=dlg.user_id
+        left join #table_users_full# u on u.id=dlg.new_user_id
+        left join #table_users_full# um on um.id=dlg.modifier_id
+    $INCLUDE [criteria] ??!AR_SYS_ADMIN=1
+    order by ifnull(dlg.doc_type_id, 10000), dlg.modified desc
+[end]
+
+[criteria]
+where 1=1
+    and dlg.user_id=#USER_ID# or dlg.new_user_id=#USER_ID#  ??!AR_LAB_ADMIN=1|!f_div_id
+    and dlg.user_id in (select user_id from a_user_role where target_type_id=1 and target_code in(#f_div_id#) and active=1)   ??AR_LAB_ADMIN=1&f_div_id
+    or dlg.modifier_id=#USER_ID#
+[end]
+
+[process del]
+    delete from wf_delegate 
+    where id=#rec_id# 
+    $INCLUDE [del check criteria] ??!AR_SYS_ADMIN=1
+[end]
+
+
+[del check criteria]
+    and (
+        user_id=#USER_ID# or new_user_id=#USER_ID#  ??!AR_LAB_ADMIN=1|!f_div_id
+        user_id in (select user_id from a_user_role where target_type_id=1 and target_code in(#f_div_id#) and active=1)   ??AR_LAB_ADMIN=1&f_div_id
+        or modifier_id=#USER_ID#
+    )
+[end]
+
+[check src user]
+    select 'Y' as "CAN_ADD"
+    from #table_users_full# 
+    where  id=#src_user_id#
+        and id in (select user_id from a_user_role where target_type_id=1 and target_code in(#f_div_id#) and active=1)   ??AR_LAB_ADMIN=1&f_div_id
+        and id in (select user_id from a_user_role where active=1)   ??AR_SYS_ADMIN=1&!f_div_id
+[end]
+
+
+[add rule]
+    insert into  wf_delegate(user_id, doc_type_id, new_user_id, start_date, end_date, comments, modified, modifier_id)
+    values (#src_user_id#
+        , #new_doc_type# ??new_doc_type
+        , null ??!new_doc_type
+        , #new_user_id#
+        , STR_TO_DATE('#new_start_date#', '#dateFormat#') ??new_start_date
+        , null ??!new_start_date
+        , STR_TO_DATE('#new_end_date#', '#dateFormat#') ??new_end_date
+        , null ??!new_end_date
+        , '#user_IOF#->#NEW_FIO#', now(), #USER_ID#)
+[end]
+
+[check user input]
+    select FIO as SRC_FIO from #table_users_full# where id=#src_user_id# ??src_user_id
+    ;
+    select FIO as NEW_FIO from #table_users_full# where id=#new_user_id# ??new_user_id
+    ;
+    select 'Y' as "RULE_EXISTS" from wf_delegate where user_id=#USER_ID# 
+    and doc_type_id=#new_doc_type# ??new_doc_type
+    and doc_type_id=null        ??!new_doc_type
+[end]
+
+
+[getDocTypes]
+    select concat('<option value=', cast(dt.id as char), '>', dt.name, '</option>') as DOC_TYPES
+    from d_types dt join doc_groups dg on dg.id=dt.group_id
+    where dt.is_active = 1 
+        and dg.has_wf=1
+    order by dt.name
+    ;
+[end]
